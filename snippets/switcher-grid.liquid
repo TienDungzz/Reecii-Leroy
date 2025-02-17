@@ -1,0 +1,57 @@
+{% comment %}
+    Render grid view
+    Accepts:
+    - columns_desktop: {String} Type of columns
+    - filter_type: {String} Type of filter
+
+    Usage:
+    {% render 'switcher-grid', columns_desktop: columns_desktop, filter_type: 'vertical' %}
+{% endcomment %}
+
+<grid-view class="switcher-grid no-js-hidden small-hide medium-hide">
+    {%- if filter_type == 'vertical' -%}
+        <ul class="dis-flex list-unstyled" role="list" style="--gap-a-lg: 0.8rem;--gap-a-xm: 1.6rem;">
+            <li class="grid-view-list">
+                <button class="button--grid-view t-button bor-circle dis-flex a-i-center j-c-center{% if columns_desktop == 1 %} active{% else %} c-pointer{% endif %}" type="button" aria-label="list" data-grid="list" style="--pad-a-a: 1rem;--wid-a: 4rem;--hei-a: 4rem;">list</button>
+            </li>
+            <li class="grid-view-2">
+                <button class="button--grid-view t-button bor-circle dis-flex a-i-center j-c-center{% if columns_desktop == 2 %} active{% else %} c-pointer{% endif %}" type="button" aria-label="2" data-grid="2" style="--pad-a-a: 1rem;--wid-a: 4rem;--hei-a: 4rem;">2</button>
+            </li>
+            <li class="grid-view-3">
+                <button class="button--grid-view t-button bor-circle dis-flex a-i-center j-c-center{% if columns_desktop == 3 %} active{% else %} c-pointer{% endif %}" type="button" aria-label="3" data-grid="3" style="--pad-a-a: 1rem;--wid-a: 4rem;--hei-a: 4rem;">3</button>
+            </li>
+            <li class="grid-view-4">
+                <button class="button--grid-view t-button bor-circle dis-flex a-i-center j-c-center{% if columns_desktop == 4 %} active{% else %} c-pointer{% endif %}" type="button" aria-label="4" data-grid="4" style="--pad-a-a: 1rem;--wid-a: 4rem;--hei-a: 4rem;">4</button>
+            </li>
+        </ul>
+    {%- else -%}
+        <details
+            id="Details-GridView"
+            class="details--dropdown facet-filters__sort facet-grid-view pos-relative caption-large"
+            is="dropdown-details" activate-event="hover"
+            data-index="0"
+        >
+            <summary class="details__summary facets__summary focus-inset">
+                <span class="facet-grid-view_label">
+                    test Grid
+                </span>
+            </summary>
+            <div id="GridViewPopup" class="details__list pos-absolute top-100 right-0 z-index-1 gradient global-settings-popup" style="--min-w-a: 20rem;" tabindex="-1">
+                <ul class="dis-flex list-unstyled" role="list" style="--pad-a-a: 1.3rem 2rem;">
+                    <li class="grid-view-list">
+                        <button class="button--grid-view t-button bor-circle dis-flex a-i-center j-c-center{% if columns_desktop == 1 %} active{% else %} c-pointer{% endif %}" type="button" aria-label="list" data-grid="list" style="--pad-a-a: 1rem;--wid-a: 4rem;--hei-a: 4rem;">list</button>
+                    </li>
+                    <li class="grid-view-2">
+                        <button class="button--grid-view t-button bor-circle dis-flex a-i-center j-c-center{% if columns_desktop == 2 %} active{% else %} c-pointer{% endif %}" type="button" aria-label="2" data-grid="2" style="--pad-a-a: 1rem;--wid-a: 4rem;--hei-a: 4rem;">2</button>
+                    </li>
+                    <li class="grid-view-3">
+                        <button class="button--grid-view t-button bor-circle dis-flex a-i-center j-c-center{% if columns_desktop == 3 %} active{% else %} c-pointer{% endif %}" type="button" aria-label="3" data-grid="3" style="--pad-a-a: 1rem;--wid-a: 4rem;--hei-a: 4rem;">3</button>
+                    </li>
+                    <li class="grid-view-4">
+                        <button class="button--grid-view t-button bor-circle dis-flex a-i-center j-c-center{% if columns_desktop == 4 %} active{% else %} c-pointer{% endif %}" type="button" aria-label="4" data-grid="4" style="--pad-a-a: 1rem;--wid-a: 4rem;--hei-a: 4rem;">4</button>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    {%- endif -%}
+</grid-view>
