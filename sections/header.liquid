@@ -86,7 +86,8 @@
 
 <{% if section.settings.sticky_header_type != 'none' %}sticky-header data-sticky-type="{{ section.settings.sticky_header_type }}"{% else %}div{% endif %} class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}">
   <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}">
-    {%- liquid
+  {% content_for 'blocks' %}  
+  {%- liquid
       if section.settings.menu != blank
         render 'header-functions', enable_menu_drawer: true
       endif
@@ -269,7 +270,6 @@
 {
   "name": "t:sections.header.name",
   "class": "section-header",
-  "max_blocks": 3,
   "settings": [
     {
       "type": "select",
@@ -449,17 +449,8 @@
       "type": "@app"
     },
     {
-      "type": "mega_menu",
-      "name": "t:sections.header.blocks.mega_menu.name",
-      "settings": [
-        {
-          "type": "text",
-          "id": "menu_item",
-          "label": "t:sections.header.blocks.mega_menu.settings.menu_name.label",
-          "info": "t:sections.header.blocks.mega_menu.settings.menu_name.info"
-        }
-      ]
-    }
+      "type": "@theme"
+    },
   ]
 }
 {% endschema %}
