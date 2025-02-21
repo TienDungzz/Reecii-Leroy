@@ -86,39 +86,7 @@
 
 <{% if section.settings.sticky_header_type != 'none' %}sticky-header data-sticky-type="{{ section.settings.sticky_header_type }}"{% else %}div{% endif %} class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}">
   <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}">
-  {% content_for 'blocks' %}  
-  {%- liquid
-      if section.settings.menu != blank
-        render 'header-functions', enable_menu_drawer: true
-      endif
-
-      if section.settings.logo_position == 'top-center' or section.settings.menu == blank
-        render 'header-search', input_id: 'Search-In-Modal-1'
-      endif
-    -%}
-
-    {%- if section.settings.logo_position != 'middle-center' -%}
-      {% render 'header-logo' %}
-    {%- endif -%}
-
-    {%- liquid
-      if section.settings.menu != blank
-        render 'header-menu'
-      endif
-    %}
-
-    {%- if section.settings.logo_position == 'middle-center' -%}
-      {% render 'header-logo' %}
-    {%- endif -%}
-
-    <div class="header__icons{% if section.settings.enable_country_selector or section.settings.enable_language_selector %} header__icons--localization header-localization{% endif %}">
-      {%- render 'header-functions',
-        enable_localization: true,
-        enable_search: true,
-        enable_account: true,
-        enable_cart: true
-      -%}
-    </div>
+    {% content_for 'blocks' %}
   </header>
 </{% if section.settings.sticky_header_type != 'none' %}sticky-header{% else %}div{% endif %}>
 
@@ -270,6 +238,23 @@
 {
   "name": "t:sections.header.name",
   "class": "section-header",
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "group-announcement"
+    },
+    {
+      "type": "group-multi-site"
+    },
+    {
+      "type": "group-sale-banner"
+    },
+    {
+      "type": "group-mega-menu"
+    }
+  ],
   "settings": [
     {
       "type": "select",
@@ -443,14 +428,6 @@
       "label": "t:sections.all.padding.padding_bottom",
       "default": 20
     }
-  ],
-  "blocks": [
-    {
-      "type": "@app"
-    },
-    {
-      "type": "@theme"
-    },
   ]
 }
 {% endschema %}
