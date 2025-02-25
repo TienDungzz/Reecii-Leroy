@@ -1,6 +1,6 @@
 {% comment %} [START nesting.block_render] {% endcomment %}
 <div
-  class="{{ block.settings | class_list }} group-block group-block--{{ block.id }} color-{{ block.settings.color_scheme }}"
+  class="{{ block.settings | class_list }} group-block group-block--{{ block.id }} color-{{ block.settings.color_scheme }}{% if section.settings.menu != blank %} header--has-menu{% endif %}"
   {{ block.shopify_attributes }}
 >
   {% content_for 'blocks' %}
@@ -12,17 +12,59 @@
 {
   "name": "Group: Mega menu",
   "tag": null,
-  "blocks": [{ "type": "@app" }, { "type": "text" }],
+  "blocks": [
+    { "type": "@app" },
+    { "type": "group-shopping-function" },
+    { "type": "group-search" },
+    { "type": "group-logo" },
+    { "type": "group-menu" },
+    { "type": "text" }
+  ],
   "settings": [
     {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "t:sections.header.settings.menu.label"
+    },
+    {
       "type": "header",
-      "content": "Color"
+      "content": "t:sections.all.colors.name"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme",
+      "label": "t:sections.all.colors.label",
       "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "menu_color_scheme",
+      "label": "t:sections.header.settings.menu_color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.header__7.content",
+      "info": "t:sections.header.settings.header__7.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_customer_avatar",
+      "default": true,
+      "label": "t:sections.header.settings.enable_customer_avatar.label",
+      "info": "t:sections.header.settings.enable_customer_avatar.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.mobile_layout.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_show_social",
+      "default": true,
+      "label": "t:sections.header.settings.header__8.content",
+      "info": "t:sections.header.settings.header__8.info"
     }
   ],
   "presets": [
@@ -30,21 +72,7 @@
       "name": "Group: Mega menu",
       "settings": {
         "color_scheme": "scheme-3"
-      },
-      "blocks": [
-        {
-          "type": "text",
-          "settings": {
-            "text": "<h3>Column</h3>"
-          }
-        },
-        {
-          "type": "text",
-          "settings": {
-            "text": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.<\/p>"
-          }
-        }
-      ]
+      }
     }
   ]
 }
