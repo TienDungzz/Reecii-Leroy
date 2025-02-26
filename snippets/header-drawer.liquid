@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
 
 {%- liquid
-    if localization.available_countries.size > 1 and section.settings.enable_country_selector or section.settings.enable_language_selector and localization.available_languages.size > 1
+    if localization.available_countries.size > 1 and block.settings.enable_country_selector or block.settings.enable_language_selector and localization.available_languages.size > 1
       assign localization_forms = true
     endif
 -%}
@@ -170,7 +170,7 @@
                 class="menu-drawer__account link focus-inset h5 medium-hide large-up-hide"
                 rel="nofollow"
               >
-                {%- if section.settings.enable_customer_avatar -%}
+                {%- if block.settings.enable_customer_avatar -%}
                   <account-icon>
                     {%- if customer and customer.has_avatar? -%}
                       {{ customer | avatar }}
@@ -223,7 +223,7 @@
                 {%- endif -%}
               </div>
             {%- endif -%}
-            {%- if section.settings.mobile_show_social -%}
+            {%- if block.settings.mobile_show_social -%}
               {% render 'social-icons', class: 'list' %}
             {%- endif -%}
           </div>

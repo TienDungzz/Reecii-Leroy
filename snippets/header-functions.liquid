@@ -32,8 +32,8 @@
 {%- endif -%}
 
 {%- if enable_localization -%}
-    <div class="desktop-localization-wrapper">
-        {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
+    <div class="desktop-localization-wrapper {{block.settings.enable_country_selector}}">
+        {%- if block.settings.enable_country_selector and localization.available_countries.size > 1 -%}
             <localization-form class="small-hide medium-hide" data-prevent-hide activate-event="hover">
                 {%- form 'localization', id: 'HeaderCountryForm', class: 'localization-form' -%}
                     <div>
@@ -44,7 +44,7 @@
             </localization-form>
         {% endif %}
 
-        {%- if section.settings.enable_language_selector and localization.available_languages.size > 1 -%}
+        {%- if block.settings.enable_language_selector and localization.available_languages.size > 1 -%}
             <localization-form class="small-hide medium-hide" data-prevent-hide activate-event="hover">
                 {%- form 'localization', id: 'HeaderLanguageForm', class: 'localization-form' -%}
                     <div>
@@ -62,8 +62,8 @@
 {%- endif -%}
 
 {%- if enable_account and shop.customer_accounts_enabled -%}
-    <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__icon header__icon--account link focus-inset{% if section.settings.menu != blank %} small-hide{% endif %}">
-        {%- if section.settings.enable_customer_avatar -%}
+    <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__icon header__icon--account link focus-inset">
+        {%- if block.settings.enable_customer_avatar -%}
             <account-icon>
                 {%- if customer and customer.has_avatar? -%}
                     {{ customer | avatar }}
