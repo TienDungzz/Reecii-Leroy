@@ -1,16 +1,25 @@
+{%- liquid
+  assign social_icons = true
+  if settings.social_facebook_link == blank and settings.social_instagram_link == blank and settings.social_youtube_link == blank and settings.social_tiktok_link == blank and settings.social_twitter_link == blank and settings.social_pinterest_link == blank and settings.social_snapchat_link == blank and settings.social_tumblr_link == blank and settings.social_vimeo_link == blank
+    assign social_icons = false
+  endif
+-%}
+
 {% comment %} [START nesting.block_render] {% endcomment %}
 <div
-  class="header-grid {{ block.settings | class_list }} group-block group-block--{{ block.id }} color-{{ block.settings.color_scheme }}"
+  class="{{ block.settings | class_list }} group-block group-block--{{ block.id }} color-{{ block.settings.color_scheme }} utility-bar gradient{% if block.settings.show_line_separator %} utility-bar--bottom-border{% endif %}{% if block.settings.enable_country_selector or block.settings.enable_language_selector %} header-localization{% endif %}"
   {{ block.shopify_attributes }}
 >
-  {% content_for 'blocks' %}
+  <div class="page-width utility-bar__grid{% if block.blocks.size > 2 and social_icons %} utility-bar__grid--3-col{% elsif block.blocks.size > 1 and social_icons %} utility-bar__grid--2-col{% endif %}">
+    {% content_for 'blocks' %}
+  </div>
 </div>
 {% comment %} [END nesting.block_render] {% endcomment %}
 
 {% comment %} [START nesting.block_schema] {% endcomment %}
 {% schema %}
 {
-  "name": "Group: Mega menu",
+  "name": "Group: Announcement bar",
   "tag": null,
   "blocks": [
     { "type": "@app" },
@@ -29,6 +38,20 @@
       "id": "color_scheme",
       "label": "t:sections.all.colors.label",
       "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_line_separator",
+      "default": true,
+      "label": "t:sections.header.settings.show_line_separator.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Group: Announcement bar",
+      "settings": {
+        "color_scheme": "scheme-3"
+      }
     }
   ]
 }
