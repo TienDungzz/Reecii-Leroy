@@ -6,7 +6,7 @@
   class="{{ block.settings | class_list }}"
   {{ block.shopify_attributes }}
 >
-  <div class="localization-wrapper">
+  <div class="localization-wrapper{% if block.settings.enable_country_selector or block.settings.enable_language_selector %} header-localization{% endif %}">
     {%- if block.settings.enable_country_selector and localization.available_countries.size > 1 -%}
       <localization-form class="small-hide medium-hide" activate-event="hover">
         {%- form 'localization', id: 'AnnouncementCountryForm', class: 'localization-form' -%}
