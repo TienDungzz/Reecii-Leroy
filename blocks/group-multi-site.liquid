@@ -1,6 +1,6 @@
 {% comment %} [START nesting.block_render] {% endcomment %}
 <div
-  class="{{ block.settings | class_list }} group-block group-block--{{ block.id }} color-{{ block.settings.color_scheme }}"
+  class="header-grid {{ block.settings | class_list }} group-block group-block--{{ block.id }} color-{{ block.settings.color_scheme }}"
   {{ block.shopify_attributes }}
 >
   {% content_for 'blocks' %}
@@ -12,16 +12,23 @@
 {
   "name": "Group: Multi site",
   "tag": null,
-  "blocks": [{ "type": "@app" }, { "type": "text" }],
+  "blocks": [
+    { "type": "@app" },
+    { "type": "group-shopping-function" },
+    { "type": "group-search" },
+    { "type": "group-logo" },
+    { "type": "group-site" },
+    { "type": "text" }
+  ],
   "settings": [
     {
       "type": "header",
-      "content": "Color"
+      "content": "t:sections.all.colors.name"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme",
+      "label": "t:sections.all.colors.label",
       "default": "scheme-1"
     }
   ],
@@ -30,21 +37,7 @@
       "name": "Group: Multi site",
       "settings": {
         "color_scheme": "scheme-3"
-      },
-      "blocks": [
-        {
-          "type": "text",
-          "settings": {
-            "text": "<h3>Column</h3>"
-          }
-        },
-        {
-          "type": "text",
-          "settings": {
-            "text": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.<\/p>"
-          }
-        }
-      ]
+      }
     }
   ]
 }

@@ -1,0 +1,52 @@
+{% stylesheet %}
+{% endstylesheet %}
+
+{% comment %} [START block.markup] {% endcomment %}
+<div
+  class="{{ block.settings | class_list }} text-block"
+  {{ block.shopify_attributes }}
+>
+{%- if block.settings.text != blank -%}
+  {%- if block.settings.link != blank -%}
+    <a
+      href="{{ block.settings.link }}"
+      class="button"
+    >
+  {%- else -%}
+    <span class="button" >
+  {%- endif -%}
+  {{ block.settings.text | escape }}
+  {%- if block.settings.link != blank -%}
+    </a>
+  {%- else -%}
+    </span>
+  {%- endif -%}
+{%- endif -%}
+</div>
+{% comment %} [END block.markup] {% endcomment %}
+
+{% comment %} [START block.preset] {% endcomment %}
+{% schema %}
+{
+  "name": "Button",
+  "tag": null,
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "t:settings_schema.global.settings.button_label.label",
+      "default": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings_schema.global.settings.button_link.label"
+    }
+  ],
+  "presets": [
+    { "name": "Button" }
+  ]
+}
+{% endschema %}
+{% comment %} [END block.preset {% endcomment %}
+  

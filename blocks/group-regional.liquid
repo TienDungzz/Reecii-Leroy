@@ -6,28 +6,30 @@
   class="{{ block.settings | class_list }}"
   {{ block.shopify_attributes }}
 >
-  <div class="localization-wrapper{% if block.settings.enable_country_selector or block.settings.enable_language_selector %} header-localization{% endif %}">
-    {%- if block.settings.enable_country_selector and localization.available_countries.size > 1 -%}
-      <localization-form class="small-hide medium-hide" activate-event="hover">
-        {%- form 'localization', id: 'AnnouncementCountryForm', class: 'localization-form' -%}
-          <div>
-            <h2 class="visually-hidden" id="AnnouncementCountryLabel">{{ 'localization.country_label' | t }}</h2>
-            {%- render 'country-localization', localPosition: 'AnnouncementCountry' -%}
-          </div>
-        {%- endform -%}
-      </localization-form>
-    {% endif %}
+  <div class="dis-flex f-wrap j-c-center f-column hei-100">
+    <div class="localization-wrapper{% if block.settings.enable_country_selector or block.settings.enable_language_selector %} header-localization{% endif %}">
+      {%- if block.settings.enable_country_selector and localization.available_countries.size > 1 -%}
+        <localization-form class="small-hide medium-hide" activate-event="hover">
+          {%- form 'localization', id: 'AnnouncementCountryForm', class: 'localization-form' -%}
+            <div>
+              <h2 class="visually-hidden" id="AnnouncementCountryLabel">{{ 'localization.country_label' | t }}</h2>
+              {%- render 'country-localization', localPosition: 'AnnouncementCountry' -%}
+            </div>
+          {%- endform -%}
+        </localization-form>
+      {% endif %}
 
-    {%- if block.settings.enable_language_selector and localization.available_languages.size > 1 -%}
-      <localization-form class="small-hide medium-hide" activate-event="hover">
-        {%- form 'localization', id: 'AnnouncementLanguageForm', class: 'localization-form' -%}
-          <div>
-            <h2 class="visually-hidden" id="AnnouncementLanguageLabel">{{ 'localization.language_label' | t }}</h2>
-            {%- render 'language-localization', localPosition: 'AnnouncementLanguage' -%}
-          </div>
-        {%- endform -%}
-      </localization-form>
-    {%- endif -%}
+      {%- if block.settings.enable_language_selector and localization.available_languages.size > 1 -%}
+        <localization-form class="small-hide medium-hide" activate-event="hover">
+          {%- form 'localization', id: 'AnnouncementLanguageForm', class: 'localization-form' -%}
+            <div>
+              <h2 class="visually-hidden" id="AnnouncementLanguageLabel">{{ 'localization.language_label' | t }}</h2>
+              {%- render 'language-localization', localPosition: 'AnnouncementLanguage' -%}
+            </div>
+          {%- endform -%}
+        </localization-form>
+      {%- endif -%}
+    </div>
   </div>
 </div>
 {% comment %} [END block.markup] {% endcomment %}
