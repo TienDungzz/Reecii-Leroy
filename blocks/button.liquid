@@ -6,22 +6,18 @@
   class="{{ block.settings | class_list }} text-block"
   {{ block.shopify_attributes }}
 >
-{%- if block.settings.text != blank -%}
-  {%- if block.settings.link != blank -%}
+  {%- if block.settings.text != blank -%}
     <a
-      href="{{ block.settings.link }}"
+      {% if block.settings.link == blank %}
+        role="link" aria-disabled="true"
+      {% else %}
+        href="{{ block.settings.link }}"
+      {% endif %}
       class="button"
     >
-  {%- else -%}
-    <span class="button" >
-  {%- endif -%}
-  {{ block.settings.text | escape }}
-  {%- if block.settings.link != blank -%}
+      {{ block.settings.text }}
     </a>
-  {%- else -%}
-    </span>
   {%- endif -%}
-{%- endif -%}
 </div>
 {% comment %} [END block.markup] {% endcomment %}
 
