@@ -1,0 +1,40 @@
+{% stylesheet %}
+{% endstylesheet %}
+
+{% comment %} [START block.markup] {% endcomment %}
+<div
+  class="{{ block.settings | class_list }}"
+  {{ block.shopify_attributes }}
+> 
+    <div class="dis-flex f-wrap j-c-end j-c-center-mb">
+        {% content_for 'blocks' %}
+    </div>
+</div>
+{% comment %} [END block.markup] {% endcomment %}
+
+{% comment %} [START block.preset] {% endcomment %}
+{% schema %}
+{
+  "name": "Group: Multi site",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.all.colors.name"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-4"
+    }
+  ],
+  "blocks": [
+    { "type": "button" }
+  ],
+  "presets": [
+    { "name": "Group: Multi site" }
+  ]
+}
+{% endschema %}
+{% comment %} [END block.preset {% endcomment %}

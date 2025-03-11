@@ -1,0 +1,45 @@
+{% stylesheet %}
+{% endstylesheet %}
+  
+{% comment %} [START block.markup] {% endcomment %}
+<div
+  class="{{ block.settings | class_list }} slideshow__slide slider__slide grid__item grid--1-col"
+  id="Slide-{{ block.id }}-{{ forloop.index }}"
+  {{ block.shopify_attributes }}
+  role="group"
+  aria-roledescription="{{ 'sections.announcements.announcement' | t }}"
+  aria-label="{{ forloop.index }} {{ 'general.slider.of' | t }} {{ forloop.length }}"
+  tabindex="-1"
+>
+  <div
+    class="announcement-bar__announcement"
+    role="region"
+    aria-label="{{ 'sections.header.announcement' | t }}"
+    {{ block.shopify_attributes }}
+  >
+    <p class="announcement-bar__message">
+      <span>{{ block.settings.text | escape }}</span>
+    </p>
+  </div>
+</div>
+{% comment %} [END block.markup] {% endcomment %}
+
+{% comment %} [START block.preset] {% endcomment %}
+{% schema %}
+{
+  "name": "Announcement text",
+  "tag": null,
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "Share information about your brand with your customers."
+    }
+  ],
+  "presets": [
+    { "name": "Announcement text" }
+  ]
+}
+{% endschema %}
+{% comment %} [END block.preset {% endcomment %}

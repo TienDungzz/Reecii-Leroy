@@ -1,20 +1,24 @@
+@ -0,0 +1,68 @@
 {% comment %}
-  Renders a megamenu for the header.
+  Renders a vertical menu for the header.
 
   Usage:
-  {% render 'header-menu' %}
+  {% render 'header-menu-vertical' %}
 {% endcomment %}
 
-<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-<noscript>
-  {{ 'component-list-menu.css' | asset_url | stylesheet_tag }}
-  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag }}
-</noscript>
+<details class="header__vertical-menu pos-relative hidden lg:block w-fit">
+  <summary>
+    <span class="svg-wrapper">
+      {{- 'icon-hamburger.svg' | inline_asset_content -}}
+    </span>
+    {{ block.settings.vertical_menu_title }}
+  </summary>
 
-<nav class="header__inline-menu">
-  <ul class="list-menu list-menu-desktop list-menu--inline {{block.settings.color_scheme}}" role="list">
-    {%- for link in block.settings.menu.links -%}
+  <ul
+    class="list-unstyled pos-absolute top-full left-0 z-index-100 bg-white wid-100 details__list color-{{block.settings.color_scheme_vertical_menu}} global-settings-popup"
+    style="--pad-a-a:20px;"
+  >
+    {% for link in block.settings.menu.links %}
       <li>
         {%- if link.links != blank -%}
           {%- liquid
@@ -45,7 +49,7 @@
           <a
             id="HeaderMenu-{{ link.handle }}"
             href="{{ link.url }}"
-            class="header__menu-item list-menu__item link link--text focus-inset"
+            class="verical-menu__item link link--text focus-inset"
             {% if link.current %}
               aria-current="page"
             {% endif %}
@@ -60,6 +64,6 @@
           </a>
         {%- endif -%}
       </li>
-    {%- endfor -%}
+    {% endfor %}
   </ul>
-</nav>
+</details>

@@ -3,7 +3,7 @@
 
 {% comment %} [START block.markup] {% endcomment %}
 <div
-  class="{{ block.settings | class_list }} taulablocksize-{{block.blocks.size}}"
+  class="{{ block.settings | class_list }}"
   {{ block.shopify_attributes }}
 >
   <slideshow-component
@@ -32,26 +32,7 @@
         data-autoplay="{{ block.settings.auto_rotate }}"
         data-speed="{{ block.settings.change_slides_speed }}"
       >
-        {%- for block in block.blocks -%}
-          <div
-            class="slideshow__slide slider__slide grid__item grid--1-col"
-            id="Slide-{{ block.id }}-{{ forloop.index }}"
-            {{ block.shopify_attributes }}
-            role="group"
-            aria-roledescription="{{ 'sections.announcements.announcement' | t }}"
-            aria-label="{{ forloop.index }} {{ 'general.slider.of' | t }} {{ forloop.length }}"
-            tabindex="-1"
-          >
-            <div
-              class="announcement-bar__announcement {{block.settings.text}}"
-              role="region"
-              aria-label="{{ 'sections.header.announcement' | t }}"
-              {{ block.shopify_attributes }}
-            >
-              {% content_for 'blocks' %}
-            </div>
-          </div>
-        {%- endfor -%}
+        {% content_for 'blocks' %}
       </div>
       <button
         type="button"
@@ -116,7 +97,7 @@
     }
   ],
   "blocks": [
-    { "type": "text" }
+    { "type": "announcement-text" }
   ],
   "presets": [
     { "name": "Group: Announcement" }
