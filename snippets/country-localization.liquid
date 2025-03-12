@@ -25,6 +25,8 @@
   endif
 %}
 
+<link rel="stylesheet" href="{{ 'icon-flag.css' | asset_url }}" media="print" onload="this.media='all'">
+
 <div class="disclosure">
   <button
     type="button"
@@ -33,6 +35,7 @@
     aria-controls="{{ localPosition }}-country-results"
     aria-describedby="{{ localPosition }}Label"
   >
+    <span class="icon-flag icon-flag--{{ localization.country.iso_code }}"></span>
     <span>
       {{ localization.country.currency.symbol -}}
       {{ localization.country.currency.iso_code }}
@@ -115,6 +118,7 @@
                   >
                     {{- 'icon-checkmark.svg' | inline_asset_content -}}
                   </span>
+                  <span class="icon-flag icon-flag--{{ country.iso_code }}"></span>
                   <span class="country">{{- country.name }}</span>
                   <span class="localization-form__currency motion-reduce{% unless show_currencies %} hidden{% endunless %}">
                     {{ country.currency.symbol -}}
@@ -144,6 +148,7 @@
                 >
                   {{- 'icon-checkmark.svg' | inline_asset_content -}}
                 </span>
+                <span class="icon-flag icon-flag--{{ country.iso_code }}"></span>
                 <span class="country">{{- country.name }}</span>
                 <span class="localization-form__currency motion-reduce{% unless show_currencies %} hidden{% endunless %}">
                   {{ country.currency.symbol -}}
