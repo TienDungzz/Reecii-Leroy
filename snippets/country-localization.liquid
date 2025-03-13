@@ -101,7 +101,7 @@
             aria-label="{{ 'localization.popular_countries_regions' | t }}"
           >
             {%- for country in popular_countries -%}
-              <li class="disclosure__item" tabindex="-1">
+              <li class="disclosure__item {{ country.iso_code }}" tabindex="-1">
                 <a
                   class="link link--text disclosure__link caption-large focus-inset"
                   href="#"
@@ -119,11 +119,7 @@
                     {{- 'icon-checkmark.svg' | inline_asset_content -}}
                   </span>
                   <span class="icon-flag icon-flag--{{ country.iso_code }}"></span>
-                  <span class="country">{{- country.name }}</span>
-                  <span class="localization-form__currency motion-reduce{% unless show_currencies %} hidden{% endunless %}">
-                    {{ country.currency.symbol -}}
-                    {{ country.currency.iso_code }}
-                  </span>
+                  <span class="country">{{- country.name }} <span class="localization-form__currency">({{ country.currency.symbol -}}{{ country.currency.iso_code }})</span></span>
                 </a>
               </li>
             {%- endfor -%}
@@ -149,11 +145,7 @@
                   {{- 'icon-checkmark.svg' | inline_asset_content -}}
                 </span>
                 <span class="icon-flag icon-flag--{{ country.iso_code }}"></span>
-                <span class="country">{{- country.name }}</span>
-                <span class="localization-form__currency motion-reduce{% unless show_currencies %} hidden{% endunless %}">
-                  {{ country.currency.symbol -}}
-                  {{ country.currency.iso_code }}
-                </span>
+                <span class="country">{{- country.name }}<span class="localization-form__currency">({{ country.currency.symbol -}}{{ country.currency.iso_code }})</span></span>
               </a>
             </li>
           {%- endfor -%}
