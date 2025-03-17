@@ -13,6 +13,7 @@
     aria-controls="{{ localPosition }}List"
     aria-describedby="{{ localPosition }}Label"
   >
+    <span class="icon-flag icon-flag--{{ localization.language.iso_code }}"></span>
     <span>{{ localization.language.endonym_name | capitalize }}</span>
     {{ 'icon-caret.svg' | inline_asset_content }}
   </button>
@@ -44,13 +45,7 @@
               {% endif %}
               data-value="{{ language.iso_code }}"
             >
-              <span
-                {% if language.iso_code != localization.language.iso_code %}
-                  class="visibility-hidden"
-                {% endif %}
-              >
-                {{- 'icon-checkmark.svg' | inline_asset_content -}}
-              </span>
+              <span class="icon-flag icon-flag--{{ language.iso_code }}"></span>
               <span>
                 {{ language.endonym_name | capitalize }}
               </span>
