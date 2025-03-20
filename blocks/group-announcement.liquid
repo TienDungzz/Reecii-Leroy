@@ -47,16 +47,16 @@
       </button>
     </div>
   </slideshow-component>
-  {%- if request.design_mode -%}
-    <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
-    <style>
-      /* theme editor power preview fix */
-      .announcement-bar-slider .slider__slide[aria-hidden='true'] {
-        visibility: hidden;
-      }
-    </style>
-  {%- endif -%}
 </div>
+{%- if request.design_mode -%}
+  <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
+  <style>
+    /* theme editor power preview fix */
+    .announcement-bar-slider .slider__slide[aria-hidden='true'] {
+      visibility: hidden;
+    }
+  </style>
+{%- endif -%}
 {% comment %} [END block.markup] {% endcomment %}
 
 {% comment %} [START block.preset] {% endcomment %}
@@ -64,6 +64,10 @@
 {
   "name": "Group: Announcement",
   "tag": null,
+  "blocks": [
+    { "type": "@app" },
+    { "type": "announcement-text" }
+  ],
   "settings": [
     {
       "type": "header",
@@ -95,9 +99,6 @@
       "label": "t:sections.announcement-bar.settings.change_slides_speed.label",
       "default": 5
     }
-  ],
-  "blocks": [
-    { "type": "announcement-text" }
   ],
   "presets": [
     { "name": "Group: Announcement" }
