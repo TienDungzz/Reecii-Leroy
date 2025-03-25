@@ -43,7 +43,7 @@
   {{ block.shopify_attributes }}
 >
   <marquee-element>
-    <div class="marquee-element wid-100 over-h" style="--pad-t-a: .1rem;--hei-a-md: {{block.settings.height | append: 'px'}};--hei-a-lg: {{block.settings.height | append: 'px'}};--hei-a-md: {{block.settings.height | append: 'px'}};--hei-a-lg: {{block.settings.height | append: 'px'}};--pad-t-a-mb: 0.7rem;--pad-b-a-mb: 0.6rem;--pad-t-a-md: 1.9rem;--pad-b-a-md: 1.8rem;" data-height-sec="{{block.settings.height | append: 'px'}}">
+    <div class="marquee-element wid-100 over-h" style="--pad-t-a: .1rem;--hei-a-md: {{block.settings.height | append: 'px'}};--hei-a-lg: {{block.settings.height | append: 'px'}};--pad-t-a-mb: 0.7rem;--pad-b-a-mb: 0.6rem;--pad-t-a-md: 1.9rem;--pad-b-a-md: 1.8rem;">
       <div class="announcement-list marquee-list hei-100 dis-flex a-i-center j-c-around" style="--marquee-duration: {{block.settings.speed | append: 's'}};">
         {%- if block_size == 1 -%}
           <div class="marquee-scroll hei-100 dis-flex a-i-center j-c-around f-shrink{% if block.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
@@ -77,9 +77,6 @@
   customElements.define('marquee-element', MarqueeElement);
 </script>
 
-{%- if request.design_mode -%}
-  <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
-{%- endif -%}
 {% comment %} [END nesting.block_render] {% endcomment %}
 
 {% comment %} [START nesting.block_schema] {% endcomment %}
@@ -121,12 +118,12 @@
     {
       "type": "range",
       "id": "height",
-      "min": 40,
+      "min": 30,
       "max": 120,
-      "step": 5,
+      "step": 6,
       "unit": "px",
       "label": "height",
-      "default": 70
+      "default": 36
     },
     {
       "type": "header",

@@ -3,11 +3,11 @@
   
 {% comment %} [START block.markup] {% endcomment %}
 {%- if block.settings.link != blank -%}
-  <a href="{{ block.settings.link }}" target="_blank" class="{{ block.settings | class_list }} dis-i-block" {{ block.shopify_attributes }}>
+  <a href="{{ block.settings.link }}" target="_blank" class="{{ block.settings | class_list }} link dis-i-block" {{ block.shopify_attributes }}>
 {%- endif -%}
   <div class="{%- if block.settings.link == blank -%}{{ block.settings | class_list }} {%- endif -%}announcement-wrapper dis-flex a-i-center"{%- if block.settings.link == blank -%} {{ block.shopify_attributes }}{%- endif -%} style="--c-gap-a: 1.5rem;--pad-a-a: 0 2.5rem;--pad-a-a-md: 0 3.75rem;--pad-a-a-lg: 0 5rem;">
-    <span class="dis-i-block w-space-nowrap typography-font-heading f-w-{{block.settings.font_weight}} mar-t-0 mar-b-0{% if block.settings.font_size == "small" %} body-xl body-xxl-md body-md-mb{% elsif block.settings.font_size == "medium" %} h5 h5-md body-lg-mb{% else %} h4{% endif %}">
-      {%- render 'icon', icon: block.settings.icon, size: 'm' -%}{{block.settings.text}}
+    <span class="dis-flex a-i-center w-space-nowrap typography-font-heading f-w-{{block.settings.font_weight}} mar-t-0 mar-b-0{% if block.settings.font_size == "small" %} body-xl body-xxl-md body-md-mb{% elsif block.settings.font_size == "medium" %} h5 h5-md body-lg-mb{% else %} h4{% endif %}" style="--gap-a: 1rem;">
+      {%- render 'icon', icon: block.settings.icon, size: block.settings.icon_size -%}<span>{{block.settings.text}}</span>
     </span>
   </div>
 {%- if block.settings.link != blank -%}
@@ -36,6 +36,34 @@
           "label": "t:settings_schema.global.settings.icon.options__2.label"
         }
       ]
+    },
+    {
+      "type": "select",
+      "id": "icon_size",
+      "options": [
+        {
+          "value": "xs",
+          "label": "t:settings_schema.global.settings.icon_size.options__1.label"
+        },
+        {
+          "value": "s",
+          "label": "t:settings_schema.global.settings.icon_size.options__2.label"
+        },
+        {
+          "value": "m",
+          "label": "t:settings_schema.global.settings.icon_size.options__3.label"
+        },
+        {
+          "value": "l",
+          "label": "t:settings_schema.global.settings.icon_size.options__4.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:settings_schema.global.settings.icon_size.options__5.label"
+        }
+      ],
+      "default": "xs",
+      "label": "t:settings_schema.global.settings.icon_size.label"
     },
     {
       "type": "text",
