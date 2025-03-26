@@ -1,0 +1,69 @@
+{% comment %} [START block.markup] {% endcomment %}
+<div
+  class="{{ block.settings | class_list }} text-block color-{{ block.settings.color_scheme }} gradient"
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.text != blank -%}
+    <a
+      {% if block.settings.link == blank %}
+        role="link" aria-disabled="true"
+      {% else %}
+        href="{{ block.settings.link }}"
+      {% endif %}
+      class="button"
+    >
+      {%- if block.settings.logo != blank -%}
+        {%- assign logo_alt = block.settings.logo_text | default: shop.name | escape -%}
+        {%- assign image = block.settings.logo -%}
+        {{ image | image_url: width: 600 | image_tag:
+          class: 'header__heading-logo',
+          height: settings.logo_height,
+          width: settings.logo_width,
+          alt: logo_alt,
+          preload: true
+        }}
+      {%- elsif block.settings.logo_text != blank -%}
+        <span class="h2 {{ section.settings.logo_text_transform }}">{{ block.settings.logo_text }}</span>
+      {%- else -%}
+        <span class="h2 {{ section.settings.logo_text_transform }}">{{ shop.name }}</span>
+      {%- endif -%}
+    </a>
+  {%- endif -%}
+</div>
+{% comment %} [END block.markup] {% endcomment %}
+
+{% comment %} [START block.preset] {% endcomment %}
+{% schema %}
+{
+  "name": "Menu tab",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo text"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings_schema.global.settings.button_link.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-4"
+    }
+  ],
+  "presets": [
+    { "name": "Menu tab" }
+  ]
+}
+{% endschema %}
+{% comment %} [END block.preset {% endcomment %}
+  
