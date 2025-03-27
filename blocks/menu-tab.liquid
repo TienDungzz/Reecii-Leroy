@@ -3,13 +3,32 @@
   class="{{ block.settings | class_list }} text-block color-{{ block.settings.color_scheme }} gradient"
   {{ block.shopify_attributes }}
 >
+  {%- liquid
+    assign page_handle = page.handle
+    assign multi_site_handle = block.settings.link.object.handle
+    assign multi_site_url = block.settings.link
+    assign class = 'button-site'
+    if template.suffix contains 'landing'
+      if page_handle == multi_site_handle
+        assign class = 'button-site is-active'
+      endif
+    else
+      assign class = 'button-site is-active'
+    endif
+    if multi_site_url != blank
+      assign url = multi_site_url
+    else
+      assign url = routes.root_url
+    endif
+  -%}
   <a
-    {% if block.settings.link == blank %}
+    {% if url == blank %}
       role="link" aria-disabled="true"
     {% else %}
-      href="{{ block.settings.link }}"
+      href="{{ url }}"
     {% endif %}
-    class="button h2"
+    class="button h2{% if class != blank %}{{class}}{% endif %}"
+    data-handle-page="{{ multi_site_handle }}"
   >
     {%- if block.settings.logo != blank -%}
       {%- assign logo_alt = settings.logo.alt| default: shop.name | escape -%}
@@ -33,17 +52,16 @@
 {% schema %}
 {
   "name": "Menu tab",
-  "tag": null,
   "settings": [
-    {
-      "type": "image_picker",
-      "id": "logo",
-      "label": "Logo image"
-    },
     {
       "type": "text",
       "id": "logo_text",
       "label": "Logo text"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
     },
     {
       "type": "url",
