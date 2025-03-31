@@ -18,7 +18,7 @@
       <li>
         {%- if link.links != blank -%}
           {%- liquid
-            assign megamenu = section.blocks | where: 'type', 'mega_menu'
+            assign megamenu = block.blocks | where: 'type', 'mega_menu'
             assign check_megamenu = false
             if megamenu.size > 0
               assign check_megamenu = true
@@ -27,7 +27,7 @@
             assign has_megamenu = false
             assign menu_title = link.title | escape | downcase | handle
 
-            for block in section.blocks
+            for block in block.blocks
               assign block_title = block.settings.menu_item | escape | downcase | handle
               if block_title == menu_title
                 assign block = block

@@ -23,7 +23,7 @@
     return matches ? decodeURIComponent(matches[1]) : null;
   }
 
-  function renderLogoMobile() {
+  function menuTab() {
     const menuTabs = document.querySelector("[data-menu-tab]");
     if (!menuTabs) return;
 
@@ -43,11 +43,10 @@
       setCookie("page-url", window.page_active, 1);
       pageUrl = window.page_active;
     }
-
     if (pageUrl) {
       menuTabItem = document.querySelector(`[data-handle-page="${pageUrl}"]`);
-      logoTabItem = document.querySelector('.header__heading-link').addAttribute("data-logo-page", pageUrl);
-      menuItem = document.querySelector('.header__inline-menu').addAttribute("data-menu-page", pageUrl);
+      logoTabItem = document.querySelector(".header__heading-link").setAttribute("data-logo-page", `${pageUrl}`);
+      menuItem = document.querySelector(".header__inline-menu").setAttribute("data-menu-page", `${pageUrl}`);
     } else {
       menuTabItem = document.querySelector("[data-handle-page].is-active");
       logoTabItem = document.querySelector("[data-logo-page].first");
@@ -71,6 +70,8 @@
       document.querySelector("[data-menu-page]:nth-child(1)")?.classList.add("is-active");
     }
   }
+
+  menuTab();
 {% endjavascript %}
 {% comment %} [END block.markup] {% endcomment %}
 

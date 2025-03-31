@@ -8,10 +8,8 @@
     assign multi_site_handle = block.settings.link.object.handle
     assign multi_site_url = block.settings.link
     assign class = 'button-site'
-    if template.suffix contains 'landing'
-      if page_handle == multi_site_handle
-        assign class = 'button-site is-active'
-      endif
+    if page_handle == multi_site_handle
+      assign class = 'button-site is-active'
     endif
     if multi_site_url != blank
       assign url = multi_site_url
@@ -25,7 +23,7 @@
     {% else %}
       href="{{ url }}"
     {% endif %}
-    class="button h2{% if class != blank %} {{class}}{% endif %} {{template.suffix}}"
+    class="button h2{% if class != blank %} {{class}}{% endif %}"
     data-handle-page="{{ multi_site_handle }}"
   >
     {%- if block.settings.logo != blank -%}
@@ -44,6 +42,9 @@
     {%- endif -%}
   </a>
 </div>
+<script type="text/javascript">
+  window.page_active = '{{ page_handle }}';
+</script>
 {% comment %} [END block.markup] {% endcomment %}
 
 {% comment %} [START block.preset] {% endcomment %}
@@ -79,4 +80,3 @@
 }
 {% endschema %}
 {% comment %} [END block.preset {% endcomment %}
-  
