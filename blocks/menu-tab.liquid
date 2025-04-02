@@ -41,7 +41,14 @@
       {{ shop.name }}
     {%- endif -%}
   </a>
-  {% render 'header-menu' %}
+  {%- if multi_site_handle != blank -%}
+    123
+    {%- assign menu = linklists[multi_site_handle].links -%}
+    {% render 'header-menu-multi-site', menu: menu %}
+  {%- else -%}
+  456
+    {% render 'header-menu' %}
+  {%- endif -%}
 </div>
 <script type="text/javascript">
   window.page_active = '{{ page_handle }}';
@@ -53,12 +60,6 @@
 {
   "name": "Menu tab",
   "settings": [
-    {
-      "type": "link_list",
-      "id": "menu",
-      "default": "main-menu",
-      "label": "t:sections.header.settings.menu.label"
-    },
     {
       "type": "text",
       "id": "logo_text",
