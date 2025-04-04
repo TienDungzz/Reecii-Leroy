@@ -1583,6 +1583,20 @@ shopify-accelerated-checkout-cart {
   rgba(var(--color-shadow), var(--shadow-opacity));
 }
 /* Button - other */
+.button.is-active {
+  color: rgba(var(--color-button), var(--alpha-button-background));
+  background-color: rgb(var(--color-button-text));
+}
+.button.is-active:after {
+  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset))
+      rgba(var(--color-button), var(--border-opacity)),
+    0 0 0 var(--buttons-border-width) rgba(var(--color-button-text), var(--alpha-button-background));
+}
+.button.is-active:not([disabled]):hover::after {
+  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset))
+      rgba(var(--color-button), var(--border-opacity)),
+    0 0 0 calc(var(--buttons-border-width) + 1px) rgba(var(--color-button-text), var(--alpha-button-background));
+}
 .button:disabled,
 .button[aria-disabled='true'],
 .button.disabled,
@@ -2498,7 +2512,7 @@ input[type='checkbox'] {
     grid-template-columns: minmax(0, 1fr) fit-content(70%) fit-content(70%) minmax(0, 1fr);
   }
   .header-multi-site-grid {
-    grid-template-columns: fit-content(40%) fit-content(40%) fit-content(30%) minmax(0, 1fr);
+    grid-template-columns: fit-content(40%) fit-content(30%) minmax(0, 1fr);
   }
   .header--top-left,
   .header--middle-left:not(.header--has-menu) {
@@ -2563,6 +2577,10 @@ input[type='checkbox'] {
 }
 .header__heading-logo-wrapper {
   transition: width 0.4s var(--cubic-smooth);
+}
+.menu__tab-logo {
+  height: 1.6rem;
+  width: auto;
 }
 @media screen and (max-width: 1024px) {
   .header__heading,

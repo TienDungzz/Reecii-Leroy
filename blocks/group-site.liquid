@@ -3,10 +3,76 @@
   class="{{ block.settings | class_list }} color-{{ block.settings.color_scheme }} gradient"
   {{ block.shopify_attributes }}
 > 
-    <div class="dis-flex f-wrap j-c-end j-c-center-mb">
+    <div class="dis-flex f-wrap j-c-end j-c-center-mb" {% if block.blocks.size > 0 %}data-menu-tab{% endif %}>
         {% content_for 'blocks' %}
     </div>
 </div>
+{% javascript %}
+  function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+      let date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + value + "; path=/" + expires;
+  }
+
+  function getCookie(name) {
+    let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
+    return matches ? decodeURIComponent(matches[1]) : null;
+  }
+
+  function menuTab() {
+    const menuTabs = document.querySelector("[data-menu-tab]");
+    if (!menuTabs) return;
+
+    document.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-menu-tab] a");
+      if (!target) return;
+
+      const activePage = target.dataset.loadPage;
+      setCookie("page-url", activePage, 1);
+    });
+
+    const canonical = document.querySelector("[canonical-url]")?.getAttribute("canonical-url");
+    let pageUrl = getCookie("page-url");
+    let menuTabItem, logoTabItem, menuItem;
+
+    if (window.location.pathname.includes("/pages/") && window.page_active && window.page_active !== pageUrl) {
+      setCookie("page-url", window.page_active, 1);
+      pageUrl = window.page_active;
+    }
+    if (pageUrl) {
+      menuTabItem = document.querySelector(`[data-handle-page="${pageUrl}"]`);
+      logoTabItem = document.querySelector(".header__heading-link").setAttribute("data-logo-page", `${pageUrl}`);
+      menuItem = document.querySelector(".header__inline-menu").setAttribute("data-menu-page", `${pageUrl}`);
+    } else {
+      menuTabItem = document.querySelector("[data-handle-page].is-active");
+      logoTabItem = document.querySelector("[data-logo-page].first");
+      menuItem = document.querySelector("[data-menu-page].is-active");
+    }
+
+    const menuTab = menuTabItem?.closest("[data-menu-tab]");
+    if (menuTab) {
+      menuTab.querySelectorAll("[data-handle-page]").forEach(el => el.classList.remove("is-active"));
+      logoTabItem?.parentElement?.querySelectorAll("[data-logo-page]").forEach(el => el.classList.remove("is-active"));
+      menuItem?.parentElement?.querySelectorAll("[data-menu-page]").forEach(el => el.classList.remove("is-active"));
+    }
+
+    if (pageUrl) {
+      logoTabItem?.classList.add("is-active");
+      menuTabItem?.classList.add("is-active");
+      menuItem?.classList.add("is-active");
+    } else {
+      document.querySelector("[data-handle-page]:nth-child(1)")?.classList.add("is-active");
+      document.querySelector("[data-logo-page]:nth-child(1)")?.classList.add("is-active");
+      document.querySelector("[data-menu-page]:nth-child(1)")?.classList.add("is-active");
+    }
+  }
+
+  menuTab();
+{% endjavascript %}
 {% comment %} [END block.markup] {% endcomment %}
 
 {% comment %} [START block.preset] {% endcomment %}
@@ -23,7 +89,7 @@
     }
   ],
   "blocks": [
-    { "type": "metu-tab" }
+    { "type": "menu-tab" }
   ],
   "presets": [
     { "name": "Group: Multi site" }

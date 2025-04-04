@@ -2,19 +2,13 @@
   Renders a megamenu for the header.
 
   Usage:
-  {% render 'header-menu' %}
+  {% render 'header-menu-multi-site' %}
 {% endcomment %}
 
-<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-<noscript>
-  {{ 'component-list-menu.css' | asset_url | stylesheet_tag }}
-  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag }}
-</noscript>
 
-<nav class="header__inline-menu" data-menu-page>
+<nav class="header__inline-menu {{template.suffix}}" data-menu-page>
   <ul class="list-menu list-menu-desktop list-menu--inline {{block.settings.color_scheme}}" role="list">
-    {%- for link in block.settings.menu.links -%}
+    {%- for link in menu -%}
       <li>
         {%- if link.links != blank -%}
           {%- liquid
