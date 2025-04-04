@@ -1,0 +1,39 @@
+{% stylesheet %}
+  .spacer {
+    height: var(--spacerHeight);
+  }
+
+  @media (max-width: 1024px) {
+    .spacer {
+      height: calc(var(--spacerHeight) * 0.75);
+    }
+  }
+
+  @media (max-width: 749px) {
+    .spacer {
+      height: calc(var(--spacerHeight) * 0.5);
+    }
+  }
+{% endstylesheet %}
+
+<span class="spacer dis-block" style="--spacerHeight: {{ block.settings.spacer_height |  append: 'px'}}"></span>
+
+{% schema %}
+{
+  "name": "Spacer",
+  "tag": null,
+  "settings": [
+    {
+      "type": "range",
+      "id": "spacer_height",
+      "label": "Height",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "presets": [{ "name": "Spacer" }]
+}
+{% endschema %}

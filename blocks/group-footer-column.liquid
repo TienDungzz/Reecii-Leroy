@@ -1,0 +1,48 @@
+<div
+  class="footer-block footer-block--{{ block.id }} grid__item dis-block{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+  style="--width-grid-item: {{ block.settings.width_grid_item }}%;"
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Group: Footer column",
+  "tag": null,
+  "blocks": [
+    { "type": "@app" },
+    { "type": "email-signup" },
+    { "type": "spacer" },
+    { "type": "text" },
+    { "type": "text-with-icon" },
+    { "type": "footer-link-list" },
+    { "type": "country-selector" },
+    { "type": "group-footer-row" },
+    { "type": "payment-icons" },
+    { "type": "social-icons" },
+    { "type": "copyright" }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Footer column width"
+    },
+    {
+      "type": "range",
+      "id": "width_grid_item",
+      "min": 15,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:sections.footer.settings.grid_item.label__1",
+      "info": "t:sections.footer.settings.grid_item.info",
+      "default": 25
+    }
+  ],
+  "presets": [
+    {
+      "name": "Group: Footer column"
+    }
+  ]
+}
+{% endschema %}

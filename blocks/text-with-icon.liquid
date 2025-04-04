@@ -2,14 +2,78 @@
   class="{{ block.settings | class_list }} text-block body-{{block.settings.text_size}}-font-size {{ block.settings.alignment }}"
   {{ block.shopify_attributes }}
 >
+  {%- if block.settings.icon != 'none' and block.settings.image_upload == blank -%}
+    <svg
+      class="icon-block__icon"
+      style="--width: {{ block.settings.width }}px;"
+      aria-hidden="true"
+      focusable="false"
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      {{ block.shopify_attributes }}
+    >
+      {%- render 'icon', icon: block.settings.icon -%}
+    </svg>
+  {%- elsif block.settings.image_upload != blank -%}
+    {{
+      block.settings.image_upload
+      | image_url: width: 500
+      | image_tag: widths: '50, 100, 200, 300, 400, 500', class: 'icon-block__icon'
+    }}
+  {%- endif -%}
   {{ block.settings.text }}
 </div>
 
 {% schema %}
 {
-  "name": "Text",
+  "name": "Text with icon",
   "tag": null,
   "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "phone",
+          "label": "Phone"
+        },
+        {
+          "value": "letter",
+          "label": "Letter"
+        },
+        {
+          "value": "message",
+          "label": "Message"
+        }
+      ],
+      "default": "phone"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_upload",
+      "label": "Custom icon"
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "Width",
+      "min": 22,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 44
+    },
     {
       "type": "richtext",
       "id": "text",
@@ -82,7 +146,7 @@
       "default": "left"
     }
   ],
-  "presets": [{ "name": "Text" }]
+  "presets": [{ "name": "Text with icon" }]
 }
 {% endschema %}
 {% comment %} [END block.preset {% endcomment %}
