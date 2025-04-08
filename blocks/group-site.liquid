@@ -36,17 +36,19 @@
     });
 
     const canonical = document.querySelector("[canonical-url]")?.getAttribute("canonical-url");
-    let pageUrl = getCookie("page-url");
+    let handlePageUrl = getCookie("page-url");
     let menuTabItem, logoTabItem, menuItem;
 
-    if (window.location.pathname.includes("/pages/") && window.page_active && window.page_active !== pageUrl) {
+    console.log(handlePageUrl);
+
+    if (window.location.pathname.includes("/pages/") && window.page_active && window.page_active !== handlePageUrl) {
       setCookie("page-url", window.page_active, 1);
-      pageUrl = window.page_active;
+      handlePageUrl = window.page_active;
     }
-    if (pageUrl) {
-      menuTabItem = document.querySelector(`[data-handle-page="${pageUrl}"]`);
-      logoTabItem = document.querySelector(".header__heading-link").setAttribute("data-logo-page", `${pageUrl}`);
-      menuItem = document.querySelector(".header__inline-menu").setAttribute("data-menu-page", `${pageUrl}`);
+    if (handlePageUrl) {
+      menuTabItem = document.querySelector(`[data-handle-page="${handlePageUrl}"]`);
+      logoTabItem = document.querySelector(".header__heading-link").setAttribute("data-logo-page", `${handlePageUrl}`);
+      menuItem = document.querySelector(".header__inline-menu").setAttribute("data-menu-page", `${handlePageUrl}`);
     } else {
       menuTabItem = document.querySelector("[data-handle-page].is-active");
       logoTabItem = document.querySelector("[data-logo-page].first");
@@ -60,10 +62,28 @@
       menuItem?.parentElement?.querySelectorAll("[data-menu-page]").forEach(el => el.classList.remove("is-active"));
     }
 
-    if (pageUrl) {
+    if (handlePageUrl) {
       logoTabItem?.classList.add("is-active");
       menuTabItem?.classList.add("is-active");
       menuItem?.classList.add("is-active");
+
+      const pageUrl = menuTabItem.getAttribute('href').split('?')[0];
+
+      console.log(pageUrl);
+      // fetch(`${pageUrl}?section_id=bulk-quick-order-list`)
+      //   .then((response) => response.text())
+      //   .then((responseText) => {
+      //     const responseHTML = new DOMParser().parseFromString(responseText, 'text/html');
+      //     const productElement = responseHTML.querySelector('bulk-quick-order-list');
+
+      //     HTMLUpdateUtility.setInnerHTML(this.modalContent, productElement.outerHTML);
+      //     super.show(opener);
+      //   })
+      //   .finally(() => {
+      //     opener.removeAttribute('aria-disabled');
+      //     opener.classList.remove('loading');
+      //     opener.querySelector('.loading__spinner').classList.add('hidden');
+      //   });
     } else {
       document.querySelector("[data-handle-page]:nth-child(1)")?.classList.add("is-active");
       document.querySelector("[data-logo-page]:nth-child(1)")?.classList.add("is-active");
