@@ -19,80 +19,78 @@
   }
 
   function getCookie(name) {
-    let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
+    let matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
     return matches ? decodeURIComponent(matches[1]) : null;
   }
 
   function menuTab() {
-    const menuTabs = document.querySelector("[data-menu-tab]");
+    const menuTabs = document.querySelector('[data-menu-tab]');
     if (!menuTabs) return;
 
-    document.addEventListener("click", (event) => {
-      const target = event.target.closest("[data-menu-tab] a");
+    document.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-menu-tab] a');
       if (!target) return;
 
       const activePage = target.dataset.loadPage;
-      setCookie("page-url", activePage, 1);
+      setCookie('page-url', activePage, 1);
     });
 
-    const canonical = document.querySelector("[canonical-url]")?.getAttribute("canonical-url");
-    let handlePageUrl = getCookie("page-url");
+    const canonical = document.querySelector('[canonical-url]')?.getAttribute('canonical-url');
+    let handlePageUrl = getCookie('page-url');
     let menuTabItem, logoTabItem, menuItem;
 
     console.log(handlePageUrl);
 
-    if (window.location.pathname.includes("/pages/") && window.page_active && window.page_active !== handlePageUrl) {
-      setCookie("page-url", window.page_active, 1);
+    if (window.location.pathname.includes('/pages/') && window.page_active && window.page_active !== handlePageUrl) {
+      setCookie('page-url', window.page_active, 1);
       handlePageUrl = window.page_active;
     }
     if (handlePageUrl) {
-      menuTabItem = document.querySelector(`[data-handle-page="${handlePageUrl}"]`);
-      logoTabItem = document.querySelector(".header__heading-link").setAttribute("data-logo-page", `${handlePageUrl}`);
-      menuItem = document.querySelector(".header__inline-menu").setAttribute("data-menu-page", `${handlePageUrl}`);
+      menuTabItem = document.querySelector(`[data-handle-page='${handlePageUrl}']`);
+      logoTabItem = document.querySelector('.header__heading-link').setAttribute('data-logo-page', `${handlePageUrl}`);
+      menuItem = document.querySelector(`[data-handle-page='${handlePageUrl}']~.header__inline-menu`).setAttribute('data-menu-page', `${handlePageUrl}`);
     } else {
-      menuTabItem = document.querySelector("[data-handle-page].is-active");
-      logoTabItem = document.querySelector("[data-logo-page].first");
-      menuItem = document.querySelector("[data-menu-page].is-active");
+      menuTabItem = document.querySelector('[data-handle-page].is-active');
+      logoTabItem = document.querySelector('[data-logo-page].first');
+      menuItem = document.querySelector('[data-menu-page].is-active');
     }
 
-    const menuTab = menuTabItem?.closest("[data-menu-tab]");
+    const menuTab = menuTabItem?.closest('[data-menu-tab]');
     if (menuTab) {
-      menuTab.querySelectorAll("[data-handle-page]").forEach(el => el.classList.remove("is-active"));
-      logoTabItem?.parentElement?.querySelectorAll("[data-logo-page]").forEach(el => el.classList.remove("is-active"));
-      menuItem?.parentElement?.querySelectorAll("[data-menu-page]").forEach(el => el.classList.remove("is-active"));
+      menuTab.querySelectorAll('[data-handle-page]').forEach(el => el.classList.remove('is-active'));
+      logoTabItem?.parentElement?.querySelectorAll('[data-logo-page]').forEach(el => el.classList.remove('is-active'));
+      menuItem?.parentElement?.querySelectorAll('[data-menu-page]').forEach(el => el.classList.remove('is-active'));
     }
 
     if (handlePageUrl) {
-      logoTabItem?.classList.add("is-active");
-      menuTabItem?.classList.add("is-active");
-      menuItem?.classList.add("is-active");
-
-      const pageUrl = menuTabItem.getAttribute('href').split('?')[0];
-
-      console.log(pageUrl);
-      // fetch(`${pageUrl}?section_id=bulk-quick-order-list`)
-      //   .then((response) => response.text())
-      //   .then((responseText) => {
-      //     const responseHTML = new DOMParser().parseFromString(responseText, 'text/html');
-      //     const productElement = responseHTML.querySelector('bulk-quick-order-list');
-
-      //     HTMLUpdateUtility.setInnerHTML(this.modalContent, productElement.outerHTML);
-      //     super.show(opener);
-      //   })
-      //   .finally(() => {
-      //     opener.removeAttribute('aria-disabled');
-      //     opener.classList.remove('loading');
-      //     opener.querySelector('.loading__spinner').classList.add('hidden');
-      //   });
+      logoTabItem?.classList.add('is-active');
+      menuTabItem?.classList.add('is-active');
+      menuItem?.classList.add('is-active');
     } else {
-      document.querySelector("[data-handle-page]:nth-child(1)")?.classList.add("is-active");
-      document.querySelector("[data-logo-page]:nth-child(1)")?.classList.add("is-active");
-      document.querySelector("[data-menu-page]:nth-child(1)")?.classList.add("is-active");
+      document.querySelector('[data-handle-page]:nth-child(1)')?.classList.add('is-active');
+      document.querySelector('[data-logo-page]:nth-child(1)')?.classList.add('is-active');
+      document.querySelector('[data-menu-page]:nth-child(1)')?.classList.add('is-active');
     }
   }
-
   menuTab();
+
+  function appendTabMenuToMainMenu() {
+    const handle = getCookie('page-url') || window.page_active;
+    if (!handle || handle === 'undefined') return;
+
+    const tabMenu = document.querySelector(`[data-menu-page='${handle}']`);
+    const mainMenu = document.querySelector('[data-main-menu]');
+
+    if (tabMenu && mainMenu) {
+      mainMenu.innerHTML = tabMenu.innerHTML;
+      // const menuClone = tabMenu.cloneNode(true);
+      // menuClone.style.display = 'block';
+      // mainMenu.appendChild(menuClone);
+    }
+  }
+  appendTabMenuToMainMenu();
 {% endjavascript %}
+
 {% comment %} [END block.markup] {% endcomment %}
 
 {% comment %} [START block.preset] {% endcomment %}
