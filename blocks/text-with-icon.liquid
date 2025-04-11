@@ -1,11 +1,11 @@
 <div
-  class="{{ block.settings | class_list }} text-block body-{{block.settings.text_size}}-font-size {{ block.settings.alignment }}"
+  class="{{ block.settings | class_list }} dis-flex a-i-center text-block body-{{block.settings.text_size}}-font-size {{ block.settings.alignment }} {%- if block.settings.reverse -%} f-row-reverse j-c-end {% else %} j-c-start {%- endif -%}"
+  style="--c-gap-a: {{ block.settings.gap }}px; --width: {{ block.settings.width }}px;"
   {{ block.shopify_attributes }}
 >
   {%- if block.settings.icon != 'none' and block.settings.image_upload == blank -%}
     <svg
       class="icon-block__icon"
-      style="--width: {{ block.settings.width }}px;"
       aria-hidden="true"
       focusable="false"
       xmlns="http://www.w3.org/2000/svg"
@@ -144,6 +144,23 @@
         }
       ],
       "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "reverse",
+      "label": "Reverse icon and text",
+      "default": false,
+      "info": "Reverses the icon and text position in the footer."
     }
   ],
   "presets": [{ "name": "Text with icon" }]
