@@ -10,15 +10,19 @@
 {% endcomment %}
 
 {%- liquid
-    if settings.social_twitter_link != blank or settings.social_facebook_link != blank or settings.social_pinterest_link != blank or settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_vimeo_link != blank or settings.social_tiktok_link != blank or settings.social_tumblr_link != blank or settings.social_snapchat_link != blank
-      assign social_links = true
-    endif
+  if settings.social_twitter_link != blank or settings.social_facebook_link != blank or settings.social_pinterest_link != blank or settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_vimeo_link != blank or settings.social_tiktok_link != blank or settings.social_tumblr_link != blank or settings.social_snapchat_link != blank
+    assign social_links = true
+  endif
 -%}
 
 {%- if social_links -%}
   {{ 'component-list-social.css' | asset_url | stylesheet_tag }}
   <div class="dis-flex f-wrap j-c-center f-column hei-100">
-    <ul class="list-unstyled list-social dis-flex f-wrap j-c-end j-c-center-mb{% if class %} {{ class}}{% endif %}" role="list">
+    <ul
+      class="list-unstyled list-social dis-flex f-wrap j-c-end j-c-center-mb{% if class %} {{ class}}{% endif %}"
+      role="list"
+      style="--gap-x: 1.1rem; --gap-y: 1.1rem;"
+    >
       {%- if settings.social_twitter_link != blank -%}
         <li class="list-social__item">
           <a href="{{ settings.social_twitter_link }}" class="list-social__link link">

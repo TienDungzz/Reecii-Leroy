@@ -1,5 +1,5 @@
 <div
-  class="flex-section wid-100 dis-flex f-{{ block.settings.direction }} f-{{ block.settings.wrap }} a-i-{{ block.settings.align_items}} j-c-{{ block.settings.justify_content }} {{ block.settings | class_list }} color-{{ block.settings.color_scheme }}"
+  class="flex-section wid-100 dis-flex f-{{ block.settings.direction }} f-{{ block.settings.wrap }} a-i-{{ block.settings.align_items}} j-c-{{ block.settings.justify_content }} {{ block.settings | class_list }} color-{{ block.settings.color_scheme }} block-border{% if block.settings.border_left %}  block-border--left{% endif %} {% if block.settings.border_right %}  block-border--right{% endif %}{% if block.settings.border_top %}  block-border--top{% endif %}{% if block.settings.border_bottom %}  block-border--bottom{% endif %}"
   style="--pl:{{ block.settings.padding_left }}px; --pr:{{ block.settings.padding_right }}px; --pt:{{ block.settings.padding_top }}px; --pb:{{ block.settings.padding_bottom }}px; --gap-x: {{ block.settings.gap_x }}px; --gap-y: {{ block.settings.gap_y }}px;"
   {{ section.shopify_attributes }}
 >
@@ -19,7 +19,9 @@
     { "type": "spacer" },
     { "type": "payment-icons" },
     { "type": "social-icons" },
-    { "type": "copyright" }
+    { "type": "copyright" },
+    { "type": "banner" },
+    { "type": "group-footer-row" }
   ],
   "settings": [
     {
@@ -33,7 +35,7 @@
       "max": 100,
       "step": 1,
       "default": 10,
-      "label": "Top"
+      "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
     },
     {
       "type": "range",
@@ -42,7 +44,7 @@
       "max": 100,
       "step": 1,
       "default": 10,
-      "label": "Right"
+      "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
     },
     {
       "type": "range",
@@ -51,7 +53,7 @@
       "max": 100,
       "step": 1,
       "default": 10,
-      "label": "Bottom"
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
     },
     {
       "type": "range",
@@ -60,7 +62,7 @@
       "max": 100,
       "step": 1,
       "default": 10,
-      "label": "Left"
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
     },
     {
       "type": "header",
@@ -86,7 +88,7 @@
       "type": "select",
       "id": "wrap",
       "label": "Wrap",
-      "default": "no-wrap",
+      "default": "wrap",
       "options": [
         {
           "value": "no-wrap",
@@ -177,6 +179,34 @@
       "id": "color_scheme",
       "label": "Color scheme",
       "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Border"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_left",
+      "label": "Left border",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "border_right",
+      "label": "Right border",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "border_top",
+      "label": "Top border",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "border_bottom",
+      "label": "Bottom border",
+      "default": true
     }
   ],
   "presets": [
