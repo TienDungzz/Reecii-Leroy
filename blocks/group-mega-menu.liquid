@@ -1,8 +1,8 @@
 {% comment %} [START nesting.block_render] {% endcomment %}
 {%- style -%}
-  .group-block--{{ block.id }} .grid__item {
-    width: calc(var(--width-header-col) - calc(var(--gap-x) * {{ block.blocks.size }} - var(--gap-x)));
-    max-width: calc(var(--width-header-col) - calc(var(--gap-x) * {{ block.blocks.size }} - var(--gap-x)));
+  .group-block--{{ block.id }} > .grid__item {
+    width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size |  minus: 1 }} / {{  block.blocks.size }});
+    max-width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size | minus: 1 }} / {{  block.blocks.size }});
   }
 {%- endstyle -%}
 
@@ -176,7 +176,7 @@
     },
     {
       "type": "header",
-      "content": "Color"
+      "content": "t:sections.all.colors.name"
     },
     {
       "type": "color_scheme",

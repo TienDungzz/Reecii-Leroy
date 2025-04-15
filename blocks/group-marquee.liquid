@@ -35,7 +35,7 @@
 {%- endstyle -%}
 
 {%- capture blocks_content -%}
-  {% content_for 'blocks' %}
+  {% content_for 'blocks'%}
 {%- endcapture -%}
 
 <div
@@ -46,19 +46,19 @@
     <div class="marquee-element wid-100 over-h" style="--pad-t-a: .1rem;--hei-a-md: {{block.settings.height | append: 'px'}};--hei-a-lg: {{block.settings.height | append: 'px'}};--pad-t-a-mb: 0.7rem;--pad-b-a-mb: 0.6rem;--pad-t-a-md: 1.9rem;--pad-b-a-md: 1.8rem;">
       <div class="announcement-list marquee-list hei-100 dis-flex a-i-center j-c-around" style="--marquee-duration: {{block.settings.speed | append: 's'}};">
         {%- if block_size == 1 -%}
-          <div class="marquee-scroll hei-100 dis-flex a-i-center j-c-around f-shrink{% if block.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
+          <div class="marquee-scroll hei-100 dis-flex a-i-center j-c-around f-shrink body-{{block.settings.text_size}}-font-size{% if block.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
             {%- for i in (1..2) -%}
               {{ blocks_content }}
             {%- endfor -%}
           </div>
-          <div class="marquee-scroll hei-100 dis-flex a-i-center j-c-around f-shrink{% if block.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
+          <div class="marquee-scroll hei-100 dis-flex a-i-center j-c-around f-shrink body-{{block.settings.text_size}}-font-size{% if block.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
             {%- for i in (1..2) -%}
               {{ blocks_content }}
             {%- endfor -%}
           </div>
         {%- else -%}
           {%- for i in (1..limit) -%}
-            <div class="marquee-scroll hei-100 dis-flex a-i-center j-c-around f-shrink{% if block.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
+            <div class="marquee-scroll hei-100 dis-flex a-i-center j-c-around f-shrink body-{{block.settings.text_size}}-font-size{% if block.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
               {{ blocks_content }}
             </div>
           {%- endfor -%}
@@ -84,10 +84,7 @@
 {
   "name": "Group: Marquee",
   "tag": null,
-  "blocks": [
-    { "type": "@app" },
-    { "type": "marquee-text" }
-  ],
+  "blocks": [{ "type": "marquee-text" }],
   "settings": [
     {
       "type": "checkbox",
@@ -114,54 +111,6 @@
       "unit": "px",
       "label": "height",
       "default": 36
-    },
-    {
-      "type": "header",
-      "content": "text"
-    },
-    {
-      "type": "select",
-      "id": "font_size",
-      "label": "fontsize",
-      "default": "medium",
-      "options": [
-        {
-          "value": "small",
-          "label": "1"
-        },
-        {
-          "value": "medium",
-          "label": "2"
-        },
-        {
-          "value": "large",
-          "label": "3"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "font_weight",
-      "options": [
-        {
-          "value": "normal",
-          "label": "normal"
-        },
-        {
-          "value": "medium",
-          "label": "medium"
-        },
-        {
-          "value": "semibold",
-          "label": "semibold"
-        },
-        {
-          "value": "bold",
-          "label": "bold"
-        }
-      ],
-      "default": "bold",
-      "label": "bold"
     },
     {
       "type": "header",
@@ -198,8 +147,42 @@
     {
       "name": "Group: Marquee",
       "settings": {
-        "color_scheme": "scheme-3"
-      }
+        "color_scheme": "scheme-1"
+      },
+      "blocks": [
+        {
+          "type": "marquee-text",
+          "settings": {
+            "icon": "none",
+            "icon_size": "xs",
+            "text": "Welcome to our store"
+          }
+        },
+        {
+          "type": "marquee-text",
+          "settings": {
+            "icon": "none",
+            "icon_size": "xs",
+            "text": "Welcome to our store"
+          }
+        },
+        {
+          "type": "marquee-text",
+          "settings": {
+            "icon": "none",
+            "icon_size": "xs",
+            "text": "Welcome to our store"
+          }
+        },
+        {
+          "type": "marquee-text",
+          "settings": {
+            "icon": "none",
+            "icon_size": "xs",
+            "text": "Welcome to our store"
+          }
+        }
+      ]
     }
   ]
 }

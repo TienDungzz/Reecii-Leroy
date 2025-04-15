@@ -1,6 +1,7 @@
 {% comment %} [START block.markup] {% endcomment %}
 <div
-  class="{{ block.settings | class_list }} color-{{ block.settings.color_scheme }} gradient"
+  class="header-block header-block--{{ block.id }} grid__item dis-block{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+  style="--width-header-col: {{ block.settings.width_grid_item }}%;"
   {{ block.shopify_attributes }}
 > 
     <div class="dis-flex f-wrap j-c-end j-c-center-mb" {% if block.blocks.size > 0 %}data-menu-tab{% endif %}>
@@ -100,10 +101,15 @@
   "tag": null,
   "settings": [
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "t:sections.all.colors.label",
-      "default": "scheme-4"
+      "type": "range",
+      "id": "width_grid_item",
+      "min": 15,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:sections.header.settings.grid_item.label__1",
+      "info": "t:sections.header.settings.grid_item.info",
+      "default": 25
     }
   ],
   "blocks": [
