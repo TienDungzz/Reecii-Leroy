@@ -1,28 +1,19 @@
-<div
-  class="flex-section wid-100 dis-flex f-{{ block.settings.direction }} f-{{ block.settings.wrap }} a-i-{{ block.settings.align_items}} j-c-{{ block.settings.justify_content }} {{ block.settings | class_list }} color-{{ block.settings.color_scheme }} gradient block-border{% if block.settings.border_left %}  block-border--left{% endif %} {% if block.settings.border_right %}  block-border--right{% endif %}{% if block.settings.border_top %}  block-border--top{% endif %}{% if block.settings.border_bottom %}  block-border--bottom{% endif %}"
-  style="--pl:{{ block.settings.padding_left }}px; --pr:{{ block.settings.padding_right }}px; --pt:{{ block.settings.padding_top }}px; --pb:{{ block.settings.padding_bottom }}px; --gap-x: {{ block.settings.gap_x }}px; --gap-y: {{ block.settings.gap_y }}px;"
-  {{ section.shopify_attributes }}
->
-  {% content_for 'blocks' %}
+<div class="color-{{ block.settings.color_scheme }}">
+  <div class="page-width">
+    <div
+      class="flex-section wid-100 dis-flex f-{{ block.settings.direction }} f-{{ block.settings.wrap }} a-i-{{ block.settings.align_items}} j-c-{{ block.settings.justify_content }} {{ block.settings | class_list }} block-border{% if block.settings.border_left %}  block-border--left{% endif %} {% if block.settings.border_right %}  block-border--right{% endif %}{% if block.settings.border_top %}  block-border--top{% endif %}{% if block.settings.border_bottom %}  block-border--bottom{% endif %}"
+      style="--pl:{{ block.settings.padding_left }}px; --pr:{{ block.settings.padding_right }}px; --pt:{{ block.settings.padding_top }}px; --pb:{{ block.settings.padding_bottom }}px; --gap-x: {{ block.settings.gap_x }}px; --gap-y: {{ block.settings.gap_y }}px; --gap-count: {{ block.blocks.size | minus: 1 }}"
+      {{ section.shopify_attributes }}
+    >
+      {% content_for 'blocks' %}
+    </div>
+  </div>
 </div>
 
 {% schema %}
 {
   "name": "Group: Footer row",
-  "blocks": [
-    { "type": "@app" },
-    { "type": "group-footer-column" },
-    { "type": "text" },
-    { "type": "text-with-icon" },
-    { "type": "country-selector" },
-    { "type": "email-signup" },
-    { "type": "spacer" },
-    { "type": "payment-icons" },
-    { "type": "social-icons" },
-    { "type": "copyright" },
-    { "type": "banner" },
-    { "type": "group-footer-row" }
-  ],
+  "blocks": [{ "type": "@app" }, { "type": "group-footer-column" }],
   "settings": [
     {
       "type": "header",
@@ -34,7 +25,7 @@
       "min": 0,
       "max": 100,
       "step": 1,
-      "default": 10,
+      "default": 0,
       "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
     },
     {
@@ -43,7 +34,7 @@
       "min": 0,
       "max": 100,
       "step": 1,
-      "default": 10,
+      "default": 0,
       "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
     },
     {
@@ -52,8 +43,8 @@
       "min": 0,
       "max": 100,
       "step": 1,
-      "default": 10,
-      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
     },
     {
       "type": "range",
@@ -61,7 +52,7 @@
       "min": 0,
       "max": 100,
       "step": 1,
-      "default": 10,
+      "default": 0,
       "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
     },
     {
@@ -188,25 +179,25 @@
       "type": "checkbox",
       "id": "border_left",
       "label": "Left border",
-      "default": true
+      "default": false
     },
     {
       "type": "checkbox",
       "id": "border_right",
       "label": "Right border",
-      "default": true
+      "default": false
     },
     {
       "type": "checkbox",
       "id": "border_top",
       "label": "Top border",
-      "default": true
+      "default": false
     },
     {
       "type": "checkbox",
       "id": "border_bottom",
       "label": "Bottom border",
-      "default": true
+      "default": false
     }
   ],
   "presets": [

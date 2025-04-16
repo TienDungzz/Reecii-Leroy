@@ -3,12 +3,23 @@
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+  }
+
+  .payment-icons__list.left {
+    justify-content: flex-start;
+  }
+
+  .payment-icons__list.center {
     justify-content: center;
+  }
+
+  .payment-icons__list.right {
+    justify-content: flex-end;
   }
 {% endstylesheet %}
 
 <span class="visually-hidden">Payment methods</span>
-<ul class="list payment-icons__list list-unstyled" role="list">
+<ul class="list payment-icons__list list-unstyled {{ block.settings.position }}" role="list">
   {%- for type in shop.enabled_payment_types -%}
     <li class="payment-icons__icon">
       {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
@@ -20,7 +31,23 @@
 {
   "name": "Payment icons",
   "class": "payment-icons",
-  "settings": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Payment icons"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "t:sections.footer.settings.alignment.label",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "t:sections.footer.settings.alignment.left" },
+        { "value": "center", "label": "t:sections.footer.settings.alignment.center" },
+        { "value": "right", "label": "t:sections.footer.settings.alignment.right" }
+      ]
+    }
+  ],
   "presets": [{ "name": "Payment icons" }]
 }
 {% endschema %}

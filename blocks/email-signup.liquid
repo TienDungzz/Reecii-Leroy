@@ -48,6 +48,22 @@
         </small>
       {%- endif -%}
     </div>
+
+    {%- if block.settings.agree_condition -%}
+      <div class="newsletter-form__checkbox">
+        <input
+          type="checkbox"
+          id="agree_condition"
+          name="agree_condition"
+          class="checkbox__input"
+          required
+        >
+        <label for="agree_condition" class="checkbox__label">
+          {{ block.settings.content }}
+        </label>
+      </div>
+    {%- endif -%}
+
     {%- if form.posted_successfully? -%}
       <h3
         class="newsletter-form__message newsletter-form__message--success form__message"
@@ -64,12 +80,44 @@
   {%- endform -%}
 </div>
 
+<script>
+  const form = document.getElementById('ContactFooter');
+  const checkbox = document.getElementById('agree_condition');
+  const submitButton = form.querySelector("button[type='submit']");
+
+  submitButton.disabled = true;
+
+  checkbox.addEventListener('change', function () {
+    submitButton.disabled = !checkbox.checked;
+  });
+
+  form.addEventListener('submit', function (e) {
+    if (!checkbox.checked) {
+      e.preventDefault();
+      alert('Please agree to the terms and conditions before submitting.');
+    }
+  });
+</script>
+
 {% schema %}
 {
   "name": "Email signup",
   "tag": null,
   "blocks": [],
-  "settings": [],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "agree_condition",
+      "label": "t:sections.newsletter.settings.agree_condition.label",
+      "info": "t:sections.newsletter.settings.agree_condition.info"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "content",
+      "label": "t:sections.newsletter.settings.agree_condition.content",
+      "default": "I agree with the terms and conditions"
+    }
+  ],
   "presets": [
     {
       "name": "Email signup"
