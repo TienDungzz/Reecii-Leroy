@@ -1,3 +1,11 @@
+{% comment %} [START nesting.block_render] {% endcomment %}
+{%- style -%}
+  .group-block--{{ block.id }} > .grid__item {
+    width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size |  minus: 1 }} / {{  block.blocks.size }});
+    max-width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size | minus: 1 }} / {{  block.blocks.size }});
+  }
+{%- endstyle -%}
+
 {%- liquid
   assign social_icons = true
   if settings.social_facebook_link == blank and settings.social_instagram_link == blank and settings.social_youtube_link == blank and settings.social_tiktok_link == blank and settings.social_twitter_link == blank and settings.social_pinterest_link == blank and settings.social_snapchat_link == blank and settings.social_tumblr_link == blank and settings.social_vimeo_link == blank
@@ -5,14 +13,12 @@
   endif
 -%}
 
-{% comment %} [START nesting.block_render] {% endcomment %}
 <div
-  class="{{ block.settings | class_list }} group-block group-block--{{ block.id }} color-{{ block.settings.color_scheme }} utility-bar gradient{% if block.settings.show_line_separator %} utility-bar--bottom-border{% endif %}"
+  class="group-block group-block--{{ block.id }} page-width utility-bar__grid flex-section wid-100 dis-flex f-{{ block.settings.direction }} f-{{ block.settings.wrap }} a-i-{{ block.settings.align_items}} j-c-{{ block.settings.justify_content }} color-{{ block.settings.color_scheme }} gradient utility-bar {% if block.settings.show_line_separator %} utility-bar--bottom-border{% endif %}"
+  style="--pl:{{ block.settings.padding_left }}px; --pr:{{ block.settings.padding_right }}px; --pt:{{ block.settings.padding_top }}px; --pb:{{ block.settings.padding_bottom }}px; --gap-x: {{ block.settings.gap_x }}px; --gap-y: {{ block.settings.gap_y }}px;"
   {{ block.shopify_attributes }}
 >
-  <div class="page-width utility-bar__grid{% if block.blocks.size > 2 and social_icons %} utility-bar__grid--3-col{% elsif block.blocks.size > 1 and social_icons %} utility-bar__grid--2-col{% endif %}">
-    {% content_for 'blocks' %}
-  </div>
+  {% content_for 'blocks' %}
 </div>
 {% comment %} [END nesting.block_render] {% endcomment %}
 
@@ -30,10 +36,160 @@
   ],
   "settings": [
     {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "default": "row",
+      "options": [
+        {
+          "value": "row",
+          "label": "⭢"
+        },
+        {
+          "value": "column",
+          "label": "⭣"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "wrap",
+      "label": "Wrap",
+      "default": "wrap",
+      "options": [
+        {
+          "value": "no-wrap",
+          "label": "No"
+        },
+        {
+          "value": "wrap",
+          "label": "Yes"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "align_items",
+      "options": [
+        {
+          "value": "start",
+          "label": "⤒"
+        },
+        {
+          "value": "center",
+          "label": "⮃"
+        },
+        {
+          "value": "end",
+          "label": "⤓"
+        }
+      ],
+      "default": "start",
+      "label": "Align items"
+    },
+    {
+      "type": "select",
+      "id": "justify_content",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "around",
+          "label": "Space Around"
+        },
+        {
+          "value": "evenly",
+          "label": "Space Evenly"
+        }
+      ],
+      "default": "start",
+      "label": "Justify"
+    },
+    {
+      "type": "range",
+      "id": "gap_x",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "Column Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_y",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "Row Gap"
+    },
+    {
       "type": "checkbox",
       "id": "show_line_separator",
       "default": true,
       "label": "t:sections.header.settings.show_line_separator.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.colors.name"
     },
     {
       "type": "color_scheme",

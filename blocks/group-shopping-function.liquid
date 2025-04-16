@@ -1,6 +1,7 @@
 {% comment %} [START block.markup] {% endcomment %}
 <div
-  class="{{ block.settings | class_list }}"
+  class="header-block header-block--{{ block.id }} grid__item dis-block{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+  style="--width-header-col: {{ block.settings.width_grid_item }}%;"
   {{ block.shopify_attributes }}
 >
   <div class="header__icons{% if block.settings.enable_country_selector or block.settings.enable_language_selector %} header__icons--localization header-localization{% endif %}">
@@ -21,6 +22,17 @@
   "name": "Header functions",
   "tag": null,
   "settings": [
+    {
+      "type": "range",
+      "id": "width_grid_item",
+      "min": 15,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:sections.header.settings.grid_item.label__1",
+      "info": "t:sections.header.settings.grid_item.info",
+      "default": 25
+    },
     {
       "type": "header",
       "content": "t:sections.header.settings.header__3.content",

@@ -1,6 +1,14 @@
 {% comment %} [START nesting.block_render] {% endcomment %}
+{%- style -%}
+  .group-block--{{ block.id }} > .grid__item {
+    width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size |  minus: 1 }} / {{  block.blocks.size }});
+    max-width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size | minus: 1 }} / {{  block.blocks.size }});
+  }
+{%- endstyle -%}
+
 <div
-  class="header-grid{% if block.blocks.size > 3%}header__grid--3-col{% endif %} {{ block.settings | class_list }} group-block group-block--{{ block.id }} color-{{ block.settings.color_scheme }}"
+  class="group-block group-block--{{ block.id }} flex-section wid-100 dis-flex f-{{ block.settings.direction }} f-{{ block.settings.wrap }} a-i-{{ block.settings.align_items}} j-c-{{ block.settings.justify_content }} color-{{ block.settings.color_scheme }}"
+  style="--pl:{{ block.settings.padding_left }}px; --pr:{{ block.settings.padding_right }}px; --pt:{{ block.settings.padding_top }}px; --pb:{{ block.settings.padding_bottom }}px; --gap-x: {{ block.settings.gap_x }}px; --gap-y: {{ block.settings.gap_y }}px;"
   {{ block.shopify_attributes }}
 >
   {% content_for 'blocks' %}
@@ -17,10 +25,159 @@
     { "type": "group-shopping-function" },
     { "type": "group-search" },
     { "type": "group-logo" },
-    { "type": "group-menu" },
-    { "type": "text" }
+    { "type": "group-menu" }
   ],
   "settings": [
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "default": "row",
+      "options": [
+        {
+          "value": "row",
+          "label": "⭢"
+        },
+        {
+          "value": "column",
+          "label": "⭣"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "wrap",
+      "label": "Wrap",
+      "default": "wrap",
+      "options": [
+        {
+          "value": "no-wrap",
+          "label": "No"
+        },
+        {
+          "value": "wrap",
+          "label": "Yes"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "align_items",
+      "options": [
+        {
+          "value": "start",
+          "label": "⤒"
+        },
+        {
+          "value": "center",
+          "label": "⮃"
+        },
+        {
+          "value": "end",
+          "label": "⤓"
+        }
+      ],
+      "default": "start",
+      "label": "Align items"
+    },
+    {
+      "type": "select",
+      "id": "justify_content",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "around",
+          "label": "Space Around"
+        },
+        {
+          "value": "evenly",
+          "label": "Space Evenly"
+        }
+      ],
+      "default": "start",
+      "label": "Justify"
+    },
+    {
+      "type": "range",
+      "id": "gap_x",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "Column Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_y",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "Row Gap"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.colors.name"
+    },
     {
       "type": "color_scheme",
       "id": "color_scheme",

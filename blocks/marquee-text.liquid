@@ -1,15 +1,9 @@
 {% comment %} [START block.markup] {% endcomment %}
-{%- if block.settings.link != blank -%}
-  <a href="{{ block.settings.link }}" target="_blank" class="{{ block.settings | class_list }} link dis-i-block" {{ block.shopify_attributes }}>
-{%- endif -%}
-  <div class="{%- if block.settings.link == blank -%}{{ block.settings | class_list }} {%- endif -%}announcement-wrapper dis-flex a-i-center"{%- if block.settings.link == blank -%} {{ block.shopify_attributes }}{%- endif -%} style="--c-gap-a: 1.5rem;--pad-a-a: 0 2.5rem;--pad-a-a-md: 0 3.75rem;--pad-a-a-lg: 0 5rem;">
-    <span class="dis-flex a-i-center w-space-nowrap typography-font-heading f-w-{{block.settings.font_weight}} mar-t-0 mar-b-0{% if block.settings.font_size == "small" %} body-xl body-xxl-md body-md-mb{% elsif block.settings.font_size == "medium" %} h5 h5-md body-lg-mb{% else %} h4{% endif %}" style="--gap-a: 1rem;">
+  <div class="announcement-wrapper dis-flex a-i-center" {{ block.shopify_attributes }} style="--c-gap-a: 1.5rem;--pad-a-a: 0 2.5rem;--pad-a-a-md: 0 3.75rem;--pad-a-a-lg: 0 5rem;">
+    <span class="dis-flex a-i-center w-space-nowrap typography-font-heading mar-t-0 mar-b-0" style="--gap-a: 1rem;">
       {%- render 'icon', icon: block.settings.icon, size: block.settings.icon_size -%}<span>{{block.settings.text}}</span>
     </span>
   </div>
-{%- if block.settings.link != blank -%}
-  </a>
-{%- endif -%}
 {% comment %} [END block.markup] {% endcomment %}
 
 {% comment %} [START block.preset] {% endcomment %}
@@ -63,15 +57,55 @@
       "label": "t:settings_schema.global.settings.icon_size.label"
     },
     {
-      "type": "text",
+      "type": "inline_richtext",
       "id": "text",
       "label": "Text",
       "default": "Welcome to our store"
     },
     {
-      "type": "url",
-      "id": "link",
-      "label": "t:settings_schema.global.settings.button_link.label"
+      "type": "select",
+      "id": "text_size",
+      "label": "t:settings_schema.typography.settings.body_size.label",
+      "info": "t:settings_schema.typography.settings.body_size.info",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "3xl",
+          "label": "t:settings_schema.typography.settings.body_size.options__1.label"
+        },
+        {
+          "value": "2xl",
+          "label": "t:settings_schema.typography.settings.body_size.options__2.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:settings_schema.typography.settings.body_size.options__3.label"
+        },
+        {
+          "value": "l",
+          "label": "t:settings_schema.typography.settings.body_size.options__4.label"
+        },
+        {
+          "value": "m",
+          "label": "t:settings_schema.typography.settings.body_size.options__5.label"
+        },
+        {
+          "value": "s",
+          "label": "t:settings_schema.typography.settings.body_size.options__6.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:settings_schema.typography.settings.body_size.options__7.label"
+        },
+        {
+          "value": "xxs",
+          "label": "t:settings_schema.typography.settings.body_size.options__8.label"
+        }
+      ],
+      "default": "default"
     }
   ],
   "presets": [

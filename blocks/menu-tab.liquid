@@ -7,10 +7,6 @@
     assign page_handle = page.handle
     assign multi_site_handle = block.settings.link.object.handle
     assign multi_site_url = block.settings.link
-    assign class = 'button-site'
-    if page_handle == multi_site_handle
-      assign class = 'button-site is-active'
-    endif
     if multi_site_url != blank
       assign url = multi_site_url
     else
@@ -23,7 +19,7 @@
     {% else %}
       href="{{ url }}"
     {% endif %}
-    class="button h2{% if class != blank %} {{class}}{% endif %}"
+    class="button h2 button-site"
     data-handle-page="{{ multi_site_handle }}"
   >
     {%- if block.settings.logo != blank -%}
