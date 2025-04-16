@@ -1,11 +1,4 @@
 {% comment %} [START nesting.block_render] {% endcomment %}
-{%- style -%}
-  .group-block--{{ block.id }} > .grid__item {
-    width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size |  minus: 1 }} / {{  block.blocks.size }});
-    max-width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size | minus: 1 }} / {{  block.blocks.size }});
-  }
-{%- endstyle -%}
-
 {%- liquid
   assign social_icons = true
   if settings.social_facebook_link == blank and settings.social_instagram_link == blank and settings.social_youtube_link == blank and settings.social_tiktok_link == blank and settings.social_twitter_link == blank and settings.social_pinterest_link == blank and settings.social_snapchat_link == blank and settings.social_tumblr_link == blank and settings.social_vimeo_link == blank
@@ -18,6 +11,12 @@
   style="--pl:{{ block.settings.padding_left }}px; --pr:{{ block.settings.padding_right }}px; --pt:{{ block.settings.padding_top }}px; --pb:{{ block.settings.padding_bottom }}px; --gap-x: {{ block.settings.gap_x }}px; --gap-y: {{ block.settings.gap_y }}px;"
   {{ block.shopify_attributes }}
 >
+  {%- style -%}
+    .group-block--{{ block.id }} > .grid__item {
+      width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size |  minus: 1 }} / {{  block.blocks.size }});
+      max-width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size | minus: 1 }} / {{  block.blocks.size }});
+    }
+  {%- endstyle -%}
   {% content_for 'blocks' %}
 </div>
 {% comment %} [END nesting.block_render] {% endcomment %}

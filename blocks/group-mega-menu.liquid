@@ -1,16 +1,15 @@
 {% comment %} [START nesting.block_render] {% endcomment %}
-{%- style -%}
-  .group-block--{{ block.id }} > .grid__item {
-    width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size |  minus: 1 }} / {{  block.blocks.size }});
-    max-width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size | minus: 1 }} / {{  block.blocks.size }});
-  }
-{%- endstyle -%}
-
 <div
   class="group-block group-block--{{ block.id }} flex-section wid-100 dis-flex f-{{ block.settings.direction }} f-{{ block.settings.wrap }} a-i-{{ block.settings.align_items}} j-c-{{ block.settings.justify_content }} color-{{ block.settings.color_scheme }}"
   style="--pl:{{ block.settings.padding_left }}px; --pr:{{ block.settings.padding_right }}px; --pt:{{ block.settings.padding_top }}px; --pb:{{ block.settings.padding_bottom }}px; --gap-x: {{ block.settings.gap_x }}px; --gap-y: {{ block.settings.gap_y }}px;"
   {{ block.shopify_attributes }}
 >
+  {%- style -%}
+    .group-block--{{ block.id }} > .grid__item {
+      width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size |  minus: 1 }} / {{  block.blocks.size }});
+      max-width: calc(var(--width-header-col) - var(--gap-x) * {{ block.blocks.size | minus: 1 }} / {{  block.blocks.size }});
+    }
+  {%- endstyle -%}
   {% content_for 'blocks' %}
 </div>
 {% comment %} [END nesting.block_render] {% endcomment %}
