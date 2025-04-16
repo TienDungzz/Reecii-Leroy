@@ -102,8 +102,21 @@
 
 @media screen and (min-width: 750px) {
   .footer-block {
-    display: block;
+    display: flex;
+    flex-direction: column;
     margin-top: 0;
+  }
+
+  .footer-block.left {
+    align-items: flex-start;
+  }
+
+  .footer-block.center {
+    align-items: center;
+  }
+
+  .footer-block.right {
+    align-items: flex-end;
   }
 }
 
@@ -120,6 +133,7 @@
 .footer-block__heading {
   margin-block: 0 2rem;
   font-size: calc(var(--font-heading-scale) * 1.6rem);
+  width: 100%;
 }
 
 @media screen and (max-width: 749px) {
@@ -273,7 +287,7 @@
 }
 
 .footer__copyright {
-  text-align: center;
+  /* text-align: center; */
   margin-top: 1.5rem;
 }
 
@@ -304,10 +318,6 @@
 
   .footer-block:only-child li {
     display: inline;
-  }
-
-  .footer-block:only-child:last-child .footer-block__details-content > li:not(:last-child) {
-    margin-right: 1.5rem;
   }
 }
 
@@ -489,8 +499,8 @@
 
 /* mint add css code */
 .footer-block.grid__item {
-  width: calc(var(--width-footer-col) - calc(var(--gap-x) / 2));
-  max-width: calc(var(--width-footer-col) - calc(var(--gap-x) / 2));
+  width: calc(var(--width-footer-col) - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
+  max-width: calc(var(--width-footer-col) - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
 }
 
 @media screen and (max-width: 749px) {
@@ -501,7 +511,20 @@
 }
 @media (min-width: 750px) and (max-width: 1024px) {
   .footer-block.grid__item {
-    width: 50% !important;  
+    width: calc(50% - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
+    max-width: calc(50% - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
+  }
+
+  .footer-block.grid__item.full-width-tablet {
+    width: 100% !important;  
+    max-width: 100% !important;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1200px) {
+  .footer-block.grid__item.full-width-tablet .flex-section .grid__item {
+    width: calc(50% - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
+    max-width: calc(50% - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
   }
 }
 

@@ -10,7 +10,7 @@
     <ul
       class="list-unstyled list-social dis-flex f-wrap j-c-{{ block.settings.align_content }} j-c-center-mb{% if class %} {{ class}}{% endif %}"
       role="list"
-      style="--gap-x: 1.1rem; --gap-y: 1.1rem;"
+      style="--gap-x: {{ block.settings.gap_x }}px; --gap-y: {{ block.settings.gap_y }}px;"
     >
       {%- if settings.social_twitter_link != blank -%}
         <li class="list-social__item">
@@ -129,6 +129,24 @@
       ],
       "default": "start",
       "label": "Align content"
+    },
+    {
+      "type": "range",
+      "id": "gap_x",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "Column Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_y",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "Row Gap"
     }
   ],
   "presets": [
