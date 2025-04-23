@@ -9,19 +9,11 @@
 {%- liquid
   for link in block.settings.menu.links
     if link.links != blank
-      assign has_megamenu = false
       assign menu_title = link.title | escape | downcase | handle
 
       assign block_title = block.settings.menu_item | escape | downcase | handle
       if block_title == menu_title
-        assign block = block
-        assign has_megamenu = true
-      endif
-
-      if has_megamenu
-        render 'header-mega-menu', link: link, forloopIndex: forloop.index, block: block
-      else
-        render 'header-dropdown-menu', link: link, forloopIndex: forloop.index
+        render 'header-mega-menu', title: menu_title, link: link, forloopIndex: forloop.index, block: block
       endif
     endif
   endfor
