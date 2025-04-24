@@ -1,8 +1,8 @@
 <div class="footer-block__newsletter">
   {%- form 'customer', id: 'ContactFooter', class: 'footer__newsletter newsletter-form' -%}
     <input type="hidden" name="contact[tags]" value="newsletter">
-    <div class="newsletter-form__field-wrapper">
-      <div class="field">
+    <div class="newsletter-form__field-wrapper {% if block.settings.full_width %} newsletter-form__field-wrapper--full {% endif %}">
+      <div class="field field--style-{{ block.settings.field_style }}">
         <input
           id="NewsletterForm--{{ block.id }}"
           type="email"
@@ -28,7 +28,7 @@
         </label>
         <button
           type="submit"
-          class="newsletter-form__button field__button"
+          class="newsletter-form__button field__button button"
           name="commit"
           id="Subscribe"
           aria-label="{{ 'newsletter.button_label' | t }}"
@@ -102,9 +102,43 @@
 {% schema %}
 {
   "name": "Email signup",
-  "tag": null,
   "blocks": [],
   "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.newsletter.settings.submit_form.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "t:sections.newsletter.settings.submit_form.full_width.label",
+      "info": "t:sections.newsletter.settings.submit_form.full_width.info",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "field_style",
+      "label": "t:sections.newsletter.settings.submit_form.field_style.label",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.newsletter.settings.submit_form.field_style.options__1.label"
+        },
+        {
+          "value": "2",
+          "label": "t:sections.newsletter.settings.submit_form.field_style.options__2.label"
+        },
+        {
+          "value": "3",
+          "label": "t:sections.newsletter.settings.submit_form.field_style.options__3.label"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.newsletter.settings.agree_condition.label"
+    },
     {
       "type": "checkbox",
       "id": "agree_condition",

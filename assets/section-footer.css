@@ -100,23 +100,39 @@
   }
 }
 
-@media screen and (min-width: 750px) {
+@media screen and (min-width: 1025px) {
   .footer-block {
     display: flex;
     flex-direction: column;
     margin-top: 0;
   }
 
-  .footer-block.left {
+  .footer-block.pos-left {
     align-items: flex-start;
+    text-align: left;
   }
 
-  .footer-block.center {
+  .footer-block.pos-left .list-position-inherit{
+    justify-content: flex-start;
+  }
+
+  .footer-block.pos-center {
     align-items: center;
+    text-align: center;
+  }
+  
+
+  .footer-block.pos-center .list-position-inherit{
+    justify-content: center;
   }
 
-  .footer-block.right {
+  .footer-block.pos-right {
     align-items: flex-end;
+    text-align: right;
+  }
+
+  .footer-block.pos-right .list-position-inherit{
+    justify-content: flex-end;
   }
 }
 
@@ -124,9 +140,37 @@
   display: none;
 }
 
-@media screen and (max-width: 749px) {
+@media screen and (max-width: 1024px) {
   .footer-block.footer-block--menu:only-child {
     text-align: left;
+  }
+
+  .footer-block.pos-mb-left {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .footer-block.pos-mb-left .list-position-inherit{
+    justify-content: flex-start;
+  }
+
+  .footer-block.pos-mb-center {
+    align-items: center;
+    text-align: center;
+  }
+  
+
+  .footer-block.pos-mb-center .list-position-inherit{
+    justify-content: center;
+  }
+
+  .footer-block.pos-mb-right {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .footer-block.pos-mb-right .list-position-inherit{
+    justify-content: flex-end;
   }
 }
 
@@ -161,11 +205,6 @@
   display: none;
 }
 
-.footer__follow-on-shop {
-  display: flex;
-  text-align: center;
-}
-
 .footer__list-social.list-social:only-child,
 .footer-bottom .footer__list-social.list-social {
   justify-content: center;
@@ -173,7 +212,6 @@
 
 .footer-block__newsletter {
   text-align: center;
-  flex-grow: 1;
 }
 
 .footer-block__newsletter .newsletter-form {
@@ -182,6 +220,10 @@
 
 .newsletter-form__field-wrapper {
   max-width: 36rem;
+}
+
+.newsletter-form__field-wrapper.newsletter-form__field-wrapper--full {
+  max-width: 100%;
 }
 
 @media screen and (min-width: 750px) {
@@ -198,25 +240,6 @@
   .footer-block__newsletter:not(:only-child) .newsletter-form__message--success {
     left: auto;
   }
-
-  .footer__follow-on-shop {
-    margin-bottom: 0.4rem;
-  }
-  /* Follow on shop is the first button but it has siblings*/
-  .footer__follow-on-shop:first-child:not(:last-child) {
-    justify-content: flex-start;
-    margin-right: auto;
-    text-align: left;
-  }
-
-  /*
-    All three components are present, email, Follow on Shop, and social icons.
-    Moves the FoS button next to the social icons so they appear grouped together
-  */
-  .footer__follow-on-shop:not(:first-child):not(:last-child) {
-    justify-content: flex-end;
-    text-align: right;
-  }
 }
 
 @media screen and (max-width: 749px) {
@@ -225,7 +248,6 @@
     because they will be stacked.
    */
   .footer__list-social.list-social,
-  .footer__follow-on-shop,
   .footer-block__newsletter {
     display: flex;
     justify-content: center;
@@ -240,55 +262,6 @@
   .footer-block__newsletter + .footer__list-social {
     margin-top: 0;
   }
-}
-
-.footer__localization {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-content: center;
-  flex-wrap: wrap;
-  padding: 1rem 0 0;
-}
-
-.footer__localization:empty {
-  display: none;
-}
-
-.footer__localization h2 {
-  margin: 1rem 1rem 0.5rem 0;
-  color: rgba(var(--color-foreground), 0.75);
-}
-
-@media screen and (max-width: 749px) {
-  .footer__localization .localization-form:only-child {
-    margin-right: 1rem;
-  }
-
-  .footer__localization .localization-form:only-child .button,
-  .footer__localization .localization-form:only-child .localization-form__select {
-    margin: 1rem 1rem 0.5rem 0;
-  }
-}
-
-@media screen and (min-width: 750px) {
-  .footer__localization {
-    padding: 0.4rem 0;
-    justify-content: flex-start;
-  }
-
-  .footer__localization h2 {
-    margin: 1rem 0 0;
-  }
-
-  .footer__payment {
-    margin-top: 1.5rem;
-  }
-}
-
-.footer__copyright {
-  /* text-align: center; */
-  margin-top: 1.5rem;
 }
 
 @keyframes appear-down {
@@ -353,30 +326,6 @@
   }
 }
 
-.footer-block-image {
-  display: flex;
-}
-
-.footer-block-image.left {
-  justify-content: flex-start;
-}
-
-.footer-block-image.center {
-  justify-content: center;
-}
-
-.footer-block-image.right {
-  justify-content: flex-end;
-}
-
-@media screen and (max-width: 749px) {
-  .footer-block-image,
-  .footer-block-image.left,
-  .footer-block-image.center,
-  .footer-block-image.right {
-    justify-content: center;
-  }
-}
 
 .footer-block__image-wrapper {
   margin-bottom: 2rem;
@@ -400,11 +349,6 @@
 .footer-block:only-child > .footer-block__brand-info > .footer-block__image-wrapper {
   margin-left: auto;
   margin-right: auto;
-}
-
-.footer-block-image > img,
-.footer-block__brand-info > img {
-  height: auto;
 }
 
 .footer-block:only-child .footer-block__brand-info .footer__list-social.list-social {
@@ -511,8 +455,8 @@
 }
 @media (min-width: 750px) and (max-width: 1024px) {
   .footer-block.grid__item {
-    width: calc(50% - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
-    max-width: calc(50% - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
+    width: calc(var(--width-footer-col-mb) - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
+    max-width: calc(var(--width-footer-col-mb) - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
   }
 
   .footer-block.grid__item.full-width-tablet {
@@ -523,8 +467,8 @@
 
 @media (min-width: 1025px) and (max-width: 1200px) {
   .footer-block.grid__item.full-width-tablet .flex-section .grid__item {
-    width: calc(50% - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
-    max-width: calc(50% - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
+    width: calc(var(--width-footer-col-mb) - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
+    max-width: calc(var(--width-footer-col-mb) - var(--gap-x) * var(--gap-count) / (var(--gap-count) + 1));
   }
 }
 

@@ -22,20 +22,6 @@
       </localization-form>
     {%- endif -%}
   </div>
-  <div class="footer__column footer__column--info">
-    {%- if block.settings.payment_enable -%}
-      <div class="footer__payment">
-        <span class="visually-hidden">{{ 'sections.footer.payment' | t }}</span>
-        <ul class="list list-payment" role="list">
-          {%- for type in shop.enabled_payment_types -%}
-            <li class="list-payment__item">
-              {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
-            </li>
-          {%- endfor -%}
-        </ul>
-      </div>
-    {%- endif -%}
-  </div>
 </div>
 
 {% schema %}
@@ -45,19 +31,25 @@
   "settings": [
     {
       "type": "header",
-      "content": "Country selector"
+      "content": "t:sections.footer-bottom.settings.header__1.content",
+      "info": "t:sections.footer-bottom.settings.header__1.info"
     },
     {
       "type": "checkbox",
       "id": "enable_country_selector",
-      "label": "Enable country selector",
-      "default": true
+      "default": true,
+      "label": "t:sections.footer-bottom.settings.enable_country_selector.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.footer-bottom.settings.header__2.content",
+      "info": "t:sections.footer-bottom.settings.header__2.info"
     },
     {
       "type": "checkbox",
       "id": "enable_language_selector",
-      "label": "Enable language selector",
-      "default": true
+      "default": true,
+      "label": "t:sections.footer-bottom.settings.enable_language_selector.label"
     }
   ],
   "blocks": [],
