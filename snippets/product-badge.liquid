@@ -1,0 +1,26 @@
+{%- capture class_badge -%}badge badge--bottom-left color{%- endcapture -%}
+{%- capture id_badge -%}NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}{%- endcapture -%}
+
+{%- if card_product.available == false -%}
+    <span id="{{ id_badge }}" class="{{ class_badge }} color-{{ settings.sold_out_badge_color_scheme }}" aria-hidden="true">
+        {{- 'products.product.sold_out' | t -}}
+    </span>
+{%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
+    <span id="{{ id_badge }}" class="{{ class_badge }} color-{{ settings.sale_badge_color_scheme }}" aria-hidden="true">
+        {{- 'products.product.on_sale' | t -}}
+    </span>
+{%- endif -%}
+{%- if new_badge -%}
+    <span id="{{ id_badge }}-new" class="new-badge {{ class_badge }} color-{{ settings.new_badge_color_scheme }}" aria-hidden="true">
+        {{ 'products.product.new' | t }}
+    </span>
+{%- endif -%}
+{%- if custom_badge -%}
+    <span id="{{ id_badge }}-custom" class="custom-badge {{ class_badge }} color-{{ settings.custom_badge_color_scheme }}" aria-hidden="true">
+        {%- if custom_badge_text -%}
+            {{ custom_badge_text }}
+        {%- else -%}
+            {{ 'products.product.custom' | t }}
+        {%- endif -%}
+    </span>
+{%- endif -%}

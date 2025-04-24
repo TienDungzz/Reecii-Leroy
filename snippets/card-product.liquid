@@ -20,6 +20,7 @@
   Usage:
   {% render 'card-product', show_vendor: section.settings.show_vendor %}
 {% endcomment %}
+
 {%- unless skip_styles -%}
   {{ 'component-rating.css' | asset_url | stylesheet_tag }}
   {{ 'component-volume-pricing.css' | asset_url | stylesheet_tag }}
@@ -38,11 +39,41 @@
     if ratio == 0 or ratio == null
       assign ratio = 1
     endif
+
+    if settings.show_new_badge
+        assign new_badge = false
+        assign new_badge_type = settings.new_badge_type
+        if new_badge_type == 'auto'
+            assign date_start = card_product.created_at | date: '%s'
+            assign date_now = 'now' | date:'%s'
+            assign date_minus = date_now | minus: date_start
+            assign date_difference = date_minus | divided_by: 86400
+            assign new_badge_time = settings.new_badge_time
+            if date_difference < new_badge_time
+              assign new_badge = true
+            endif 
+        else
+            for tag in card_product.tags
+            assign tag_handle = tag | handle
+                if tag_handle == 'new'
+                    assign new_badge = true
+                endif
+            endfor
+        endif
+    endif
+
+    if settings.show_custom_badge
+      assign custom_badge = false
+      assign custom_badge_text = card_product.metafields.custom.custom_badge
+
+      if custom_badge_text
+          assign custom_badge = true
+      endif
+    endif
   -%}
   <div class="card-wrapper product-card-wrapper underline-links-hover">
     <div
-      class="
-        card card--{{ settings.card_style }}
+      class="card card--{{ settings.card_style }}
         {% if card_product.featured_media %} card--media{% else %} card--text{% endif %}
         {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }} gradient{% endif %}
         {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
@@ -106,44 +137,46 @@
           </div>
         {%- endif -%}
         <div class="card__content">
-          <div class="card__information">
-            <h3
-              class="card__heading"
-              {% if card_product.featured_media == null and settings.card_style == 'standard' %}
-                id="title-{{ section_id }}-{{ card_product.id }}"
-              {% endif %}
-            >
-              <a
-                href="{{ card_product.url }}"
-                id="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}"
-                class="full-unstyled-link"
-                aria-labelledby="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }} NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
+          {%- if settings.card_style == 'card' -%}
+            <div class="card__information">
+              {%- if show_vendor -%}
+                <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+                <div class="caption-with-letter-spacing light">{{ card_product.vendor }}</div>
+              {%- endif -%}
+              <h3
+                class="card__heading"
+                {% if card_product.featured_media == null and settings.card_style == 'standard' %}
+                  id="title-{{ section_id }}-{{ card_product.id }}"
+                {% endif %}
               >
-                {{ card_product.title | escape }}
-              </a>
-            </h3>
-          </div>
+                <a
+                  href="{{ card_product.url }}"
+                  id="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}"
+                  class="full-unstyled-link"
+                  aria-labelledby="StandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }} NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
+                >
+                  {{ card_product.title | escape }}
+                </a>
+              </h3>
+            </div>
+          {%- endif -%}
+          
           <div class="card__badge {{ settings.badge_position }}">
-            {%- if card_product.available == false -%}
-              <span
-                id="NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
-                class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
-              >
-                {{- 'products.product.sold_out' | t -}}
-              </span>
-            {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
-              <span
-                id="NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
-                class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
-              >
-                {{- 'products.product.on_sale' | t -}}
-              </span>
-            {%- endif -%}
+            {%- render 'product-badge'
+              card_product: card_product,
+              new_badge: new_badge,
+              custom_badge: custom_badge,
+              custom_badge_text: custom_badge_text
+            -%}
           </div>
         </div>
       </div>
       <div class="card__content">
         <div class="card__information">
+          {%- if show_vendor -%}
+            <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+            <div class="caption-with-letter-spacing light">{{ card_product.vendor }}</div>
+          {%- endif -%}
           <h3
             class="card__heading{% if card_product.featured_media or settings.card_style == 'standard' %} h5{% endif %}"
             {% if card_product.featured_media or settings.card_style == 'card' %}
@@ -160,10 +193,6 @@
             </a>
           </h3>
           <div class="card-information">
-            {%- if show_vendor -%}
-              <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
-              <div class="caption-with-letter-spacing light">{{ card_product.vendor }}</div>
-            {%- endif -%}
 
             <span class="caption-large light">{{ block.settings.description | escape }}</span>
 
@@ -465,23 +494,17 @@
             {%- endif -%}
           </div>
         {% endif %}
-        <div class="card__badge {{ settings.badge_position }}">
-          {%- if card_product.available == false -%}
-            <span
-              id="Badge-{{ section_id }}-{{ card_product.id }}"
-              class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}"
-            >
-              {{- 'products.product.sold_out' | t -}}
-            </span>
-          {%- elsif card_product.compare_at_price > card_product.price and card_product.available -%}
-            <span
-              id="Badge-{{ section_id }}-{{ card_product.id }}"
-              class="badge badge--bottom-left color-{{ settings.sale_badge_color_scheme }}"
-            >
-              {{- 'products.product.on_sale' | t -}}
-            </span>
-          {%- endif -%}
-        </div>
+        {%- if settings.card_style == 'card' -%}
+          <div class="card__badge {{ settings.badge_position }}">
+            {%- render 'product-badge'
+              card_product: card_product,
+              new_badge: new_badge,
+              custom_badge: custom_badge,
+              custom_badge_text: custom_badge_text
+            -%}
+          </div>
+        {%- endif -%}
+
       </div>
     </div>
   </div>
