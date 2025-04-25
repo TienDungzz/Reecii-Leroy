@@ -70,10 +70,34 @@
           assign custom_badge = true
       endif
     endif
+
+    assign product_swatch_option = settings.swatch | downcase
+    assign isColor = false
+    assign variant_img = ''
+    for option in card_product.options_with_values
+      assign option_name = option.name | downcase
+      if product_swatch_option contains option_name
+          assign isColor = true
+          assign index = forloop.index0
+          assign position = forloop.index | minus: 1
+          assign variant_selected = option.selected_value
+          if settings.show_quick_shop
+              for variant in card_product.variants limit: 1
+                  if variant.image != null  
+                      assign variant_img = variant.image
+                  endif
+              endfor
+          endif
+        break
+      else 
+          assign position = 0
+          assign variant_selected = nil
+      endif
+    endfor
   -%}
   <div class="card-wrapper product-card-wrapper underline-links-hover">
     <div
-      class="card card--{{ settings.card_style }}
+      class="card card--{{ settings.card_style }} khinh2-{{ index }}
         {% if card_product.featured_media %} card--media{% else %} card--text{% endif %}
         {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }} gradient{% endif %}
         {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
@@ -504,7 +528,9 @@
             -%}
           </div>
         {%- endif -%}
-
+      </div>
+      <div class="card__bottom">
+          {%- render 'product-swatch', product: card_product, variant_selected: variant_selected, index: index -%}
       </div>
     </div>
   </div>
