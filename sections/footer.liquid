@@ -26,12 +26,14 @@
   class="footer color-{{ section.settings.color_scheme }} gradient spacing"
 >
   <div
-    class="footer__blocks-wrapper color-{{ block.settings.color_scheme }}"
+    class="footer__blocks-wrapper color-{{ section.settings.color_scheme }}"
     {% if settings.animations_reveal_on_scroll %}
       data-cascade
     {% endif %}
   >
-    {% content_for 'blocks' %}
+    <div class="page-width page-width--{{ section.settings.page_width }}">
+      {% content_for 'blocks' %}
+    </div>
   </div>
 </footer>
 
@@ -43,13 +45,49 @@
   "settings": [
     {
       "type": "header",
-      "content": "Color scheme"
+      "content": "t:settings_schema.general.name"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme",
+      "label": "t:settings_schema.general.settings.color_scheme.color_text",
       "default": "scheme-1"
+    },
+    {
+        "type": "select",
+        "id": "page_width",
+        "label": "t:sections.layout.container.option",
+        "default": "default",
+        "options": [
+            {
+                "value": "default",
+                "label": "t:sections.layout.container.option1"
+            },
+            {
+                "value": "1200",
+                "label": "t:sections.layout.container.option4"
+            },
+            {
+                "value": "1320",
+                "label": "t:sections.layout.container.option7"
+            },
+            {
+                "value": "1470",
+                "label": "t:sections.layout.container.option5"
+            },
+            {
+                "value": "1570",
+                "label": "t:sections.layout.container.option6"
+            },
+            {
+                "value": "1770",
+                "label": "t:sections.layout.container.option3"
+            },
+            {
+                "value": "fullwidth",
+                "label": "t:sections.layout.container.option2"
+            }
+        ]
     }
   ]
 }

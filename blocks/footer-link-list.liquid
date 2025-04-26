@@ -7,7 +7,7 @@
   {{ block.shopify_attributes }}
 >
   <summary id="Footer-summary-{{ block.id }}-{{ section.id }}" class="dis-flex-mb a-i-center j-c-between c-pointer">
-    <h2 class="footer-block__heading inline-richtext">{{- block.settings.heading -}}</h2>
+    <h2 class="footer-block__heading inline-richtext{% if block.settings.underline %} underline{% endif %}">{{- block.settings.heading -}}</h2>
     {{- 'icon-caret.svg' | inline_asset_content -}}
   </summary>
 
@@ -42,6 +42,12 @@
       "id": "heading",
       "default": "t:sections.footer.blocks.link_list.settings.heading.default",
       "label": "t:sections.footer.blocks.link_list.settings.heading.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "underline",
+      "label": "t:sections.footer.blocks.link_list.settings.underline.label",
+      "default": false
     },
     {
       "type": "link_list",
