@@ -44,6 +44,9 @@
 
     {{ 'component-slider.css' | asset_url | stylesheet_tag }}
     {{ 'component-card.css' | asset_url | stylesheet_tag }}
+    {%- if settings.show_countdown -%}
+      {{ 'component-card-countdown.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
     {{ 'component-price.css' | asset_url | stylesheet_tag }}
 
     {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
@@ -73,6 +76,7 @@
     {%- liquid
       sections 'header-group'
       sections 'popup-group'
+      sections 'general-group'
     -%}
 
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">

@@ -1372,3 +1372,20 @@ class RecentlyViewedProducts extends HTMLElement {
 }
 
 customElements.define('recently-viewed-products', RecentlyViewedProducts);
+
+const moreButton = document.querySelectorAll('.card__swatch .item-swatch-more .number-showmore');
+moreButton.forEach(button => {
+  button.addEventListener('click', function(event) {
+      const swatch = event.target.closest('.swatch-list')
+      span = button.querySelector('span'),
+      groupSwatch = swatch.querySelector('.group-swatch');
+
+      if (groupSwatch.style.display == 'flex') {
+        groupSwatch.style.display = 'none';
+        if (span) span.textContent = '+';
+      } else {
+        groupSwatch.style.display = 'flex';
+        if (span) span.textContent = '-';
+      }
+  });
+})
