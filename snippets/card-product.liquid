@@ -97,7 +97,7 @@
   -%}
   <div class="card-wrapper product-card-wrapper underline-links-hover">
     <div
-      class="card card--{{ settings.card_style }} khinh2-{{ index }}
+      class="card card--{{ settings.card_style }}
         {% if card_product.featured_media %} card--media{% else %} card--text{% endif %}
         {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }} gradient{% endif %}
         {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
@@ -194,6 +194,21 @@
             -%}
           </div>
         </div>
+        {%- if settings.show_countdown -%}
+          {%- liquid
+              assign countdown_type = settings.countdown_type
+              assign countdown_time = settings.countdown_time
+              assign countdown_collection = settings.countdown_collection | downcase | handle
+          -%}
+              <div class="card__countDown pos-absolute-c-x z-index-2 wid-100" style="--bottom-a: 2rem;">
+                  {% render 'product-countdown',
+                    product: card_product,
+                    countdown_type: countdown_type,
+                    countdown_time: countdown_time,
+                    countdown_collection: countdown_collection
+                  %}
+              </div>
+        {%- endif -%}
       </div>
       <div class="card__content">
         <div class="card__information">

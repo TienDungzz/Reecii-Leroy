@@ -10,10 +10,18 @@
     else
         assign number_limit = 4
     endif
+
+    if settings.card_text_alignment == 'left'
+        assign sw_alignment = 'j-c-center'
+    elsif settings.card_text_alignment == 'center'
+        assign sw_alignment = 'j-c-center'
+    elsif settings.card_text_alignment == 'right'
+        assign sw_alignment = 'j-c-end'
+    endif
 -%}
 {%- if variantCount > 0 and product.variants.first.title != 'Default Title' -%}
-    <div class="card__swatch text-{{ settings.product_content_text_align }}" id="product-swatch-{{ product.id }}">
-        <ul class="swatch-list list-unstyled {{ index }}">
+    <div class="card__swatch pos-relative z-index-2" id="product-swatch-{{ product.id }}">
+        <ul class="swatch-list list-unstyled dis-flex a-i-center {{ sw_alignment }}" style="--c-gap-a: 0.5rem;">
             {%- for variant in product.variants -%}
                 {%- assign color = variant.options[index] -%}
                 {%- assign color_check = color | prepend: "|" | append: "|" -%}
@@ -44,6 +52,7 @@
                                 assign background_color = metaobject_color
                                 assign enable_variant_image = true
                                 assign has_metaobject = true
+                                assign background_image = ''
                             elsif variant.image
                                 assign background_image = variant.image.src | product_img_url: '120x'
                                 assign enable_variant_image = true
@@ -51,47 +60,37 @@
                     endcase
                     -%}
                     {%- if count < number_limit -%}
-                        <li class="item">
-                            <div class="item-wrapper">
-                                {% comment %} <label{% if product.options_with_values.size == 1 %} data-with-one-option="{{ variant.id }}" data-quantity="{% if variant.available %}1{% else %}0{% endif %}" {% endif %} class="swatch-label{% if settings.show_quick_shop %}{% unless settings.quick_shop_type == '2' %}{% if variant_selected != blank %}{% if variant_selected == text %} is-active{% endif %}{% else %}{% if count == 0 %} is-active{% endif %}{% endif %}{% endunless %}{% endif %}{% if product.options_with_values.size == 1 and variant.unavailable %} is-soldout{% endif %}" data-value="{{ text }}" data-variant-id="{{ variant.id }}" title="{{ color | strip }}" {% if variant.image != null -%} data-variant-img="{{ variant.image.src | product_img_url: '800x' }}"{% endif %}>
-                                    <span
-                                        class="pattern"
-                                        style="background-color: {{ color | split: ' ' | last | handle }};
-                                            {% if enable_variant_image %}
-                                                {% if has_metaobject and swatch_type == 'metaobjects' %}
-                                                    {% if has_image %}background: url({{ background_image }}); background-size: cover;
-                                                    {% else %}
-                                                        background: {{ background_color }};
-                                                    {% endif %}
-                                                 {% else %} background-image: url({{ background_image }});
-                                                {% endif %}
-                                            {% endif %}"
-                                    ></span>
-                                </label>
-                                <span class="tooltip">{{ color | escape }}</span> {% endcomment %}
+                        <li class="swatch-item">
+                            <div class="swatch-wrapper">
                                 <span
-                                    {% if background_image %}
-                                      class="swatch"
-                                      style="--swatch--background-color: {{ color | split: ' ' | last | handle }};{% if enable_variant_image %}--swatch--background: url({{ background_image }});{% endif %}"
+                                    {% if enable_variant_image %}
+                                      class="swatch color-swacth-color--{{ color | handle }}"
+                                      style="{%- if swatch_type == 'color' -%}--swatch--background-color: {{ color | split: ' ' | last | handle }};{%- endif -%}
+                                        {%- if has_metaobject and metaobject_color != blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
+                                        {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}"
                                     {% else %}
-                                      class="swatch swatch--unavailable"
+                                      class="swatch color-swacth-color--{{ color | handle }} swatch--unavailable"
                                     {% endif %}
                                 ></span>
+                                <span class="tooltip visually-hidden">{{ color | escape }}</span>
                             </div>
                         </li>
                     {%- else -%}
                         {%- if count == number_limit -%}
-                            <li class="group-swatch" style="display: none">
+                            <li class="group-swatch" style="--c-gap-a: 0.5rem; display: none">
                         {%- endif -%}
-                            <div class="item-wrapper clearfix">
-                                <label{% if product.options_with_values.size == 1 %} data-with-one-option="{{ variant.id }}" data-quantity="{% if variant.available %}1{% else %}0{% endif %}"{% endif %} class="swatch-label{% if settings.show_quick_shop %}{% unless settings.quick_shop_type == '2' %}{% if variant_selected != blank %}{% if variant_selected == text %} is-active{% endif %}{% else %}{% if count == 0 %} is-active{% endif %}{% endif %}{% endunless %}{% endif %}{% if product.options_with_values.size == 1 and variant.unavailable %} is-soldout{% endif %}" data-value="{{ text }}" data-variant-id="{{ variant.id }}" title="{{ color | strip }}" {% if variant.image != null %} data-variant-img="{{ variant.image.src | product_img_url: '800x' }}"{% endif %}>
-                                    <span
-                                        class="pattern"
-                                        style="background-color: {{ color | split: ' ' | last | handle }};{% if enable_variant_image %}{% if has_metaobject and swatch_type == 'metaobjects' %}{% if has_image %}background: url({{ background_image }}); background-size: cover;{% else %}background: {{ background_color }};{% endif %}{% else %} background-image: url({{ background_image }});{% endif %}{% endif %}"
-                                    ></span>
-                                    {{ text }}
-                                </label>
-                                <span class="tooltip">{{ color | escape }}</span>
+                            <div class="swatch-wrapper">
+                                <span
+                                    {% if enable_variant_image %}
+                                      class="swatch color-swacth-color--{{ color | handle }}"
+                                      style="{%- if swatch_type == 'color' -%}--swatch--background-color: {{ color | split: ' ' | last | handle }};{%- endif -%}
+                                        {%- if has_metaobject and metaobject_color != blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
+                                        {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}"
+                                    {% else %}
+                                      class="swatch color-swacth-color--{{ color | handle }} swatch--unavailable"
+                                    {% endif %}
+                                ></span>
+                                <span class="tooltip visually-hidden">{{ color | escape }}</span>
                             </div>
                         {%- if forloop.last -%}
                             </li>
@@ -105,9 +104,8 @@
                 {%- endunless -%}
             {%- endfor -%}
             {%- if count > number_limit -%}
-                <li class="item-swatch-more item"><button type="button" class="number-showmore" title="More Color"><span>+</span> <span class="text-number">{{ count | minus : number_limit }}</span></button></li>
+                <li class="item-swatch-more item"><button type="button" class="number-showmore t-button c-pointer" title="More Color"><span>+</span> <span class="text-number">{{ count | minus : number_limit }}</span></button></li>
             {%- endif -%}
         </ul>
     </div>
 {%- endif -%}
-<script></script>
