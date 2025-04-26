@@ -12,57 +12,50 @@
   {{ 'component-mega-menu.css' | asset_url | stylesheet_tag }}
 </noscript>
 
-<div class="header__menu-wrapper header__menu-multi-site-wrapper"></div>
-<div class="header__menu-wrapper" data-main-menu>
-  <nav class="header__inline-menu">
-    <ul class="list-menu list-menu-desktop list-menu--inline {{block.settings.color_scheme}}" role="list">
-      {%- for link in block.settings.menu.links -%}
-        <li>
-          {%- if link.links != blank -%}
-            {%- liquid
-              assign megamenu = block.blocks | where: 'type', 'mega_menu'
-              assign check_megamenu = false
-              if megamenu.size > 0
-                assign check_megamenu = true
-              endif
-
-              assign has_megamenu = false
-              assign menu_title = link.title | escape | downcase | handle
-
-              for block in block.blocks
-                assign block_title = block.settings.menu_item | escape | downcase | handle
-                if block_title == menu_title
-                  assign block = block
-                  assign has_megamenu = true
+<div
+  class="header-block grid__item dis-block{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+>
+  <div class="header__menu-wrapper header__menu-multi-site-wrapper"></div>
+  <div class="header__menu-wrapper" data-main-menu>
+    <nav class="header__inline-menu">
+      <ul class="list-menu list-menu-desktop list-menu--inline" role="list">
+        {%- for link in section.settings.menu.links -%}
+          <li>
+            {%- if link.links != blank -%}
+              {%- liquid
+                assign megamenu = section.blocks | where: "type", "mega_menu"
+                assign check_megamenu = false
+                if megamenu.size > 0
+                  assign check_megamenu = true
                 endif
-              endfor
 
-              if check_megamenu and has_megamenu
-                render 'header-mega-menu', link: link, forloopIndex: forloop.index, block: block
-              else
-                render 'header-dropdown-menu', link: link, forloopIndex: forloop.index
-              endif
-            -%}
-          {%- else -%}
-            <a
-              id="HeaderMenu-{{ link.handle }}"
-              href="{{ link.url }}"
-              class="header__menu-item list-menu__item link link--text focus-inset"
-              {% if link.current %}
-                aria-current="page"
-              {% endif %}
-            >
-              <span
-                {%- if link.current %}
-                  class="header__active-menu-item"
-                {% endif %}
-              >
-                {{- link.title | escape -}}
-              </span>
-            </a>
-          {%- endif -%}
-        </li>
-      {%- endfor -%}
-    </ul>
-  </nav>
+                assign has_megamenu = false
+                assign menu_title = link.title | escape | downcase | handle
+
+                for block in section.blocks
+                  assign block_title = block.settings.menu_item | escape | downcase | handle
+                  if block_title == menu_title
+                    assign block = block
+                    assign has_megamenu = true
+                  endif
+                endfor
+
+                if check_megamenu and has_megamenu
+                    render 'header-mega-menu', link: link, forloopIndex: forloop.index, block: block
+                else
+                  render 'header-dropdown-menu', link: link, forloopIndex: forloop.index
+                endif
+              -%}
+            {%- else -%}
+              <a id="HeaderMenu-{{ link.handle }}" href="{{ link.url }}" class="header__menu-item list-menu__item link link--text focus-inset"{% if link.current %} aria-current="page"{% endif %}>
+                <span {%- if link.current %}class="header__active-menu-item"{% endif %}>
+                  {{- link.title | escape -}}
+                </span>
+              </a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+  </div>
 </div>
