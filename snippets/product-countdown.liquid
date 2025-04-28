@@ -1,21 +1,24 @@
-<div class="card-countDown-wrapper" style="--fg-color: {{ settings.countdown_text_color }};">
+{%- capture styles -%}
+    --bg-color: {{ settings.countdown_background_color }}; --fg-color: {{ settings.countdown_text_color }};--pad-a-a: .8rem 1.2rem;
+{%- endcapture -%}
+{%- capture number_html -%}
+    <span class="num animated-loading">
+        <span>151<span>D</span></span>
+    </span>
+    <span class="num animated-loading">
+        <span>8<span>H</span></span>
+    </span>
+    <span class="num animated-loading">
+        <span>23<span>M</span></span>
+    </span>
+    <span class="num animated-loading">
+        <span>0<span>S</span></span>
+    </span>
+{%- endcapture -%}
+<div class="card-countDown-wrapper body-s-font-size" style="{{ styles }}">
     {%- if countdown_type == 'all_product' -%}
-        <div class="text animated-loading">
-            <span>{{ settings.countdown_text }}</span>
-        </div>
-        <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-fit mar-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}" style="--bg-color: {{ settings.countdown_background_color }};">
-            <span class="num animated-loading">
-                <span>151<span>D</span></span>
-            </span>
-            <span class="num animated-loading">
-                <span>8<span>H</span></span>
-            </span>
-            <span class="num animated-loading">
-                <span>23<span>M</span></span>
-            </span>
-            <span class="num animated-loading">
-                <span>0<span>S</span></span>
-            </span>
+        <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-fit mar-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}">
+            {{ number_html }}
         </div>
     {%- elsif countdown_type == 'collection_product' -%}
         {%- liquid
@@ -30,43 +33,15 @@
             endif
         -%}
         {%- if hasCountdown -%}
-            <div class="text animated-loading">
-                <span>{{ settings.countdown_text }}</span>
-            </div>
-            <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-fit mar-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}" style="--bg-color: {{ settings.countdown_background_color }};"> 
-                <span class="num animated-loading">
-                    <span>151<span>D</span></span>
-                </span>
-                <span class="num animated-loading">
-                    <span>8<span>H</span></span>
-                </span>
-                <span class="num animated-loading">
-                    <span>23<span>M</span></span>
-                </span>
-                <span class="num animated-loading">
-                    <span>0<span>S</span></span>
-                </span>
+            <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-fit mar-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}"> 
+                {{ number_html }}
             </div>
         {%- endif -%}
     {%- else -%}
         {%- if product.metafields.c_f.countdown -%}
             {% assign countdown_type = product.metafields.c_f.countdown %}
-            <div class="text animated-loading">
-                <span>{{ settings.countdown_text }}</span>
-            </div>
-            <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-fit mar-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_type }}" style="--bg-color: {{ settings.countdown_background_color }};">
-                <span class="num animated-loading">
-                    <span>151<span>D</span></span>
-                </span>
-                <span class="num animated-loading">
-                    <span>8<span>H</span></span>
-                </span>
-                <span class="num animated-loading">
-                    <span>23<span>M</span></span>
-                </span>
-                <span class="num animated-loading">
-                    <span>0<span>S</span></span>
-                </span>
+            <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-fit mar-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_type }}">
+                {{ number_html }}
             </div>
         {%- endif -%}
     {%- endif -%}
