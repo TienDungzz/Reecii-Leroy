@@ -4,8 +4,12 @@
 
 {% schema %}
 {
-  "name": "t:sections.header.name__1",
+  "name": "t:sections.announcement-bar.name",
   "class": "section-header",
+  "limit": 1,
+  "enabled_on": {
+    "groups": ["header"]
+  },
   "blocks": [
     { "type": "@app" },
     { "type": "group-announcement-bar" },
@@ -55,6 +59,79 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.announcement-bar.name",
+      "settings": {
+        "color_scheme": "scheme-3"
+      },
+      "blocks": [
+        {
+          "type": "group-announcement-bar",
+          "settings": {
+            "color_scheme": "scheme-3"
+          },
+          "blocks": [
+            {
+              "type": "group-announcement",
+              "settings": {
+                "color_scheme": "scheme-1",
+                "width_grid_item": 33
+              },
+              "blocks": [
+                {
+                  "type": "announcement-text",
+                  "settings": {
+                    "text": "Welcome to our store"
+                  }
+                },
+                {
+                  "type": "announcement-text",
+                  "settings": {
+                    "text": "Welcome to our store"
+                  }
+                },
+                {
+                  "type": "announcement-text",
+                  "settings": {
+                    "text": "Welcome to our store"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "group-social",
+              "settings": {
+                "width_grid_item": 33
+              }
+            },
+            {
+              "type": "group-regional",
+              "settings": {
+                "width_grid_item": 33,
+                "enable_country_selector": true,
+                "enable_language_selector": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "group-sale-banner",
+          "settings": {
+            "color_scheme": "scheme-3"
+          },
+          "blocks": [
+            {
+              "type": "text",
+              "settings": {
+                "text": "<h3>Banner test</h3>"
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }
