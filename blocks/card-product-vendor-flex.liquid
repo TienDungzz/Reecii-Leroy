@@ -1,13 +1,34 @@
+{%- liquid
+    assign card_product = block.settings.product
+-%}
+<div class="card--block-vendor">
+    <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+    <div class="caption-with-letter-spacing light">
+        {%- if card_product and card_product != empty -%}
+            {{ card_product.vendor }}
+        {%- else -%}
+            {{ 'products.product.vendor' | t }}
+        {%- endif -%}
+    </div>
+</div>
+
 {% schema %}
     {
         "name": "Product vendor",
         "tag": null,
         "settings": [
-        
+            {
+                "type": "product",
+                "id": "product",
+                "label": "t:sections.collage.blocks.product.settings.product.label"
+            }
         ],
         "presets": [
             {
                 "name": "Product vendor",
+                "settings": {
+                    "product": "{{ closest.product }}"
+                }
             }
         ]
     }
