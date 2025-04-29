@@ -1,13 +1,111 @@
+{%- liquid
+    assign section_id = section.id
+    assign card_product = block.settings.product
+    assign media_aspect_ratio = block.settings.image_ratio
+    assign show_secondary_image = block.settings.show_secondary_image
+    assign ratio = 1
+    if card_product.featured_media and media_aspect_ratio == 'portrait'
+        assign ratio = 0.8
+    elsif card_product.featured_media and media_aspect_ratio == 'adapt'
+        assign ratio = card_product.featured_media.aspect_ratio
+    endif
+    if ratio == 0 or ratio == null
+        assign ratio = 1
+    endif
+-%}
+{%- if card_product and card_product != empty -%}
+    {%- if card_product.featured_media -%}
+        <div class="{{ block.settings | class_list }} card--block-media ratio" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
+            <div class="card--block-media card__media{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}">
+              <div class="media media--transparent media--hover-effect">
+                {%- capture sizes -%}
+                    (min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)
+                  {%- endcapture -%}
+                  
+                  {%- liquid
+                    assign f_media = card_product.featured_media
+                    assign media = card_product.media
+        
+                    assign sizes = sizes
+        
+                    assign f_widths = '165, 360, 533, 720, 940, 1066'
+                    assign m_widths = '165, 360, 533, 720, 940, 1066'
+        
+                    unless lazy_load == false
+                        assign loading = "lazy"
+                    endunless
+                -%}
+    
+                {{ f_media | image_url: width: f_media.width | image_tag: sizes: sizes , widths: f_widths, loading: 'lazy', alt: f_media.alt, class: 'motion-reduce', loading: loading, width: f_media.width, height: f_media.height}}
+    
+                {%- if media[1] != null and show_secondary_image -%}
+                    {{ media[1] | image_url: width: media[1].width | image_tag: sizes: sizes, widths: m_widths, loading: 'lazy', alt: media.alt, class: 'motion-reduce', loading: 'lazy', width: media[1].width, height: media[1].height}}
+                {%- endif -%}
+    
+              </div>
+            </div>
+        </div>
+    {%- endif -%}
+{%- else -%}
+    <div class="{{ block.settings | class_list }} media-block card__inner{% if settings.card_style == 'standard' %} color-{{ settings.card_color_scheme }} gradient{% endif %} ratio" data-cart-media style="--ratio-percent: 100%;">
+        <div class="card__media">
+            <div class="media media--transparent">
+                {{ 'product-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+        </div>
+    </div>
+{%- endif -%}
+
+
 {% schema %}
     {
         "name": "Product media",
         "tag": null,
         "settings": [
-        
+            {
+                "type": "product",
+                "id": "product",
+                "label": "t:sections.collage.blocks.product.settings.product.label"
+            },
+            {
+                "type": "select",
+                "id": "image_ratio",
+                "options": [
+                    {
+                        "value": "adapt",
+                        "label": "t:sections.featured-collection.settings.image_ratio.options__1.label"
+                    },
+                    {
+                        "value": "portrait",
+                        "label": "t:sections.featured-collection.settings.image_ratio.options__2.label"
+                    },
+                    {
+                        "value": "square",
+                        "label": "t:sections.featured-collection.settings.image_ratio.options__3.label"
+                    }
+                ],
+                "default": "adapt",
+                "label": "t:sections.featured-collection.settings.image_ratio.label"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_secondary_image",
+                "default": true,
+                "label": "t:sections.featured-collection.settings.show_secondary_image.label"
+            },
+            {
+                "type": "checkbox",
+                "id": "enable_quick_add",
+                "default": true,
+                "label": "t:sections.featured-collection.settings.enable_quick_buy.label"
+            }
         ],
         "presets": [
             {
                 "name": "Product media",
+                "settings": {
+                    "product": "{{ closest.product }}"
+                }
             }
         ]
     }
