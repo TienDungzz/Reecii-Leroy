@@ -1,0 +1,26 @@
+<div class="card--block-content pos-absolute left-0 right-0 bottom-0">
+    {% content_for "blocks" %}
+</div>
+
+{% schema %}
+    {
+        "name": "Group: Product content",
+        "tag": null,
+        "blocks": [{ "type": "spacer" }, { "type": "card-product-vendor-flex" }, { "type": "card-product-title-flex" }, { "type": "card-product-price-flex" }],
+        "settings": [
+            {
+                "type": "product",
+                "id": "product",
+                "label": "t:sections.collage.blocks.product.settings.product.label"
+            },
+        ],
+        "presets": [
+            {
+                "name": "Group: Product content",
+                "settings": {
+                    "product": "{{ closest.product }}"
+                }
+            }
+        ]
+    }
+{% endschema %}

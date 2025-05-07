@@ -94,6 +94,16 @@
           assign variant_selected = nil
       endif
     endfor
+
+    if settings.badge_position == 'top left'
+        assign check_pos_badge = 'top-left'
+    elsif settings.badge_position == 'top right'  
+        assign check_pos_badge = 'top-right'
+    elsif settings.badge_position == 'bottom left'
+        assign check_pos_badge = 'bottom-left'
+    elsif settings.badge_position == 'bottom right'
+        assign check_pos_badge = 'bottom-right'
+    endif
   -%}
   <div class="card-wrapper product-card-wrapper underline-links-hover">
     <div
@@ -108,7 +118,7 @@
       style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
     >
       <div
-        class="card__inner {% if settings.card_style == 'standard' %}color-{{ settings.card_color_scheme }} gradient{% endif %}{% if card_product.featured_media or settings.card_style == 'standard' %} ratio{% endif %}"
+        class="card__inner {% if settings.card_style == 'standard' %}color-{{ settings.card_color_scheme }} gradient{% endif %}{% if card_product.featured_media or settings.card_style == 'standard' %} ratio{% endif %} card-badge-is-{{ check_pos_badge }}"
         style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
       >
           {%- capture sizes -%}

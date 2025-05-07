@@ -128,7 +128,6 @@
 .card__content {
   display: grid;
   grid-template-rows: minmax(0, 1fr) max-content minmax(0, 1fr);
-  padding: 1rem;
   width: 100%;
   flex-grow: 1;
 }
@@ -418,6 +417,9 @@
     text-decoration: underline;
     text-underline-offset: 0.3rem;
   }
+  .card__content {
+    padding: 1rem;
+  }
 }
 
 .grid:not([data-view="list"]) .card--standard.card--text > .card__content .card__heading:not(.card__heading--placeholder),
@@ -622,8 +624,8 @@
 
 /* Card button */
 .card-product__group-btn {
-  width: 36px;
-  height: 36px;
+  width: 3rem;
+  height: 3rem;
   line-height: 1;
   background: var(--color-background-icon);
   color: var(--color-icon);
@@ -673,5 +675,146 @@
   --color-icon: var(--compare-button-background);
 }
 
+@media screen and (max-width: 749px){
+  .card-product__group-btn.wishlist-button svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .card-product__group-btn {
+    width: 3.6rem;
+    height: 3.6rem;
+  }
+}
 /* End Card button */
 
+/* CHECK CARD BADGE POSITION */
+
+/* ---------------------------------------- CARD BADGE TOP RIGHT ---------------------------------------- */
+.card-badge-is-top-right .card--block-group {
+  left: 0;
+  right: unset;
+}
+.card-badge-is-top-right .card-product__group-btn .text {
+  padding-inline: 3.6rem 1.5rem ;
+  left: calc(100% - 3.6rem);
+  right: unset;
+}
+.card-badge-is-top-right .card-product__group-btn .text-inner {
+  transform: translateX(-1rem);
+}
+@media (hover: hover) {
+  .card-badge-is-top-right .card-product__group-btn:hover .text-inner {
+    transform: translateX(0);
+  }
+}
+.card-badge-is-bottom-right .card__badge .badge,
+.card-badge-is-top-right .card__badge .badge{
+  margin-left: auto;
+}
+/* ---------------------------------------- END CARD BADGE TOP RIGHT ---------------------------------------- */
+
+/* ---------------------------------------- CARD BADGE BOTTOM LEFT ---------------------------------------- */
+.card-badge-is-bottom-right:has(.card__countDown, card-marquee) .card__badge,
+.card-badge-is-bottom-left:has(.card__countDown, card-marquee) .card__badge {
+  padding-bottom: 3rem;
+}
+/* ---------------------------------------- END CARD BADGE BOTTOM LEFT ---------------------------------------- */
+/* END CHECK CARD BADGE POSITION */
+
+/* CARD FLEX */
+.card-product__group-wrapper .card--block-button {
+  width: 100%;
+  z-index: 2;
+  position: relative;
+}
+
+.card-product__group-wrapper .card--block-button .quick-add {
+  margin-bottom: 0;
+}
+
+
+
+/* END CARD FLEX */
+
+/* CARD HOVER */
+@media screen and (min-width: 1025px){
+  .card-product__group-wrapper .card--block-button {
+    position: absolute;
+    padding: 1.6rem;
+    bottom: 0;
+    opacity: 0;
+    transform: translateY(1rem);
+    transition: opacity var(--duration-medium) ease-in-out, transform var(--duration-medium) ease-in-out;
+  }
+
+  .card-product__group,
+  .card-wrapper :is(.card-marquee,.card__countDown),
+  .card-wrapper .card-badge-is-bottom-right:has(.card__countDown, card-marquee) .card__badge {
+    transition: opacity var(--duration-medium) ease-in-out, transform var(--duration-medium) ease-in-out;
+  }
+
+  .card-product__group {
+    opacity: 0;
+    transform: translateX(0.5rem);
+  }
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+
+  .card-wrapper:not(.card--block):hover .card__countDown  {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0.5rem);
+  }
+  
+  .card-wrapper.card--block:hover .card__countDown,
+  .card-wrapper:hover .card-marquee {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  .card-wrapper:hover .card-badge-is-bottom-right:has(.card__countDown, card-marquee) .card__badge {
+   transform: translateY(3rem);
+  }
+
+  .card-wrapper:hover .card--block-button {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card-wrapper:hover .card-product__group {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+/* END CARD HOVER */
+
+/* CARD MOBILE */
+@media screen and (max-width: 1024px){
+  .card--block-blocks {
+    display: flex;
+    flex-direction: column;
+  }
+
+ .card--block-media__bottom {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  order: -1;
+ }
+
+  .card--block-media__bottom .card--block-marquee {
+    order: -1;
+  }
+
+  .card--block-media__bottom .spacer {
+    order: 0;
+  }
+
+  .card--block-media__bottom .card--block-countdown {
+    order: 1;
+  }
+}
+/* END CARD MOBILE */
