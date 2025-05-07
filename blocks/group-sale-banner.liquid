@@ -3,7 +3,20 @@
   class="{{ block.settings | class_list }} group-block group-block--{{ block.id }} color-{{ block.settings.color_scheme }}"
   {{ block.shopify_attributes }}
 >
-  {% content_for 'blocks' %}
+  <div class="countdown_timer color-{{block.settings.countdown_color_scheme}} gradient bg-transparent" style="--pad-t-a: {{block.settings.padding_top}}px;--pad-b-a: {{block.settings.padding_bottom}}px;">
+    <div class="countdown-text-wrapper dis-flex a-i-center" style="--gap-a: 1rem;--mar-b-a: 2rem;">
+      <span class="countdown__text inline-richtext typography-font-body {{block.settings.countdown_text_size}} f-w-normal">{{ block.settings.countdown_text }}</span>
+    </div>
+    <count-down class="dis-block" data-countdown="{{ block.settings.countdown_end_date }}" data-type="product" data-hide="{{block.settings.hide_countdown_expired}}">
+      <div class="countdown countdown-border-gradient dis-flex a-i-center pos-relative over-h"{% if block.settings.countdown_border_color_1.alpha != 0.0 or block.settings.countdown_border_color_2.alpha != 0.0 %} style="--border-color-1: {{ block.settings.countdown_border_color_1 }};--border-color-2: {{ block.settings.countdown_border_color_2 }};"{% endif %}>
+        <span class="countdown-item dis-i-block v-a-top center"><span class="dis-flex a-i-center j-c-center countdown-digit h5 typography-font-body f-w-semibold pos-relative">0</span><span class="dis-block t-uppercase body-sm">Days</span></span>
+        <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex a-i-center j-c-center countdown-digit h5 typography-font-body f-w-semibold pos-relative">0</span><span class="dis-block t-uppercase body-sm">Hours</span></span>
+        <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex a-i-center j-c-center countdown-digit h5 typography-font-body f-w-semibold pos-relative">0</span><span class="dis-block t-uppercase body-sm">Mins</span></span>
+        <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex a-i-center j-c-center countdown-digit h5 typography-font-body f-w-semibold pos-relative">0</span><span class="dis-block t-uppercase body-sm">secs</span></span>
+      </div>
+      <div class="countdown-expired hidden body-lg inline-richtext" style="--mar-t-a: 2rem;">{{ block.settings.countdown_expired_message }}</div>
+    </count-down>
+  </div>
 </div>
 {% comment %} [END nesting.block_render] {% endcomment %}
 
@@ -11,12 +24,24 @@
 {% schema %}
 {
   "name": "t:sections.announcement-bar.blocks.sale-banner.name",
-  "tag": null,
-  "blocks": [{ "type": "@app" }, { "type": "text" }],
   "settings": [
     {
-      "type": "header",
-      "content": "t:sections.all.colors.name"
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.announcement-bar.blocks.sale-banner.settings.image.label"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "t:sections.announcement-bar.blocks.sale-banner.settings.countdown.message",
+      "default": "Limited-time Offer!"
+    },
+    {
+      "type" : "text",
+      "id" : "countdown",
+      "label" : "t:sections.announcement-bar.blocks.sale-banner.settings.countdown.label",
+      "default" : "12/31/2025 11:59:00",
+      "info": "t:sections.announcement-bar.blocks.sale-banner.settings.countdown.info"
     },
     {
       "type": "color_scheme",
@@ -30,15 +55,7 @@
       "name": "t:sections.announcement-bar.blocks.sale-banner.name",
       "settings": {
         "color_scheme": "scheme-3"
-      },
-      "blocks": [
-        {
-          "type": "text",
-          "settings": {
-            "text": "<h3>Banner test</h3>"
-          }
-        }
-      ]
+      }
     }
   ]
 }
