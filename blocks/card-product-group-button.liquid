@@ -4,11 +4,19 @@
     assign enable_quick_view = settings.enable_quick_view
     assign enable_price_wishlist = settings.enable_price_wishlist
     assign enable_price_compare = settings.enable_price_compare
+
+    if settings.quick_add_type == 'icon' and block.blocks.size > 0
+        assign quick_add_is_icon = true
+        assign class_group = 'pos-absolute-md top-0 right-0 z-index-2'
+        assign class_group_inner = 'pos-absolute-mb top-0 right-0 z-index-2'
+    elsif settings.quick_add_type == 'text'
+        assign class_group = 'pos-absolute top-0 right-0 z-index-2'
+    endif
 -%}
 
 {%- if card_product and card_product != empty -%}
-    <div class="card-product__group-wrapper">
-        <div class="card--block-group card-product__group pos-absolute top-0 right-0 z-index-2 dis-flex f-column" style="--gap-y: 1rem; --pad-a-a: .5rem; --pad-a-a-md: 1rem; --pad-a-a-lg: 1.6rem;">
+    <div class="card-product__group-wrapper{% if quick_add_is_icon %} {{ class_group }} quick-add-type-icon{% endif %}">
+        <div class="card--block-group card-product__group dis-flex f-column {% if settings.quick_add_type == 'text' %} {{ class_group }}{% endif %}{% if quick_add_is_icon %} {{ class_group_inner }}{% endif %}" style="--gap-y: 1rem; --pad-a-a: .5rem; --pad-b-a: 1rem; --pad-a-a-md: 1rem; --pad-b-a-md: 1rem; --pad-a-a-lg: 1.6rem; --pad-b-a-lg: 1rem;">
             {%- assign class_button = 'card-product__group-btn bor-circle bor-none center c-pointer dis-flex a-i-center j-c-center pos-relative' -%}
             {% comment %} ------ Wishlist ------ {% endcomment %}
             {%- if enable_price_wishlist -%}
@@ -47,9 +55,9 @@
                      </button>
                  </div>
              {%- endif -%}
-    
         </div>
 
+        {% comment %} ------ Quick add ------ {% endcomment %}
         {% content_for 'blocks' %}
     </div>
 {%- endif -%}

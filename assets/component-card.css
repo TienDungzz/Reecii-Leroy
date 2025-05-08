@@ -741,22 +741,25 @@
 
 /* CARD HOVER */
 @media screen and (min-width: 1025px){
-  .card-product__group-wrapper .card--block-button {
+  .card--quickadd-type-text .card-product__group-wrapper .card--block-button {
     position: absolute;
     padding: 1.6rem;
     bottom: 0;
     opacity: 0;
     transform: translateY(1rem);
-    transition: opacity var(--duration-medium) ease-in-out, transform var(--duration-medium) ease-in-out;
   }
 
-  .card-product__group,
+  .card-product__group-wrapper .card--block-button,
+  .card-wrapper .card--block-content,
+  .card-product__group-wrapper.quick-add-type-icon,
+  .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group,
   .card-wrapper :is(.card-marquee,.card__countDown),
   .card-wrapper .card-badge-is-bottom-right:has(.card__countDown, card-marquee) .card__badge {
     transition: opacity var(--duration-medium) ease-in-out, transform var(--duration-medium) ease-in-out;
   }
 
-  .card-product__group {
+  .card-product__group-wrapper.quick-add-type-icon ,
+  .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group {
     opacity: 0;
     transform: translateX(0.5rem);
   }
@@ -769,8 +772,8 @@
     transform: translateX(-50%) translateY(0.5rem);
   }
   
-  .card-wrapper.card--block:hover .card__countDown,
-  .card-wrapper:hover .card-marquee {
+  .card-wrapper.card--block:hover .card--block-media__bottom .card__countDown,
+  .card-wrapper:hover .card--block-media__bottom .card-marquee {
     opacity: 0;
     transform: translateY(0.5rem);
   }
@@ -784,9 +787,15 @@
     transform: translateY(0);
   }
 
-  .card-wrapper:hover .card-product__group {
+  .card-wrapper:hover .card-product__group-wrapper.quick-add-type-icon,
+  .card-wrapper:hover .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group {
     opacity: 1;
     transform: translateX(0);
+  }
+
+  .card-wrapper:hover .card--block-content {
+    opacity: 0;
+    transform: translateY(1rem);
   }
 }
 /* END CARD HOVER */

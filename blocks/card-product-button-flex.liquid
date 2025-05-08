@@ -3,10 +3,15 @@
     assign block_id = block.id
     assign card_product = block.settings.product
     assign quick_add = block.settings.quick_add
+
+    if settings.quick_add_type == 'icon'
+        assign quick_add_type_icon = true
+        assign class_button = 'card-product__group-btn bor-circle bor-none center c-pointer dis-flex a-i-center j-c-center pos-relative w-fit'
+    endif
 -%}
 
 {%- if card_product and card_product != empty and block.settings.quick_add != 'none' -%}
-    <div class="card--block-button {{ block.settings.quick_add }} pos-relative z-index-2">
+    <div class="card--block-button {{ block.settings.quick_add }} pos-relative z-index-2" style="{% if quick_add_type_icon %}--pad-l-a: 0; --pad-r-a: 0;--pad-l-a-md: 1rem; --pad-r-a-md: 1rem;--pad-l-a-lg: 1.6rem; --pad-r-a-lg: 1.6rem;{% endif %}">
         {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id | append: block_id %}
         {% if quick_add == 'standard' %}
             <div class="quick-add">
@@ -22,16 +27,27 @@
                     id="{{ product_form_id }}-submit"
                     type="submit"
                     name="add"
-                    class="quick-add__submit button button--full-width {% if horizontal_quick_add %} card--horizontal__quick-add animate-arrow{% endif %}"
+                    class="quick-add__submit button button--full-width {% if horizontal_quick_add %} card--horizontal__quick-add animate-arrow{% endif %} {{ class_button }}"
                     aria-haspopup="dialog"
                     aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                     data-product-url="{{ card_product.url }}"
                 >
-                    {{ 'products.product.choose_options' | t }}
+                    {%- if settings.quick_add_type == 'text' -%}
+                        {{ 'products.product.choose_options' | t }}
+                    {%- else -%}
+                        <span class="text-in-mb">
+                            {{ 'products.product.choose_options' | t }}
+                        </span>
+                        <span class="text pointer-e-none pos-absolute-c-y z-index--1">
+                             <span class="text-inner">{{ 'products.product.choose_options' | t }}</span>
+                         </span>
+                        {%- render 'icon', icon: 'cart', class: 'dis-none-mb' -%}
+                    {%- endif -%}
+
                     {%- if horizontal_quick_add -%}
-                    <span class="icon-wrap">
-                        {{- 'icon-arrow.svg' | inline_asset_content -}}
-                    </span>
+                        <span class="icon-wrap">
+                            {{- 'icon-arrow.svg' | inline_asset_content -}}
+                        </span>
                     {%- endif -%}
                     {%- render 'loading-spinner' -%}
                 </button>
@@ -92,18 +108,23 @@
             <div class="quick-add">
             {%- if card_product.variants.size > 1 -%}
                 <modal-opener data-modal="#QuickAddBulk">
-                <button
-                    id="{{ product_form_id }}-submit"
-                    type="submit"
-                    name="add"
-                    class="quick-add__submit button button--full-width button--secondary"
-                    aria-haspopup="dialog"
-                    aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
-                    data-product-url="{{ card_product.url }}"
-                >
-                    {{ 'products.product.choose_options' | t }}
-                    {%- render 'loading-spinner' -%}
-                </button>
+                    <button
+                        id="{{ product_form_id }}-submit"
+                        type="submit"
+                        name="add"
+                        class="quick-add__submit button button--full-width button--secondary"
+                        aria-haspopup="dialog"
+                        aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
+                        data-product-url="{{ card_product.url }}"
+                    >
+                        {%- if settings.quick_add_type == 'text' -%}
+                            {{ 'products.product.choose_options' | t }}
+                        {%- else -%}
+                            {%- render 'icon', icon: 'cart' -%}
+                        {%- endif -%}
+
+                        {%- render 'loading-spinner' -%}
+                    </button>
                 </modal-opener>
             {%- else -%}
                 <quick-add-bulk
