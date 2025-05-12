@@ -1,0 +1,25 @@
+<link rel="stylesheet" href="{{ 'component-compare-product.css' | asset_url }}" media="print" onload="this.media='all'">
+<noscript>{{ 'component-compare-product.css' | asset_url | stylesheet_tag }}</noscript>
+
+<compare-product-popup class="halo-compareProduct pos-fixed z-index-2 trans-y-50 dis-none pointer-e-none">
+    <button type="button" class="button button--primary" data-compare-link>
+		<span class="text">{{ 'compare.general.title' | t }}</span> (<span class="countPill" data-compare-count></span>)
+	</button>
+</compare-product-popup>
+
+<compare-product-modal class="compare-product-modal">
+	<div class="halo-popup halo-compare-product-popup modal--popup pos-fixed top-0 left-0 z-index-9 wid-100v hei-100 dis-flex j-c-center no-js-hidden" data-compare-product-popup id="halo-compare-product-popup">
+    <div id="Modal-Compare-Overlay" class="drawer__overlay pos-fixed inset-0 c-pointer"></div>
+	<div class="popup__inner compare-modal__content wid-100 hei-100v pos-absolute-c-c dis-flex f-column gradient global-settings-popup" role="dialog" aria-modal="true" aria-label="{{ 'products.product.choose_product_options' | t: product_name: product.title | escape }}" tabindex="-1" style="--popup-max-width: 95%; --popup-max-height: 85%;">
+		<div class="halo-popup-wrapper">
+			<div class="halo-popup-header">
+				<button type="button" class="halo-popup-close drawer__close dis-block t-button bor-none bor-circle c-pointer" data-close-compare-product-popup aria-label="{{ 'general.common.close' | t }}">
+					{{- 'icon-close.svg' | inline_asset_content -}}
+				</button>
+				<h5 class="halo-popup-title center">{{ 'compare.general.title' | t }}</h5>
+			</div>
+			<div class="halo-popup-content halo-popup-scroll custom-scrollbar">{% render 'halo-compare-product-table' %}</div>
+		</div>
+	</div>
+</div>
+</compare-product-modal>

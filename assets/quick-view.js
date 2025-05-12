@@ -103,7 +103,8 @@ if (!customElements.get("quick-view-modal")) {
           const sectionId = productElement.dataset.section;
 
           const oldId = sectionId;
-          const newId = `quickadd-${sectionId}`;
+          const newId = `quickview-${sectionId}`;
+
           productElement.innerHTML = productElement.innerHTML.replaceAll(
             oldId,
             newId

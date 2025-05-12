@@ -2,8 +2,8 @@
     assign section_id = section.id
     assign card_product = block.settings.product
     assign enable_quick_view = settings.enable_quick_view
-    assign enable_price_wishlist = settings.enable_price_wishlist
-    assign enable_price_compare = settings.enable_price_compare
+    assign enable_wishlist = settings.enable_wishlist
+    assign enable_compare = settings.enable_compare
 
     if settings.quick_add_type == 'icon' and block.blocks.size > 0
         assign quick_add_is_icon = true
@@ -18,18 +18,11 @@
     <div class="card-product__group-wrapper{% if quick_add_is_icon %} {{ class_group }} quick-add-type-icon{% endif %}">
         <div class="card--block-group card-product__group dis-flex f-column {% if settings.quick_add_type == 'text' %} {{ class_group }}{% endif %}{% if quick_add_is_icon %} {{ class_group_inner }}{% endif %}" style="--gap-y: 1rem; --pad-a-a: .5rem; --pad-b-a: 1rem; --pad-a-a-md: 1rem; --pad-b-a-md: 1rem; --pad-a-a-lg: 1.6rem; --pad-b-a-lg: 1rem;">
             {%- assign class_button = 'card-product__group-btn bor-circle bor-none center c-pointer dis-flex a-i-center j-c-center pos-relative' -%}
+            
             {% comment %} ------ Wishlist ------ {% endcomment %}
-            {%- if enable_price_wishlist -%}
-                <div class="card-product__group-item card-wishlist">
-                    <wisht-list>
-                        <button type="button" title="{{ 'wishlist.general.add' | t }}" class="{{ class_button }} wishlist-button " data-wishlist data-wishlist-handle="{{ card_product.handle }}" data-product-id="{{ card_product.id }}">
-                            <span class="text pointer-e-none pos-absolute-c-y z-index--1">
-                                <span class="text-inner">{{ 'wishlist.general.add' | t }}</span>
-                            </span>
-                            {% render 'icon', icon: 'heart' %}
-                        </button>
-                    </wisht-list>
-                </div>
+            {%- if enable_wishlist -%}
+                {% render 'product-wishlist-button', card_product: card_product, class_button: class_button %}
+                
             {%- endif -%}
     
             {% comment %} ------ Quick view ------ {% endcomment %}
@@ -38,15 +31,8 @@
              {%- endif -%}
     
             {% comment %} ------ Compare ------ {% endcomment %}
-             {%- if enable_price_compare -%}
-                 <div class="card-product__group-item card-compare dis-none-mb">
-                     <button type="button" title="{{ 'products.product.compare' | t }}" class="{{ class_button }} compare-button" data-compare data-compare-handle="{{ card_product.handle }}" data-product-id="{{ card_product.id }}">
-                         <span class="text pointer-e-none pos-absolute-c-y z-index--1">
-                             <span class="text-inner">{{ 'products.product.compare' | t }}</span>
-                         </span>
-                         {% render 'icon', icon: 'compare' %}
-                     </button>
-                 </div>
+             {%- if enable_compare -%}
+                 {% render 'product-compare-button', card_product: card_product, class_button: class_button, sectionId: section_id %}
              {%- endif -%}
         </div>
 

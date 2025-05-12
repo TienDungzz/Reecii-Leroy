@@ -97,20 +97,7 @@
       <li id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</li>
     </ul>
 
-    {%- if settings.enable_quick_view -%}
-      {%- render 'quick-view' -%}
-
-      {%- liquid
-        assign files = 'product-form.js'
-    
-        assign files = files | append: ', quick-view.js'
-    
-        assign files = files | split: ', '
-        render 'theme-loader', files: files
-      -%}
-    {%- endif -%}
-
-    {%- render 'quick-add' -%}
+    {% render 'halo-popup' %}
 
     {%- if settings.predictive_search_enabled -%}
       <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
