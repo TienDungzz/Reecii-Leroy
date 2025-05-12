@@ -1,5 +1,4 @@
 .card-wrapper {
-  color: inherit;
   height: 100%;
   position: relative;
   text-decoration: none;
@@ -444,6 +443,7 @@
 .card--standard > .card__content .card__information {
   padding-left: 0;
   padding-right: 0;
+  position: relative;
 }
 
 .collection-card.card--card.card--media .card__inner .card__information {
@@ -629,34 +629,68 @@
   line-height: 1;
   background: var(--color-background-icon);
   color: var(--color-icon);
+  transition: color var(--duration-default), background-color var(--duration-default);
 }
-.card-product__group-btn .text {
+
+.card-product__group-btn.loading .icon {
+  display: none;
+}
+
+.card-product__group-btn.loading .loading__spinner .path {
+  stroke: currentColor;
+}
+
+.card-product__group-wrapper .card-product__group-btn .text {
   white-space: nowrap;
   font-size: var(--body-m-font-size);
   font-weight: var(--font-body-weight);
-  line-height: 3.6rem;
+  line-height: 3rem;
   width: 0;
   opacity: 0;
   overflow: hidden;
-  right: calc(100% - 3.6rem);
-  height: 3.6rem;
+  right: calc(100% - 3rem);
+  height: 3rem;
   color: var(--color-icon);
   background-color: var(--color-background-icon);
-  padding: 0 3.6rem 0 1.5rem;
+  padding: 0 3rem 0 1.5rem;
   border-radius: 3.6rem;
+  transition: color var(--duration-default);
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 40px 0px;
+
 }
-.card-product__group-btn .text-inner {
+
+.card-product__group-wrapper .card-product__group-btn .text-inner {
   display: inline-block;
   transform: translateX(1rem);
 }
+
+.card.card--quickadd-type-icon > .card--block-button {
+  padding-inline: 0;
+}
+
+.card.card--quickadd-type-icon > .card--block-button .quick-add__submit.card-product__group-btn {
+  width: 100%;
+}
+
+.card.card--quickadd-type-icon > .card--block-button .card-product__group-btn :is(.text, .text-in-mb) {
+  display: none;
+}
+
 @media (hover: hover) {
-  .card-product__group-btn:hover .text {
+  .card-product__group-wrapper .card-product__group-btn:hover .text,
+  .card-product__group-wrapper .card-product__group-btn:hover {
+    color: var(--color-background-icon);
+    background-color: var(--color-icon);
+  }
+
+  .card-product__group-wrapper .card-product__group-btn:hover .text {
     opacity: 1;
     pointer-events: auto;
     width: auto;
     left: auto;
   }
-  .card-product__group-btn:hover .text-inner {
+
+  .card-product__group-wrapper .card-product__group-btn:hover .text-inner {
     transform: translateX(0rem);
     transition-property: opacity, visibility, transform;
     transition-duration: var(--duration-default);
@@ -666,10 +700,12 @@
   --color-background-icon: var(--quickview-button-color);
   --color-icon: var(--quickview-button-background);
 }
+
 .card-product__group-btn.quickview-button {
   --color-background-icon: var(--quickview-button-color);
   --color-icon: var(--quickview-button-background);
 }
+
 .card-product__group-btn.compare-button {
   --color-background-icon: var(--compare-button-color);
   --color-icon: var(--compare-button-background);
@@ -683,9 +719,16 @@
 }
 
 @media screen and (min-width: 750px) {
-  .card-product__group-btn {
+  .card-product__group-wrapper .card-product__group-btn {
     width: 3.6rem;
     height: 3.6rem;
+  }
+
+  .card-product__group-wrapper .card-product__group-btn .text {
+    height: 3.6rem;
+    line-height: 3.6rem;
+    right: calc(100% - 3.6rem);
+    padding: 0 3.6rem 0 1.5rem;
   }
 }
 /* End Card button */
@@ -697,6 +740,7 @@
   left: 0;
   right: unset;
 }
+
 .card-badge-is-top-right .card-product__group-btn .text {
   padding-inline: 3.6rem 1.5rem ;
   left: calc(100% - 3.6rem);
@@ -734,9 +778,6 @@
 .card-product__group-wrapper .card--block-button .quick-add {
   margin-bottom: 0;
 }
-
-
-
 /* END CARD FLEX */
 
 /* CARD HOVER */
@@ -758,7 +799,7 @@
     transition: opacity var(--duration-medium) ease-in-out, transform var(--duration-medium) ease-in-out;
   }
 
-  .card-product__group-wrapper.quick-add-type-icon ,
+  .card-product__group-wrapper.quick-add-type-icon,
   .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group {
     opacity: 0;
     transform: translateX(0.5rem);
@@ -767,14 +808,18 @@
 
 @media (hover: hover) and (min-width: 1025px) {
 
-  .card-wrapper:not(.card--block):hover .card__countDown  {
+  :is(.card-wrapper:not(.card--block):hover .card__countDown, 
+  .card-wrapper.card--block:hover .card--block-media__bottom .card__countDown),
+  .card-wrapper:hover :is(.card--block-media__bottom .card-marquee, .card--block-content) {
     opacity: 0;
+  }
+
+  .card-wrapper:not(.card--block):hover .card__countDown {
     transform: translateX(-50%) translateY(0.5rem);
   }
   
   .card-wrapper.card--block:hover .card--block-media__bottom .card__countDown,
   .card-wrapper:hover .card--block-media__bottom .card-marquee {
-    opacity: 0;
     transform: translateY(0.5rem);
   }
 
@@ -787,31 +832,31 @@
     transform: translateY(0);
   }
 
-  .card-wrapper:hover .card-product__group-wrapper.quick-add-type-icon,
-  .card-wrapper:hover .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group {
+  .card-wrapper:hover :is(.card-product__group-wrapper.quick-add-type-icon, .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group) {
     opacity: 1;
     transform: translateX(0);
   }
 
   .card-wrapper:hover .card--block-content {
-    opacity: 0;
     transform: translateY(1rem);
   }
 }
 /* END CARD HOVER */
 
-/* CARD MOBILE */
+/* CARD TABLET */
+
 @media screen and (max-width: 1024px){
+  
   .card--block-blocks {
     display: flex;
     flex-direction: column;
   }
 
  .card--block-media__bottom {
-  position: static;
-  display: flex;
-  flex-direction: column;
-  order: -1;
+    position: static;
+    display: flex;
+    flex-direction: column;
+    order: -1;
  }
 
   .card--block-media__bottom .card--block-marquee {
@@ -824,6 +869,15 @@
 
   .card--block-media__bottom .card--block-countdown {
     order: 1;
+  }
+}
+/* END CARD TABLET */
+
+/* CARD MOBILE */
+@media screen and (max-width: 749px){
+  .card.card--quickadd-type-icon > .card--block-button .card-product__group-btn .text {
+    display: inline-block;
+    z-index: 1;
   }
 }
 /* END CARD MOBILE */

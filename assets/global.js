@@ -1678,11 +1678,14 @@ class Wishlist extends HTMLElement {
         document.dispatchEvent(addEvent);
       }
 
-      wishlistList.push(handle);
-      localStorage.setItem("wishlistItem", JSON.stringify(wishlistList));
-
-      const updateWishlistMailEvent = new CustomEvent("updatewishlistmail", { bubbles: true });
-      document.dispatchEvent(updateWishlistMailEvent);
+      if (!wishlistList.includes(handle)) {
+        wishlistList.push(handle);
+        localStorage.setItem("wishlistItem", JSON.stringify(wishlistList));
+  
+        const updateWishlistMailEvent = new CustomEvent("updatewishlistmail", { bubbles: true });
+        document.dispatchEvent(updateWishlistMailEvent);
+        console.log('wishlistList', wishlistList)
+      }
     } else {
       target.classList.remove("wishlist-added");
       const textElement = target.querySelector(".text");
@@ -1700,6 +1703,9 @@ class Wishlist extends HTMLElement {
       if (index > -1) {
         wishlistList.splice(index, 1);
         localStorage.setItem("wishlistItem", JSON.stringify(wishlistList));
+        
+        console.log('wishlistList', wishlistList)
+        console.log('localStorage', localStorage)
       }
 
       const updatePaginationEvent = new CustomEvent("updatepagination", { bubbles: true });
@@ -1733,9 +1739,10 @@ class Wishlist extends HTMLElement {
     const wishlistCount = document.querySelector("[data-wishlist-count]");
     if (wishlistCount) wishlistCount.textContent = wishlistList.length;
 
-    if (typeof halo !== "undefined" && typeof halo.setProductForWishlist === "function") {
-      halo.setProductForWishlist(handle);
-    }
+
+    // if (typeof halo !== "undefined" && typeof halo.setProductForWishlist === "function") {
+    //   halo.setProductForWishlist(handle);
+    // }
   }
 }
 

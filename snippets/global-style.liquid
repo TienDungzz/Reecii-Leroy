@@ -43,9 +43,46 @@
           --color-secondary-button: {{ scheme.settings.background.red }} {{ scheme.settings.background.green }} {{ scheme.settings.background.blue }} / {{ scheme.settings.background.alpha }};
           --color-secondary-button-text: {{ scheme.settings.secondary_button_label.red }},{{ scheme.settings.secondary_button_label.green }},{{ scheme.settings.secondary_button_label.blue }};
           --color-link: {{ scheme.settings.secondary_button_label.red }},{{ scheme.settings.secondary_button_label.green }},{{ scheme.settings.secondary_button_label.blue }};
-          --color-badge-foreground: {{ scheme.settings.text.red }},{{ scheme.settings.text.green }},{{ scheme.settings.text.blue }};
-          --color-badge-background: {{ scheme.settings.background.red }} {{ scheme.settings.background.green }} {{ scheme.settings.background.blue }} / {{ scheme.settings.background.alpha }};
-          --color-badge-border: {{ scheme.settings.text.red }},{{ scheme.settings.text.green }},{{ scheme.settings.text.blue }};
+
+          /* -------------------------------------------- BADGE COLOR -------------------------------------------- */
+          --color-sale-badge-foreground: {{ scheme.settings.sale_badge_color.red }},{{ scheme.settings.sale_badge_color.green }},{{ scheme.settings.sale_badge_color.blue }};
+          --color-sale-badge-background: {{ scheme.settings.sale_badge_background.red }} {{ scheme.settings.sale_badge_background.green }} {{ scheme.settings.sale_badge_background.blue }} / {{ scheme.settings.sale_badge_background.alpha }};
+          --color-sale-badge-border: 
+            {% if scheme.settings.sale_badge_background.red == 255 and scheme.settings.sale_badge_background.green == 255 and scheme.settings.sale_badge_background.blue == 255 %}
+                {{ scheme.settings.sale_badge_color.red }},{{ scheme.settings.sale_badge_color.green }},{{ scheme.settings.sale_badge_color.blue }}
+            {% else %}
+                {{ scheme.settings.sale_badge_background.red }},{{ scheme.settings.sale_badge_background.green }},{{ scheme.settings.sale_badge_background.blue }}
+            {% endif %};
+          
+          --color-sold-out-badge-foreground: {{ scheme.settings.sold_out_badge_color.red }},{{ scheme.settings.sold_out_badge_color.green }},{{ scheme.settings.sold_out_badge_color.blue }};
+          --color-sold-out-badge-background: {{ scheme.settings.sold_out_badge_background.red }} {{ scheme.settings.sold_out_badge_background.green }} {{ scheme.settings.sold_out_badge_background.blue }} / {{ scheme.settings.sold_out_badge_background.alpha }};
+          --color-sold-out-badge-border: 
+            {% if scheme.settings.sold_out_badge_background.red == 255 and scheme.settings.sold_out_badge_background.green == 255 and scheme.settings.sold_out_badge_background.blue == 255 %}
+                {{ scheme.settings.sold_out_badge_color.red }},{{ scheme.settings.sold_out_badge_color.green }},{{ scheme.settings.sold_out_badge_color.blue }}
+            {% else %}
+                {{ scheme.settings.sold_out_badge_background.red }},{{ scheme.settings.sold_out_badge_background.green }},{{ scheme.settings.sold_out_badge_background.blue }}
+            {% endif %};
+          
+          --color-new-badge-foreground: {{ scheme.settings.new_badge_color.red }},{{ scheme.settings.new_badge_color.green }},{{ scheme.settings.new_badge_color.blue }};
+          --color-new-badge-background: {{ scheme.settings.new_badge_background.red }} {{ scheme.settings.new_badge_background.green }} {{ scheme.settings.new_badge_background.blue }} / {{ scheme.settings.new_badge_background.alpha }};
+          --color-new-badge-border: 
+            {% if scheme.settings.new_badge_background.red == 255 and scheme.settings.new_badge_background.green == 255 and scheme.settings.new_badge_background.blue == 255 %}
+                {{ scheme.settings.new_badge_color.red }},{{ scheme.settings.new_badge_color.green }},{{ scheme.settings.new_badge_color.blue }}
+            {% else %}
+                {{ scheme.settings.new_badge_background.red }},{{ scheme.settings.new_badge_background.green }},{{ scheme.settings.new_badge_background.blue }}
+            {% endif %};
+          
+          --color-custom-badge-foreground: {{ scheme.settings.custom_badge_color.red }},{{ scheme.settings.custom_badge_color.green }},{{ scheme.settings.custom_badge_color.blue }};
+          --color-custom-badge-background: {{ scheme.settings.custom_badge_background.red }} {{ scheme.settings.custom_badge_background.green }} {{ scheme.settings.custom_badge_background.blue }} / {{ scheme.settings.custom_badge_background.alpha }};
+          --color-custom-badge-border: 
+            {% if scheme.settings.custom_badge_background.red == 255 and scheme.settings.custom_badge_background.green == 255 and scheme.settings.custom_badge_background.blue == 255 %}
+                {{ scheme.settings.custom_badge_color.red }},{{ scheme.settings.custom_badge_color.green }},{{ scheme.settings.custom_badge_color.blue }}
+            {% else %}
+                {{ scheme.settings.custom_badge_background.red }},{{ scheme.settings.custom_badge_background.green }},{{ scheme.settings.custom_badge_background.blue }}
+            {% endif %};
+          
+          /* -------------------------------------------- END BADGE COLOR -------------------------------------------- */
+
           --payment-terms-background-color: rgb({{ scheme.settings.background.rgb }});
             --wishtlist-button-color: {{ scheme.settings.wishlist_icon }};
             --wishtlist-button-background: {{ scheme.settings.wishlist_background }};
