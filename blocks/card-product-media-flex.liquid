@@ -58,35 +58,8 @@
     {%- if card_product.featured_media -%}
         <div class="card--block-media card-badge-is-{{ check_pos_badge }} pos-relative">
             <div class="ratio" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
-                <div class="card--block-media card__media{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}">
-                  <div class="media media--transparent media--hover-effect">
-                    {%- capture sizes -%}
-                        (min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 130 | divided_by: 4 }}px, (min-width: 990px) calc((100vw - 130px) / 4), (min-width: 750px) calc((100vw - 120px) / 3), calc((100vw - 35px) / 2)
-                      {%- endcapture -%}
-                      
-                      {%- liquid
-                        assign f_media = card_product.featured_media
-                        assign media = card_product.media
-            
-                        assign sizes = sizes
-            
-                        assign f_widths = '165, 360, 533, 720, 940, 1066'
-                        assign m_widths = '165, 360, 533, 720, 940, 1066'
-            
-                        unless lazy_load == false
-                            assign loading = "lazy"
-                        endunless
-                    -%}
-        
-                    {{ f_media | image_url: width: f_media.width | image_tag: sizes: sizes , widths: f_widths, loading: 'lazy', alt: f_media.alt, class: 'motion-reduce', loading: loading, width: f_media.width, height: f_media.height}}
-        
-                    {%- if media[1] != null and show_secondary_image -%}
-                        {{ media[1] | image_url: width: media[1].width | image_tag: sizes: sizes, widths: m_widths, loading: 'lazy', alt: media.alt, class: 'motion-reduce', loading: 'lazy', width: media[1].width, height: media[1].height}}
-                    {%- endif -%}
-        
-                  </div>
-                </div>
-
+                {%- render 'card-product-media', show_secondary_image: show_secondary_image, card_product: card_product -%}
+                
                 <div class="card__content pos-relative">
                     <div class="card__badge {{ settings.badge_position }}">
                         {%- render 'product-badge'
