@@ -1,5 +1,4 @@
 .card-wrapper {
-  color: inherit;
   height: 100%;
   position: relative;
   text-decoration: none;
@@ -128,7 +127,6 @@
 .card__content {
   display: grid;
   grid-template-rows: minmax(0, 1fr) max-content minmax(0, 1fr);
-  padding: 1rem;
   width: 100%;
   flex-grow: 1;
 }
@@ -418,6 +416,9 @@
     text-decoration: underline;
     text-underline-offset: 0.3rem;
   }
+  .card__content {
+    padding: 1rem;
+  }
 }
 
 .grid:not([data-view="list"]) .card--standard.card--text > .card__content .card__heading:not(.card__heading--placeholder),
@@ -442,6 +443,7 @@
 .card--standard > .card__content .card__information {
   padding-left: 0;
   padding-right: 0;
+  position: relative;
 }
 
 .collection-card.card--card.card--media .card__inner .card__information {
@@ -619,3 +621,260 @@
     clip-path: polygon(var(--shape--blob-5));
   }
 }
+
+/* Card button */
+.card-product__group-btn {
+  width: 3rem;
+  height: 3rem;
+  line-height: 1;
+  background: var(--color-background-icon);
+  color: var(--color-icon);
+  transition: color var(--duration-default), background-color var(--duration-default);
+}
+
+.card-product__group-btn.loading .icon {
+  display: none;
+}
+
+.card-product__group-btn.loading .loading__spinner .path {
+  stroke: currentColor;
+}
+
+.card-product__group-wrapper .card-product__group-btn .text {
+  white-space: nowrap;
+  font-size: var(--body-m-font-size);
+  font-weight: var(--font-body-weight);
+  line-height: 3rem;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  right: calc(100% - 3rem);
+  height: 3rem;
+  background-color: var(--color-background-icon);
+  padding: 0 3rem 0 1.5rem;
+  border-radius: 3.6rem;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 40px 0px;
+}
+
+.card-product__group-wrapper .card-product__group-btn .text-inner {
+  transform: translateX(1rem);
+}
+
+.card.card--quickadd-type-icon > .card--block-button {
+  padding-inline: 0;
+}
+
+.card.card--quickadd-type-icon > .card--block-button .quick-add__submit.card-product__group-btn {
+  width: 100%;
+}
+
+.card.card--quickadd-type-icon > .card--block-button .card-product__group-btn :is(.text, .text-in-mb) {
+  display: none;
+}
+
+@media (hover: hover) {
+  .card-product__group-wrapper .card-product__group-btn:hover .text,
+  .card-product__group-wrapper .card-product__group-btn:hover {
+    color: var(--color-background-icon);
+    background-color: var(--color-icon);
+  }
+
+  .card-product__group-wrapper .card-product__group-btn:hover .text {
+    opacity: 1;
+    pointer-events: auto;
+    width: auto;
+    left: auto;
+  }
+
+  .card-product__group-wrapper .card-product__group-btn:hover .text-inner {
+    transform: translateX(0rem);
+    transition-property: opacity, visibility, transform;
+    transition-duration: var(--duration-default);
+  }
+}
+.card-product__group-btn.wishlist-button {
+  --color-background-icon: var(--quickview-button-color);
+  --color-icon: var(--quickview-button-background);
+}
+
+.compare-button.is-checked,
+.wishlist-button.wishlist-added {
+  color: var(--color-background-icon);
+  background-color: var(--color-icon);
+  box-shadow: rgba(99, 99, 99, 0.2) 0px .2rem .8rem 0px;  
+}
+
+.card-product__group-btn.quickview-button {
+  --color-background-icon: var(--quickview-button-color);
+  --color-icon: var(--quickview-button-background);
+}
+
+.card-product__group-btn.compare-button {
+  --color-background-icon: var(--compare-button-color);
+  --color-icon: var(--compare-button-background);
+}
+
+@media screen and (max-width: 749px){
+  .card-product__group-btn.wishlist-button svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .card-product__group-wrapper .card-product__group-btn {
+    width: 3.6rem;
+    height: 3.6rem;
+  }
+
+  .card-product__group-wrapper .card-product__group-btn .text {
+    height: 3.6rem;
+    line-height: 3.6rem;
+    right: calc(100% - 3.6rem);
+    padding: 0 3.6rem 0 1.5rem;
+  }
+}
+/* End Card button */
+
+/* CHECK CARD BADGE POSITION */
+
+/* ---------------------------------------- CARD BADGE TOP RIGHT ---------------------------------------- */
+.card-badge-is-top-right .card--block-group {
+  left: 0;
+  right: unset;
+}
+
+.card-badge-is-top-right .card-product__group-btn .text {
+  padding-inline: 3.6rem 1.5rem ;
+  left: calc(100% - 3.6rem);
+  right: unset;
+}
+.card-badge-is-top-right .card-product__group-btn .text-inner {
+  transform: translateX(-1rem);
+}
+@media (hover: hover) {
+  .card-badge-is-top-right .card-product__group-btn:hover .text-inner {
+    transform: translateX(0);
+  }
+}
+.card-badge-is-bottom-right .card__badge .badge,
+.card-badge-is-top-right .card__badge .badge{
+  margin-left: auto;
+}
+/* ---------------------------------------- END CARD BADGE TOP RIGHT ---------------------------------------- */
+
+/* ---------------------------------------- CARD BADGE BOTTOM LEFT ---------------------------------------- */
+.card-badge-is-bottom-right:has(.card__countDown, card-marquee) .card__badge,
+.card-badge-is-bottom-left:has(.card__countDown, card-marquee) .card__badge {
+  padding-bottom: 3rem;
+}
+/* ---------------------------------------- END CARD BADGE BOTTOM LEFT ---------------------------------------- */
+/* END CHECK CARD BADGE POSITION */
+
+/* CARD FLEX */
+.card-product__group-wrapper .card--block-button .quick-add {
+  margin-bottom: 0;
+}
+/* END CARD FLEX */
+
+/* CARD HOVER */
+@media screen and (min-width: 1025px){
+  .card--quickadd-type-text .card-product__group-wrapper .card--block-button {
+    position: absolute;
+    padding: 1.6rem;
+    bottom: 0;
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+
+  .card-product__group-wrapper .card--block-button,
+  .card-wrapper .card--block-content,
+  .card-product__group-wrapper.quick-add-type-icon,
+  .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group,
+  .card-wrapper :is(.card-marquee,.card__countDown),
+  .card-wrapper .card-badge-is-bottom-right:has(.card__countDown, card-marquee) .card__badge {
+    transition: opacity var(--duration-medium) ease-in-out, transform var(--duration-medium) ease-in-out;
+  }
+
+  .card-product__group-wrapper.quick-add-type-icon,
+  .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group {
+    opacity: 0;
+    transform: translateX(0.5rem);
+  }
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+
+  :is(.card-wrapper:not(.card--block):hover .card__countDown, 
+  .card-wrapper.card--block:hover .card--block-media__bottom .card__countDown),
+  .card-wrapper:hover :is(.card--block-media__bottom .card-marquee, .card--block-content) {
+    opacity: 0;
+  }
+
+  .card-wrapper:not(.card--block):hover .card__countDown {
+    transform: translateX(-50%) translateY(0.5rem);
+  }
+  
+  .card-wrapper.card--block:hover .card--block-media__bottom .card__countDown,
+  .card-wrapper:hover .card--block-media__bottom .card-marquee {
+    transform: translateY(0.5rem);
+  }
+
+  .card-wrapper:hover .card-badge-is-bottom-right:has(.card__countDown, card-marquee) .card__badge {
+   transform: translateY(3rem);
+  }
+
+  .card-wrapper:hover .card--block-button {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card-wrapper:hover :is(.card-product__group-wrapper.quick-add-type-icon, .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group) {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .card-wrapper:hover .card--block-content {
+    transform: translateY(1rem);
+  }
+}
+/* END CARD HOVER */
+
+/* CARD TABLET */
+
+@media screen and (max-width: 1024px){
+  
+  .card--block-blocks {
+    display: flex;
+    flex-direction: column;
+  }
+
+ .card--block-media__bottom {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    order: -1;
+ }
+
+  .card--block-media__bottom .card--block-marquee {
+    order: -1;
+  }
+
+  .card--block-media__bottom .spacer {
+    order: 0;
+  }
+
+  .card--block-media__bottom .card--block-countdown {
+    order: 1;
+  }
+}
+/* END CARD TABLET */
+
+/* CARD MOBILE */
+@media screen and (max-width: 749px){
+  .card.card--quickadd-type-icon > .card--block-button .card-product__group-btn .text {
+    display: inline-block;
+    z-index: 1;
+  }
+}
+/* END CARD MOBILE */

@@ -19,10 +19,16 @@
             assign product_marquee_text = product_marquee_text | append: sale_text
         endif
     endif
--%}             
+
+    if is_blocks == true
+        assign class = ''
+    else
+        assign class = ' pos-absolute left-0 right-0 bottom-0'
+    endif
+-%}
     
 {%- if product_marquee_text != blank -%}
-    <div class="card-marquee marquee-{{ product_marquee_type }} pos-absolute left-0 right-0 bottom-0" style="--bg-color: {{ settings.product_marquee_background_color }}; --fg-color: {{ settings.product_marquee_text_color }};">   
+    <div class="card-marquee marquee-{{ product_marquee_type }}{{ class }}" style="--bg-color: {{ settings.product_marquee_background_color }}; --fg-color: {{ settings.product_marquee_text_color }};">   
         <div class="card-marquee-box dis-flex over-h">
             {%- capture card_marquee_item_html -%}
                 <div class="card-marquee__item dis-flex a-i-center w-max f-shrink-0{% if settings.product_marquee_reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}" style="--marquee-duration: {{settings.product_marquee_speed | append: 's'}};">
