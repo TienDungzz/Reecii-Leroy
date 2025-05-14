@@ -23,17 +23,15 @@
 -%}
 
 <footer
-  class="footer color-{{ section.settings.color_scheme }} gradient spacing"
+  class="footer colors-{{ section.settings.color_scheme }} gradient spacing{% if section.settings.enabled_rtf %} footer--rtl{% endif %}"
 >
   <div
-    class="footer__blocks-wrapper color-{{ section.settings.color_scheme }}"
+    class="footer__blocks-wrapper"
     {% if settings.animations_reveal_on_scroll %}
       data-cascade
     {% endif %}
   >
-    <div class="page-width page-width--{{ section.settings.page_width }}" style="--pl:{{ section.settings.padding_section }}px; --pr:{{ section.settings.padding_section }}px;">
-      {% content_for 'blocks' %}
-    </div>
+    {% content_for 'blocks' %}
   </div>
 </footer>
 
@@ -45,65 +43,76 @@
   "settings": [
     {
       "type": "header",
-      "content": "t:settings_schema.general.name"
+      "content": "t:settings_schema.global.name"
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "t:settings_schema.general.settings.color_scheme.color_text",
+      "label": "t:settings_schema.global.settings.color_scheme.color_text",
       "default": "scheme-1"
     },
     {
-        "type": "select",
-        "id": "page_width",
-        "label": "t:sections.layout.container.option",
-        "default": "default",
-        "options": [
-            {
-                "value": "default",
-                "label": "t:sections.layout.container.option1"
-            },
-            {
-                "value": "full",
-                "label": "t:sections.layout.container.option2"
-            },
-            {
-                "value": "1880",
-                "label": "t:sections.layout.container.option3"
-            },
-            {
-              "value": "1770",
-              "label": "t:sections.layout.container.option4"
-            },
-            {
-              "value": "1670",
-              "label": "t:sections.layout.container.option5"
-            },
-            {
-              "value": "1570",
-              "label": "t:sections.layout.container.option6"
-            },
-            {
-              "value": "1470",
-              "label": "t:sections.layout.container.option7"
-            },
-            {
-              "value": "1370",
-              "label": "t:sections.layout.container.option8"
-            },
-            {
-              "value": "1270",
-              "label": "t:sections.layout.container.option9"
-            },
-            {
-              "value": "1170",
-              "label": "t:sections.layout.container.option10"
-            },
-            {
-              "value": "1070",
-              "label": "t:sections.layout.container.option11"
-            }
-        ]
+      "type": "select",
+      "id": "page_width",
+      "label": "t:sections.layout.container.option",
+      "default": "default",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.layout.container.option1"
+        },
+        {
+          "value": "full",
+          "label": "t:sections.layout.container.option2"
+        },
+        {
+          "value": "1880",
+          "label": "t:sections.layout.container.option3"
+        },
+        {
+          "value": "1770",
+          "label": "t:sections.layout.container.option4"
+        },
+        {
+          "value": "1670",
+          "label": "t:sections.layout.container.option5"
+        },
+        {
+          "value": "1570",
+          "label": "t:sections.layout.container.option6"
+        },
+        {
+          "value": "1470",
+          "label": "t:sections.layout.container.option7"
+        },
+        {
+          "value": "1370",
+          "label": "t:sections.layout.container.option8"
+        },
+        {
+          "value": "1270",
+          "label": "t:sections.layout.container.option9"
+        },
+        {
+          "value": "1170",
+          "label": "t:sections.layout.container.option10"
+        },
+        {
+          "value": "1070",
+          "label": "t:sections.layout.container.option11"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:settings_schema.global.settings.enable_rtl.heading",
+      "info": "t:settings_schema.global.settings.enable_rtl.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enabled_rtf",
+      "label": "t:settings_schema.global.settings.enable_rtl.label",
+      "default": false
     },
     {
       "type": "header",
