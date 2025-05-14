@@ -1389,3 +1389,77 @@ moreButton.forEach(button => {
       }
   });
 })
+
+class CountDown extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.d = new Date(this.dataset.countdown).getTime();
+    this.t = this.dataset.type;
+    this.e = this.dataset.hide;
+    this.createObserver();
+  }
+
+  init(time, type, hide) {
+    var countdown = setInterval(() => {
+      let now = new Date().getTime();
+
+      if (isNaN(time)) {
+        time = new Date(this.dataset.countdown.replace(/-/g, "/")).getTime();
+  
+        if (isNaN(time)) {
+          clearInterval(countdown);
+          this.parentElement.classList.add('hidden');
+          return;
+        }
+      }
+
+      let distance = time - now;
+
+      if (distance < 0) {
+        clearInterval(countdown);
+        if (hide == 'true') {
+          this.parentElement.classList.add('hidden');
+        } else {
+          let content = `<span class="countdown-item dis-i-block v-a-top center"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.days}</span></span></span>\
+              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.hours}</span></span></span>\
+              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.mins}</span></span></span>\
+              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.secs}</span></span></span>`;
+              
+          this.querySelector('.countdown').innerHTML = content;
+          this.querySelector('.countdown-expired').classList.remove('hidden');
+        }
+      } else {
+        let day = Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          second = Math.floor((distance % (1000 * 60)) / 1000),
+          content;
+
+          if(type == 'sale-banner') {
+            content = `<span class="countdown-item dis-i-block v-a-top center"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${day}<span class="dis-block body-sm">${window.countdown.days}</span></span></span>\
+              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${hour}<span class="dis-block body-sm">${window.countdown.hours}</span></span></span>\
+              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${minute}<span class="dis-block body-sm">${window.countdown.mins}</span></span></span>\
+              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${second}<span class="dis-block body-sm">${window.countdown.secs}</span></span></span>`;
+              
+              this.querySelector('.countdown').innerHTML = content;
+              this.parentElement.classList.remove('hidden');
+          }
+      }
+    }, 1000);
+  }
+
+  createObserver() {
+    let observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        this.init(this.d, this.t, this.e);
+        observer.unobserve(this);
+      });
+    }, {rootMargin: "0px 0px -200px 0px"});
+
+    observer.observe(this);
+  }
+}
+customElements.define('count-down', CountDown);
