@@ -1,6 +1,7 @@
 <script>
     window.shopUrl = '{{ request.origin }}';
     window.routes = {
+        root: '{{  routes.cart_url | split: "/cart" | first }}',
         cart_add_url: '{{ routes.cart_add_url }}',
         cart_change_url: '{{ routes.cart_change_url }}',
         cart_update_url: '{{ routes.cart_update_url }}',
@@ -55,6 +56,20 @@
         h: `{{ 'countdown.general.h' | t }}`,
         m: `{{ 'countdown.general.m' | t }}`,
         s: `{{ 'countdown.general.s' | t }}`
+    };
+
+    window.wishlist = {
+        add: `{{ 'wishlist.general.add' | t }}`,
+        added: `{{ 'wishlist.general.added' | t }}`,
+        empty: `{{ 'wishlist.general.empty' | t }}`,
+        continue_shopping: `{{ 'wishlist.general.continue_shopping' | t }}`
+    };
+
+    window.compare = {
+        show: {{ settings.enable_compare }},
+        add: `{{ 'compare.general.add' | t }}`,
+        added: `{{ 'compare.general.added' | t }}`,
+        message: `{{ 'compare.general.message' | t }}`
     };
 
     document.documentElement.className = document.documentElement.className.replace('no-js', 'js');

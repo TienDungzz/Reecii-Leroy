@@ -1,0 +1,24 @@
+{%- render 'quick-add' -%}
+
+
+{%- if settings.enable_quick_view -%}
+    {%- render 'quick-view' -%}
+
+    {{ 'quick-view.css' | asset_url | stylesheet_tag }}
+
+    {%- liquid
+    assign files = 'product-form.js'
+
+    assign files = files | append: ', quick-view.js'
+
+    assign files = files | split: ', '
+    render 'theme-loader', files: files
+    -%}
+{%- endif -%}
+
+{%- if settings.enable_compare -%}
+    {% render 'compare-popup' %}
+    {% comment %} {%- render 'product-compare' -%} {% endcomment %}
+
+    <script src="{{ 'product-compare.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
