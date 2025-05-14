@@ -440,7 +440,7 @@
   {% endif %}
 >
   <div class="slideshow__slides">
-    {% content_for 'blocks' %}
+    {% comment %} {% content_for 'blocks' %} {% endcomment %}
   </div>
 
   {% if section.blocks.size > 1 %}
@@ -448,11 +448,13 @@
   {% endif %}
 </slideshow-component>
 
+{% comment %} --------------------------------- KHÔNG MERGE CODE ( KHỊNH ) ---------------------------- {% endcomment %}
+
 {% schema %}
 {
   "name": "Slideshow",
   "class": "section--has-background",
-  "blocks": [{ "type": "_slide" }],
+  "blocks": [],
   "settings": [
     {
       "type": "header",
@@ -506,112 +508,6 @@
   "presets": [
     {
       "name": "Slideshow",
-      "blocks": [
-        {
-          "type": "_slide",
-          "blocks": [
-            {
-              "type": "group",
-              "settings": {
-                "layout": {
-                  "flex-direction": "column",
-                  "justify-content": "flex-start"
-                },
-                "size": {
-                  "width": "50%",
-                  "flex-grow": "0",
-
-                  "@media (--mobile)": {
-                    "width": "100%"
-                  }
-                },
-                "spacing": {
-                  "padding": "50px",
-
-                  "@media (--mobile)": {
-                    "padding": "20px"
-                  }
-                }
-              },
-              "blocks": [
-                {
-                  "type": "text",
-                  "settings": {
-                    "text": "<h1>Image slide</h1>"
-                  }
-                },
-                {
-                  "type": "text",
-                  "settings": {
-                    "text": "<p>Tell your brand's story through images</p>"
-                  }
-                },
-                {
-                  "type": "link",
-                  "settings": {
-                    "label": "Button label",
-                    "spacing": {
-                      "padding": "10px 30px"
-                    }
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "_slide",
-          "blocks": [
-            {
-              "type": "group",
-              "settings": {
-                "layout": {
-                  "flex-direction": "column",
-                  "justify-content": "flex-start"
-                },
-                "size": {
-                  "width": "50%",
-                  "flex-grow": "0",
-
-                  "@media (--mobile)": {
-                    "width": "100%"
-                  }
-                },
-                "spacing": {
-                  "padding": "50px",
-
-                  "@media (--mobile)": {
-                    "padding": "20px"
-                  }
-                }
-              },
-              "blocks": [
-                {
-                  "type": "text",
-                  "settings": {
-                    "text": "<h1>Image slide</h1>"
-                  }
-                },
-                {
-                  "type": "text",
-                  "settings": {
-                    "text": "<p>Tell your brand's story through images</p>"
-                  }
-                },
-                {
-                  "type": "link",
-                  "settings": {
-                    "label": "Button label",
-                    "spacing": {
-                      "padding": "10px 30px"
-                    }
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ]
     }
   ]
 }

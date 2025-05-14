@@ -53,8 +53,11 @@
       {{ 'component-card-marquee.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
 
-
     {{ 'component-price.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {%- if settings.swatch != blank -%}
+      {{ 'component-swatch.css' | asset_url | stylesheet_tag: preload: true }}
+    {%- endif -%}
 
     {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
       {{ 'component-localization-form.css' | asset_url | stylesheet_tag: preload: true }}
