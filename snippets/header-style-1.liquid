@@ -1,0 +1,27 @@
+{%- liquid
+  if header_settings.menu != blank
+    render 'header-functions', header_settings: header_settings, blocks: blocks, enable_menu_drawer: true
+  endif
+-%}
+
+{% render 'header-logo', header_settings: header_settings, blocks: blocks  %}
+
+{%- liquid
+  if header_settings.menu != blank
+    render 'header-menu', header_settings: header_settings, blocks: blocks 
+  endif
+%}
+
+<div
+  class="header-block header-functions header__icons grid__item dis-block{% if header_settings.enable_country_selector or header_settings.enable_language_selector %} header__icons--localization header-localization{% endif %}"
+>
+  {%- render 'header-functions',
+    header_settings: header_settings, 
+    blocks: blocks,
+    enable_menu_drawer: true,
+    enable_localization: true,
+    enable_search: true,
+    enable_account: true,
+    enable_cart: true
+  -%}
+</div>

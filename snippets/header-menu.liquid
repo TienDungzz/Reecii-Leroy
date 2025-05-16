@@ -1,5 +1,5 @@
 {% comment %}
-  Renders a megamenu for the header.
+  Renders a mega_menu for the header.
 
   Usage:
   {% render 'header-menu' %}
@@ -13,34 +13,48 @@
 </noscript>
 
 <div
-  class="header-block grid__item dis-block"
+  class="header-block header-menu grid__item dis-flex a-i-center j-c-center"
+  style="--gap-x: {{ section.settings.gap_x }}px;"
 >
+  {%- liquid
+    assign vertical_menu_blocks = blocks | where: 'type', 'vertical_menu'
+
+    for block in vertical_menu_blocks
+      assign block_settings = block.settings
+      assign vertical_menu_style = block_settings.vertical_menu_style
+    endfor
+
+    if vertical_menu_style == 'style_1'
+      render 'header-menu-vertical', blocks: blocks, block_settings: block_settings
+    endif
+  -%}
+
   <div class="header__menu-wrapper header__menu-multi-site-wrapper"></div>
   <div class="header__menu-wrapper" data-main-menu>
     <nav class="header__inline-menu">
       <ul class="list-menu list-menu-desktop list-menu--inline" role="list">
-        {%- for link in section.settings.menu.links -%}
+        {%- for link in header_settings.menu.links -%}
           <li>
             {%- if link.links != blank -%}
               {%- liquid
-                assign megamenu = section.blocks | where: "type", "mega_menu"
-                assign check_megamenu = false
-                if megamenu.size > 0
-                  assign check_megamenu = true
+                assign mega_menu = blocks | where: "type", "mega_menu"
+                assign check_mega_menu = false
+                if mega_menu.size > 0
+                  assign check_mega_menu = true
                 endif
 
-                assign has_megamenu = false
+                assign has_mega_menu = false
                 assign menu_title = link.title | escape | downcase | handle
 
-                for block in section.blocks
+                for block in mega_menu
                   assign block_title = block.settings.menu_item | escape | downcase | handle
                   if block_title == menu_title
                     assign block = block
-                    assign has_megamenu = true
+                    assign has_mega_menu = true
                   endif
                 endfor
 
-                if check_megamenu and has_megamenu
+                if check_mega_menu and has_mega_menu
                     render 'header-mega-menu', link: link, forloopIndex: forloop.index, block: block
                 else
                   render 'header-dropdown-menu', link: link, forloopIndex: forloop.index

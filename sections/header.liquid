@@ -7,12 +7,12 @@
   .header {
     padding-block: {{ section.settings.padding_top | times: 0.5 | round: 0 }}px {{ section.settings.padding_bottom | times: 0.5 | round: 0 }}px;
   }
-  .section-header {
+  .section-header-main {
     position: sticky; /* This is for fixing a Safari z-index issue. PR #2147 */
     margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 }}px;
   }
   @media screen and (min-width: 750px) {
-    .section-header {
+    .section-header-main {
       margin-bottom: {{ section.settings.margin_bottom }}px;
     }
   }
@@ -37,41 +37,12 @@
       class="group-block group-block--{{ section.id }} flex-section wid-100 dis-flex f-{{ section.settings.direction }} f-{{ section.settings.wrap }} a-i-{{ section.settings.align_items}} j-c-{{ section.settings.justify_content }} color-{{ section.settings.color_scheme }}"
       style="--pl:{{ section.settings.padding_left }}px; --pr:{{ section.settings.padding_right }}px; --pt:{{ section.settings.padding_top }}px; --pb:{{ section.settings.padding_bottom }}px; --gap-x: {{ section.settings.gap_x }}px; --gap-y: {{ section.settings.gap_y }}px;"
     >
-      {%- liquid
-        if section.settings.menu != blank
-          render 'header-functions', enable_menu_drawer: true
-        endif
-
-        if section.settings.logo_position == 'top-center' or section.settings.menu == blank
-          render 'header-search', input_id: 'Search-In-Modal-1'
-        endif
-      -%}
-
-      {%- if section.settings.logo_position != 'middle-center' -%}
-        {% render 'header-logo' %}
-      {%- endif -%}
-
-      {%- liquid
-        if section.settings.menu != blank
-          render 'header-menu'
-        endif
-      %}
-
-      {%- if section.settings.logo_position == 'middle-center' -%}
-        {% render 'header-logo' %}
-      {%- endif -%}
-
-      <div
-        class="header-block header__icons grid__item dis-block{% if section.settings.enable_country_selector or section.settings.enable_language_selector %} header__icons--localization header-localization{% endif %}"
-      >
-        {%- render 'header-functions',
-          enable_menu_drawer: true,
-          enable_localization: true,
-          enable_search: true,
-          enable_account: true,
-          enable_cart: true
-        -%}
-      </div>
+      {%- case section.settings.logo_position -%}
+        {%- when 'style1' -%}
+          {% render 'header-style-1', blocks: section.blocks, header_settings: section.settings %}
+        {%- when 'style2' -%}
+          {% render 'header-style-2', blocks: section.blocks, header_settings: section.settings %}
+      {%- endcase -%}
     </div>
   </header>
 </{% if section.settings.sticky_header_type != 'none' %}sticky-header{% else %}div{% endif %}>
@@ -127,7 +98,7 @@
     }
 
     connectedCallback() {
-      this.header = document.querySelector('.section-header');
+      this.header = document.querySelector('.section-header-main');
       this.headerIsAlwaysSticky = this.getAttribute('data-sticky-type') === 'always';
       this.headerBounds = {};
 
@@ -223,7 +194,7 @@
 {% schema %}
 {
   "name": "t:sections.header.name__2",
-  "class": "section-header",
+  "class": "section-header-main",
   "blocks": [
     { 
       "type": "@app" 
@@ -239,12 +210,83 @@
           "info": "t:sections.header.blocks.mega_menu.settings.menu_name.info"
         }
       ]
+    },
+    {
+      "type": "vertical_menu",
+      "name": "t:sections.header.blocks.vertical_menu.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "link_list",
+          "id": "vertical_menu",
+          "default": "main-menu",
+          "label": "t:sections.header.settings.menu.label"
+        },
+        {
+          "type": "select",
+          "id": "vertical_menu_style",
+          "options": [
+            {
+              "value": "none",
+              "label": "t:sections.header.blocks.vertical_menu.style.options__1.label"
+            },
+            {
+              "value": "style_1",
+              "label": "t:sections.header.blocks.vertical_menu.style.options__2.label"
+            }
+          ],
+          "default": "style_1",
+          "label": "t:sections.header.blocks.vertical_menu.style.label"
+        },
+        {
+          "type": "text",
+          "label": "t:sections.header.blocks.vertical_menu.title",
+          "id": "vertical_menu_title",
+          "default": "Dropdown List"
+        },
+        {
+          "type": "color_scheme",
+          "id": "color_scheme_vertical_menu",
+          "label": "Vertical menu color scheme",
+          "default": "scheme-1"
+        }
+      ]
     }
   ],
   "settings": [
     {
+      "type": "select",
+      "id": "page_width",
+      "label": "t:sections.layout.container.option",
+      "default": "default",
+      "options": [
+        { "value": "default", "label": "t:sections.layout.container.option1" },
+        { "value": "full", "label": "t:sections.layout.container.option2" },
+        { "value": "1880", "label": "t:sections.layout.container.option3" },
+        { "value": "1770", "label": "t:sections.layout.container.option4" },
+        { "value": "1670", "label": "t:sections.layout.container.option5" },
+        { "value": "1570", "label": "t:sections.layout.container.option6" },
+        { "value": "1470", "label": "t:sections.layout.container.option7" },
+        { "value": "1370", "label": "t:sections.layout.container.option8" },
+        { "value": "1270", "label": "t:sections.layout.container.option9" },
+        { "value": "1170", "label": "t:sections.layout.container.option10" },
+        { "value": "1070", "label": "t:sections.layout.container.option11" }
+      ]
+    },
+    {
       "type": "paragraph",
       "content": "t:sections.header.settings.logo_help.content"
+    },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "t:sections.header.settings.logo_position.label",
+      "default": "style1",
+      "options": [
+        { "value": "style1", "label": "t:sections.header.settings.logo_position.options__1.label" },
+        { "value": "style2", "label": "t:sections.header.settings.logo_position.options__2.label" }
+      ],
+      "info": "Position is always center for mobile."
     },
     {
       "type": "link_list",
@@ -256,18 +298,9 @@
       "type": "select",
       "id": "sticky_header_type",
       "options": [
-        {
-          "value": "none",
-          "label": "t:sections.header.settings.sticky_header_type.options__1.label"
-        },
-        {
-          "value": "on-scroll-up",
-          "label": "t:sections.header.settings.sticky_header_type.options__2.label"
-        },
-        {
-          "value": "always",
-          "label": "t:sections.header.settings.sticky_header_type.options__3.label"
-        }
+        { "value": "none", "label": "t:sections.header.settings.sticky_header_type.options__1.label" },
+        { "value": "on-scroll-up", "label": "t:sections.header.settings.sticky_header_type.options__2.label" },
+        { "value": "always", "label": "t:sections.header.settings.sticky_header_type.options__3.label" }
       ],
       "default": "on-scroll-up",
       "label": "t:sections.header.settings.sticky_header_type.label"
@@ -288,14 +321,8 @@
       "label": "Direction",
       "default": "row",
       "options": [
-        {
-          "value": "row",
-          "label": "⭢"
-        },
-        {
-          "value": "column",
-          "label": "⭣"
-        }
+        { "value": "row", "label": "⭢" },
+        { "value": "column", "label": "⭣" }
       ]
     },
     {
@@ -304,32 +331,17 @@
       "label": "Wrap",
       "default": "wrap",
       "options": [
-        {
-          "value": "no-wrap",
-          "label": "No"
-        },
-        {
-          "value": "wrap",
-          "label": "Yes"
-        }
+        { "value": "no-wrap", "label": "No" },
+        { "value": "wrap", "label": "Yes" }
       ]
     },
     {
       "type": "select",
       "id": "align_items",
       "options": [
-        {
-          "value": "start",
-          "label": "⤒"
-        },
-        {
-          "value": "center",
-          "label": "⮃"
-        },
-        {
-          "value": "end",
-          "label": "⤓"
-        }
+        { "value": "start", "label": "⤒" },
+        { "value": "center", "label": "⮃" },
+        { "value": "end", "label": "⤓" }
       ],
       "default": "start",
       "label": "Align items"
@@ -338,30 +350,12 @@
       "type": "select",
       "id": "justify_content",
       "options": [
-        {
-          "value": "start",
-          "label": "Start"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "end",
-          "label": "End"
-        },
-        {
-          "value": "between",
-          "label": "Space Between"
-        },
-        {
-          "value": "around",
-          "label": "Space Around"
-        },
-        {
-          "value": "evenly",
-          "label": "Space Evenly"
-        }
+        { "value": "start", "label": "Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "End" },
+        { "value": "between", "label": "Space Between" },
+        { "value": "around", "label": "Space Around" },
+        { "value": "evenly", "label": "Space Evenly" }
       ],
       "default": "start",
       "label": "Justify"
