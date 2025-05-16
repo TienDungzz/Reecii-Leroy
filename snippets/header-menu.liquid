@@ -37,25 +37,91 @@
           <li>
             {%- if link.links != blank -%}
               {%- liquid
-                assign mega_menu = blocks | where: "type", "mega_menu"
-                assign check_mega_menu = false
-                if mega_menu.size > 0
-                  assign check_mega_menu = true
-                endif
+                assign mega_menu_1 = blocks | where: "type", "mega_menu_1"
+                assign mega_menu_2 = blocks | where: "type", "mega_menu_2"
+                assign mega_menu_3 = blocks | where: "type", "mega_menu_3"
+                assign mega_menu_4 = blocks | where: "type", "mega_menu_4"
+                assign mega_menu_5 = blocks | where: "type", "mega_menu_5"
 
-                assign has_mega_menu = false
+                assign check_mega_menu_1 = false
+                assign check_mega_menu_2 = false
+                assign check_mega_menu_3 = false
+                assign check_mega_menu_4 = false
+                assign check_mega_menu_5 = false
+
+                assign has_mega_menu_1 = false
+                assign has_mega_menu_2 = false
+                assign has_mega_menu_3 = false
+                assign has_mega_menu_4 = false
+                assign has_mega_menu_5 = false
+                
                 assign menu_title = link.title | escape | downcase | handle
 
-                for block in mega_menu
+                if mega_menu_1.size > 0
+                  assign check_mega_menu_1 = true
+                endif
+                for block in mega_menu_1
                   assign block_title = block.settings.menu_item | escape | downcase | handle
                   if block_title == menu_title
                     assign block = block
-                    assign has_mega_menu = true
+                    assign has_mega_menu_1 = true
                   endif
                 endfor
 
-                if check_mega_menu and has_mega_menu
-                    render 'header-mega-menu', link: link, forloopIndex: forloop.index, block: block
+                if mega_menu_2.size > 0
+                  assign check_mega_menu_2 = true
+                endif
+                for block in mega_menu_2
+                  assign block_title = block.settings.menu_item | escape | downcase | handle
+                  if block_title == menu_title
+                    assign block = block
+                    assign has_mega_menu_2 = true
+                  endif
+                endfor
+
+                if mega_menu_3.size > 0
+                  assign check_mega_menu_3 = true
+                endif
+                for block in mega_menu_3
+                  assign block_title = block.settings.menu_item | escape | downcase | handle
+                  if block_title == menu_title
+                    assign block = block
+                    assign has_mega_menu_3 = true
+                  endif
+                endfor
+
+                if mega_menu_4.size > 0
+                  assign check_mega_menu_4 = true
+                endif
+                for block in mega_menu_4
+                  assign block_title = block.settings.menu_item | escape | downcase | handle
+                  if block_title == menu_title
+                    assign block = block
+                    assign has_mega_menu_4 = true
+                  endif
+                endfor
+
+                if mega_menu_5.size > 0
+                  assign check_mega_menu_5 = true
+                endif
+                for block in mega_menu_5
+                  assign block_title = block.settings.menu_item | escape | downcase | handle
+                  if block_title == menu_title
+                    assign block = block
+                    assign has_mega_menu_5 = true
+                  endif
+                endfor
+
+                if check_mega_menu_1 and has_mega_menu_1
+                    render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block
+                elsif check_mega_menu_2 and has_mega_menu_2
+                    render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block
+                elsif check_mega_menu_3 and has_mega_menu_3
+                    render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block
+                elsif check_mega_menu_4 and has_mega_menu_4
+                    render 'header-mega-menu-4', link: link, forloopIndex: forloop.index, block: block
+                elsif check_mega_menu_5 and has_mega_menu_5
+                    render 'header-mega-menu-5', link: link, forloopIndex: forloop.index, block: block
                 else
                   render 'header-dropdown-menu', link: link, forloopIndex: forloop.index
                 endif
