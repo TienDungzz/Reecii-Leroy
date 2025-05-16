@@ -61,7 +61,7 @@ class ProductCompare extends HTMLElement {
 
     items.forEach((element) => {
       const handle = element.dataset.productCompareHandle;
-      const compareIcon = element.querySelector(".compare-icon");
+      const compareIcon = element.querySelector(".compare-button");
       const text = element.querySelector(".text");
       const input = element.querySelector("input");
 
@@ -127,7 +127,9 @@ class ProductCompare extends HTMLElement {
     }
 
     document.querySelectorAll(`[data-compare-handle="${handle}"]`).forEach(itemHandle => {
-        itemHandle.querySelector("input[name='compare']").checked = false;
+      itemHandle.classList.remove("is-checked");
+      itemHandle.querySelector(".text").textContent = window.compare.add;
+      itemHandle.querySelector("input[name='compare']").checked = false;
     });
   }
 

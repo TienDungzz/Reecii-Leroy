@@ -35,6 +35,9 @@
     {% if card_product.featured_media == nil and settings.card_style == 'card' %} ratio{% endif %}
     {% if horizontal_class %} card--horizontal{% endif %}
   ">
+    <template>
+      <div data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'></div>
+    </template>
     {% content_for 'blocks' %}
   </div>
 </div> 

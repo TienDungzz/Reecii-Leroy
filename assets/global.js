@@ -323,6 +323,55 @@ function onKeyUpEscape(event) {
   summaryElement.focus();
 }
 
+// Format money Function
+Shopify.formatMoney = function (cents, format) {
+  if (typeof cents == "string") {
+    cents = cents.replace(".", "");
+  }
+  var value = "";
+  var placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
+  var formatString = format || this.money_format;
+
+  function defaultOption(opt, def) {
+    return typeof opt == "undefined" ? def : opt;
+  }
+
+  function formatWithDelimiters(number, precision, thousands, decimal) {
+    precision = defaultOption(precision, 2);
+    thousands = defaultOption(thousands, ",");
+    decimal = defaultOption(decimal, ".");
+
+    if (isNaN(number) || number == null) {
+      return 0;
+    }
+
+    number = (number / 100.0).toFixed(precision);
+
+    var parts = number.split("."),
+      dollars = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + thousands),
+      cents = parts[1] ? decimal + parts[1] : "";
+
+    return dollars + cents;
+  }
+
+  switch (formatString.match(placeholderRegex)[1]) {
+    case "amount":
+      value = formatWithDelimiters(cents, 2);
+      break;
+    case "amount_no_decimals":
+      value = formatWithDelimiters(cents, 0);
+      break;
+    case "amount_with_comma_separator":
+      value = formatWithDelimiters(cents, 2, ".", ",");
+      break;
+    case "amount_no_decimals_with_comma_separator":
+      value = formatWithDelimiters(cents, 0, ".", ",");
+      break;
+  }
+
+  return formatString.replace(placeholderRegex, value);
+};
+
 class QuantityInput extends HTMLElement {
   constructor() {
     super();
@@ -1820,3 +1869,114 @@ class CountDown extends HTMLElement {
   }
 }
 customElements.define('count-down', CountDown);
+
+// Color Swatch
+
+class ColorSwatch extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.init();
+  }
+
+  init() {
+    this.swatchList = this.querySelector('.swatch-list');
+    this.swatchList.addEventListener('click', this.handleSwatchClick.bind(this));
+  }
+
+  handleSwatchClick(event) {
+    let target = event.target,
+      title = target.getAttribute("data-title").trim(),
+      product = target.closest(".card-wrapper"),
+      template = product.querySelector("template"),
+      fragment = template.content.cloneNode(true),
+      divFragment = fragment.querySelector("[data-json-product]"),
+      jsonData = divFragment.getAttribute("data-json-product"),
+      productJson = JSON.parse(jsonData),
+      productTitle = product.querySelector(".card__heading > a"),
+      productAction = product.querySelector("[data-btn-addtocart]"),
+      productAction2 = product.querySelector(
+        ".card-product [data-btn-addtocart]"
+      ),
+      variantId = Number(target.dataset.variantId),
+      productHref = product.querySelector("a").getAttribute("href"),
+      oneOption = target.dataset.withOneOption,
+      newImage = target.dataset.variantImg,
+      mediaList = [];
+
+      
+    // CHANGE TITLE
+    if (productTitle.classList.contains("card-title-change")) {
+      productTitle.querySelector("[data-change-title]").textContent =
+        " - " + title;
+    } else {
+      productTitle.classList.add("card-title-change");
+      productTitle.innerHTML = `<span data-change-title> - ${title}</span>`;
+    }
+
+    
+    // CHANGE PRICE
+    const selectedVariant = productJson.variants.find(variant => variant.id === variantId);
+
+    if (selectedVariant.compare_at_price > selectedVariant.price) {
+      product.querySelector(".price").classList.add("price--on-sale");
+      
+      product.querySelector(".price__sale .price-item--regular").innerHTML = 
+        Shopify.formatMoney(selectedVariant.compare_at_price, window.money_format);
+      
+      product.querySelector(".price__sale .price-item--sale").innerHTML =
+        Shopify.formatMoney(selectedVariant.price, window.money_format);
+      
+      const labelSale = `(-${Math.round(
+        ((selectedVariant.compare_at_price - selectedVariant.price) * 100) /
+          selectedVariant.compare_at_price
+      )}%)`;
+      
+      product.querySelector(".price__sale .price-item--percent span").innerHTML =
+        labelSale;
+    } else {
+      product.querySelector(".price__regular .price-item").innerHTML = 
+        Shopify.formatMoney(selectedVariant.price, window.money_format);
+
+      if (selectedVariant.compare_at_price == null) {
+        product.querySelector(".price").classList.remove("price--on-sale");
+        product.querySelector(".price__sale .price-item--regular").innerHTML = "";
+      }
+    }
+
+    // CHANGE HREF
+    product.querySelector(".card__heading > a").setAttribute("href", productHref.split("?variant=")[0] + "?variant=" + variantId);
+
+    // CHANGE IMAGE
+    if (productJson.media != undefined) {
+      const mediaList = productJson.media.filter((index, element) => {
+        return element.alt === title;
+      });
+    }
+
+    if (mediaList.length > 0) {
+      if (mediaList.length > 1) {
+        const length = 2;
+    } else {
+        const length = mediaList.length;
+      }
+
+      for (let i = 0; i < length; i++) {
+        product
+          .querySelector(".card__media img:eq(" + i + ")")
+          .setAttribute("srcset", mediaList[i].src);
+      }
+    } else {
+      if (newImage) {
+        product
+          .querySelector(".card__media img:nth-child(1)")
+          .setAttribute("srcset", newImage);
+      }
+    }
+
+  }
+  
+}
+customElements.define('color-swatch', ColorSwatch);
