@@ -1,7 +1,7 @@
 <div
   class="{{ block.settings | class_list }} group-block group-block--{{block.id}} group-align-{{ block.settings.alignment }} group-align-mb-{{ block.settings.alignment_mb }} flex-section wid-100 dis-flex f-{{ block.settings.direction }} f-{{ block.settings.wrap }} a-i-{{ block.settings.align_items}} j-c-{{ block.settings.justify_content }} color-{{ block.settings.color_scheme }}"
   {{ block.shopify_attributes }}
-  style="--pl:{{ block.settings.padding_left }}px; --pr:{{ block.settings.padding_right }}px; --pt:{{ block.settings.padding_top }}px; --pb:{{ block.settings.padding_bottom }}px"
+  style="--pl:{{ block.settings.padding_left }}px; --pr:{{ block.settings.padding_right }}px; --pt:{{ block.settings.padding_top }}px; --pb:{{ block.settings.padding_bottom }}px; {%- if block.settings.width_option == 'custom' -%} --globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}"
   ;
 >
   {% content_for 'blocks' %}
@@ -22,6 +22,37 @@
     { "type": "button" }
   ],
   "settings": [
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width_option",
+      "label": "Width Option",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full width"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "custom"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "Custom Width (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 80,
+      "info": "Only applies when 'Custom' is selected above."
+    },
     {
       "type": "header",
       "content": "Padding"
