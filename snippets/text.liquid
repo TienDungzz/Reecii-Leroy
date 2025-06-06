@@ -1,0 +1,10 @@
+{%- liquid
+  assign plain_text = block.settings.text | strip_newlines | strip_html | strip
+-%}
+<div {{ block.shopify_attributes }}>
+    {% if placeholder_text != blank and plain_text == blank %}
+        {{ placeholder_text }}
+    {% elsif plain_text != blank %}
+        {{ plain_text }}
+    {% endif %}
+</div>

@@ -74,10 +74,18 @@ if (!customElements.get('quick-add-modal')) {
       if (modalDialog) modalDialog.forEach((modal) => modal.remove());
 
       const sideDrawerOpener = productElement.querySelectorAll('side-drawer-opener');
-      if (sideDrawerOpener) sideDrawerOpener.forEach((button) => button.remove());
+      if (sideDrawerOpener) {
+        sideDrawerOpener.forEach((button) => {
+          if (!button.classList.contains('product-sizechar-popup-modal__opener')) button.remove()
+        })
+      };
 
       const sideDrawer = productElement.querySelectorAll('side-drawer');
-      if (sideDrawer) sideDrawer.forEach((drawer) => drawer.remove());
+      if (sideDrawer) {
+        sideDrawer.forEach((drawer) => {
+           if (!drawer.classList.contains('size-chart-popup-modal')) drawer.remove()
+        })
+      };
     }
 
     preventDuplicatedIDs(productElement) {

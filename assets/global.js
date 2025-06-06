@@ -670,9 +670,9 @@ class MenuDrawer extends HTMLElement {
 
     openDetailsElement === this.mainDetailsToggle
       ? this.closeMenuDrawer(
-          event,
-          this.mainDetailsToggle.querySelector("summary")
-        )
+        event,
+        this.mainDetailsToggle.querySelector("summary")
+      )
       : this.closeSubmenu(openDetailsElement);
   }
 
@@ -714,9 +714,9 @@ class MenuDrawer extends HTMLElement {
         !reducedMotion || reducedMotion.matches
           ? addTrapFocus()
           : summaryElement.nextElementSibling.addEventListener(
-              "transitionend",
-              addTrapFocus
-            );
+            "transitionend",
+            addTrapFocus
+          );
       }, 100);
     }
   }
@@ -817,9 +817,9 @@ class HeaderDrawer extends MenuDrawer {
     this.header = this.header || document.querySelector(".section-header-main");
     this.borderOffset =
       this.borderOffset ||
-      this.closest(".drawer--menu").classList.contains(
-        "header-wrapper--border-bottom"
-      )
+        this.closest(".drawer--menu").classList.contains(
+          "header-wrapper--border-bottom"
+        )
         ? 1
         : 0;
     document.documentElement.style.setProperty(
@@ -939,7 +939,7 @@ class SliderComponent extends HTMLElement {
       this.sliderItemsToShow[0].offsetLeft;
     this.slidesPerPage = Math.floor(
       (this.slider.clientWidth - this.sliderItemsToShow[0].offsetLeft) /
-        this.sliderItemOffset
+      this.sliderItemOffset
     );
     this.totalPages = this.sliderItemsToShow.length - this.slidesPerPage + 1;
     this.update();
@@ -1287,9 +1287,9 @@ class SlideshowComponent extends SliderComponent {
     const slideScrollPosition =
       this.slider.scrollLeft +
       this.sliderFirstItemNode.clientWidth *
-        (this.sliderControlLinksArray.indexOf(event.currentTarget) +
-          1 -
-          this.currentPage);
+      (this.sliderControlLinksArray.indexOf(event.currentTarget) +
+        1 -
+        this.currentPage);
     this.slider.scrollTo({
       left: slideScrollPosition,
     });
@@ -1297,6 +1297,57 @@ class SlideshowComponent extends SliderComponent {
 }
 
 customElements.define("slideshow-component", SlideshowComponent);
+
+// SWIPER COMPONENT KHINH
+class SwiperComponent extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    const swiperEl = this.querySelector('.swiper');
+    if (!swiperEl || swiperEl._swiperInitialized) return;
+
+    swiperEl._swiperInitialized = true;
+
+    const getOption = (name, defaultValue = undefined) => {
+      const attr = this.getAttribute(`data-${name}`);
+      if (attr === null) return defaultValue;
+
+      try {
+        // Nếu là JSON (ví dụ như breakpoints)
+        return JSON.parse(attr);
+      } catch {
+        // Nếu là số hoặc boolean
+        if (attr === 'true') return true;
+        if (attr === 'false') return false;
+        if (!isNaN(attr)) return Number(attr);
+        return attr;
+      }
+    };
+
+    // Options
+    const options = {
+      loop: getOption('loop', true),
+      spaceBetween: getOption('space-between', 20),
+      slidesPerView: getOption('slides-per-view', 1),
+      navigation: {
+        nextEl: swiperEl.querySelector('.swiper-button-next'),
+        prevEl: swiperEl.querySelector('.swiper-button-prev'),
+      },
+      pagination: {
+        el: swiperEl.querySelector('.swiper-pagination'),
+        clickable: true,
+      },
+      breakpoints: getOption('breakpoints', null)
+    };
+
+    new Swiper(swiperEl, options);
+  }
+}
+
+customElements.define('swiper-component', SwiperComponent);
+// END SWIPER COMPONENT KHINH
 
 class VariantSelects extends HTMLElement {
   constructor() {
@@ -1729,7 +1780,7 @@ class Wishlist extends HTMLElement {
       if (!wishlistList.includes(handle)) {
         wishlistList.push(handle);
         localStorage.setItem("wishlistItem", JSON.stringify(wishlistList));
-  
+
         const updateWishlistMailEvent = new CustomEvent("updatewishlistmail", { bubbles: true });
         document.dispatchEvent(updateWishlistMailEvent);
         console.log('wishlistList', wishlistList)
@@ -1751,7 +1802,7 @@ class Wishlist extends HTMLElement {
       if (index > -1) {
         wishlistList.splice(index, 1);
         localStorage.setItem("wishlistItem", JSON.stringify(wishlistList));
-        
+
         console.log('wishlistList', wishlistList)
         console.log('localStorage', localStorage)
       }
@@ -1814,7 +1865,7 @@ class CountDown extends HTMLElement {
 
       if (isNaN(time)) {
         time = new Date(this.dataset.countdown.replace(/-/g, "/")).getTime();
-  
+
         if (isNaN(time)) {
           clearInterval(countdown);
           this.parentElement.classList.add('hidden');
@@ -1833,7 +1884,7 @@ class CountDown extends HTMLElement {
               <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.hours}</span></span></span>\
               <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.mins}</span></span></span>\
               <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.secs}</span></span></span>`;
-              
+
           this.querySelector('.countdown').innerHTML = content;
           this.querySelector('.countdown-expired').classList.remove('hidden');
         }
@@ -1844,15 +1895,15 @@ class CountDown extends HTMLElement {
           second = Math.floor((distance % (1000 * 60)) / 1000),
           content;
 
-          if(type == 'sale-banner') {
-            content = `<span class="countdown-item dis-i-block v-a-top center"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${day}<span class="dis-block body-sm">${window.countdown.days}</span></span></span>\
+        if (type == 'sale-banner') {
+          content = `<span class="countdown-item dis-i-block v-a-top center"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${day}<span class="dis-block body-sm">${window.countdown.days}</span></span></span>\
               <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${hour}<span class="dis-block body-sm">${window.countdown.hours}</span></span></span>\
               <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${minute}<span class="dis-block body-sm">${window.countdown.mins}</span></span></span>\
               <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${second}<span class="dis-block body-sm">${window.countdown.secs}</span></span></span>`;
-              
-              this.querySelector('.countdown').innerHTML = content;
-              this.parentElement.classList.remove('hidden');
-          }
+
+          this.querySelector('.countdown').innerHTML = content;
+          this.parentElement.classList.remove('hidden');
+        }
       }
     }, 1000);
   }
@@ -1863,7 +1914,7 @@ class CountDown extends HTMLElement {
         this.init(this.d, this.t, this.e);
         observer.unobserve(this);
       });
-    }, {rootMargin: "0px 0px -200px 0px"});
+    }, { rootMargin: "0px 0px -200px 0px" });
 
     observer.observe(this);
   }
@@ -1906,7 +1957,7 @@ class ColorSwatch extends HTMLElement {
       newImage = target.dataset.variantImg,
       mediaList = [];
 
-      
+
     // CHANGE TITLE
     if (productTitle.classList.contains("card-title-change")) {
       productTitle.querySelector("[data-change-title]").textContent =
@@ -1916,28 +1967,28 @@ class ColorSwatch extends HTMLElement {
       productTitle.innerHTML = `<span data-change-title> - ${title}</span>`;
     }
 
-    
+
     // CHANGE PRICE
     const selectedVariant = productJson.variants.find(variant => variant.id === variantId);
 
     if (selectedVariant.compare_at_price > selectedVariant.price) {
       product.querySelector(".price").classList.add("price--on-sale");
-      
-      product.querySelector(".price__sale .price-item--regular").innerHTML = 
+
+      product.querySelector(".price__sale .price-item--regular").innerHTML =
         Shopify.formatMoney(selectedVariant.compare_at_price, window.money_format);
-      
+
       product.querySelector(".price__sale .price-item--sale").innerHTML =
         Shopify.formatMoney(selectedVariant.price, window.money_format);
-      
+
       const labelSale = `(-${Math.round(
         ((selectedVariant.compare_at_price - selectedVariant.price) * 100) /
-          selectedVariant.compare_at_price
+        selectedVariant.compare_at_price
       )}%)`;
-      
+
       product.querySelector(".price__sale .price-item--percent span").innerHTML =
         labelSale;
     } else {
-      product.querySelector(".price__regular .price-item").innerHTML = 
+      product.querySelector(".price__regular .price-item").innerHTML =
         Shopify.formatMoney(selectedVariant.price, window.money_format);
 
       if (selectedVariant.compare_at_price == null) {
@@ -1959,7 +2010,7 @@ class ColorSwatch extends HTMLElement {
     if (mediaList.length > 0) {
       if (mediaList.length > 1) {
         const length = 2;
-    } else {
+      } else {
         const length = mediaList.length;
       }
 
@@ -1977,6 +2028,6 @@ class ColorSwatch extends HTMLElement {
     }
 
   }
-  
+
 }
 customElements.define('color-swatch', ColorSwatch);
