@@ -1,16 +1,35 @@
+{%- liquid
+  assign bl_stts = block.settings
+
+  assign p_left = bl_stts.padding_left
+  assign p_right = bl_stts.padding_right
+  assign p_top = bl_stts.padding_top
+  assign p_bottom = bl_stts.padding_bottom
+
+  assign gap_x = bl_stts.gap_x
+  assign gap_y = bl_stts.gap_y
+-%}
 {%- capture children -%}
   {%- content_for 'blocks' -%}
 {%- endcapture -%}
 
+{%- capture styles -%}
+  style="{%- if p_left != 0 -%}--pl:{{ p_left }}px;{%- endif -%}
+  {%- if p_top != 0 -%}--pt:{{ p_top }}px;{%- endif -%}
+  {%- if p_bottom != 0 -%}--pb:{{ p_bottom }}px;{%- endif -%}
+  {%- if p_right != 0 -%}--pr:{{ p_right }}px;{%- endif -%}
+  {%- if gap_x != 0 -%}--gap-x: {{ gap_x }}px;{%- endif -%}
+  {%- if gap_y != 0 -%}--gap-y: {{ gap_y }}px;{%- endif -%}
+  "
+{%- endcapture -%}
+
 <div
-  class="{{ block.settings | class_list }} group-block group-block--{{block.id}} group-align-{{ block.settings.alignment }} group-align-mb-{{ block.settings.alignment_mb }} flex-section wid-100 dis-flex f-{{ block.settings.direction }} f-{{ block.settings.wrap }} a-i-{{ block.settings.align_items}} j-c-{{ block.settings.justify_content }} color-{{ block.settings.color_scheme }}"
+  class="{{ bl_stts | class_list }} group-block group-block--{{block.id}} flex-section wid-100 dis-flex f-{{ bl_stts.direction }} f-{{ bl_stts.wrap }} a-i-{{ bl_stts.align_items}} j-c-{{ bl_stts.justify_content }} color-{{ bl_stts.color_scheme }}"
   {{ block.shopify_attributes }}
-  style="--pl:{{ block.settings.padding_left }}px; --pr:{{ block.settings.padding_right }}px; --pt:{{ block.settings.padding_top }}px; --pb:{{ block.settings.padding_bottom }}px; {%- if block.settings.width_option == 'custom' -%} --globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}"
-  ;
+  {{ styles }}
 >
   {{ children }}
 </div>
-
 
 {% schema %}
 {
@@ -21,6 +40,7 @@
     { "type": "spacer" },
     { "type": "text" },
     { "type": "_collection_title" },
+    { "type": "_view_all_button" },
     { "type": "button" }
   ],
   "settings": [
@@ -47,13 +67,13 @@
     {
       "type": "range",
       "id": "custom_width",
-      "label": "Custom Width (%)",
+      "label": "Custom (%)",
       "min": 1,
       "max": 100,
       "step": 1,
       "unit": "%",
       "default": 80,
-      "info": "Only applies when 'Custom' is selected above."
+      "visible_if": "{{ block.settings.width_option == 'custom' }}"
     },
     {
       "type": "header",
@@ -204,89 +224,6 @@
       "step": 1,
       "default": 10,
       "label": "Row Gap"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.all.colors.name"
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "Color scheme",
-      "default": "scheme-1"
-    },
-    {
-      "type": "header",
-      "content": "Text Alignment"
-    },
-    {
-      "type": "select",
-      "id": "alignment",
-      "label": "Text alignment desktop",
-      "default": "left",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "alignment_mb",
-      "label": "Text alignment mobile",
-      "default": "left",
-      "info": "t:sections.footer.settings.alignment.info",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ]
-    },
-    {
-      "type": "header",
-      "content": "Border"
-    },
-    {
-      "type": "checkbox",
-      "id": "border_left",
-      "label": "Left border",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "border_right",
-      "label": "Right border",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "border_top",
-      "label": "Top border",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "border_bottom",
-      "label": "Bottom border",
-      "default": false
     }
   ],
   "presets": [

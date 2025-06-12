@@ -1,0 +1,38 @@
+{% assign collection = block.settings.collection %}
+
+<div class="tabs-product-grid">
+  {% comment %} {{ children }} {% endcomment %}
+
+  {% for product in collection.products %}
+     {% content_for "block", type: "card-product-flex", id: "product-slide-item", closest.product: product %}
+  {% endfor %}
+</div>
+
+{% schema %}
+    {
+        "name": "Group: Tabs product",
+        "class": "tabs-product-grid",
+        "blocks": [
+            { "type": "card-product-flex" },
+            { "type": "tab-group" }
+        ],
+        "settings": [
+            {
+                "type": "collection",
+                "id": "collection",
+                "label": "Collection"
+            },  
+            {
+                "type": "text",
+                "id": "title",
+                "label": "Title",
+                "default": "Tabs product grid"
+            }
+        ],
+        "presets": [
+            {
+                "name": "Group: Tabs product"
+            }
+        ]
+    }
+{% endschema %}
