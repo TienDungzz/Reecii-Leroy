@@ -534,6 +534,14 @@ video {
   display: grid;
 }
 
+.grid-template-col {
+  grid-template-columns: var(--columns-vertical-int, repeat(2, 1fr));
+}
+
+.grid-template-col-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .flex-center {
   display: flex;
   justify-content: center;
@@ -996,6 +1004,18 @@ video {
 
   [style*="--mar-b-a-md"] {
     margin-bottom: var(--mar-b-a-md);
+  }
+
+  [style*="--c-gap-a-md"] {
+    column-gap: var(--c-gap-a-md, 0);
+  }
+
+  [style*="--r-gap-a-md"] {
+    row-gap: var(--r-gap-a-md, 0);
+  }
+
+  [style*="--gap-a-md"] {
+    gap: var(--gap-a-md, 0);
   }
 
   .pos-absolute-md {
@@ -4215,7 +4235,7 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
     border: var(--border-width) solid rgba(var(--color-foreground), var(--border-opacity));
     padding: var(--image-padding);
     
-  :after {
+  &:after {
     content: '';
     position: absolute;
     z-index: -1;
@@ -4257,7 +4277,7 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
   .deferred-media__poster {
     background-color: transparent;
     border: 0;
-    :after {
+    &:after {
       content: '';
       position: absolute;
       z-index: 1;
@@ -4633,6 +4653,14 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
 /* End: Mint */
 
 /* khinh Start: Swiper */
+.swiper-component-mobile {
+  @media screen and (width >= 750px) {
+    .swiper-wrapper.dis-block-md {
+      display: block;
+    }
+  }
+  
+}
 .swiper-initialized .swiper-slide {
   max-width: 100%;
 }
