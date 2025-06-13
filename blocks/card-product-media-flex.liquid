@@ -78,9 +78,9 @@
   {%- endif -%}
 {%- else -%}
   <div
-    class="{{ block.settings | class_list }} media-block card__inner{% if settings.card_style == 'standard' %} color-{{ settings.card_color_scheme }} gradient{% endif %} ratio"
+    class="group-block {{ block.settings | class_list }} media-block card__inner{% if settings.card_style == 'standard' %} color-{{ settings.card_color_scheme }} gradient{% endif %} ratio"
     data-cart-media
-    style="--ratio-percent: 100%;"
+    style="--ratio-percent: 100%;{%- if block.settings.width_option == 'custom' -%} --globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}"
   >
     <div class="card__media">
       <div class="media media--transparent">
