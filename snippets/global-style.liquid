@@ -131,7 +131,10 @@
     --font-body-scale: {{ settings.body_scale | divided_by: 100.0 }};
     --font-heading-scale: {{ settings.heading_scale | times: 1.0 | divided_by: settings.body_scale }};
 
-    --page-width: {{ settings.page_width | divided_by: 10 }}rem;
+    /* Page layout */
+    --page-margin: 1.6rem;
+    --page-content-width: {{ settings.page_width | divided_by: 10 }}rem;
+    --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
 
     --product-card-image-padding: {{ settings.card_image_padding | divided_by: 10.0 }}rem;
     --product-card-corner-radius: {{ settings.card_corner_radius | divided_by: 10.0 }}rem;
@@ -283,6 +286,12 @@
 
     /** Z-Index / Layering */
     --layer-section-background: -2;
+  }
+
+  @media screen and (width >= 750px) {
+    :root {
+      --page-margin: 4rem;
+    }
   }
 
   *,
