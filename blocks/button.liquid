@@ -1,19 +1,15 @@
 {% comment %} [START block.markup] {% endcomment %}
+ {%- liquid
+    assign link = block.settings.link
+    assign text = block.settings.text
+-%}
+
 <div
   class="{{ block.settings | class_list }} text-block"
   {{ block.shopify_attributes }}
 >
   {%- if block.settings.text != blank -%}
-    <a
-      {% if block.settings.link == blank %}
-        role="link" aria-disabled="true"
-      {% else %}
-        href="{{ block.settings.link }}"
-      {% endif %}
-      class="button"
-    >
-      {{ block.settings.text }}
-    </a>
+    {%- render 'link', block: block, link: link, text: text -%}
   {%- endif -%}
 </div>
 {% comment %} [END block.markup] {% endcomment %}
@@ -27,7 +23,7 @@
     {
       "type": "inline_richtext",
       "id": "text",
-      "label": "t:settings_schema.global.settings.button.button_label.label",
+      "label": "Label",
       "default": "Button label"
     },
     {
