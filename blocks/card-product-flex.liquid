@@ -21,107 +21,222 @@
   {% render 'card-product', show_vendor: section.settings.show_vendor %}
 {% endcomment %}
 
-
 {%- liquid
   assign card_product = block.settings.product
 -%}
 
 <div class="card--block card-wrapper product-card-wrapper underline-links-hover color-{{ block.settings.color_scheme }}">
-  <div class="card card--{{ settings.card_style }} card--quickadd-type-{{ settings.quick_add_type }}
-    {% if card_product.featured_media %} card--media{% else %} card--text{% endif %}
-    {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }} gradient{% endif %}
-    {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
-    {% if extend_height %} card--extend-height{% endif %}
-    {% if card_product.featured_media == nil and settings.card_style == 'card' %} ratio{% endif %}
-    {% if horizontal_class %} card--horizontal{% endif %}
-  ">
+  <div
+    class="
+      card card--{{ settings.card_style }} card--quickadd-type-{{ settings.quick_add_type }}
+      {% if card_product.featured_media %} card--media{% else %} card--text{% endif %}
+      {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }} gradient{% endif %}
+      {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
+      {% if extend_height %} card--extend-height{% endif %}
+      {% if card_product.featured_media == nil and settings.card_style == 'card' %} ratio{% endif %}
+      {% if horizontal_class %} card--horizontal{% endif %}
+      f-{{ block.settings.direction }} f-{{ block.settings.wrap }} a-i-{{ block.settings.align_items}} j-c-{{ block.settings.justify_content }}
+    "
+  >
     <template>
-      <div data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'></div>
+      <div
+        data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'
+      ></div>
     </template>
     {% content_for 'blocks' %}
   </div>
-</div> 
+</div>
 
 {% schema %}
-  {
-      "name": "Product card",
-      "tag": null,
-       "blocks": [
-        { "type": "@app" }, 
-        { "type": "spacer" }, 
-        { "type": "icon" }, 
-        { "type": "card-product-media-flex" }, 
-        { "type": "card-product-button-flex" }, 
-        { "type": "card-product-vendor-flex" }, 
-        { "type": "card-product-title-flex" }, 
-        { "type": "card-product-price-flex" }, 
-        { "type": "card-product-variant-flex" }, 
-        { "type": "card-product-marquee-flex" }, 
-        { "type": "card-product-countdown-flex" }
-      ],
-      "settings": [
+{
+  "name": "Product card",
+  "tag": null,
+  "blocks": [
+    { "type": "@app" },
+    { "type": "spacer" },
+    { "type": "icon" },
+    { "type": "card-product-information" },
+    { "type": "card-product-media-flex" },
+    { "type": "card-product-button-flex" },
+    { "type": "card-product-vendor-flex" },
+    { "type": "card-product-title-flex" },
+    { "type": "card-product-price-flex" },
+    { "type": "card-product-variant-flex" },
+    { "type": "card-product-marquee-flex" },
+    { "type": "card-product-countdown-flex" }
+  ],
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:sections.collage.blocks.product.settings.product.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "default": "column",
+      "options": [
         {
-          "type": "product",
-          "id": "product",
-          "label": "t:sections.collage.blocks.product.settings.product.label"
+          "value": "row",
+          "label": "⭢"
         },
         {
-          "type": "color_scheme",
-          "id": "color_scheme",
-          "label": "t:sections.all.colors.label",
-          "info": "t:sections.all.colors.has_cards_info",
-          "default": "scheme-1"
+          "value": "column",
+          "label": "⭣"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "wrap",
+      "label": "Wrap",
+      "default": "no-wrap",
+      "options": [
+        {
+          "value": "no-wrap",
+          "label": "No"
+        },
+        {
+          "value": "wrap",
+          "label": "Yes"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "align_items",
+      "options": [
+        {
+          "value": "stretch",
+          "label": "Default"
+        },
+        {
+          "value": "start",
+          "label": "⤒"
+        },
+        {
+          "value": "center",
+          "label": "⮃"
+        },
+        {
+          "value": "end",
+          "label": "⤓"
         }
       ],
-      "presets": [
-          {
-              "name": "Product card",
-              "blocks": [
-                  {
-                      "type": "card-product-media-flex",
-                      "settings": {
-                        "product": "{{ closest.product }}"
-                      }
-                      
-                  },
-                  {
-                      "type": "spacer",
-                      "settings": {
-                          "spacer_height": 6
-                      }
-                  },
-                  {
-                    "type": "card-product-button-flex",
-                    "settings": {
-                      "product": "{{ closest.product }}"
-                    }
-                },
-                  {
-                      "type": "card-product-vendor-flex",
-                      "settings": {
-                        "product": "{{ closest.product }}"
-                      }
-                  },
-                  {
-                      "type": "card-product-title-flex",
-                      "settings": {
-                        "product": "{{ closest.product }}"
-                      }
-                  },
-                  {
-                      "type": "card-product-price-flex",
-                      "settings": {
-                        "product": "{{ closest.product }}"
-                      }
-                  },
-                  {
-                      "type": "card-product-variant-flex",
-                      "settings": {
-                        "product": "{{ closest.product }}"
-                      }
-                  }
-              ]
+      "default": "stretch",
+      "label": "Align items"
+    },
+    {
+      "type": "select",
+      "id": "justify_content",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "around",
+          "label": "Space Around"
+        },
+        {
+          "value": "evenly",
+          "label": "Space Evenly"
+        }
+      ],
+      "default": "start",
+      "label": "Justify"
+    },
+    {
+      "type": "range",
+      "id": "gap_x",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "Column Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_y",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "Row Gap"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product card",
+      "blocks": [
+        {
+          "type": "card-product-media-flex",
+          "settings": {
+            "product": "{{ closest.product }}"
           }
+        },
+        {
+          "type": "spacer",
+          "settings": {
+            "spacer_height": 6
+          }
+        },
+        {
+          "type": "card-product-button-flex",
+          "settings": {
+            "product": "{{ closest.product }}"
+          }
+        },
+        {
+          "type": "card-product-vendor-flex",
+          "settings": {
+            "product": "{{ closest.product }}"
+          }
+        },
+        {
+          "type": "card-product-title-flex",
+          "settings": {
+            "product": "{{ closest.product }}"
+          }
+        },
+        {
+          "type": "card-product-price-flex",
+          "settings": {
+            "product": "{{ closest.product }}"
+          }
+        },
+        {
+          "type": "card-product-variant-flex",
+          "settings": {
+            "product": "{{ closest.product }}"
+          }
+        }
       ]
-  }
+    }
+  ]
+}
 {% endschema %}

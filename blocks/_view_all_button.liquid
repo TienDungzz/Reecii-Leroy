@@ -1,0 +1,136 @@
+{%- liquid
+  assign sec_stts = section.settings
+
+  assign link = block.settings.collection.url
+  assign text = block.settings.text
+  assign button_style = block.settings.button_style
+
+  assign max_tiems = sec_stts.products_to_show
+
+  if sec_stts.collection.all_products_count > max_tiems
+    assign more_in_collection = true
+  endif
+
+  assign width_option_desktop = block.settings.width_option_desktop
+  assign custom_width_desktop = block.settings.custom_width_desktop
+
+  assign width_option_mobile = block.settings.width_option_mobile
+  assign custom_width_mobile = block.settings.custom_width_mobile
+-%}
+
+{%- if sec_stts.show_view_all and more_in_collection -%}
+  {%- render 'link',
+    block: block,
+    link: link,
+    text: text,
+    button_style: button_style,
+    width_option: width_option_desktop,
+    custom_width: custom_width_desktop,
+    width_option_mobile: width_option_mobile,
+    custom_width_mobile: custom_width_mobile
+  -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "View all button",
+  "tag": null,
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "Label",
+      "default": "View all"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "link",
+          "label": "Link"
+        }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "select",
+      "id": "width_option_desktop",
+      "label": "Desktop width",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_desktop",
+      "label": "Custom (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_option_desktop == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_option_mobile",
+      "label": "Mobile width",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "Custom (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_option_mobile == 'custom' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "View all button",
+      "category": "Collection",
+      "settings": {
+        "text": "View all",
+        "collection": "{{ closest.collection }}"
+      }
+    }
+  ]
+}
+{% endschema %}
