@@ -3,10 +3,10 @@
   --alpha-button-border: 1;
   --alpha-link: 0.85;
   --alpha-badge-border: 1;
-  --focused-base-outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  --focused-base-outline: 0.2rem solid color-mix(in srgb, var(--color-foreground), transparent 50%);
   --focused-base-outline-offset: 0.3rem;
-  --focused-base-box-shadow: 0 0 0 0.3rem rgb(var(--color-background)),
-    0 0 0.5rem 0.4rem rgba(var(--color-foreground), 0.3);
+  --focused-base-box-shadow: 0 0 0 0.3rem var(--color-background),
+    0 0 0.5rem 0.4rem color-mix(in srgb, var(--color-foreground), transparent 70%);
   --duration-short: 100ms;
   --duration-default: 200ms;
   --duration-announcement-bar: 250ms;
@@ -185,7 +185,7 @@ img {
 }
 
 .background-secondary {
-  background-color: rgba(var(--color-foreground), 0.04);
+  background-color: color-mix(in srgb, var(--color-foreground), transparent 96%);
 }
 
 .grid-auto-flow {
@@ -250,7 +250,7 @@ img {
 }
 
 ::selection {
-  background-color: rgba(var(--color-foreground), 0.2);
+  background-color: color-mix(in srgb, var(--color-foreground), transparent 80%);
 }
 
 .text-body {
@@ -277,7 +277,7 @@ h5,
   font-style: var(--font-heading-style);
   font-weight: var(--font-heading-weight);
   letter-spacing: calc(var(--font-heading-scale) * 0.06rem);
-  color: rgb(var(--color-foreground));
+  color: var(--color-foreground);
   line-height: calc(1 + 0.3 / max(1, var(--font-heading-scale)));
   word-break: break-word;
 }
@@ -351,15 +351,15 @@ h5,
 
 h6,
 .h6 {
-  color: rgba(var(--color-foreground), 0.75);
+  color: color-mix(in srgb, var(--color-foreground), transparent 25%);
   margin-block-start: 1.67em;
   margin-block-end: 1.67em;
 }
 
 blockquote {
   font-style: italic;
-  color: rgba(var(--color-foreground), 0.75);
-  border-left: 0.2rem solid rgba(var(--color-foreground), 0.2);
+  color: color-mix(in srgb, var(--color-foreground), transparent 25%);
+  border-left: 0.2rem solid color-mix(in srgb, var(--color-foreground), transparent 80%);
   padding-left: 1rem;
   @media screen and (width >= 750px) {
     padding-left: 1.5rem;
@@ -405,7 +405,7 @@ blockquote {
 }
 
 .color-foreground {
-  color: rgb(var(--color-foreground));
+  color: var(--color-foreground);
 }
 
 table:not([class]) {
@@ -413,14 +413,14 @@ table:not([class]) {
   border-collapse: collapse;
   font-size: 1.4rem;
   border-style: hidden;
-  box-shadow: 0 0 0 0.1rem rgba(var(--color-foreground), 0.2);
+  box-shadow: 0 0 0 0.1rem color-mix(in srgb, var(--color-foreground), transparent 80%);
   /* draws the table border  */
 }
 
 table:not([class]) td,
 table:not([class]) th {
   padding: 1em;
-  border: 0.1rem solid rgba(var(--color-foreground), 0.2);
+  border: 0.1rem solid color-mix(in srgb, var(--color-foreground), transparent 80%);
 }
 
 @media screen and (max-width: 749px) {
@@ -1138,9 +1138,9 @@ h6:empty {
 }
 
 .link--text {
-  color: rgb(var(--color-foreground));
+  color: var(--color-foreground);
   &:hover{
-    color: rgba(var(--color-foreground), 0.75);
+    color: color-mix(in srgb, var(--color-foreground), transparent 25%);
   }
 }
 
@@ -1183,7 +1183,7 @@ a:not([href]) {
 hr {
   border: none;
   height: 0.1rem;
-  background-color: rgba(var(--color-foreground), 0.2);
+  background-color: color-mix(in srgb, var(--color-foreground), transparent 80%);
   display: block;
   margin: 5rem 0;
   @media screen and (width >= 750px) {
@@ -1198,9 +1198,9 @@ hr {
 }
 
 .placeholder {
-  background-color: rgba(var(--color-foreground), 0.04);
-  color: rgba(var(--color-foreground), 0.55);
-  fill: rgba(var(--color-foreground), 0.55);
+  background-color: color-mix(in srgb, var(--color-foreground), transparent 96%);
+  color: color-mix(in srgb, var(--color-foreground), transparent 45%);
+  fill: color-mix(in srgb, var(--color-foreground), transparent 45%);
 }
 
 details>* {
@@ -1309,7 +1309,7 @@ summary::-webkit-details-marker {
 
 details {
   width: 100%;
-  border-block-start: 1px solid rgba(var(--color-foreground), 0.08);
+  border-block-start: 1px solid color-mix(in srgb, var(--color-foreground), transparent 92%);
 }
 
 summary {
@@ -1324,7 +1324,7 @@ summary {
 
   &:hover {
     text-decoration: underline;
-    background-color: rgba(var(--color-foreground), 0.04);
+    background-color: color-mix(in srgb, var(--color-foreground), transparent 96%);
   }
   
   .icon-caret {
@@ -1430,17 +1430,17 @@ details[open]>summary .icon-caret {
   outline-offset: var(--focused-base-outline-offset);
   box-shadow: var(--focused-base-box-shadow);
   &.focus-inset {
-    outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+    outline: 0.2rem solid color-mix(in srgb, var(--color-foreground), transparent 50%);
     outline-offset: -0.2rem;
-    box-shadow: 0 0 0.2rem 0 rgba(var(--color-foreground), 0.3);
+    box-shadow: 0 0 0.2rem 0 color-mix(in srgb, var(--color-foreground), transparent 70%);
   }
 }
 
 /* Focus ring - inset */
 .focus-inset:focus-visible {
-  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  outline: 0.2rem solid color-mix(in srgb, var(--color-foreground), transparent 50%);
   outline-offset: -0.2rem;
-  box-shadow: 0 0 0.2rem 0 rgba(var(--color-foreground), 0.3);
+  box-shadow: 0 0 0.2rem 0 color-mix(in srgb, var(--color-foreground), transparent 70%);
 }
 
 /* Focus ring - none */
@@ -1452,26 +1452,22 @@ details[open]>summary .icon-caret {
 
 .focus-offset:focus-visible {
   border-radius: 0.1rem;
-  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  outline: 0.2rem solid color-mix(in srgb, var(--color-foreground), transparent 50%);
   outline-offset: 0.1rem;
-  box-shadow: 0 0 0 0.1rem rgb(var(--color-background)),
-    0 0 0.5rem 0.1rem rgba(var(--color-foreground), 0.3);
+  box-shadow: 0 0 0 0.1rem var(--color-background),
+    0 0 0.5rem 0.1rem color-mix(in srgb, var(--color-foreground), transparent 70%);
 }
 
 .focus-offset.focused {
-  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  outline: 0.2rem solid color-mix(in srgb, var(--color-foreground), transparent 50%);
   outline-offset: 0.1rem;
-  box-shadow: 0 0 0 0.1rem rgb(var(--color-background)),
-    0 0 0.5rem 0.1rem rgba(var(--color-foreground), 0.3);
+  box-shadow: 0 0 0 0.1rem var(--color-background),
+    0 0 0.5rem 0.1rem color-mix(in srgb, var(--color-foreground), transparent 70%);
 }
 
 /* Start: Multiple properties */
 .separator-top {
-  border-top: solid 0.1rem rgba(var(--color-foreground), var(--separator-opacity, 0.08));
-}
-
-.separator-bottom {
-  border-bottom: solid 0.1rem rgba(var(--color-foreground), var(--separator-opacity, 0.08));
+  border-top: solid 0.1rem color-mix(in srgb, var(--color-foreground), transparent 92%);
 }
 
 .card__shadow:after {
@@ -1485,8 +1481,8 @@ details[open]>summary .icon-caret {
 .card__shadow.sd-bottom:after {
   bottom: 0;
   background: linear-gradient(to bottom,
-      rgba(var(--color-background), 0),
-      rgba(var(--color-background), 0.4));
+      transparent,
+      color-mix(in srgb, var(--color-background), transparent 60%));
 }
 
 .cus-scrollbar::-webkit-scrollbar {
@@ -1652,7 +1648,7 @@ details[open]>summary .icon-caret {
   font-size: 1.8rem;
   line-height: calc(1 + 0.8 / var(--font-body-scale));
   letter-spacing: 0.06rem;
-  color: rgba(var(--color-foreground), 0.7);
+  color: color-mix(in srgb, var(--color-foreground), transparent 30%);
 }
 
 .subtitle--small {
@@ -1917,7 +1913,7 @@ details[open]>summary .icon-caret {
 /* component-media */
 .media {
   display: block;
-  background-color: rgba(var(--color-foreground), 0.1);
+  background-color: color-mix(in srgb, var(--color-foreground), transparent 90%);
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -1937,7 +1933,7 @@ details[open]>summary .icon-caret {
   background-color: transparent;
 }
 
-.media>*:not(.zoom):not(.deferred-media__poster-button),
+.media>*:not(.zoom):not(.deferred-media__poster-icon),
 .media model-viewer {
   display: block;
   max-width: 100%;
@@ -1996,7 +1992,7 @@ deferred-media {
 /* Button - default */
 .button--secondary,
 .button--tertiary {
-  --color-button: var(--color-secondary-button);
+  --color-button: var(--color-secondary-button-background);
   --color-button-text: var(--color-secondary-button-text);
 }
 
@@ -2043,11 +2039,11 @@ quick-add-bulk .cart-quantity {
   font: inherit;
   font-size: 1.5rem;
   text-decoration: none;
-  color: rgb(var(--color-button-text));
+  color: var(--color-button-text);
   transition: box-shadow var(--duration-short) ease;
   -webkit-appearance: none;
   appearance: none;
-  background-color: rgba(var(--color-button), var(--alpha-button-background));
+  background-color: color-mix(in srgb, var(--color-button), transparent  var(--alpha-button-background));
 }
 
 .button:before,
@@ -2062,7 +2058,7 @@ quick-add-bulk .cart-quantity:before {
   inset: 0;
   z-index: -1;
   border-radius: var(--buttons-radius-outset);
-  box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) rgba(var(--color-shadow), var(--shadow-opacity));
+  box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) color-mix(in srgb, var(--color-shadow), transparent var(--shadow-opacity));
 }
 
 .button:after,
@@ -2078,8 +2074,8 @@ quick-add-bulk .cart-quantity:after {
   left: var(--buttons-border-width);
   z-index: 1;
   border-radius: var(--buttons-radius);
-  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) rgba(var(--color-button-text), var(--border-opacity)),
-    0 0 0 var(--buttons-border-width) rgba(var(--color-button), var(--alpha-button-background));
+  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) color-mix(in srgb, var(--color-button-text), transparent  var(--border-opacity)),
+    0 0 0 var(--buttons-border-width) color-mix(in srgb, var(--color-button), transparent  var(--alpha-button-background));
   transition: box-shadow var(--duration-short) ease;
 }
 
@@ -2089,8 +2085,8 @@ quick-add-bulk .cart-quantity:after {
 .shopify-payment-button__button--unbranded:hover::after,
 quick-add-bulk .cart-quantity:hover::after {
   --border-offset: 1.3px;
-  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) rgba(var(--color-button-text), var(--border-opacity)),
-    0 0 0 calc(var(--buttons-border-width) + 1px) rgba(var(--color-button), var(--alpha-button-background));
+  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) color-mix(in srgb, var(--color-button-text), transparent  var(--border-opacity)),
+    0 0 0 calc(var(--buttons-border-width) + 1px) color-mix(in srgb, var(--color-button), transparent  var(--alpha-button-background));
 }
 
 .button--secondary:after {
@@ -2103,9 +2099,9 @@ quick-add-bulk .cart-quantity:hover::after {
 .shopify-payment-button__button--unbranded:focus-visible,
 .shopify-payment-button__button--unbranded:focus {
   outline: 0;
-  box-shadow: 0 0 0 0.3rem rgb(var(--color-background)),
-    0 0 0 0.5rem rgba(var(--color-foreground), 0.5),
-    0 0 0.5rem 0.4rem rgba(var(--color-foreground), 0.3);
+  box-shadow: 0 0 0 0.3rem var(--color-background),
+    0 0 0 0.5rem color-mix(in srgb, var(--color-foreground), transparent 50%),
+    0 0 0.5rem 0.4rem color-mix(in srgb, var(--color-foreground), transparent 70%);
 }
 
 .button:focus:not(:focus-visible):not(.focused),
@@ -2116,7 +2112,7 @@ quick-add-bulk .cart-quantity:hover::after {
 .button::selection,
 .shopify-challenge__button::selection,
 .customer button::selection {
-  background-color: rgba(var(--color-button-text), 0.3);
+  background-color: color-mix(in srgb, var(--color-button-text), transparent 70%);
 }
 
 .button,
@@ -2142,28 +2138,28 @@ quick-add-bulk .cart-quantity:hover::after {
 /* Shopify Accelerated Checkout */
 shopify-accelerated-checkout {
   --shopify-accelerated-checkout-button-border-radius: var(--buttons-radius-outset);
-  --shopify-accelerated-checkout-button-box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) rgba(var(--color-shadow), var(--shadow-opacity));
+  --shopify-accelerated-checkout-button-box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) color-mix(in srgb, var(--color-shadow), transparent var(--shadow-opacity));
 }
 
 shopify-accelerated-checkout-cart {
   --shopify-accelerated-checkout-button-border-radius: var(--buttons-radius-outset);
-  --shopify-accelerated-checkout-button-box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) rgba(var(--color-shadow), var(--shadow-opacity));
+  --shopify-accelerated-checkout-button-box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) color-mix(in srgb, var(--color-shadow), transparent var(--shadow-opacity));
 }
 
 /* Button - other */
 .button.is-active {
-  color: rgba(var(--color-button), var(--alpha-button-background));
-  background-color: rgb(var(--color-button-text));
+  color: color-mix(in srgb, var(--color-button), transparent  var(--alpha-button-background));
+  background-color: var(--color-button-text);
 }
 
 .button.is-active:after {
-  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) rgba(var(--color-button), var(--border-opacity)),
-    0 0 0 var(--buttons-border-width) rgba(var(--color-button-text), var(--alpha-button-background));
+  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) color-mix(in srgb, var(--color-button), transparent  var(--border-opacity)),
+    0 0 0 var(--buttons-border-width) color-mix(in srgb, var(--color-button-text), transparent  var(--alpha-button-background));
 }
 
 .button.is-active:not([disabled]):hover::after {
-  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) rgba(var(--color-button), var(--border-opacity)),
-    0 0 0 calc(var(--buttons-border-width) + 1px) rgba(var(--color-button-text), var(--alpha-button-background));
+  box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) color-mix(in srgb, var(--color-button), transparent  var(--border-opacity)),
+    0 0 0 calc(var(--buttons-border-width) + 1px) color-mix(in srgb, var(--color-button-text), transparent  var(--alpha-button-background));
 }
 
 .button:disabled,
@@ -2201,14 +2197,14 @@ shopify-accelerated-checkout-cart {
     }
 
     .path {
-      stroke: rgb(var(--color-button-text));
+      stroke: var(--color-button-text);
     }
   }
 }
 
 @media screen and (forced-colors: active) {
   .button.loading {
-    color: rgb(var(--color-foreground));
+    color: var(--color-foreground);
   }
 }
 
@@ -2276,19 +2272,19 @@ details[open]>.share-button__fallback {
     left: var(--inputs-border-width);
     border: 0.1rem solid transparent;
     border-radius: var(--inputs-radius);
-    box-shadow: 0 0 0 var(--inputs-border-width) rgba(var(--color-foreground), var(--inputs-border-opacity));
+    box-shadow: 0 0 0 var(--inputs-border-width) color-mix(in srgb, var(--color-foreground), transparent var(--inputs-border-opacity));
     transition: box-shadow var(--duration-short) ease;
     z-index: 1;
   }
   
   &:before {
-    background: rgb(var(--color-background));
+    background: var(--color-background);
     pointer-events: none;
     content: "";
     position: absolute;
     inset: 0;
     border-radius: var(--inputs-radius-outset);
-    box-shadow: var(--inputs-shadow-horizontal-offset) var(--inputs-shadow-vertical-offset) var(--inputs-shadow-blur-radius) rgba(var(--color-shadow), var(--inputs-shadow-opacity));
+    box-shadow: var(--inputs-shadow-horizontal-offset) var(--inputs-shadow-vertical-offset) var(--inputs-shadow-blur-radius) color-mix(in srgb, var(--color-shadow), transparent var(--inputs-shadow-opacity));
     z-index: -1;
   }
 
@@ -2304,7 +2300,7 @@ details[open]>.share-button__fallback {
     right: var(--inputs-border-width);
 
     &:hover {
-      color: rgba(var(--color-foreground), 0.75);
+      color: color-mix(in srgb, var(--color-foreground), transparent 25%);
     }
 
     &:hover .svg-wrapper {
@@ -2320,18 +2316,18 @@ details[open]>.share-button__fallback {
 .share-button__close,
 .share-button__copy {
   background-color: transparent;
-  color: rgb(var(--color-foreground));
+  color: var(--color-foreground);
 }
 
 .share-button__copy:focus-visible,
 .share-button__close:focus-visible {
-  background-color: rgb(var(--color-background));
+  background-color: var(--color-background);
   z-index: 2;
 }
 
 .share-button__copy:focus,
 .share-button__close:focus {
-  background-color: rgb(var(--color-background));
+  background-color: var(--color-background);
   z-index: 2;
 }
 
@@ -2354,10 +2350,10 @@ details[open]>.share-button__fallback {
 
 .share-button__fallback .field__input:focus,
 .share-button__fallback .field__input:-webkit-autofill {
-  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  outline: 0.2rem solid color-mix(in srgb, var(--color-foreground), transparent 50%);
   outline-offset: 0.1rem;
-  box-shadow: 0 0 0 0.1rem rgb(var(--color-background)),
-    0 0 0.5rem 0.4rem rgba(var(--color-foreground), 0.3);
+  box-shadow: 0 0 0 0.1rem var(--color-background),
+    0 0 0.5rem 0.4rem color-mix(in srgb, var(--color-foreground), transparent 70%);
 }
 
 .share-button__fallback .field__input {
@@ -2400,8 +2396,8 @@ details[open]>.share-button__fallback {
 .customer select {
   -webkit-appearance: none;
   appearance: none;
-  background-color: rgb(var(--color-background));
-  color: rgb(var(--color-foreground));
+  background-color: var(--color-background);
+  color: var(--color-foreground);
   font-family: var(--font-body-family);
   font-style: var(--font-body-style);
   font-weight: var(--font-body-weight);
@@ -2427,7 +2423,7 @@ details[open]>.share-button__fallback {
   position: absolute;
   inset: 0;
   border-radius: var(--inputs-radius-outset);
-  box-shadow: var(--inputs-shadow-horizontal-offset) var(--inputs-shadow-vertical-offset) var(--inputs-shadow-blur-radius) rgba(var(--color-shadow), var(--inputs-shadow-opacity));
+  box-shadow: var(--inputs-shadow-horizontal-offset) var(--inputs-shadow-vertical-offset) var(--inputs-shadow-blur-radius) color-mix(in srgb, var(--color-shadow), transparent var(--inputs-shadow-opacity));
   z-index: -1;
 }
 
@@ -2445,7 +2441,7 @@ details[open]>.share-button__fallback {
   left: var(--inputs-border-width);
   border: 0.1rem solid transparent;
   border-radius: var(--inputs-radius);
-  box-shadow: 0 0 0 var(--inputs-border-width) rgba(var(--color-foreground), var(--inputs-border-opacity));
+  box-shadow: 0 0 0 var(--inputs-border-width) color-mix(in srgb, var(--color-foreground), transparent var(--inputs-border-opacity));
   transition: box-shadow var(--duration-short) ease;
   z-index: 1;
 }
@@ -2455,7 +2451,7 @@ details[open]>.share-button__fallback {
   font-style: var(--font-body-style);
   font-weight: var(--font-body-weight);
   font-size: 1.2rem;
-  color: rgba(var(--color-foreground), 0.75);
+  color: color-mix(in srgb, var(--color-foreground), transparent 25%);
 }
 
 .field:hover.field:after,
@@ -2463,7 +2459,7 @@ details[open]>.share-button__fallback {
 .select__select:hover.select__select:after,
 .customer .field:hover.field:after,
 .customer select:hover.select:after {
-  box-shadow: 0 0 0 calc(0.1rem + var(--inputs-border-width)) rgba(var(--color-foreground), var(--inputs-border-opacity));
+  box-shadow: 0 0 0 calc(0.1rem + var(--inputs-border-width)) color-mix(in srgb, var(--color-foreground), transparent var(--inputs-border-opacity));
   outline: 0;
   border-radius: var(--inputs-radius);
 }
@@ -2472,7 +2468,7 @@ details[open]>.share-button__fallback {
 .select__select:focus-visible,
 .customer .field input:focus-visible,
 .customer select:focus-visible {
-  box-shadow: 0 0 0 calc(0.1rem + var(--inputs-border-width)) rgba(var(--color-foreground));
+  box-shadow: 0 0 0 calc(0.1rem + var(--inputs-border-width)) var(--color-foreground);
   outline: 0;
   border-radius: var(--inputs-radius);
 }
@@ -2481,7 +2477,7 @@ details[open]>.share-button__fallback {
 .select__select:focus,
 .customer .field input:focus,
 .customer select:focus {
-  box-shadow: 0 0 0 calc(0.1rem + var(--inputs-border-width)) rgba(var(--color-foreground));
+  box-shadow: 0 0 0 calc(0.1rem + var(--inputs-border-width)) var(--color-foreground);
   outline: 0;
   border-radius: var(--inputs-radius);
 }
@@ -2555,7 +2551,7 @@ details[open]>.share-button__fallback {
   margin-bottom: 0;
   pointer-events: none;
   position: absolute;
-  color: rgba(var(--color-foreground), 0.75);
+  color: color-mix(in srgb, var(--color-foreground), transparent 25%);
   letter-spacing: 0.1rem;
   line-height: 1.5;
   transition: top var(--duration-medium) var(--cubic-smooth),
@@ -2724,20 +2720,20 @@ input[type="checkbox"] {
   left: var(--localization-border-width);
   border: 0.1rem solid transparent;
   border-radius: var(--localization-radius);
-  box-shadow: 0 0 0 var(--localization-border-width) rgba(var(--color-foreground), var(--localization-border-opacity));
+  box-shadow: 0 0 0 var(--localization-border-width) color-mix(in srgb, var(--color-foreground), transparent var(--localization-border-opacity));
   transition: box-shadow var(--duration-short) ease;
   z-index: 1;
 }
 
 .localization-form__select:hover.localization-form__select:after,
 .localization-form__select:focus.localization-form__select:after {
-  box-shadow: 0 0 0 calc(0.1rem + var(--localization-border-width)) rgba(var(--color-foreground), var(--localization-border-opacity));
+  box-shadow: 0 0 0 calc(0.1rem + var(--localization-border-width)) color-mix(in srgb, var(--color-foreground), transparent var(--localization-border-opacity));
   outline: 0;
   border-radius: var(--localization-radius);
 }
 
 .localization-form__select:focus-visible.localization-form__select:after {
-  box-shadow: 0 0 0 calc(0.1rem + var(--localization-border-width)) rgba(var(--color-foreground));
+  box-shadow: 0 0 0 calc(0.1rem + var(--localization-border-width)) var(--color-foreground);
   outline: 0;
   border-radius: var(--localization-radius);
 }
@@ -2749,7 +2745,7 @@ input[type="checkbox"] {
 
 /* component-quantity */
 .quantity {
-  color: rgba(var(--color-foreground));
+  color: var(--color-foreground);
   position: relative;
   width: calc(14rem / var(--font-body-scale) + var(--quantity-border-width) * 2);
   display: flex;
@@ -2766,7 +2762,7 @@ input[type="checkbox"] {
     left: var(--quantity-border-width);
     border: 0.1rem solid transparent;
     border-radius: var(--quantity-radius);
-    box-shadow: 0 0 0 var(--quantity-border-width) rgba(var(--color-foreground), var(--quantity-border-opacity));
+    box-shadow: 0 0 0 var(--quantity-border-width) color-mix(in srgb, var(--color-foreground), transparent var(--quantity-border-opacity));
     transition: box-shadow var(--duration-short) ease;
     z-index: 1;
   }
@@ -2812,7 +2808,7 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgb(var(--color-foreground));
+  color: var(--color-foreground);
   padding: 0;
 
   &:first-child {
@@ -2831,13 +2827,13 @@ input[type="checkbox"] {
 
 .quantity__button:focus-visible,
 .quantity__input:focus-visible {
-  background-color: rgb(var(--color-background));
+  background-color: var(--color-background);
   z-index: 2;
 }
 
 .quantity__button:focus,
 .quantity__input:focus {
-  background-color: rgb(var(--color-background));
+  background-color: var(--color-background);
   z-index: 2;
 }
 
@@ -2850,8 +2846,8 @@ input[type="checkbox"] {
 .quantity__input:-webkit-autofill,
 .quantity__input:-webkit-autofill:hover,
 .quantity__input:-webkit-autofill:active {
-  box-shadow: 0 0 0 10rem rgb(var(--color-background)) inset !important;
-  -webkit-box-shadow: 0 0 0 10rem rgb(var(--color-background)) inset !important;
+  box-shadow: 0 0 0 10rem var(--color-background) inset !important;
+  -webkit-box-shadow: 0 0 0 10rem var(--color-background) inset !important;
 }
 
 .quantity__input::-webkit-outer-spin-button,
@@ -2920,7 +2916,7 @@ input[type="checkbox"] {
 .modal__content {
   position: absolute;
   inset: 0;
-  background: rgb(var(--color-background));
+  background: var(--color-background);
   z-index: 4;
   display: flex;
   justify-content: center;
@@ -2942,8 +2938,8 @@ input[type="checkbox"] {
 
 .cart-count-bubble {
   position: absolute;
-  background-color: rgb(var(--color-button));
-  color: rgb(var(--color-button-text));
+  background-color: var(--color-button);
+  color: var(--color-button-text);
   height: 1.7rem;
   width: 1.7rem;
   border-radius: 100%;
@@ -2958,7 +2954,7 @@ input[type="checkbox"] {
 
 /* utility-bar */
 .utility-bar--bottom-border {
-  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  border-bottom: 0.1rem solid color-mix(in srgb, var(--color-foreground), transparent 92%);
 }
 
 @media screen and (width <= 1024px) {
@@ -2982,7 +2978,7 @@ input[type="checkbox"] {
 
 .announcement-bar,
 .announcement-bar__announcement {
-  color: rgb(var(--color-foreground));
+  color: var(--color-foreground);
   width: 100%;
   height: 100%;
   display: flex;
@@ -3020,7 +3016,7 @@ input[type="checkbox"] {
 .announcement-bar .slider-button--prev:focus-visible,
 .utility-bar .list-social__link:focus-visible {
   outline-offset: -0.3rem;
-  box-shadow: 0 0 0 -0.2rem rgb(var(--color-foreground));
+  box-shadow: 0 0 0 -0.2rem var(--color-foreground);
 }
 
 .localization-wrapper {
@@ -3227,7 +3223,7 @@ input[type="checkbox"] {
 }
 
 .gradient {
-  background: rgb(var(--color-background));
+  background: var(--color-background);
   background: var(--gradient-background);
   background-attachment: fixed;
 }
@@ -3561,8 +3557,7 @@ input[type="checkbox"] {
   .animate--hover-3d-lift .button:not(.button--tertiary):not([disabled]):hover,
   .animate--hover-3d-lift .shopify-challenge__button:not([disabled]):hover,
   .animate--hover-3d-lift .customer button:not([disabled]):hover,
-  .animate--hover-3d-lift .shopify-payment-button__button:hover,
-  .animate--hover-3d-lift .deferred-media:hover .deferred-media__poster-button {
+  .animate--hover-3d-lift .shopify-payment-button__button:hover {
     transition: transform var(--duration-extended) ease,
       box-shadow var(--duration-long) ease;
     /* Slow the card transition speed while hover is active. */
@@ -3571,11 +3566,6 @@ input[type="checkbox"] {
       1rem 1rem 1rem -1rem rgba(0, 0, 0, 0.05),
       0 0 0.5rem 0 rgba(255, 255, 255, 0),
       0 2rem 3.5rem -2rem rgba(0, 0, 0, 0.5);
-  }
-
-  .animate--hover-3d-lift .deferred-media:hover .deferred-media__poster-button {
-    transform: translate(-50%, -50%) scale(1.05);
-    /* Apply a specialized transform to the video play button. */
   }
 
   .animate--hover-3d-lift .collage__item .card-wrapper:hover .card--card,
@@ -3706,8 +3696,8 @@ input[type="checkbox"] {
   .animate--hover-vertical-lift .shopify-payment-button__button:not([disabled]):hover:after {
     --border-offset: 0.3px;
     /* Default is 1.3px as defined above in this file. This removes 1px to prevent the border from growing on buttons when this effect is on.  */
-    box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) rgba(var(--color-button-text), var(--border-opacity)),
-      0 0 0 var(--buttons-border-width) rgba(var(--color-button), var(--alpha-button-background));
+    box-shadow: 0 0 0 calc(var(--buttons-border-width) + var(--border-offset)) color-mix(in srgb, var(--color-button-text), transparent  var(--border-opacity)),
+      0 0 0 var(--buttons-border-width) color-mix(in srgb, var(--color-button), transparent  var(--alpha-button-background));
   }
 
   .animate--hover-vertical-lift .button:not([disabled]).button--secondary:hover:after {
@@ -3742,7 +3732,7 @@ input[type="checkbox"] {
   stroke-dasharray: 280;
   stroke-dashoffset: 0;
   transform-origin: center;
-  stroke: rgb(var(--color-foreground));
+  stroke: var(--color-foreground);
   animation: dash 1.4s ease-in-out infinite;
 }
 
@@ -3792,7 +3782,7 @@ input[type="checkbox"] {
 .progress-bar-value {
   width: 100%;
   height: 100%;
-  background-color: rgb(var(--color-foreground));
+  background-color: var(--color-foreground);
   animation: indeterminateAnimation var(--duration-extra-longer) infinite ease-in-out;
   transform-origin: 0;
 }
@@ -3852,7 +3842,7 @@ input[type="checkbox"] {
   width: 45rem;
   max-width: calc(100vw - 3rem);
   padding: 0 1.5rem;
-  border: 0.1rem solid rgba(var(--color-foreground), 0.2);
+  border: 0.1rem solid color-mix(in srgb, var(--color-foreground), transparent 80%);
   border-right: 0;
   overflow: hidden;
   display: flex;
@@ -3873,9 +3863,9 @@ input[type="checkbox"] {
   padding: 1.35rem;
   width: 4.4rem;
   height: 4.4rem;
-  color: rgba(var(--color-foreground), 1);
-  background: rgba(var(--color-foreground), 0);
-  box-shadow: 0 0 0 0.2rem rgba(var(--color-button), 0);
+  color: var(--color-foreground);
+  background: transparent;
+  box-shadow: 0 0 0 0.2rem transparent;
 }
 
 .modal--popup .drawer__close {
@@ -3999,7 +3989,7 @@ collapsible-tab:not([data-tabList-mobile]) .collapsible-tab__header {
   pointer-events: auto;
   position: relative;
   padding-block: 1rem 0.8rem;
-  border-bottom: 0.1rem solid rgb(var(--color-foreground));
+  border-bottom: 0.1rem solid var(--color-foreground);
 }
 
 collapsible-tab .collapsible-tab__header .icon-caret {
@@ -4025,7 +4015,7 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
     pointer-events: auto;
     position: relative;
     padding-block: 1rem 0.8rem;
-    border-bottom: 0.1rem solid rgb(var(--color-foreground));
+    border-bottom: 0.1rem solid var(--color-foreground);
   }
 
   collapsible-tab[data-tabList-mobile] .collapsible-tab__content {
@@ -4215,7 +4205,7 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
     height: 100%;
     position: relative;
     border-radius: var(--border-radius);
-    border: var(--border-width) solid rgba(var(--color-foreground), var(--border-opacity));
+    border: var(--border-width) solid color-mix(in srgb, var(--color-foreground), transparent var(--border-opacity));
     padding: var(--image-padding);
     
   &:after {
@@ -4223,7 +4213,7 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
     position: absolute;
     z-index: -1;
     border-radius: var(--border-radius);
-    box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) rgba(var(--color-shadow), var(--shadow-opacity));
+    box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) color-mix(in srgb, var(--color-shadow), transparent var(--shadow-opacity));
     width: calc(var(--border-width) * 2 + 100%);
     height: calc(var(--border-width) * 2 + 100%);
     top: calc(var(--border-width) * -1);
@@ -4279,13 +4269,13 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
 }
 
 .collage-card .deferred-media__poster:focus:after {
-  box-shadow: 0 0 0 0.3rem rgb(var(--color-background)), 0 0 0.5rem 0.4rem rgba(var(--color-foreground), 0.3);
-  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  box-shadow: 0 0 0 0.3rem var(--color-background), 0 0 0.5rem 0.4rem color-mix(in srgb, var(--color-foreground), transparent 70%);
+  outline: 0.2rem solid color-mix(in srgb, var(--color-foreground), transparent 50%);
 }
 
 .collage-card .deferred-media__poster:focus-visible:after {
-  box-shadow: 0 0 0 0.3rem rgb(var(--color-background)), 0 0 0.5rem 0.4rem rgba(var(--color-foreground), 0.3);
-  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  box-shadow: 0 0 0 0.3rem var(--color-background), 0 0 0.5rem 0.4rem color-mix(in srgb, var(--color-foreground), transparent 70%);
+  outline: 0.2rem solid color-mix(in srgb, var(--color-foreground), transparent 50%);
 }
 
 .collage-card .deferred-media__poster:focus:not(:focus-visible),
@@ -4585,19 +4575,19 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
   }
 
   .block-border--top {
-    border-top: 0.1rem solid rgba(var(--color-foreground), 1);
+    border-top: 0.1rem solid var(--color-foreground);
   }
 
   .block-border--bottom {
-    border-bottom: 0.1rem solid rgba(var(--color-foreground), 1);
+    border-bottom: 0.1rem solid var(--color-foreground);
   }
 
   .block-border--left {
-    border-left: 0.1rem solid rgba(var(--color-foreground), 1);
+    border-left: 0.1rem solid var(--color-foreground);
   }
 
   .block-border--right {
-    border-right: 0.1rem solid rgba(var(--color-foreground), 1);
+    border-right: 0.1rem solid var(--color-foreground);
   }
 }
 

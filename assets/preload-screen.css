@@ -7,20 +7,20 @@
 
 .preload-screen:before,
 .preload-screen:after {
-    --line: color-mix(in lch, rgba(var(--color-foreground), 0.5), transparent);
+    --line: color-mix(in lch, color-mix(in srgb, var(--color-foreground), transparent 50%), transparent);
     --size: clamp(6rem, calc(100 / 1920 * 100vw), 10rem);
     content: '';
     position: absolute;
     inset: 0;
     background: linear-gradient(90deg, var(--line) 0.1rem, transparent 0.1rem var(--size)) 0 -5vmin / var(--size) var(--size), linear-gradient(var(--line) 0.1rem, transparent 0.1rem var(--size)) 0 -1vmin / var(--size) var(--size);
-    -webkit-mask: linear-gradient(-15deg, transparent 65%, rgba(var(--color-background), 1));
-    mask: linear-gradient(-15deg, transparent 65%, rgba(var(--color-background), 1));
+    -webkit-mask: linear-gradient(-15deg, transparent 65%, var(--color-background));
+    mask: linear-gradient(-15deg, transparent 65%, var(--color-background));
     opacity: 0;
 }
 
 .preload-screen:after {
-    -webkit-mask: linear-gradient(160deg, transparent 65%, rgba(var(--color-background), 1));
-    mask: linear-gradient(160deg, transparent 65%, rgba(var(--color-background), 1));
+    -webkit-mask: linear-gradient(160deg, transparent 65%, var(--color-background));
+    mask: linear-gradient(160deg, transparent 65%, var(--color-background));
 }
 
 .preload-screen.off--ready:after,
