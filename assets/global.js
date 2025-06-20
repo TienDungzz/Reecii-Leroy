@@ -1306,6 +1306,9 @@ class SwiperComponent extends HTMLElement {
     this.swiperEl = null;
     this.initSwiper = null;
     this.options = null;
+
+      console.log("ád");
+
   }
 
   connectedCallback() {
@@ -1359,6 +1362,7 @@ class SwiperComponent extends HTMLElement {
     };
 
     const breakpointChecker = () => {
+      
       if (breakpoint.matches) {
         // Desktop
         if (this.initSwiper) {
@@ -1376,6 +1380,7 @@ class SwiperComponent extends HTMLElement {
     breakpoint.addEventListener("change", breakpointChecker);
     
     if (this.isMobileOnly) {
+
       breakpointChecker();
     } else {
       enableSwiper();
@@ -2032,11 +2037,13 @@ class ColorSwatch extends HTMLElement {
 
     // CHANGE TITLE
     if (productTitle.classList.contains("card-title-change")) {
-      productTitle.querySelector("[data-change-title]").textContent =
-        " - " + title;
+      // productTitle.querySelector("[data-change-title]").textContent =
+      //   " - " + title;
+      productTitle.querySelector(".text").setAttribute("data-change-title", " - " + title);
     } else {
       productTitle.classList.add("card-title-change");
-      productTitle.innerHTML = `<span data-change-title> - ${title}</span>`;
+      // productTitle.innerHTML = `<span data-change-title> - ${title}</span>`;
+      productTitle.querySelector(".text").setAttribute("data-change-title", " - " + title);
     }
 
     // CHANGE PRICE
@@ -2061,9 +2068,10 @@ class ColorSwatch extends HTMLElement {
           selectedVariant.compare_at_price
       )}%)`;
 
-      product.querySelector(
+      const salePercent = product.querySelector(
         ".price__sale .price-item--percent span"
-      ).innerHTML = labelSale;
+      );
+      if (salePercent) salePercent.innerHTML = labelSale;
     } else {
       product.querySelector(".price__regular .price-item").innerHTML =
         Shopify.formatMoney(selectedVariant.price, window.money_format);
@@ -2181,3 +2189,40 @@ class TabsComponent extends HTMLElement {
   }
 }
 customElements.define("tabs-component", TabsComponent);
+
+// Product Grid Show More
+
+class ShowMoreProductGrid extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.init();
+  }
+
+  init() {
+    this.button = this.querySelector("button");
+    this.button.addEventListener("click", this.handleButtonClick.bind(this));
+  }
+
+  handleButtonClick(event) {
+    event.preventDefault();
+
+    const sectionContent = this.closest('.section-global__content');
+    if (!sectionContent) return;
+
+    const template = sectionContent.querySelector('template[data-product-grid-template-showmore]');
+    if (!template) return;
+
+    const productGrid = sectionContent.querySelector('.product-grid');
+    if (!productGrid) return;
+
+    const templateContent = template.content.cloneNode(true);
+    productGrid.appendChild(templateContent);
+
+    this.remove();
+  }
+}
+customElements.define("show-more-product-grid", ShowMoreProductGrid);
+
