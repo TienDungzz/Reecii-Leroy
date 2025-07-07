@@ -1,3 +1,13 @@
+<script src="{{ 'constants.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'vendor.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'media.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
+
+{%- if settings.animations_reveal_on_scroll -%}
+  <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
 <script>
     window.shopUrl = '{{ request.origin }}';
     window.routes = {
@@ -7,6 +17,14 @@
         cart_update_url: '{{ routes.cart_update_url }}',
         cart_url: '{{ routes.cart_url }}',
         predictive_search_url: '{{ routes.predictive_search_url }}',
+    };
+
+     window.button_load_more = {
+        default: `Show more`,
+        loading: `Loading...`,
+        view_all: `View all`,
+        no_more: `No more products`,
+        no_more_collection: `No more products in this collection`
     };
 
     window.cartStrings = {

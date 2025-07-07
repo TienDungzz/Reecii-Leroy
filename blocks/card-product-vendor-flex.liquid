@@ -1,35 +1,273 @@
 {%- liquid
-    assign card_product = block.settings.product
+  assign card_product = block.settings.product
 -%}
-<div class="card--block-vendor block-{{ index }}">
-    <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
-    <div class="caption-with-letter-spacing light">
-        {%- if card_product and card_product != empty -%}
-            {{ card_product.vendor }}
-        {%- else -%}
-            {{ 'products.product.vendor' | t }}
-        {%- endif -%}
-    </div>
+<div class="card--block-vendor">
+  <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+  <div class="light">
+    {%- if card_product and card_product != empty -%}
+      {%- assign text = card_product.vendor -%}
+      {% render 'text', fallback_text: text, block: block %}
+    {%- else -%}
+      {%- assign placeholder = 'products.product.vendor' | t -%}
+      {% render 'text', fallback_text: placeholder, block: block %}
+    {%- endif -%}
+  </div>
 </div>
 
 {% schema %}
+{
+  "name": "Product vendor",
+  "tag": null,
+  "settings": [
     {
-        "name": "Product vendor",
-        "tag": null,
-        "settings": [
-            {
-                "type": "product",
-                "id": "product",
-                "label": "t:sections.collage.blocks.product.settings.product.label"
-            }
-        ],
-        "presets": [
-            {
-                "name": "Product vendor",
-                "settings": {
-                    "product": "{{ closest.product }}"
-                }
-            }
-        ]
+      "type": "product",
+      "id": "product",
+      "label": "t:sections.collage.blocks.product.settings.product.label"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit"
+        },
+        {
+          "value": "100%",
+          "label": "t:options.fill"
+        }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.width == '100%' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "t:settings.preset",
+      "options": [
+        {
+          "value": "rte",
+          "label": "t:options.default"
+        },
+        {
+          "value": "paragraph",
+          "label": "t:options.paragraph"
+        },
+        {
+          "value": "h1",
+          "label": "t:options.h1"
+        },
+        {
+          "value": "h2",
+          "label": "t:options.h2"
+        },
+        {
+          "value": "h3",
+          "label": "t:options.h3"
+        },
+        {
+          "value": "h4",
+          "label": "t:options.h4"
+        },
+        {
+          "value": "h5",
+          "label": "t:options.h5"
+        },
+        {
+          "value": "h6",
+          "label": "t:options.h6"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "rte",
+      "info": "t:info.edit_presets_in_theme_settings"
+    },
+    {
+      "type": "select",
+      "id": "font",
+      "label": "t:settings.font",
+      "options": [
+        {
+          "value": "var(--font-body-family)",
+          "label": "t:options.body"
+        },
+        {
+          "value": "var(--font-heading-family)",
+          "label": "t:options.heading"
+        }
+      ],
+      "default": "var(--font-body-family)",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "label": "t:settings.size",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "3xl",
+          "label": "t:settings_schema.typography.settings.body_size.options__1.label"
+        },
+        {
+          "value": "2xl",
+          "label": "t:settings_schema.typography.settings.body_size.options__2.label"
+        },
+        {
+          "value": "xl",
+          "label": "t:settings_schema.typography.settings.body_size.options__3.label"
+        },
+        {
+          "value": "l",
+          "label": "t:settings_schema.typography.settings.body_size.options__4.label"
+        },
+        {
+          "value": "m",
+          "label": "t:settings_schema.typography.settings.body_size.options__5.label"
+        },
+        {
+          "value": "s",
+          "label": "t:settings_schema.typography.settings.body_size.options__6.label"
+        },
+        {
+          "value": "xs",
+          "label": "t:settings_schema.typography.settings.body_size.options__7.label"
+        },
+        {
+          "value": "xxs",
+          "label": "t:settings_schema.typography.settings.body_size.options__8.label"
+        }
+      ],
+      "default": "default",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "letter_spacing",
+      "label": "t:settings.letter_spacing",
+      "options": [
+        {
+          "value": "tight",
+          "label": "t:options.tight"
+        },
+        {
+          "value": "normal",
+          "label": "t:options.normal"
+        },
+        {
+          "value": "loose",
+          "label": "t:options.loose"
+        }
+      ],
+      "default": "normal",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "t:settings.case",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "wrap",
+      "label": "t:settings.wrap",
+      "options": [
+        {
+          "value": "pretty",
+          "label": "t:options.pretty"
+        },
+        {
+          "value": "balance",
+          "label": "t:options.balance"
+        },
+        {
+          "value": "nowrap",
+          "label": "t:options.none"
+        }
+      ],
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
     }
+  ],
+  "presets": [
+    {
+      "name": "Product vendor",
+      "settings": {
+        "product": "{{ closest.product }}"
+      }
+    }
+  ]
+}
 {% endschema %}

@@ -8,6 +8,15 @@
   {% render 'button', link: '/collections/all' %}
 {% enddoc %}
 
+{%- liquid
+  assign link = link | default: block.settings.link
+  assign style_class = style_class | default: block.settings.style_class
+  assign link_underline = link_underline | default: block.settings.link_underline
+  assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab
+  assign shopify_attributes = shopify_attributes | default: block.shopify_attributes
+  assign label = label | default: block.settings.label
+-%}
+
 <a
   {% if link == blank %}
     role="link"
@@ -16,18 +25,20 @@
     href="{{ link }}"
   {% endif %}
   class="
+    {{ class }}
     size-style
-    {{ block.settings.style_class }}
-    {{ block.settings.style_class }}--{{ block.id }}
+    {{ style_class }}
+    {% if link_underline %}link--underline{% endif %}
+    {{ style_class }}--{{ block.id }}
   "
   style="{% render 'size-style', settings: block.settings %}"
-  {%- if block.settings.open_in_new_tab -%}
+  {%- if open_in_new_tab -%}
     target="_blank"
     rel="noopener noreferrer"
   {%- endif -%}
-  {{ block.shopify_attributes }}
+  {{ shopify_attributes }}
 >
-  {{ block.settings.label }}
+  {{ label }}
 </a>
 
 {% stylesheet %}
@@ -38,6 +49,11 @@
     &:hover {
       color: var(--color-primary-hover);
       text-decoration-color: transparent;
+    }
+
+    &.link--underline {
+      text-decoration: underline;
+      text-underline-offset: 1rem;
     }
   }
 {% endstylesheet %}

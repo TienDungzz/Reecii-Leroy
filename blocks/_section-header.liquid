@@ -20,11 +20,13 @@
   {%- if p_right != 0 -%}--pr:{{ p_right }}px;{%- endif -%}
   {%- if gap_x != 0 -%}--gap-x: {{ gap_x }}px;{%- endif -%}
   {%- if gap_y != 0 -%}--gap-y: {{ gap_y }}px;{%- endif -%}
+  
+  {%- render 'layout-panel-style', settings: bl_stts -%}
   "
 {%- endcapture -%}
 
 <div
-  class="{{ bl_stts | class_list }} group-block group-block--{{block.id}} flex-section wid-100 dis-flex f-{{ bl_stts.direction }} f-{{ bl_stts.wrap }} a-i-{{ bl_stts.align_items}} j-c-{{ bl_stts.justify_content }} color-{{ bl_stts.color_scheme }}"
+  class="{{ bl_stts | class_list }} layout-panel-flex layout-panel-flex--{{ bl_stts.direction }} group-block group-block--{{block.id}} flex-section wid-100 color-{{ bl_stts.color_scheme }}"
   {{ block.shopify_attributes }}
   {{ styles }}
 >
@@ -160,7 +162,7 @@
           "label": "Default"
         },
         {
-          "value": "start",
+          "value": "flex-start",
           "label": "⤒"
         },
         {
@@ -168,7 +170,7 @@
           "label": "⮃"
         },
         {
-          "value": "end",
+          "value": "flex-end",
           "label": "⤓"
         }
       ],
@@ -180,7 +182,7 @@
       "id": "justify_content",
       "options": [
         {
-          "value": "start",
+          "value": "flex-start",
           "label": "Start"
         },
         {
@@ -188,42 +190,33 @@
           "label": "Center"
         },
         {
-          "value": "end",
+          "value": "flex-end",
           "label": "End"
         },
         {
-          "value": "between",
+          "value": "space-between",
           "label": "Space Between"
         },
         {
-          "value": "around",
+          "value": "space-around",
           "label": "Space Around"
         },
         {
-          "value": "evenly",
+          "value": "space-evenly",
           "label": "Space Evenly"
         }
       ],
-      "default": "start",
+      "default": "flex-start",
       "label": "Justify"
     },
     {
       "type": "range",
-      "id": "gap_x",
+      "id": "gap",
       "min": 0,
       "max": 100,
       "step": 1,
       "default": 10,
-      "label": "Column Gap"
-    },
-    {
-      "type": "range",
-      "id": "gap_y",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "default": 10,
-      "label": "Row Gap"
+      "label": "Gap"
     }
   ],
   "presets": [

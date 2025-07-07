@@ -13,10 +13,26 @@
   assign heading_size = bl_stts.heading_size
 
   assign alignment = bl_stts.alignment
+
+  assign border = bl_stts.border
 -%}
 
+{% if border != 'none' %}
+  {%- render 'heading-border-styles' -%}
+{% endif %}
+
+
 {%- capture attr -%}
- class="wid-{{ width }} {{ alignment }}" {{ block.shopify_attributes }} style="{% if p_left != 0 %}--pl:{{ p_left }}px;{% endif %}{% if p_top != 0 %}--pt:{{ p_top }}px;{% endif %}{% if p_bottom != 0 %}--pb:{{ p_bottom }}px;{% endif %}{% if p_right != 0 %}--pr:{{ p_right }}px;{% endif %}"
+ class="{% if border != 'none' %}heading-border--{{ border }}{% endif %} wid-{{ width }} {{ alignment }}" {{ block.shopify_attributes }} 
+ style="
+ {% if border != 'none' %}
+  {%- render 'border-override', settings: bl_stts -%}
+ {% endif %}
+ {% if p_left != 0 %}--pl:{{ p_left }}px;{% endif %}
+ {% if p_top != 0 %}--pt:{{ p_top }}px;{% endif %}
+ {% if p_bottom != 0 %}--pb:{{ p_bottom }}px;{% endif %}
+ {% if p_right != 0 %}--pr:{{ p_right }}px;{% endif %}
+ "
 {%- endcapture -%}
 
 <div {{ attr }}>

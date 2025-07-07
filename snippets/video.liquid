@@ -27,6 +27,7 @@
   {% render 'video', video: section.settings.video, video_autoplay: true, video_loop: true, section_id: section.id %}
 {% enddoc %}
 
+{% assign video_id = section.settings.video.id | default: section.settings.video_url.id %}
 {% assign video_alt = video_alt | default: video.alt %}
 {% assign alt = 'blocks.load_video' | t: description: video_alt | escape %}
 {% assign video_preview_image = video_preview_image | default: video.preview_image %}
@@ -38,6 +39,18 @@
   assign sizes = '(min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
   assign widths = '450, 525, 600, 675, 750, 768, 850, 900, 1024, 1125, 1280, 1440, 1536, 1700, 1920, 2048, 2150, 2304, 2560, 2700, 2880, 3072, 3840, 4320, 5760'
 %}
+
+{% stylesheet %}
+  .video-interaction-hint {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: var(--layer-flat);
+  }
+
+  .video-interaction-hint:hover {
+    opacity: 1;
+  }
+{% endstylesheet %}
 
 {% if video_from_url %}
   {% liquid
@@ -59,7 +72,7 @@
         assign video_src = video_src | append: '&controls=0'
         assign video_src = video_src | append: '&enablejsapi=1'
       endif
-      assign class = 'js-youtube'
+      assign class = 'js-youtube wid-100'
     else
       assign video_src = 'https://player.vimeo.com/video/VIDEO_ID?' | replace: 'VIDEO_ID', video
 
@@ -83,7 +96,7 @@
   {% capture video_iframe %}
       <iframe
         src="{{ video_src }}"
-        class="{{ class }}"
+        class="{{ class }} media--{{ video_ratio }}"
         allow="autoplay; encrypted-media"
         allowfullscreen
         title="{{ video_alt | escape }}"
@@ -121,8 +134,9 @@
 
 {% if video != blank %}
   <deferred-media
-    class="{{ video_class }}"
+    class="deferred-media pos-relative overflow-hidden {{ video_class }}"
     style="{{ video_style }}"
+    data-media-id="{{ video_id }}"
     {% if video_autoplay %}
       autoplay
     {% endif %}
@@ -130,12 +144,11 @@
   >
     {% if video_preview_image != blank %}
       <button
-        class="button deferred-media__poster-button button-unstyled"
+        class="button deferred-media__poster deferred-media__poster-button media button-unstyled wid-100 media--{{ video_ratio }}"
         ref="deferredMediaPlayButton"
         aria-label="{{ alt }}"
         type="button"
-        on:click="/showDeferredMedia"
-        style="--video-aspect-ratio: {{ video.aspect_ratio }}"
+        id="Deferred-Poster-Modal-{{ video_id }}"
       >
         {{
           video_preview_image
@@ -143,7 +156,7 @@
           | image_tag: widths: widths, sizes: sizes, loading: loading, class: 'deferred-media__poster-image'
         }}
 
-        <span class="deferred-media__poster-icon icon-play">
+        <span class="deferred-media__poster-icon">
           <span class="visually-hidden">{{ 'accessibility.play_video' | t }}</span>
           {{- 'icon-play.svg' | inline_asset_content -}}
         </span>
@@ -206,14 +219,3 @@
   </div>
 {% endif %}
 
-{% stylesheet %}
-  .video-interaction-hint {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: var(--layer-flat);
-  }
-
-  .video-interaction-hint:hover {
-    opacity: 1;
-  }
-{% endstylesheet %}

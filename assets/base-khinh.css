@@ -1,0 +1,186 @@
+.media>*:not(.zoom):not(.deferred-media__poster-icon) {
+  display: block;
+  max-width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+/* Custom Typography style */
+.custom-typography,
+.custom-typography > * {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight);
+  text-transform: var(--text-transform);
+  text-wrap: var(--text-wrap);
+  letter-spacing: var(--letter-spacing);
+}
+
+.custom-font-size,
+.custom-font-size > * {
+  font-size: var(--font-size);
+}
+
+.custom-font-weight,
+.custom-font-weight > * {
+  font-weight: var(--weight);
+}
+/* swiper-component */
+.swiper {
+  --swiper-navigation-sides-offset: calc(var(--swiper-navigation-size) * -0.5);
+  --swiper-navigation-size: 3.6rem;
+  --swiper-navigation-top-offset: calc(50% - 7rem);
+
+}
+.section--page-width .swiper {
+  padding-inline: calc(var(--swiper-navigation-sides-offset) * -1) ;
+  margin-inline: var(--swiper-navigation-sides-offset);
+
+  .swiper-button {
+    --swiper-navigation-sides-offset: 0px;
+  }
+}
+
+.swiper-button {
+  width: var(--swiper-navigation-size);
+  border-radius: 50%;
+  transition: all 0.3s var(--cubic-fast);
+  
+  &.swiper-button-prev ,
+  &.swiper-button-next {
+    color: var(--arrow-color);
+    background-color: var(--arrow-background);
+    border: 1px solid var(--arrow-border);
+    width: var(--swiper-navigation-size);
+    
+    .section--full-width & {
+      --swiper-navigation-sides-offset: 2rem;
+    }
+
+    &.swiper-button-disabled {
+      opacity: 0;
+    }
+
+    &:active {
+      transform: scale(0.9);
+    }
+  }
+
+  @media screen and (width > 1024px) {
+    opacity: 0;
+    &.swiper-button-prev {
+      transform: translateX(.5rem);
+    }
+
+    &.swiper-button-next {
+      transform: translateX(-.5rem);
+    }
+
+    .swiper:hover & {
+      &:not(.swiper-button-disabled) {
+        opacity: 1;
+      }
+      
+      &.swiper-button-prev,
+      &.swiper-button-next {
+        transform: translateX(0);
+      }
+
+      &:active {
+        transform: translateX(0) scale(0.9);
+      }
+    }
+  }
+  
+}
+/* spacing-style */
+.spacing-style,
+.inherit-spacing {
+  padding-block: calc(var(--padding-block-start) + var(--section-top-offset, 0px)) var(--padding-block-end);
+  padding-inline: var(--padding-inline-start) var(--padding-inline-end);
+  margin-block: var(--margin-block-start) var(--margin-block-end);
+  margin-inline: var(--margin-inline-start) var(--margin-inline-end);
+}
+
+/* Base text and heading styles */
+.paragraph:not(.button),
+.paragraph > * {
+  font-family: var(--font-body-family);
+  font-style: var(--font-body-style);
+  font-weight: var(--font-body-weight);
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-line-height);
+  text-transform: var(--font-body-case);
+  -webkit-font-smoothing: antialiased;
+  color: var(--color, var(--color-foreground));
+}
+
+.paragraph > small {
+  font-size: smaller;
+}
+
+.body-xxs-font-size,
+.body-l-font-size,
+.body-s-font-size,
+.body-xxs-font-size {
+  line-height: var(--line-height--body-normal);/* 1.4 */
+}
+
+.body-3xl-font-size,
+.body-2xl-font-size,
+.body-xl-font-size,
+.body-m-font-size,
+.body-xs-font-size {
+  line-height: var(--line-height--body-medium);/* 1.5 */
+}
+
+
+h1,
+.h1,
+.text-block.h1 > * {
+  font-size: calc(var(--font-heading-scale) * var(--font-size--h1));
+  letter-spacing: var(--letter-spacing--h1);
+  text-transform: var(--text-transform--h1);
+}
+
+h2,
+.h2,
+.text-block.h2 > * {
+  font-size: calc(var(--font-heading-scale) * var(--font-size--h2));
+  letter-spacing: var(--letter-spacing--h2);
+  text-transform: var(--text-transform--h2);
+}
+
+h3,
+.h3,
+.text-block.h3 > * {
+  font-size: calc(var(--font-heading-scale) * var(--font-size--h3));
+  letter-spacing: var(--letter-spacing--h3);
+  text-transform: var(--text-transform--h3);
+}
+
+h4,
+.h4,
+.text-block.h4 > * {
+  font-size: calc(var(--font-heading-scale) * var(--font-size--h4));
+  letter-spacing: var(--letter-spacing--h4);
+  text-transform: var(--text-transform--h4);
+}
+
+h5,
+.h5,
+.text-block.h5 > * {
+  font-size: calc(var(--font-heading-scale) * var(--font-size--h5));
+  letter-spacing: var(--letter-spacing--h5);
+  text-transform: var(--text-transform--h5);
+}
+
+h6,
+.h6,
+.text-block.h6 > * {
+  font-size: calc(var(--font-heading-scale) * var(--font-size--h6));
+  letter-spacing: var(--letter-spacing--h6);
+  text-transform: var(--text-transform--h6);
+}

@@ -78,6 +78,11 @@
         --quickview-button-background: {{ scheme.settings.quick_view_background }};
         --compare-button-color: {{ scheme.settings.compare_icon }};
         --compare-button-background: {{ scheme.settings.compare_background }};
+
+        /* Arrows */
+      --arrow-color: rgba({{ scheme.settings.arrow_color.rgba }});
+      --arrow-background: rgba({{ scheme.settings.arrow_background.rgba }});
+      --arrow-border: rgba({{ scheme.settings.arrow_border.rgba }});
     }
   {% endfor %}
 
@@ -87,13 +92,9 @@
   }
 
   :root {
-    --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
-    --font-body-style: {{ settings.type_body_font.style }};
-    --font-body-weight: {{ settings.type_body_font.weight }};
-    --font-body-weight-bold: {{ settings.type_body_font.weight | plus: 300 | at_most: 1000 }};
-
-    --font-body-size: {{ settings.body_font_size | divided_by: 10.0 }}rem;
-
+    
+    /* Line height / Leading */
+    /* --- Body --- */
     --body-3xl-font-size: 2.8rem;
     --body-2xl-font-size: 2.4rem;
     --body-xl-font-size: 2.0rem;
@@ -103,15 +104,71 @@
     --body-xs-font-size: 1.2rem;
     --body-xxs-font-size: 1.0rem;
 
-    --body-3xl-line-height: 4.2rem;
-    --body-2xl-line-height: 3.6rem;
-    --body-xl-line-height: 3.0rem;
-    --body-l-line-height: 2.6rem;
-    --body-m-line-height: 2.4rem;
-    --body-s-line-height: 2rem;
-    --body-xs-line-height: 1.8rem;
-    --body-xxs-line-height: 1.4rem;
+    --body-3xl-line-height: 4.2rem; /* 1.5 */
+    --body-2xl-line-height: 3.6rem; /* 1.5 */
+    --body-xl-line-height: 3.0rem; /* 1.5 */
+    --body-l-line-height: 2.6rem; /* 1.4 */
+    --body-m-line-height: 2.4rem; /* 1.5 */
+    --body-s-line-height: 2rem; /* 1.4 */
+    --body-xs-line-height: 1.8rem; /* 1.5 */
+    --body-xxs-line-height: 1.4rem; /* 1.4 */
 
+    --line-height--body-tight: 1.2;
+    --line-height--body-normal: 1.4;
+    --line-height--body-medium: 1.5;
+    --line-height--body-loose: 1.75;
+
+    /* --- Heading --- */
+    {%- liquid
+       assign font_sizes = "h1, h2, h3, h4, h5, h6" | split: ", "
+       for font_size in font_sizes
+        assign size_setting = 'heading_font_size_' | append: font_size
+        assign font_size_value = settings[size_setting]
+        assign font_size_value_px = font_size_value | times: 1.0 | divided_by: 10.0
+        assign font_size_value_rem = font_size_value_px | append: "rem"
+
+        echo '--font-size--' | append: font_size | append: ': ' | append: font_size_value_rem | append: ';'
+       endfor
+    -%}
+
+    /* Letter-spacing / Tracking */
+    --letter-spacing--display-tight: -0.03em;
+    --letter-spacing--display-normal: 0;
+    --letter-spacing--display-loose: 0.03em;
+
+    --letter-spacing--heading-tight: -0.03em;
+    --letter-spacing--heading-normal: 0;
+    --letter-spacing--heading-loose: 0.03em;
+
+    --letter-spacing--body-tight: -0.03em;
+    --letter-spacing--body-normal: 0;
+    --letter-spacing--body-loose: 0.03em;
+
+    /* --- Heading --- */
+    {%- liquid
+       assign font_sizes = "h1, h2, h3, h4, h5, h6" | split: ", "
+       for font_size in font_sizes
+        assign tracking_setting = 'heading_letter_spacing_' | append: font_size
+        assign tracking_value = settings[tracking_setting]
+        echo '--letter-spacing--' | append: font_size | append: ': var(--letter-spacing--heading-' | append: tracking_value | append: ');'
+       endfor
+    -%}
+
+    /* Text transform */
+    --text-transform--none: none;
+    --text-transform--uppercase: uppercase;
+    --text-transform--capitalize: capitalize;
+
+    {%- liquid
+       assign font_sizes = "h1, h2, h3, h4, h5, h6" | split: ", "
+       for font_size in font_sizes
+        assign text_transform_setting = 'heading_text_transform_' | append: font_size
+        assign text_transform_value = settings[text_transform_setting]
+        echo '--text-transform--' | append: font_size | append: ': var(--text-transform--' | append: text_transform_value | append: ');'
+       endfor
+    -%}
+
+    /* Font heading */
     --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
     --font-heading-style: {{ settings.type_header_font.style }};
     --font-heading-weight: {{ settings.type_header_font.weight }};
@@ -124,6 +181,7 @@
     --page-content-width: {{ settings.page_width | divided_by: 10 }}rem;
     --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
 
+    /* Product card */
     --product-card-image-padding: {{ settings.card_image_padding | divided_by: 10.0 }}rem;
     --product-card-corner-radius: {{ settings.card_corner_radius | divided_by: 10.0 }}rem;
     --product-card-text-alignment: {{ settings.card_text_alignment }};
@@ -135,6 +193,7 @@
     --product-card-shadow-vertical-offset: {{ settings.card_shadow_vertical_offset | divided_by: 10.0 }}rem;
     --product-card-shadow-blur-radius: {{ settings.card_shadow_blur | divided_by: 10.0 }}rem;
 
+    /* Collection card */
     --collection-card-image-padding: {{ settings.collection_card_image_padding | divided_by: 10.0 }}rem;
     --collection-card-corner-radius: {{ settings.collection_card_corner_radius | divided_by: 10.0 }}rem;
     --collection-card-text-alignment: {{ settings.collection_card_text_alignment }};
@@ -146,6 +205,7 @@
     --collection-card-shadow-vertical-offset: {{ settings.collection_card_shadow_vertical_offset | divided_by: 10.0 }}rem;
     --collection-card-shadow-blur-radius: {{ settings.collection_card_shadow_blur | divided_by: 10.0 }}rem;
 
+    /* Blog card */
     --blog-card-image-padding: {{ settings.blog_card_image_padding | divided_by: 10.0 }}rem;
     --blog-card-corner-radius: {{ settings.blog_card_corner_radius | divided_by: 10.0 }}rem;
     --blog-card-text-alignment: {{ settings.blog_card_text_alignment }};
@@ -157,16 +217,20 @@
     --blog-card-shadow-vertical-offset: {{ settings.blog_card_shadow_vertical_offset | divided_by: 10.0 }}rem;
     --blog-card-shadow-blur-radius: {{ settings.blog_card_shadow_blur | divided_by: 10.0 }}rem;
 
+    /* Badge */
     --badge-corner-radius: {{ settings.badge_corner_radius | divided_by: 10.0 }}rem;
 
+    /* Spacing section */
     --spacing-sections-desktop: {{ settings.spacing_sections }}px;
     --spacing-sections-mobile: {% if settings.spacing_sections < 24 %}{{ settings.spacing_sections }}{% else %}{{ settings.spacing_sections | times: 0.7 | round | at_least: 20 }}{% endif %}px;
 
+    /* Grid */
     --grid-desktop-vertical-spacing: {{ settings.spacing_grid_vertical }}px;
     --grid-desktop-horizontal-spacing: {{ settings.spacing_grid_horizontal }}px;
     --grid-mobile-vertical-spacing: {{ settings.spacing_grid_vertical | divided_by: 2 }}px;
     --grid-mobile-horizontal-spacing: {{ settings.spacing_grid_horizontal | divided_by: 2 }}px;
 
+    /* Buttons */
     --buttons-radius: {{ settings.buttons_radius }}px;
     --buttons-radius-outset: {% if settings.buttons_radius > 0 %}{{ settings.buttons_radius | plus: settings.buttons_border_thickness }}{% else %}0{% endif %}px;
     --buttons-border-width: {% if settings.buttons_border_opacity > 0 %}{{ settings.buttons_border_thickness }}{% else %}0{% endif %}px;
@@ -178,6 +242,7 @@
     --buttons-shadow-blur-radius: {{ settings.buttons_shadow_blur }}px;
     --buttons-border-offset: {% if settings.buttons_radius > 0 or settings.buttons_shadow_opacity > 0 %}0.3{% else %}0{% endif %}px;
 
+    /* Inputs */
     --inputs-radius: {{ settings.inputs_radius }}px;
     --inputs-border-width: {{ settings.inputs_border_thickness }}px;
     --inputs-border-opacity: {{ 100 | minus: settings.inputs_border_opacity }}%;
@@ -188,6 +253,7 @@
     --inputs-shadow-blur-radius: {{ settings.inputs_shadow_blur }}px;
     --inputs-radius-outset: {% if settings.inputs_radius > 0 %}{{ settings.inputs_radius | plus: settings.inputs_border_thickness }}{% else %}0{% endif %}px;
 
+    /* Variant pills */
     --variant-pills-radius: {{ settings.variant_pills_radius }}px;
     --variant-pills-border-width: {{ settings.variant_pills_border_thickness }}px;
     --variant-pills-border-opacity: {{ 100 | minus: settings.variant_pills_border_opacity }}%;
@@ -196,6 +262,7 @@
     --variant-pills-shadow-vertical-offset: {{ settings.variant_pills_shadow_vertical_offset }}px;
     --variant-pills-shadow-blur-radius: {{ settings.variant_pills_shadow_blur }}px;
 
+    /* Swatch input */
     --swatch-input--size: {{ settings.variant_swatch_size | times: 0.1 }}rem;
 
     /* Localization */
@@ -274,6 +341,14 @@
 
     /** Z-Index / Layering */
     --layer-section-background: -2;
+
+    --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+    --font-body-style: {{ settings.type_body_font.style }};
+    --font-body-weight: {{ settings.type_body_font.weight }};
+    --font-body-weight-bold: {{ settings.type_body_font.weight | plus: 300 | at_most: 1000 }};
+
+    --font-body-size: {{ settings.body_font_size | divided_by: 10.0 }}rem;
+    --font-body-line-height: var(--line-height--body-{{ settings.body_line_height }});
   }
 
   @media screen and (width >= 750px) {
@@ -300,18 +375,14 @@
     grid-template-columns: 100%;
     min-height: 100%;
     margin: 0;
-    font-size: calc(var(--font-body-scale) * 1.8rem);
-    line-height: calc(1 + 0.8 / var(--font-body-scale));
+    font-size: calc(var(--font-body-scale) * var(--font-body-size));
+    line-height: calc(var(--font-body-line-height) / var(--font-body-scale));
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
     font-weight: var(--font-body-weight);
   }
 
-  @media screen and (min-width: 750px) {
-    body {
-      font-size: calc(var(--font-body-scale) * 2rem);
-    }
-  }
+
 {% endstyle %}
 {%- unless settings.type_body_font.system? -%}
   {% comment %}theme-check-disable AssetPreload{% endcomment %}
