@@ -1,18 +1,18 @@
 <details
   id="Footer-details-{{ block.id }}"
-  class="footer-block dis-block {{ block.type }} footer-block--menu{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+  class="footer-block block {{ block.type }} footer-block--menu{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
   is="collapsible-details"
   collapsible-mobile
   style="{% if settings.animations_reveal_on_scroll %}--animation-order: {{ forloop.index }};{% endif %}"
   {{ block.shopify_attributes }}
 >
-  <summary id="Footer-summary-{{ block.id }}-{{ section.id }}" class="dis-flex-mb a-i-center j-c-between c-pointer">
+  <summary id="Footer-summary-{{ block.id }}-{{ section.id }}" class="sm\:flex items-center justify-between cursor-pointer">
     <h2 class="footer-block__heading inline-richtext{% if block.settings.underline %} underline{% endif %}">{{- block.settings.heading -}}</h2>
     {{- 'icon-caret.svg' | inline_asset_content -}}
   </summary>
 
   {%- if block.settings.menu != blank -%}
-    <ul class="footer-block__details-content list-unstyled dis-flex f-column">
+    <ul class="footer-block__details-content list-unstyled flex flex-column">
       {%- for link in block.settings.menu.links -%}
         <li>
           <a

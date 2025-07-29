@@ -144,7 +144,7 @@
                 {% when 'boolean', 'list' %}
                   <details
                     id="Details-{{ filter.param_name | escape }}-{{ section.id }}"
-                    class="{% if filter_type == 'horizontal' %}details--dropdown disclosure-has-popup pos-relative facets__disclosure{% else %} facets__disclosure-vertical{% endif %} js-filter"
+                    class="{% if filter_type == 'horizontal' %}details--dropdown disclosure-has-popup relative facets__disclosure{% else %} facets__disclosure-vertical{% endif %} js-filter"
                     data-index="{{ forloop.index }}"
                     is="{{ details_ani }}"
                     {% if filter_type == 'vertical' and forloop.index == 1 %}
@@ -175,11 +175,11 @@
                     <div
                       id="Facet-{{ forloop.index }}-{{ section.id }}"
                       class="details__list parent-display{% if filter_type == 'horizontal' %} facets__display{% else %} facets__display-vertical{% endif %}"
-                      {% if filter_type == 'horizontal' %}style="--pad-a-a: 1rem 0.5rem;"{% endif %}
+                      {% if filter_type == 'horizontal' %}style="--p: 1rem 0.5rem;"{% endif %}
                       tabindex="-1"
                     >
                       {%- if filter_type == 'horizontal' -%}
-                        <div class="wid-100 hei-100 over-a cus-scrollbar" style="--pad-a-a: 0 0.5rem;">
+                        <div class="w-full h-full overflow-auto cus-scrollbar" style="--p: 0 0.5rem;">
                       {%- endif -%}
                         {%- if filter_type != 'vertical' -%}
                           <div class="facets__header">
@@ -229,7 +229,7 @@
 
                               {%- capture text_value -%}
                                 <span class="facet-checkbox__text" aria-hidden="true">
-                                  <span class="facet-checkbox__text-label{% if presentation == 'swatch' %} t-lowercase{% endif %}">{{- value.label | escape }}</span> ({{- value.count -}})
+                                  <span class="facet-checkbox__text-label{% if presentation == 'swatch' %} lowercase{% endif %}">{{- value.label | escape }}</span> ({{- value.count -}})
                                 </span>
                                 <span class="visually-hidden">
                                   {{- value.label | escape }} (
@@ -326,7 +326,7 @@
                 {% when 'price_range' %}
                   <details
                     id="Details-{{ filter.param_name | escape }}-{{ section.id }}"
-                    class="{% if filter_type == 'horizontal' %}details--dropdown disclosure-has-popup pos-relative facets__disclosure{% else %}facets__disclosure-vertical{% endif %} js-filter"
+                    class="{% if filter_type == 'horizontal' %}details--dropdown disclosure-has-popup relative facets__disclosure{% else %}facets__disclosure-vertical{% endif %} js-filter"
                     data-index="{{ forloop.index }}"
                     is="{{ details_ani }}"
                     {% if filter_type == 'vertical' and forloop.index == 1 %}
@@ -342,11 +342,11 @@
                     <div
                       id="Facet-{{ forloop.index }}-{{ section.id }}"
                       class="details__list{% if filter_type == 'horizontal' %} facets__display{% else %} facets__display-vertical{% endif %}"
-                      {% if filter_type == 'horizontal' %}style="--pad-a-a: 1rem 0.5rem;"{% endif %}
+                      {% if filter_type == 'horizontal' %}style="--p: 1rem 0.5rem;"{% endif %}
                         tabindex="-1"
                     >
                       {%- if filter_type == 'horizontal' -%}
-                        <div class="wid-100 hei-100 over-a cus-scrollbar" style="--pad-a-a: 0 0.5rem;">
+                        <div class="w-full h-full overflow-auto cus-scrollbar" style="--p: 0 0.5rem;">
                       {%- endif -%}
                         <div class="{% if filter_type == 'horizontal' %}facets__header{% else %}facets__header-vertical{% endif %}">
                           {%- assign max_price_amount = filter.range_max | money | strip_html | escape -%}
@@ -361,7 +361,7 @@
                             </facet-remove>
                           {%- endif -%}
                         </div>
-                        <price-range class="facets__price dis-block">
+                        <price-range class="facets__priceblock">
                           {% render 'price-facet', filter: filter, id_prefix: 'Filter-', filter_type: filter_type %}
                         </price-range>
                       {%- if filter_type == 'horizontal' -%}
@@ -443,7 +443,7 @@
                 {%- assign selected_sort_by = results.sort_options | where: 'value', sort_by | first -%}
                 <details
                   id="Details-SortBy"
-                  class="details--dropdown facet-filters__sort pos-relative caption-large"
+                  class="details--dropdown facet-filters__sort relative caption-large"
                   is="dropdown-details" activate-event="hover"
                   data-index="0"
                 >
@@ -452,11 +452,11 @@
                       {{ selected_sort_by.name }} {{- 'icon-caret.svg' | inline_asset_content -}}
                     </span>
                   </summary>
-                  <div id="SortByDropdown" class="details__list pos-absolute top-100 right-0 z-index-1 gradient global-settings-popup" style="--min-w-a: 20rem;" tabindex="-1">
-                    <ul class="list-unstyled" role="list" style="--pad-a-a: 1.3rem 2rem;">
+                  <div id="SortByDropdown" class="details__list absolute top-full right-0 z-1 gradient global-settings-popup" style="--min-w: 20rem;" tabindex="-1">
+                    <ul class="list-unstyled" role="list" style="--p: 1.3rem 2rem;">
                       {%- for option in results.sort_options -%}
-                        <li class="facet-filters__sort_item pos-relative{% if option.value == sort_by %} selected{% endif %}" style="--pad-a-a: 0;" tabindex="-1">
-                          <label for="Filter-{{ option.value | escape }}-{{ forloop.index }}" class="facet-checkbox c-pointer">
+                        <li class="facet-filters__sort_item relative{% if option.value == sort_by %} selected{% endif %}" style="--p: 0;" tabindex="-1">
+                          <label for="Filter-{{ option.value | escape }}-{{ forloop.index }}" class="facet-checkbox cursor-pointer">
                             <input type="checkbox" name="sort_by" value="{{ option.value | escape }}" id="Filter-{{ option.value | escape }}-{{ forloop.index }}" class="visually-hidden">
                             <span class="label full-unstyled-link">{{ option.name | escape }}</span>
                           </label>
@@ -474,10 +474,10 @@
   {%- endif -%}
   {% comment %}  Drawer and mobile filter {% endcomment %}
   <menu-drawer
-    class="mobile-facets__wrapper dis-flex{% if filter_type == 'horizontal' or filter_type == 'vertical' %} large-up-hide{% endif %}"
+    class="mobile-facets__wrapper flex{% if filter_type == 'horizontal' or filter_type == 'vertical' %} large-up-hide{% endif %}"
     data-breakpoint="mobile"
   >
-    <details class="mobile-facets__disclosure{% if filter_type == 'drawer' %} facets__disclosure-drawer{% endif %} disclosure-has-popup pos-relative dis-flex">
+    <details class="mobile-facets__disclosure{% if filter_type == 'drawer' %} facets__disclosure-drawer{% endif %} disclosure-has-popup relative flex">
       <summary class="mobile-facets__open-wrapper focus-offset">
         <span class="mobile-facets__open{% if filter_type == 'drawer' and enable_filtering == false %} large-up-hide{% endif %}">
           <span class="svg-wrapper">
@@ -505,7 +505,7 @@
         </span>
       </summary>
       <facet-filters-form>
-        <form id="FacetFiltersFormMobile" class="mobile-facets pos-fixed inset-0 z-index-9 pointer-e-none">
+        <form id="FacetFiltersFormMobile" class="mobile-facets fixed inset-0 z-9 pointer-events-none">
           <div class="mobile-facets__inner gradient">
             <div class="mobile-facets__header">
               <div class="mobile-facets__header-inner">
@@ -616,7 +616,7 @@
 
                               {%- capture text_value -%}
                                 <span class="facet-checkbox__text" aria-hidden="true">
-                                  <span class="facet-checkbox__text-label{% if presentation == 'swatch' %} t-lowercase{% endif %}">{{- value.label | escape }}</span> ({{- value.count -}})
+                                  <span class="facet-checkbox__text-label{% if presentation == 'swatch' %} lowercase{% endif %}">{{- value.label | escape }}</span> ({{- value.count -}})
                                 </span>
                                 <span class="visually-hidden">
                                   {{- value.label | escape }} (
@@ -689,7 +689,7 @@
                           </ul>
 
                           <div class="mobile-facets__footer gradient">
-                            <facet-remove class="mobile-facets__clear-wrapper a-i-center dis-flex j-c-center">
+                            <facet-remove class="mobile-facets__clear-wrapper items-center flex justify-center">
                               <a href="{{ filter.url_to_remove }}" class="mobile-facets__clear underlined-link">
                                 {{- 'products.facets.clear' | t -}}
                               </a>
@@ -736,11 +736,11 @@
                             {{ 'products.facets.max_price' | t: price: max_price_amount }}
                           </p>
 
-                          <price-range class="facets__price dis-block">
+                          <price-range class="facets__priceblock">
                             {% render 'price-facet', filter: filter, id_prefix: 'Mobile-Filter-' %}
                           </price-range>
                           <div class="mobile-facets__footer">
-                            <facet-remove class="mobile-facets__clear-wrapper a-i-center dis-flex j-c-center">
+                            <facet-remove class="mobile-facets__clear-wrapper items-center flex justify-center">
                               <a href="{{ filter.url_to_remove }}" class="mobile-facets__clear underlined-link">
                                 {{- 'products.facets.clear' | t -}}
                               </a>
@@ -796,7 +796,7 @@
               {%- endif -%}
 
               <div class="mobile-facets__footer">
-                <facet-remove class="mobile-facets__clear-wrapper a-i-center dis-flex j-c-center">
+                <facet-remove class="mobile-facets__clear-wrapper items-center flex justify-center">
                   <a href="{{ results_url }}" class="mobile-facets__clear underlined-link">
                     {{- 'products.facets.clear_all' | t -}}
                   </a>
@@ -883,7 +883,7 @@
               {%- assign selected_sort_by = results.sort_options | where: 'value', sort_by | first -%}
               <details
                 id="Details-SortBy"
-                class="details--dropdown facet-filters__sort pos-relative caption-large"
+                class="details--dropdown facet-filters__sort relative caption-large"
                 is="dropdown-details" activate-event="hover"
                 data-index="0"
               >
@@ -892,11 +892,11 @@
                     {{ selected_sort_by.name }} {{- 'icon-caret.svg' | inline_asset_content -}}
                   </span>
                 </summary>
-                <div id="SortByDropdown" class="details__list pos-absolute top-100 right-0 z-index-1 gradient global-settings-popup" style="--min-w-a: 20rem;" tabindex="-1">
-                  <ul class="list-unstyled" role="list" style="--pad-a-a: 1.3rem 2rem;">
+                <div id="SortByDropdown" class="details__list absolute top-full right-0 z-1 gradient global-settings-popup" style="--min-w: 20rem;" tabindex="-1">
+                  <ul class="list-unstyled" role="list" style="--p: 1.3rem 2rem;">
                     {%- for option in results.sort_options -%}
-                      <li class="facet-filters__sort_item pos-relative{% if option.value == sort_by %} selected{% endif %}" style="--pad-a-a: 0;" tabindex="-1">
-                        <label for="Filter-{{ option.value | escape }}-{{ forloop.index }}" class="facet-checkbox c-pointer">
+                      <li class="facet-filters__sort_item relative{% if option.value == sort_by %} selected{% endif %}" style="--p: 0;" tabindex="-1">
+                        <label for="Filter-{{ option.value | escape }}-{{ forloop.index }}" class="facet-checkbox cursor-pointer">
                           <input type="checkbox" name="sort_by" value="{{ option.value | escape }}" id="Filter-{{ option.value | escape }}-{{ forloop.index }}" class="visually-hidden">
                           <span class="label full-unstyled-link">{{ option.name | escape }}</span>
                         </label>

@@ -22,7 +22,7 @@
     </summary>
     <ul
       id="HeaderMenu-MenuList-{{ forloopIndex }}"
-      class="details__list header__submenu list-menu list-menu--disclosure z-index-1 color-{{ block.settings.menu_color_scheme }} gradient caption-large motion-reduce global-settings-popup"
+      class="details__list header__submenu list-menu list-menu--disclosure z-1 color-{{ block.settings.menu_color_scheme }} gradient caption-large motion-reduce global-settings-popup"
       role="list"
       tabindex="-1"
     >
@@ -40,7 +40,7 @@
               {{ childlink.title | escape }}
             </a>
           {%- else -%}
-            <details id="Details-HeaderSubMenu-{{ link.handle }}-{{ childlink.handle }}" class="pos-relative" is="dropdown-details" activate-event="hover">
+            <details id="Details-HeaderSubMenu-{{ link.handle }}-{{ childlink.handle }}" class="relative" is="dropdown-details" activate-event="hover">
               <summary
                 id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
                 class="details__summary header__menu-item link link--text list-menu__item focus-inset caption-large"
@@ -50,7 +50,7 @@
               </summary>
               <ul
                 id="HeaderMenu-SubMenuList-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                class="details__list header__submenu list-menu list-menu--disclosure top-0 left-100 z-index-1 gradient motion-reduce global-settings-popup"
+                class="details__list header__submenu list-menu list-menu--disclosure top-0 left-full z-1 gradient motion-reduce global-settings-popup"
               >
                 {%- for grandchildlink in childlink.links -%}
                   <li>

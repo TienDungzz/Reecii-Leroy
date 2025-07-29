@@ -11,7 +11,7 @@
         if current_variant.compare_at_price > current_variant.price
             assign product_marquee_text = 'products.product.on_sale' | t
         endif
-    else            
+    else
         assign current_variant = product.selected_or_first_available_variant
         if current_variant.compare_at_price > current_variant.price
             assign sale_text = 'products.product.off_text' | t
@@ -23,17 +23,17 @@
     if is_blocks == true
         assign class = ''
     else
-        assign class = ' pos-absolute left-0 right-0 bottom-0'
+        assign class = ' absolute left-0 right-0 bottom-0'
     endif
 -%}
-    
+
 {%- if product_marquee_text != blank -%}
-    <div class="card-marquee marquee-{{ product_marquee_type }}{{ class }}" style="--bg-color: {{ settings.product_marquee_background_color }}; --fg-color: {{ settings.product_marquee_text_color }};">   
-        <div class="card-marquee-box dis-flex over-h">
+    <div class="card-marquee marquee-{{ product_marquee_type }}{{ class }}" style="--bg-color: {{ settings.product_marquee_background_color }}; --fg-color: {{ settings.product_marquee_text_color }};">
+        <div class="card-marquee-box flex overflow-hidden">
             {%- capture card_marquee_item_html -%}
-                <div class="card-marquee__item dis-flex a-i-center w-max f-shrink-0{% if settings.product_marquee_reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}" style="--marquee-duration: {{settings.product_marquee_speed | append: 's'}};">
+                <div class="card-marquee__item flex items-center w-max shrink-0{% if settings.product_marquee_reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}" style="--marquee-duration: {{settings.product_marquee_speed | append: 's'}};">
                     {%- for i in (1..10) -%}
-                        <span class="text f-shrink-0">{{ product_marquee_text }}</span>
+                        <span class="text shrink-0">{{ product_marquee_text }}</span>
                         &nbsp;
                     {%- endfor -%}
                 </div>

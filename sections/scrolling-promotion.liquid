@@ -37,8 +37,8 @@
   {%- for block in section.blocks -%}
     {%- case block.type -%}
       {%- when 'text' -%}
-        <div class="announcement-wrapper dis-flex a-i-center" {{ block.shopify_attributes }} style="--c-gap-a: 1.5rem;--pad-a-a: 0 2.5rem;--pad-a-a-md: 0 3.75rem;--pad-a-a-lg: 0 5rem;">
-          <span class="dis-flex a-i-center w-space-nowrap typography-font-heading mar-t-0 mar-b-0" style="--gap-a: 1rem;">
+        <div class="announcement-wrapper flex items-center" {{ block.shopify_attributes }} style="--gap-x: 1.5rem;--p: 0 2.5rem;--md-p: 0 3.75rem;--lg-p: 0 5rem;">
+          <span class="flex items-center whitespace-nowrap typography-font-heading m-t-0 m-b-0" style="--gap: 1rem;">
             {%- render 'icon', icon: block.settings.icon, size: block.settings.icon_size -%}<span>{{block.settings.text}}</span>
           </span>
         </div>
@@ -51,22 +51,22 @@
   {{ section.shopify_attributes }}
 >
   <scrolling-promotion>
-    <div class="scrolling-promotion wid-100 over-h" style="--pad-t-a: .1rem;--hei-a-md: {{section.settings.height | append: 'px'}};--hei-a-lg: {{section.settings.height | append: 'px'}};--pad-t-a-mb: 0.7rem;--pad-b-a-mb: 0.6rem;--pad-t-a-md: 1.9rem;--pad-b-a-md: 1.8rem;">
-      <div class="announcement-list marquee-list hei-100 dis-flex a-i-center j-c-around" style="--marquee-duration: {{section.settings.speed | append: 's'}};">
+    <div class="scrolling-promotion w-full overflow-hidden" style="--pt: .1rem;--lg-h: {{section.settings.height | append: 'px'}};--h-lg: {{section.settings.height | append: 'px'}};--max-sm-pt: 0.7rem;--max-sm-pb: 0.6rem;--md-pt: 1.9rem;--md-pb: 1.8rem;">
+      <div class="announcement-list marquee-list h-full flex items-center justify-around" style="--marquee-duration: {{section.settings.speed | append: 's'}};">
         {%- if block_size == 1 -%}
-          <div class="marquee-scroll hei-100 dis-flex a-i-center j-c-around f-shrink body-{{section.settings.text_size}}-font-size{% if section.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
+          <div class="marquee-scroll h-full flex items-center justify-around f-shrink body-{{section.settings.text_size}}-font-size{% if section.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
             {%- for i in (1..2) -%}
               {{ blocks_content }}
             {%- endfor -%}
           </div>
-          <div class="marquee-scroll hei-100 dis-flex a-i-center j-c-around f-shrink body-{{section.settings.text_size}}-font-size{% if section.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
+          <div class="marquee-scroll h-full flex items-center justify-around f-shrink body-{{section.settings.text_size}}-font-size{% if section.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
             {%- for i in (1..2) -%}
               {{ blocks_content }}
             {%- endfor -%}
           </div>
         {%- else -%}
           {%- for i in (1..limit) -%}
-            <div class="marquee-scroll hei-100 dis-flex a-i-center j-c-around f-shrink body-{{section.settings.text_size}}-font-size{% if section.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
+            <div class="marquee-scroll h-full flex items-center justify-around f-shrink body-{{section.settings.text_size}}-font-size{% if section.settings.reverse_direction %} marquee-animate{% else %} marquee-animate-rtl{% endif %}">
               {{ blocks_content }}
             </div>
           {%- endfor -%}
@@ -93,7 +93,7 @@
     {
       "type": "@app"
     },
-    { 
+    {
       "type": "text",
       "name": "t:sections.scrolling-promotion.name",
       "settings": [

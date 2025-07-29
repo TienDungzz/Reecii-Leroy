@@ -1,7 +1,7 @@
 {{ 'component-modal-video.css' | asset_url | stylesheet_tag }}
 {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
 
-<div class="color-{{ section.settings.color_scheme }} gradient pos-relative z-index-0">
+<div class="color-{{ section.settings.color_scheme }} gradient relative z-0">
   <div class="page-width spacing"
     style="
       --p-spacing-t: {{ section.settings.padding_top }}px;
@@ -150,28 +150,28 @@
                   </div>
                 </modal-opener>
                 <modal-dialog
-                  class="modal-video modal--popup pos-fixed top-0 left-0 z-index-9 wid-100v hei-100 dis-flex j-c-center no-js-hidden"
+                  class="modal-video modal--popup fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
                   element-s-popup
                   id="PopupModal-{{ block.id }}"
                 >
-                  <div id="Modal-Overlay" class="drawer__overlay pos-fixed inset-0 c-pointer"></div>
+                  <div id="Modal-Overlay" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
                   <div
-                    class="popup__inner modal-video__content wid-auto hei-100 pos-absolute-c-c dis-flex f-column gradient color-{{ settings.color_schemes | first }} global-settings-popup"
+                    class="popup__inner modal-video__content w-auto h-full absolute-c-c flex flex-column gradient color-{{ settings.color_schemes | first }} global-settings-popup"
                     role="dialog"
                     aria-modal="true"
                     aria-label="{{ block.settings.description | escape }}"
                     tabindex="-1"
                     style="--popup-max-height: 90%;"
                   >
-                    <div class="wid-100 hei-100 over-a cus-scrollbar" style="--pad-a-a: 0 1rem;">
-                      <div class="drawer__header dis-flex j-c-end a-i-center pos-relative"
-                        style="--c-gap-a: 2rem; --pad-a-a: 1.5rem 0;"
+                    <div class="w-full h-full overflow-auto cus-scrollbar" style="--p: 0 1rem;">
+                      <div class="drawer__header flex justify-end items-center relative"
+                        style="--gap-x: 2rem; --p: 1.5rem 0;"
                       >
-                        <button class="drawer__close dis-block t-button bor-none bor-circle c-pointer" type="button" onclick="this.closest('modal-dialog').hide()" aria-label="{{ 'accessibility.close' | t }}">
+                        <button class="drawer__close block t-button bor-none rounded-full cursor-pointer" type="button" onclick="this.closest('modal-dialog').hide()" aria-label="{{ 'accessibility.close' | t }}">
                           {{- 'icon-close.svg' | inline_asset_content -}}
                         </button>
                       </div>
-                      <div class="modal-video__content-info wid-100 hei-100 mar-a">
+                      <div class="modal-video__content-info w-full h-full m-auto">
                         <deferred-media class="modal-video__video template-popup">
                           <template>
                             {%- if block.settings.video_url.type == 'youtube' -%}

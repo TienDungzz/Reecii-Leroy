@@ -38,8 +38,8 @@
 
   <body class="gradient gift-card">
     <header>
-      <div class="gift-card__price dis-flex f-wrap a-i-center j-c-center">
-        <h1 class="center mar-0">
+      <div class="gift-card__price flex flex-wrap items-center justify-center">
+        <h1 class="center m-0">
           {% if settings.currency_code_enabled %}
             {{ gift_card.balance | money_with_currency }}
           {% else %}
@@ -47,7 +47,7 @@
           {% endif %}
         </h1>
         {%- if gift_card.enabled == false or gift_card.expired -%}
-          <p class="badge badge--expired dis-i-block center">{{ 'gift_cards.issued.expired' | t }}</p>
+          <p class="badge badge--expired inline-block center">{{ 'gift_cards.issued.expired' | t }}</p>
         {%- endif -%}
       </div>
       {% if gift_card.expires_on %}
@@ -59,7 +59,7 @@
     </header>
 
     <main>
-      <div class="gift-card__image-wrapper dis-flex a-i-center j-c-center">
+      <div class="gift-card__image-wrapper flex items-center justify-center">
         {%- if settings.logo != blank -%}
           {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
           {{ settings.logo | image_url: width: 570 | image_tag: class: 'gift-card__image', alt: logo_alt }}
@@ -81,7 +81,7 @@
       <p id="gift-card-code" class="gift-card__number center">{{ gift_card.code | format_code }}</p>
       <div class="gift-card__qr-code" data-identifier="{{ gift_card.qr_identifier }}"></div>
       {%- if gift_card.pass_url -%}
-        <a href="{{ gift_card.pass_url }}" class="gift_card__apple-wallet no-print dis-block center">
+        <a href="{{ gift_card.pass_url }}" class="gift_card__apple-wallet no-print block center">
           <img
             src="{{ 'gift-card/add-to-apple-wallet.svg' | shopify_asset_url }}"
             width="120"
@@ -91,8 +91,8 @@
           >
         </a>
       {%- endif -%}
-      <div class="gift-card__buttons no-print dis-flex f-wrap f-column mar-a">
-        <span class="gift-card__copy-success form__message dis-flex a-i-center j-c-center" role="status"></span>
+      <div class="gift-card__buttons no-print flex flex-wrap flex-column m-auto">
+        <span class="gift-card__copy-success form__message flex items-center justify-center" role="status"></span>
         <template>
           <span class="svg-wrapper">
             {{- 'icon-success.svg' | inline_asset_content -}}

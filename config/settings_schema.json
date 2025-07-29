@@ -294,24 +294,36 @@
           },
           {
             "type": "header",
-            "content": "Arrows"
+            "content": "Carousel"
           },
           {
             "type": "color",
             "id": "arrow_color",
-            "label": "Arrow Color",
+            "label": "Arrow color",
             "default": "#333"
           },
           {
             "type": "color",
             "id": "arrow_background",
-            "label": "Arrow Background",
+            "label": "Arrow background",
             "default": "#ffffff"
           },
           {
             "type": "color",
             "id": "arrow_border",
-            "label": "Arrow Border",
+            "label": "Arrow border",
+            "default": "#333"
+          },
+          {
+            "type": "color",
+            "id": "pagination_color",
+            "label": "Pagination color",
+            "default": "#cecece"
+          },
+          {
+            "type": "color",
+            "id": "pagination_active_color",
+            "label": "Pagination active color",
             "default": "#333"
           }
         ],
@@ -1500,6 +1512,103 @@
     ]
   },
   {
+    "name": "Arrows",
+    "settings": [
+      {
+        "type": "header",
+        "content": "General"
+      },
+      {
+        "type": "select",
+        "id": "arrows_type",
+        "label": "Arrows type",
+        "options": [
+          {
+            "value": "arrows",
+            "label": "Arrows"
+          },
+          {
+            "value": "chevron",
+            "label": "Chevron"
+          }
+        ],
+        "default": "chevron"
+      },
+      {
+        "type": "range",
+        "id": "arrows_radius",
+        "label": "Radius",
+        "min": 0,
+        "max": 100,
+        "step": 2,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "type": "header",
+        "content": "Border"
+      },
+      {
+        "type": "range",
+        "id": "arrows_border_thickness",
+        "label": "Thickness",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "unit": "px",
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "arrows_border_opacity",
+        "label": "Opacity",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "default": 100
+      },
+      {
+        "type": "header",
+        "content": "Button"
+      },
+      {
+        "type": "range",
+        "id": "arrows_width",
+        "min": 24,
+        "max": 110,
+        "step": 1,
+        "unit": "px",
+        "label": "Width",
+        "default": 40
+      },
+      {
+        "type": "range",
+        "id": "arrows_height",
+        "min": 24,
+        "max": 110,
+        "step": 1,
+        "unit": "px",
+        "label": "Height",
+        "default": 40
+      },
+      {
+        "type": "header",
+        "content": "Icon"
+      },
+      {
+        "type": "range",
+        "id": "arrows_icon_size",
+        "min": 10,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "label": "Size",
+        "default": 24
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.variant_pills.name",
     "settings": [
       {
@@ -1789,15 +1898,15 @@
         "options": [
           {
             "value": "text",
-            "label": "t:settings_schema.sections.main-product.main-collection-product-grid.settings.quick_add.types.option_1"
+            "label": "Text"
           },
           {
             "value": "icon",
-            "label": "t:settings_schema.sections.main-product.main-collection-product-grid.settings.quick_add.types.option_2"
+            "label": "Icon"
           }
         ],
         "default": "text",
-        "label": "t:settings_schema.sections.main-product.main-collection-product-grid.settings.quick_add.types.label"
+        "label": "Quick add type"
       },
       {
         "type": "color_scheme",
@@ -2354,6 +2463,107 @@
         "id": "social_vimeo_link",
         "label": "t:settings_schema.social-media.settings.social_vimeo_link.label",
         "placeholder": "t:settings_schema.social-media.settings.social_vimeo_link.info"
+      }
+    ]
+  },
+  {
+    "name": "Multi-level category",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Multi-level category filtering lets customers filter products using a 3-level dropdown. Each level updates based on the previous selection."
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_multi_level_category",
+        "label": "Enable multi-level categories",
+        "default": false
+      },
+      {
+        "type": "link_list",
+        "id": "category_filter",
+        "label": "Menu",
+        "info": "Select a link list to display in the multi-level category filter."
+      },
+      {
+        "type": "text",
+        "id": "category_filter_label1",
+        "label": "Title level 1",
+        "default": "Select Level 1"
+      },
+      {
+        "type": "text",
+        "id": "category_filter_label2",
+        "label": "Title level 2",
+        "default": "Select Level 2"
+      },
+      {
+        "type": "text",
+        "id": "category_filter_label3",
+        "label": "Title level 3",
+        "default": "Select Level 3"
+      },
+      {
+        "type": "color",
+        "id": "color_filter_label",
+        "label": "t:settings.color",
+        "default": "#232323"
+      },
+      {
+        "type": "color",
+        "id": "bg_filter_label",
+        "label": "t:settings.background_color",
+        "default": "#fff"
+      },
+      {
+        "type": "header",
+        "content": "t:settings.button"
+      },
+      {
+        "type": "text",
+        "id": "category_filter_button",
+        "label": "t:settings.label",
+        "default": "Search"
+      },
+      {
+        "type": "color",
+        "id": "text_button_filter_color",
+        "label": "t:settings.color",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "bg_button_filter_color",
+        "label": "t:settings.background_color",
+        "default": "#ff8b21"
+      },
+      {
+        "type": "color_background",
+        "id": "bg_gradient_button_filter_color",
+        "label": "t:settings.background_color_gradient"
+      },
+      {
+        "type": "color",
+        "id": "border_button_filter_color",
+        "label": "t:settings.border",
+        "default": "transparent"
+      },
+      {
+        "type": "color",
+        "id": "hover_text_button_filter_color",
+        "label": "t:settings.hover_text",
+        "default": "#fff"
+      },
+      {
+        "type": "color",
+        "id": "hover_bg_button_filter_color",
+        "label": "t:settings.hover_background",
+        "default": "#ff8b21"
+      },
+      {
+        "type": "color_background",
+        "id": "hover_bg_gradient_button_filter_color",
+        "label": "t:settings.background_hover_gradient"
       }
     ]
   },

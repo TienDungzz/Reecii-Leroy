@@ -42,7 +42,12 @@
       endunless
     -%}
     {%- if font_size != blank -%}
-      --font-size: {{ font_size }};
+      {%- liquid
+        assign fluid_size_min_rem = font_size_value | times: 0.5
+        assign fluid_size = font_size_value
+        assign fluid_size_max_rem = font_size_value
+      -%}
+      --font-size: clamp({{fluid_size_min_rem}}rem, {{fluid_size}}vw, {{fluid_size_max_rem}}rem);
     {%- endif -%}
     {%- if weight != blank -%}
       --font-weight: {{ weight }};
@@ -52,6 +57,13 @@
     --font-family: {{ font }};
     --text-transform: {{ case }};
     --text-wrap: {{ wrap }};
+    {% if settings.type_preset == 'custom' and settings.font_size == blank %}
+      --line-height--display: var(--line-height--display-{{ settings.line_height }});
+      --line-height--heading: var(--line-height--heading-{{ settings.line_height }});
+      --line-height--body: var(--line-height--body-{{ settings.line_height }});
+    {% else %}
+      --line-height: var(--line-height--{{ type }}-{{ settings.line_height }});
+    {% endif %}
     --letter-spacing: var(--letter-spacing--{{ type }}-{{ letter_spacing }});
   {%- endif -%}
 {%- endcapture -%}

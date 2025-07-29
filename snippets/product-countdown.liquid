@@ -1,5 +1,5 @@
 {%- capture styles -%}
-    --bg-color: {{ settings.countdown_background_color }}; --fg-color: {{ settings.countdown_text_color }};--pad-a-a: .8rem 1.2rem;
+    --bg-color: {{ settings.countdown_background_color }}; --fg-color: {{ settings.countdown_text_color }};--p: .8rem 1.2rem;
 {%- endcapture -%}
 {%- capture number_html -%}
     <span class="num animated-loading">
@@ -17,7 +17,7 @@
 {%- endcapture -%}
 <div class="card-countDown-wrapper body-s-font-size" style="{{ styles }}">
     {%- if countdown_type == 'all_product' -%}
-        <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-max mar-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}">
+        <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-max m-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}">
             {{ number_html }}
         </div>
     {%- elsif countdown_type == 'collection_product' -%}
@@ -33,14 +33,14 @@
             endif
         -%}
         {%- if hasCountdown -%}
-            <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-fit mar-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}"> 
+            <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-fit m-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}">
                 {{ number_html }}
             </div>
         {%- endif -%}
     {%- else -%}
         {%- if product.metafields.c_f.countdown -%}
             {% assign countdown_type = product.metafields.c_f.countdown %}
-            <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-fit mar-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_type }}">
+            <div class="card-countDown countdown_{{ product.id }} style-{{ countdown_style }} w-fit m-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_type }}">
                 {{ number_html }}
             </div>
         {%- endif -%}

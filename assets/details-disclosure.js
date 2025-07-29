@@ -113,7 +113,7 @@ class ModalDialog extends HTMLElement {
     this.setAttribute('open', '');
     if (popup) popup.loadContent();
     this.trapFocus();
-    window.pauseAllMedia();
+    // window.pauseAllMedia();
   }
 
   hide() {

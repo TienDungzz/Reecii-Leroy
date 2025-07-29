@@ -1,4 +1,7 @@
 {%- liquid
+  assign sec_stts = section.settings
+  assign block_stts = block.settings
+
   assign blockIndex = 0
   for sectionBlock in section.blocks
     assign blockIndex = blockIndex | plus: 1
@@ -6,103 +9,301 @@
       break
     endif
   endfor
+
+  assign media_count = 0
+
+  assign has_image_1 = false
+  assign has_image_2 = false
+  assign has_video_1 = false
+  assign has_video_2 = false
+  assign has_image = false
+  assign has_video = false
+  assign has_video_multiple = false
+  assign has_media = false
+  assign media_type_1 = block_stts.media_type_1
+  assign media_type_2 = block_stts.media_type_2
+  if block_stts.image_1 != blank and media_type_1 == 'image'
+    assign has_image_1 = true
+  endif
+  if block_stts.image_2 != blank and media_type_2 == 'image'
+    assign has_image_2 = true
+  endif
+
+  if block_stts.image_mb_1 != blank and media_type_1 == 'image'
+    assign has_image_mb_1 = true
+  endif
+  if block_stts.image_mb_2 != blank and media_type_2 == 'image'
+    assign has_image_mb_2 = true
+  endif
+
+  if has_image_1 or has_image_2
+    assign has_image = true
+  endif
+  if has_video_1 or has_video_2
+    assign has_video = true
+  endif
+  if has_image or has_video
+    assign has_media = true
+  endif
+
+  if blockIndex == 1 and section.index == 1
+    assign loading = 'eager'
+    assign fetchpriority = 'high'
+  else
+    assign loading = 'lazy'
+    assign fetchpriority = 'low'
+  endif
+
+  assign height_1 = block_stts.image_1.width | divided_by: block_stts.image_1.aspect_ratio | round
+  assign height_2 = block_stts.image_2.width | divided_by: block_stts.image_2.aspect_ratio | round
+  if block_stts.image_1 != blank and block_stts.image_2 != blank
+    assign media_width_desktop = 100 | divided_by: 2 | append: 'vw'
+  else
+    assign media_width_desktop = '100vw'
+  endif
+  assign media_width_mobile = '100vw'
+  assign sizes = '(min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
+  assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
 -%}
+
+{% capture media %}
+  {%- if has_image_1 or has_image_mb_1 -%}
+    {% assign media_count = media_count | plus: 1 %}
+
+    <picture
+      class="media h-full{% if sec_stts.image_behavior != 'none' %} animate--{{ sec_stts.image_behavior }}{% endif %}"
+      data-swiper-parallax="35%"
+    >
+      {%- if has_image_mb_1 -%}
+        <source
+          media="(max-width: 1024px)"
+          srcset="{{ block_stts.image_mb_1 | image_url: width: '400x' }} 400w, {{ block_stts.image_mb_1 | image_url: width: '600x' }} 600w, {{ block_stts.image_mb_1 | image_url: width: '800x' }} 800w, {{ block_stts.image_mb_1 | image_url: width: '1000x' }} 1000w"
+          width="{{ block_stts.image_mb_1.width }}"
+          height="{{ block_stts.image_mb_1.height }}"
+        >
+      {%- endif -%}
+
+      {{
+        block_stts.image_1
+        | image_url: width: 3840
+        | image_tag: height: height_1, sizes: sizes, widths: widths, loading: loading, fetchpriority: fetchpriority
+      }}
+    </picture>
+  {%- endif -%}
+
+  {%- if has_video_1 -%}
+    {% assign media_count = media_count | plus: 1 %}
+    {{
+      section.settings.video_1
+      | video_tag:
+        image_size: '3840x',
+        autoplay: true,
+        loop: true,
+        controls: false,
+        muted: true,
+        class: 'hero__video'
+    }}
+  {%- endif -%}
+
+  {%- if has_image_2 or has_image_mb_2 -%}
+    {% assign media_count = media_count | plus: 1 %}
+    <picture
+      class="media h-full{% if sec_stts.image_behavior != 'none' %} animate--{{ sec_stts.image_behavior }}{% endif %}"
+      data-swiper-parallax="35%"
+    >
+      {%- if has_image_mb_2 -%}
+        <source
+          media="(max-width: 1024px)"
+          srcset="{{ block_stts.image_mb_2 | image_url: width: '400x' }} 400w, {{ block_stts.image_mb_2 | image_url: width: '600x' }} 600w, {{ block_stts.image_mb_2 | image_url: width: '800x' }} 800w, {{ block_stts.image_mb_2 | image_url: width: '1000x' }} 1000w"
+          width="{{ block_stts.image_mb_2.width }}"
+          height="{{ block_stts.image_mb_2.height }}"
+        >
+      {%- endif -%}
+
+      {{
+        block_stts.image_2
+        | image_url: width: 3840
+        | image_tag: height: height_2, sizes: sizes, widths: widths, loading: loading, fetchpriority: fetchpriority
+      }}
+    </picture>
+  {%- endif -%}
+
+  {%- if has_video_2 -%}
+    {% assign media_count = media_count | plus: 1 %}
+    {{
+      section.settings.video_2
+      | video_tag:
+        image_size: '3840x',
+        autoplay: true,
+        loop: true,
+        controls: false,
+        muted: true,
+        class: 'hero__video'
+    }}
+  {%- endif -%}
+
+  {% if has_media == false and is_transparent %}
+    {%- assign placeholder_slide = blockIndex | modulo: 2 -%}
+    {%- if placeholder_slide == 1 -%}
+      {{ 'hero-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+    {%- else -%}
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    {%- endif -%}
+  {%- endif -%}
+{% endcapture %}
 
 <div
   id="slide-{{ block.id }}"
-  class="slideshow__slide"
+  class="slideshow__slide color-{{ block.settings.color_scheme }}"
   aria-hidden="{% if blockIndex == 1 %}false{% else %}true{% endif %}"
   {{ block.shopify_attributes }}
 >
   {% style %}
-    {%- if section.settings.slide_height == 'adapt_image' and blockIndex == 1 and block.settings.image != blank -%}
-      #slideshow-{{ section.id }} .slideshow__slides,
-      #slideshow-{{ section.id }} .slideshow__slide {
-        min-height: {{ 1 | divided_by: block.settings.image.aspect_ratio | times: 100 }}vw;
+    {%- if sec_stts.slide_height == 'adapt_image' and blockIndex == 1 and block_stts.image_1 != blank or block_stts.image_2 != blank -%}
+      {%- liquid
+        if block_stts.image_1 != blank and block_stts.image_2 == blank
+          assign ratio = block_stts.image_1.aspect_ratio
+        elsif block_stts.image_2 != blank and block_stts.image_1 == blank
+          assign ratio = block_stts.image_2.aspect_ratio
+        elsif block_stts.image_1 != blank and block_stts.image_2 != blank
+          if block_stts.image_1.aspect_ratio > block_stts.image_2.aspect_ratio
+            assign ratio = block_stts.image_1.aspect_ratio | times: 2
+          else
+            assign ratio = block_stts.image_2.aspect_ratio | times: 2
+          endif
+        else
+          assign ratio = 1
+        endif
+      -%}
+      #slideshow-{{ section.id }}.slideshow--has-right-banner .slideshow__slides {
+        aspect-ratio: {{ ratio }};
+      }
+
+      #slideshow-{{ section.id }}:not(.slideshow--has-right-banner, .slideshow--has-left-banner) .slideshow__slides {
+        aspect-ratio: {{ ratio }};
       }
     {%- endif -%}
   {% endstyle %}
 
-  <div class="slide__image-container tets212121212">
-    <div class="wid-100 {% if block.settings.image_mb != blank %} small-hide {% endif %}">
-      {%- if block.settings.image -%}
-        {%- liquid
-          assign height = block.settings.image.width | divided_by: block.settings.image.aspect_ratio | round
-          assign sizes = '100vw'
-          assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
-        -%}
-        {%- if blockIndex == 1 -%}
-          {{
-            block.settings.image
-            | image_url: width: 3840
-            | image_tag: height: height, sizes: sizes, widths: widths, loading: 'eager'
-          }}
-        {%- else -%}
-          {{
-            block.settings.image
-            | image_url: width: 3840
-            | image_tag: height: height, sizes: sizes, widths: widths, loading: 'lazy'
-          }}
-        {%- endif -%}
-      {%- else -%}
-        {%- assign placeholder_slide = blockIndex | modulo: 2 -%}
-        {%- if placeholder_slide == 1 -%}
-          {{ 'hero-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
-        {%- else -%}
-          {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
-        {%- endif -%}
+  <div class="slide__image-container">
+    <div
+      class="slide__img-wrapper grid w-full"
+      {%- if block_stts.image_1 != blank -%}
+        style="--slide-media-count: {{ media_count }};"
       {%- endif -%}
-    </div>
-    <div class="wid-100 large-up-hide medium-hide">
-      {%- if block.settings.image_mb -%}
-        {%- liquid
-          assign height = block.settings.image.width | divided_by: block.settings.image.aspect_ratio | round
-          assign sizes = '100vw'
-          assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
-        -%}
-        {%- if blockIndex == 1 -%}
-          {{
-            block.settings.image_mb
-            | image_url: width: 3840
-            | image_tag: height: height, sizes: sizes, widths: widths, loading: 'eager'
-          }}
-        {%- else -%}
-          {{
-            block.settings.image_mb
-            | image_url: width: 3840
-            | image_tag: height: height, sizes: sizes, widths: widths, loading: 'lazy'
-          }}
-        {%- endif -%}
-      {%- else -%}
-        {%- assign placeholder_slide = blockIndex | modulo: 2 -%}
-        {%- if placeholder_slide == 1 -%}
-          {{ 'hero-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
-        {%- else -%}
-          {{ 'hero-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
-        {%- endif -%}
-      {%- endif -%}
+    >
+      {{ media }}
     </div>
   </div>
 
-  <div class="{{ block.settings | class_list }} slide__content">
-    {% content_for 'blocks' %}
+  <div class="{{ block_stts.container }}">
+    <div class="{{ block.settings | class_list }} slide__content">
+      {% content_for 'blocks' %}
+    </div>
   </div>
 </div>
+
+{%- stylesheet -%}
+  .slide__img-wrapper {
+    grid-template-columns: repeat(var(--slide-media-count, 1), 1fr);
+  }
+{%- endstylesheet -%}
 
 {% schema %}
 {
   "name": "Slide",
-  "blocks": [{ "type": "@theme" }, { "type": "@app" }, { "type": "group-global" }],
+  "blocks": [{ "type": "@theme" }, { "type": "@app" }, { "type": "group-global" }, { "type": "group" }],
+  "class": "swiper-slide",
   "settings": [
     {
+      "type": "header",
+      "content": "t:sections.slideshow.settings.layout.label"
+    },
+    {
+      "type": "select",
+      "id": "container",
+      "label": "t:content.width",
+      "default": "page-width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:sections.layout.container.option1"
+        },
+        {
+          "value": "page-width page-width--full",
+          "label": "t:sections.layout.container.option2"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:content.media"
+    },
+    {
+      "type": "select",
+      "id": "media_type_1",
+      "label": "t:settings.type",
+      "options": [
+        {
+          "value": "image",
+          "label": "t:options.image"
+        },
+        {
+          "value": "video",
+          "label": "t:options.video"
+        }
+      ],
+      "default": "image"
+    },
+    {
       "type": "image_picker",
-      "id": "image",
+      "id": "image_1",
       "label": "Default image"
     },
     {
       "type": "image_picker",
-      "id": "image_mb",
+      "id": "image_mb_1",
       "label": "Mobile image"
+    },
+    {
+      "type": "header",
+      "content": "t:content.media_2"
+    },
+    {
+      "type": "select",
+      "id": "media_type_2",
+      "label": "t:settings.type",
+      "options": [
+        {
+          "value": "image",
+          "label": "t:options.image"
+        },
+        {
+          "value": "video",
+          "label": "t:options.video"
+        }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Default image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mb_2",
+      "label": "Mobile image"
+    },
+    {
+      "type": "header",
+      "content": "t:settings.color"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
     }
   ],
   "presets": [
