@@ -44,6 +44,15 @@
           calc((var(--full-page-grid-central-column-width) / 3) * 2) var(--full-page-grid-margin);
       }
     }
+
+    &.media-banner.media-banner--media-stack,
+    &.media-banner--medium.media-banner--media-stack,
+    &.media-banner--narrow.media-banner--media-stack {
+      @media screen and (width >= 750px) {
+        grid-template-areas: 'media';
+        --media-banner-grid-columns: 1fr;
+      }
+    }
   }
 
   .section--full-width {
@@ -71,6 +80,15 @@
         --media-banner-grid-columns: 4fr 2fr;
       }
     }
+
+    &.media-banner.media-banner--media-stack,
+    &.media-banner--medium.media-banner--media-stack,
+    &.media-banner--narrow.media-banner--media-stack {
+      @media screen and (width >= 750px) {
+        grid-template-areas: 'media';
+        --media-banner-grid-columns: 1fr;
+      }
+    }
   }
 
   .media-banner.media-banner--media-extend {
@@ -91,6 +109,31 @@
   .media-banner--media-right {
     @media screen and (width >= 750px) {
       grid-template-areas: 'margin-left content media media';
+    }
+  }
+
+  .media-banner.media-banner--media-stack {
+    position: relative;
+
+    .media-block {
+      grid-area: media;
+      @media screen and (width >= 750px) {
+        align-self: stretch;
+        object-fit: cover;
+      }
+    }
+
+    .media-banner__content {
+      position: absolute;
+      inset: 0 auto 0 50%;
+      width: 50%;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      @media (max-width: 749px) {
+        position: static;
+        width: auto;
+      }
     }
   }
 
@@ -152,6 +195,8 @@
 
   if section.settings.media_position == 'right'
     assign media_class_modifier = media_class_modifier | append: ' media-banner--media-right'
+  elsif section.settings.media_position == 'stack'
+    assign media_class_modifier = media_class_modifier | append: ' media-banner--media-stack'
   endif
 %}
 
@@ -208,6 +253,10 @@
         {
           "value": "right",
           "label": "t:options.right"
+        },
+        {
+          "value": "stack",
+          "label": "t:options.stack"
         }
       ],
       "default": "left"

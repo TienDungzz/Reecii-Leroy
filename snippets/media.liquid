@@ -102,10 +102,19 @@
     {% endif %}
   {%- elsif show_video -%}
     {% render 'video',
+      video_from_url: true,
       video: block.settings.video,
+      video_class: 'media-block__media media-block__media--video spacing-style size-style border-style',
+      video_type: sec_stts.video_url.type,
       video_autoplay: block.settings.video_autoplay,
       video_loop: block.settings.video_loop,
-      video_class: 'media-block__media media-block__media--video border-style'
+      video_style: video_style,
+      video_ratio: ratio,
+      video_alt: sec_stts.alt,
+      video_preview_image: sec_stts.banner_image,
+      additional_attributes: section.shopify_attributes,
+      section_id: sec_id,
+      section: section
     %}
   {%- else -%}
     <div class="placeholder-image media-block__media border-style">
