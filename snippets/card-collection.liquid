@@ -37,7 +37,7 @@
       card collection-card
       card--{{ card_style }}
       {% if card_collection.featured_image %} card--media{% else %} card--text{% endif %}
-      {% if card_style == 'card' %} color-{{ card_color_scheme }} gradient over-h{% endif %}
+      {% if card_style == 'card' %} color-{{ card_color_scheme }} gradient overflow-hidden{% endif %}
       {% if extend_height %} card--extend-height{% endif %}
       {% if card_collection.featured_image == nil and card_style == 'card' %} ratio{% endif %}
     "
@@ -82,7 +82,7 @@
         </div>
       {%- else -%}
         <div class="card__content{% if card_style == 'card' %} card__shadow sd-bottom{% endif %}">
-          <div class="card__information{% if card_style == 'card' %} j-c-between a-i-center{% endif %}"{% if card_style == 'card' %} style="--gap-a: 1.5rem;"{% endif %}>
+          <div class="card__information{% if card_style == 'card' %} justify-between items-center{% endif %}"{% if card_style == 'card' %} style="--gap: 1.5rem;"{% endif %}>
             <h3 class="card__heading">
               <a
                 {% if card_collection == blank %}
@@ -119,7 +119,7 @@
                 {% else %}
                   href="{{ card_collection.url }}"
                 {% endif %}
-                class="link t-uppercase f-shrink-0"
+                class="link uppercase shrink-0"
               >
                 {{ 'onboarding.collection_link' | t }}
               </a>

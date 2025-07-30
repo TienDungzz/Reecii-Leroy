@@ -135,7 +135,7 @@
         }
 
         .button__back-to-top {
-            height: var(--hei-cus, 0);
+            height: var(--h-cus, 0);
             transition: opacity var(--duration-medium) ease, height var(--duration-medium) var(--cubic-smooth);
         }
 
@@ -144,7 +144,7 @@
         }
 
         body.overflow-hidden .multitasking-bar {
-            right: calc(var(--right-a) + var(--scrollbar-width, 0rem));
+            right: calc(var(--right) + var(--scrollbar-width, 0rem));
         }
 
         body:not(.has--preload-screen) .multitasking-bar {
@@ -169,33 +169,33 @@
 
         @media only screen and (min-width: 1025px) {
             body.overflow-hidden .multitasking-bar {
-                right: calc(var(--right-a) + var(--scrollbar-width, 0rem) - 0.1rem);
+                right: calc(var(--right) + var(--scrollbar-width, 0rem) - 0.1rem);
             }
         }
     {% endstyle %}
 
     <multitasking-bar
-        class="multitasking-bar pos-fixed hei-auto z-index-2 gradient no-js-hidden"
+        class="multitasking-bar fixed h-auto z-2 gradient no-js-hidden"
         id="multitasking-bar"
         style="
-            --right-a: 0.5%;
+            --right: 0.5%;
             --color-background: {{ section.settings.background.red }},{{ section.settings.background.green }},{{ section.settings.background.blue }};
             --color-foreground: {{ section.settings.icon.red }},{{ section.settings.icon.green }},{{ section.settings.icon.blue }};
             --secondary-icon-background: {{ section.settings.secondary_background.red }},{{ section.settings.secondary_background.green }},{{ section.settings.secondary_background.blue }};
             --secondary-icon: {{ section.settings.secondary_icon.red }},{{ section.settings.secondary_icon.green }},{{ section.settings.secondary_icon.blue }};
         "
     >
-        <div class="multi-t__wrap pos-relative dis-flex f-column" id="multitasking-wrap">
+        <div class="multi-t__wrap relative flex flex-column" id="multitasking-wrap">
             {%- for block in section.blocks -%}
                 {%- case block.type -%}
                     {%- when 'recently_viewed_products' -%}
                         <side-drawer-opener
-                            class="target-block product-popup-modal__opener dis-i-block{% if forloop.first %} active{% endif %}"
+                            class="target-block product-popup-modal__opener inline-block{% if forloop.first %} active{% endif %}"
                             data-side-drawer="#popup-recently-viewed"
                             data-index="{{ forloop.index }}"
                         >
                             <button
-                                class="multi-t__button pad-0 dis-flex a-i-center j-c-center pos-relative c-pointer bor-none bor-circle gradient"
+                                class="multi-t__button p-0 flex items-center justify-center relative cursor-pointer bor-none rounded-full gradient"
                                 data-target="multitasking-recently-viewed"
                                 type="button"
                                 aria-haspopup="dialog"
@@ -210,12 +210,12 @@
                         </side-drawer-opener>
 
                         <side-drawer
-                            class="multi-t__products drawer pos-fixed top-0 left-0 wid-100v hei-100 z-index-9 dis-flex j-c-end no-js-hidden"
+                            class="multi-t__products drawer fixed top-0 left-0 w-screen h-full z-9 flex justify-end no-js-hidden"
                             id="popup-recently-viewed"
                         >
                             {{ 'quick-add.css' | asset_url | stylesheet_tag }}
 
-                            <div id="Drawer-Overlay-Multitasking-Bar" class="drawer__overlay pos-fixed inset-0 c-pointer"></div>
+                            <div id="Drawer-Overlay-Multitasking-Bar" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
                             <div
                                 class="drawer__inner gradient cus-scrollbar"
                                 role="dialog"
@@ -223,9 +223,9 @@
                                 aria-label="{{ 'sections.recently_viewed.title' | t }}"
                                 tabindex="-1"
                             >
-                                <div class="drawer__header dis-flex j-c-between a-i-center pos-relative" style="--pad-a-a: 1.5rem 0;">
-                                    <h2 class="drawer__heading break mar-0">{{ 'sections.recently_viewed.title' | t }}</h2>
-                                    <button class="drawer__close dis-block t-button bor-none bor-circle c-pointer" type="button" onclick="this.closest('side-drawer').close()" aria-label="{{ 'accessibility.close' | t }}">
+                                <div class="drawer__header flex justify-between items-center relative" style="--p: 1.5rem 0;">
+                                    <h2 class="drawer__heading break m-0">{{ 'sections.recently_viewed.title' | t }}</h2>
+                                    <button class="drawer__close block t-button bor-none rounded-full cursor-pointer" type="button" onclick="this.closest('side-drawer').close()" aria-label="{{ 'accessibility.close' | t }}">
                                         {{- 'icon-close.svg' | inline_asset_content -}}
                                     </button>
                                 </div>
@@ -268,7 +268,7 @@
                                             {%- endfor -%}
                                         </ul>
                                     {%- else -%}
-                                        <div class="recently-viewed__warnings dis-flex f-column f-1 j-c-center center">
+                                        <div class="recently-viewed__warnings flex flex-column flex-1 justify-center center">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 455 455" xmlns:xlink="http://www.w3.org/1999/xlink" class="icon icon-no-product" aria-hidden="true" focusable="false" role="presentation" xml:space="preserve">
                                                 <path d="M360.967,130.599c-4.06-0.818-8.018,1.8-8.841,5.86c-0.823,4.06,1.801,8.018,5.86,8.841
                                                 c1.147,0.232,2.013,1.286,2.013,2.45v160c0,1.355-1.145,2.5-2.5,2.5H179.676c-4.142,0-7.5,3.357-7.5,7.5s3.358,7.5,7.5,7.5H357.5
@@ -307,9 +307,9 @@
                             -%}
                         </side-drawer>
                     {%- when 'social_media' -%}
-                        <div class="target-block pos-relative{% if forloop.first %} active{% endif %}" data-index="{{ forloop.index }}">
+                        <div class="target-block relative{% if forloop.first %} active{% endif %}" data-index="{{ forloop.index }}">
                             <button
-                                class="multi-t__button pad-0 dis-flex a-i-center j-c-center pos-relative c-pointer bor-none bor-circle gradient"
+                                class="multi-t__button p-0 flex items-center justify-center relative cursor-pointer bor-none rounded-full gradient"
                                 data-target="multitasking-social-media"
                                 type="button"
                                 aria-haspopup="dialog"
@@ -321,14 +321,14 @@
                                 </span>
                             </button>
 
-                            <div class="multi-t__wrapper multi-t__social pointer-e-none pos-absolute top-0 gradient">
+                            <div class="multi-t__wrapper multi-t__social pointer-events-none absolute top-0 gradient">
                                 {%- render 'social-icons', class: 'multi-t__list' -%}
                             </div>
                         </div>
                     {%- when 'back_to_top' -%}
-                        <div class="target-block pos-relative button__back-to-top{% if forloop.first %} active{% endif %} hide" data-index="{{ forloop.index }}">
+                        <div class="target-block relative button__back-to-top{% if forloop.first %} active{% endif %} hide" data-index="{{ forloop.index }}">
                             <button
-                                class="multi-t__button pad-0 dis-flex a-i-center j-c-center pos-relative c-pointer bor-none bor-circle gradient"
+                                class="multi-t__button p-0 flex items-center justify-center relative cursor-pointer bor-none rounded-full gradient"
                                 data-target="back-to-top"
                                 role="button"
                                 aria-haspopup="dialog"
@@ -342,7 +342,7 @@
                         </div>
                 {%- endcase -%}
             {%- endfor -%}
-            <span class="glider pos-absolute dis-flex bor-circle"></span>
+            <span class="glider absolute flex rounded-full"></span>
         </div>
     </multitasking-bar>
 
@@ -447,10 +447,10 @@
                         firstTargetBlock?.classList.add('active');
                     }
 
-                    backToTopButton.style.setProperty('--hei-cus', '0px');
+                    backToTopButton.style.setProperty('--h-cus', '0px');
                 } else {
                     backToTopButton.classList.remove('hide');
-                    backToTopButton.style.setProperty('--hei-cus', `${this.scrollTopHeight}px`);
+                    backToTopButton.style.setProperty('--h-cus', `${this.scrollTopHeight}px`);
                 }
             }
         }

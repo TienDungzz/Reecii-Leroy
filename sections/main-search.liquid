@@ -178,7 +178,7 @@
         <div class="product-grid-container" id="ProductGridContainer">
           {%- if search.results.size == 0 and search.filters != empty -%}
             <div
-              class="pos-relative collection collection--empty{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
+              class="relative collection collection--empty{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
               id="product-grid"
               data-id="{{ section.id }}"
             >
@@ -216,7 +216,7 @@
                       {%- assign selected_sort_by = results.sort_options | where: 'value', sort_by | first -%}
                       <details
                         id="Details-SortBy"
-                        class="details--dropdown facet-filters__sort pos-relative caption-large"
+                        class="details--dropdown facet-filters__sort relative caption-large"
                         is="dropdown-details" activate-event="hover"
                         data-index="0"
                       >
@@ -225,11 +225,11 @@
                             {{ selected_sort_by.name }} {{- 'icon-caret.svg' | inline_asset_content -}}
                           </span>
                         </summary>
-                        <div id="SortByDropdown" class="details__list pos-absolute top-100 right-0 z-index-1 gradient global-settings-popup" style="--min-w-a: 20rem;" tabindex="-1">
-                          <ul class="list-unstyled" role="list" style="--pad-a-a: 1.3rem 2rem;">
+                        <div id="SortByDropdown" class="details__list absolute top-full right-0 z-1 gradient global-settings-popup" style="--min-w: 20rem;" tabindex="-1">
+                          <ul class="list-unstyled" role="list" style="--p: 1.3rem 2rem;">
                             {%- for option in results.sort_options -%}
-                              <li class="facet-filters__sort_item pos-relative{% if option.value == sort_by %} selected pointer-e-none{% endif %}" style="--pad-a-a: 0;" tabindex="-1">
-                                <label for="Filter-{{ option.value | escape }}-{{ forloop.index }}" class="facet-checkbox c-pointer">
+                              <li class="facet-filters__sort_item relative{% if option.value == sort_by %} selected pointer-events-none{% endif %}" style="--p: 0;" tabindex="-1">
+                                <label for="Filter-{{ option.value | escape }}-{{ forloop.index }}" class="facet-checkbox cursor-pointer">
                                   <input type="checkbox" name="sort_by" value="{{ option.value | escape }}" id="Filter-{{ option.value | escape }}-{{ forloop.index }}" class="visually-hidden">
                                   <span class="label full-unstyled-link">{{ option.name | escape }}</span>
                                 </label>
@@ -245,7 +245,7 @@
             {%- endif -%}
 
             <div
-              class="pos-relative collection{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
+              class="relative collection{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
             >
               <div class="loading-overlay gradient"></div>
               <ul
@@ -312,7 +312,7 @@
                                   </a>
                                 </h3>
                               </div>
-                              <div class="card__badge {{ settings.badge_position }}">
+                              <div class="card__badge relative {{ settings.badge_position }}">
                                 <span class="badge color-{{ settings.color_schemes | first }}">
                                   {{- 'templates.search.page' | t -}}
                                 </span>
@@ -325,8 +325,8 @@
                 {%- endfor -%}
               </ul>
 
-              <div class="product-count pos-relative light left" role="status">
-                <h2 class="product-count__text text-body mar-0">
+              <div class="product-count relative opacity-70 left" role="status">
+                <h2 class="product-count__text text-body m-0">
                   <span id="ProductCount">
                     {%- if search.results_count -%}
                       {{ 'templates.search.results_with_count' | t: terms: search.terms, count: search.results_count }}

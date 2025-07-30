@@ -62,7 +62,7 @@ class ProductCompare extends HTMLElement {
     items.forEach((element) => {
       const handle = element.dataset.productCompareHandle;
       const compareIcon = element.querySelector(".compare-button");
-      const text = element.querySelector(".text");
+      const text = element.querySelector(".text .text-inner");
       const input = element.querySelector("input");
 
       if (this.compareItems.includes(handle)) {
@@ -220,4 +220,3 @@ if (!customElements.get("compare-product-modal")) {
     }
   );
 }
-

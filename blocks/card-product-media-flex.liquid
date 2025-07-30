@@ -56,12 +56,12 @@
 -%}
 {%- if card_product and card_product != empty -%}
   {%- if card_product.featured_media -%}
-    <div class="card--block-media card-badge-is-{{ check_pos_badge }} pos-relative group-block wid-100" style="{%- if block.settings.width_option == 'custom' -%} --globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}">
+    <div class="card--block-media overflow-hidden card-badge-is-{{ check_pos_badge }} relative group-block w-full" style="{%- if block.settings.width_option == 'custom' -%} --globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}">
       <div class="ratio" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
         {%- render 'card-product-media', show_secondary_image: show_secondary_image, card_product: card_product -%}
 
-        <div class="card__content pos-relative">
-          <div class="card__badge {{ settings.badge_position }}">
+        <div class="card__content relative">
+          <div class="card__badge relative {{ settings.badge_position }}">
             {%- render 'product-badge',
               card_product: card_product,
               new_badge: new_badge,

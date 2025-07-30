@@ -1306,9 +1306,6 @@ class SwiperComponent extends HTMLElement {
     this.swiperEl = null;
     this.initSwiper = null;
     this.options = null;
-
-      console.log("ád");
-
   }
 
   connectedCallback() {
@@ -1333,8 +1330,16 @@ class SwiperComponent extends HTMLElement {
 
     // Options
     this.options = {
-      loop: getOption("loop", true),
+      watchSlidesProgress: getOption("watch-slides-progress", false),
+      loop: getOption("loop", false),
+      speed: getOption("speed", 500),
+      parallax: getOption("parallax", false),
       spaceBetween: getOption("space-between", 20),
+      autoplay: {
+        enabled: getOption("slide-autoplay", false),
+        pauseOnMouseEnter: true,
+        disableOnInteraction: false,
+      },
       slidesPerView: getOption("slides-per-view", 1),
       autoHeight: getOption("auto-height", false),
       navigation: {
@@ -1362,7 +1367,7 @@ class SwiperComponent extends HTMLElement {
     };
 
     const breakpointChecker = () => {
-      
+
       if (breakpoint.matches) {
         // Desktop
         if (this.initSwiper) {
@@ -1378,7 +1383,7 @@ class SwiperComponent extends HTMLElement {
     };
 
     breakpoint.addEventListener("change", breakpointChecker);
-    
+
     if (this.isMobileOnly) {
 
       breakpointChecker();
@@ -1694,11 +1699,11 @@ class GridView extends HTMLElement {
   changeLayoutGrid(event) {
     const gridView = event.currentTarget.dataset.grid;
     this.querySelectorAll(".button--grid-view").forEach((button) => {
-      button.classList.add("c-pointer");
+      button.classList.add("cursor-pointer");
       button.classList.remove("active");
     });
 
-    event.currentTarget.classList.remove("c-pointer");
+    event.currentTarget.classList.remove("cursor-pointer");
     event.currentTarget.classList.add("active");
     this.productGrid.setAttribute("data-view", gridView);
   }
@@ -1950,10 +1955,10 @@ class CountDown extends HTMLElement {
         if (hide == "true") {
           this.parentElement.classList.add("hidden");
         } else {
-          let content = `<span class="countdown-item dis-i-block v-a-top center"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.days}</span></span></span>\
-              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.hours}</span></span></span>\
-              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.mins}</span></span></span>\
-              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">0<span class="dis-block body-sm">${window.countdown.secs}</span></span></span>`;
+          let content = `<span class="countdown-item inline-block v-a-top center"><span class="flex flex-column items-center justify-center countdown-digit typography-font-body font-semibold relative">0<span class="block body-sm">${window.countdown.days}</span></span></span>\
+              <span class="countdown-item inline-block v-a-top center w-auto"><span class="flex flex-column items-center justify-center countdown-digit typography-font-body font-semibold relative">0<span class="block body-sm">${window.countdown.hours}</span></span></span>\
+              <span class="countdown-item inline-block v-a-top center w-auto"><span class="flex flex-column items-center justify-center countdown-digit typography-font-body font-semibold relative">0<span class="block body-sm">${window.countdown.mins}</span></span></span>\
+              <span class="countdown-item inline-block v-a-top center w-auto"><span class="flex flex-column items-center justify-center countdown-digit typography-font-body font-semibold relative">0<span class="block body-sm">${window.countdown.secs}</span></span></span>`;
 
           this.querySelector(".countdown").innerHTML = content;
           this.querySelector(".countdown-expired").classList.remove("hidden");
@@ -1968,10 +1973,10 @@ class CountDown extends HTMLElement {
           content;
 
         if (type == "sale-banner") {
-          content = `<span class="countdown-item dis-i-block v-a-top center"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${day}<span class="dis-block body-sm">${window.countdown.days}</span></span></span>\
-              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${hour}<span class="dis-block body-sm">${window.countdown.hours}</span></span></span>\
-              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${minute}<span class="dis-block body-sm">${window.countdown.mins}</span></span></span>\
-              <span class="countdown-item dis-i-block v-a-top center wid-auto"><span class="dis-flex f-column a-i-center j-c-center countdown-digit typography-font-body f-w-semibold pos-relative">${second}<span class="dis-block body-sm">${window.countdown.secs}</span></span></span>`;
+          content = `<span class="countdown-item inline-block v-a-top center"><span class="flex flex-column items-center justify-center countdown-digit typography-font-body font-semibold relative">${day}<span class="block body-sm">${window.countdown.days}</span></span></span>\
+              <span class="countdown-item inline-block v-a-top center w-auto"><span class="flex flex-column items-center justify-center countdown-digit typography-font-body font-semibold relative">${hour}<span class="block body-sm">${window.countdown.hours}</span></span></span>\
+              <span class="countdown-item inline-block v-a-top center w-auto"><span class="flex flex-column items-center justify-center countdown-digit typography-font-body font-semibold relative">${minute}<span class="block body-sm">${window.countdown.mins}</span></span></span>\
+              <span class="countdown-item inline-block v-a-top center w-auto"><span class="flex flex-column items-center justify-center countdown-digit typography-font-body font-semibold relative">${second}<span class="block body-sm">${window.countdown.secs}</span></span></span>`;
 
           this.querySelector(".countdown").innerHTML = content;
           this.parentElement.classList.remove("hidden");
@@ -2134,7 +2139,7 @@ class TabsComponent extends HTMLElement {
   init() {
     this.tabs = this.querySelectorAll(".tabs-component-panel-trigger");
     this.tabContents = this.querySelectorAll(".tabs-component-content");
-    
+
     this.initRender();
     this.tabs.forEach((tab) => {
       tab.addEventListener("click", this.handleTabClick.bind(this));
@@ -2225,4 +2230,3 @@ class ShowMoreProductGrid extends HTMLElement {
   }
 }
 customElements.define("show-more-product-grid", ShowMoreProductGrid);
-

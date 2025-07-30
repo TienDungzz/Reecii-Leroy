@@ -1,0 +1,135 @@
+{%- liquid
+  assign bl_id = block.id
+  assign collection = block.settings.collection
+-%}
+
+{% capture style %}
+  --gap: 1rem;
+{% endcapture %}
+
+{%- capture class -%}
+  category-item category-item-{{ bl_id }} shadow-style border-style relative overflow-hidden flex justify-between items-center
+{%- endcapture -%}
+
+{%- capture image_html -%}
+  <div class="category-item__image relative shrink-0 overflow-hidden" >
+    {%- capture class_img -%}
+      category-item__img object-cover w-full h-full
+    {%- endcapture -%}
+
+    {% if block.settings.image %}
+      {%- render 'image', image: block.settings.image, class: class_img -%}
+    {% elsif collection.featured_image %}
+      {%- render 'image', image: collection.featured_image, class: class_img -%}
+    {% else %}
+      <div class="category-item__placeholder w-full h-full flex-center">
+        {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    {% endif %}
+  </div>
+{%- endcapture -%}
+
+<div class="{{ class }}" style="{{ style }}" {{ block.shopify_attributes }}>
+  {% if block.settings.position == 'left' %}
+    {{ image_html }}
+  {% endif %}
+
+  <div class="category-item__content w-full">
+    <h5 class="category-item__title m-0 h6">
+      {%- if collection != blank -%}
+        {{ block.settings.title | default: collection.title }}
+      {%- else -%}
+        {{ collection.title }}
+      {%- endif -%}
+    </h5>
+    {% if block.settings.url_label != blank %}
+      <a href="{{ block.settings.url | default: collection.url }}" class="category-item__button link link--text link--hover-underline">
+        {{- block.settings.url_label -}}
+      </a>
+    {% endif %}
+  </div>
+
+  {% if block.settings.position == 'right' %}
+    {{ image_html }}
+  {% endif %}
+</div>
+
+{%- stylesheet -%}
+  .category-item__placeholder {
+    background-color: #f4f4f4;
+
+    svg {
+      width: 7rem;
+      height: 7rem;
+      opacity: 0.3;
+    }
+  }
+
+  .category-item__content {
+    padding: 20px;
+  }
+{%- endstylesheet -%}
+
+{% schema %}
+{
+  "name": "Category item",
+  "tag": null,
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "header",
+      "content": "t:settings.image"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.all.image.name"
+    },
+    {
+      "type": "header",
+      "content": "t:names.content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:names.title"
+    },
+    {
+      "type": "text",
+      "id": "url_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "url",
+      "label": "Button url"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category item",
+      "category": "t:categories.collections"
+    }
+  ]
+}
+{% endschema %}

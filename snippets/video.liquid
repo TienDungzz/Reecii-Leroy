@@ -72,7 +72,7 @@
         assign video_src = video_src | append: '&controls=0'
         assign video_src = video_src | append: '&enablejsapi=1'
       endif
-      assign class = 'js-youtube wid-100'
+      assign class = 'js-youtube w-full'
     else
       assign video_src = 'https://player.vimeo.com/video/VIDEO_ID?' | replace: 'VIDEO_ID', video
 
@@ -134,7 +134,7 @@
 
 {% if video != blank %}
   <deferred-media
-    class="deferred-media pos-relative overflow-hidden {{ video_class }}"
+    class="deferred-media relative overflow-hidden {{ video_class }}"
     style="{{ video_style }}"
     data-media-id="{{ video_id }}"
     {% if video_autoplay %}
@@ -144,7 +144,7 @@
   >
     {% if video_preview_image != blank %}
       <button
-        class="button deferred-media__poster deferred-media__poster-button media button-unstyled wid-100 media--{{ video_ratio }}"
+        class="button deferred-media__poster deferred-media__poster-button media button-unstyled w-full media--{{ video_ratio }}"
         ref="deferredMediaPlayButton"
         aria-label="{{ alt }}"
         type="button"
@@ -218,4 +218,3 @@
     </span>
   </div>
 {% endif %}
-

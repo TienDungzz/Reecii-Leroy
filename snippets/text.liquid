@@ -12,6 +12,8 @@
   assign plain_text = bl_stts.text | strip_newlines | strip_html | strip
   assign text_width = width | default: bl_stts.width
 
+  assign text = bl_stts.text
+
   if bl_stts.font_size contains 'heading-lg' or bl_stts.font_size contains 'heading-xl'
     assign type = 'display'
   elsif bl_stts.font_size contains 'heading'
@@ -24,16 +26,41 @@
   endif
 
   assign border = bl_stts.border
-%}
+  if border == 'solid' and text_width == '100%' and class_heading == 'section-header'
+    assign has_border = true
+    assign heading_border_classes = 'heading-border--solid relative justify-center'
+  elsif bl_stts.enable_border_bottom == true
+    assign enable_border_bottom = true
+  endif
 
-{%- capture heading_border_classes -%}
-  {%- if bl_stts.border == 'solid' and text_width == '100%' -%} heading-border--{{ bl_stts.border }} {% endif -%}
-{%- endcapture -%}
+  assign highlight_text = bl_stts.highlight_text
+  assign highlight_content = bl_stts.highlight_text_content | split: ','
+  assign highlight_color = bl_stts.highlight_text_color
+
+  if highlight_content != blank and highlight_text == true
+    for highlight in highlight_content
+      assign highlight_text_code = highlight | prepend: '<span class="highlight_text--content" style="color: [highlight_color];">' | append: '</span>' | replace: '[highlight_color]', highlight_color
+      assign text = text | replace: highlight, highlight_text_code
+    endfor
+  endif
+
+  assign spacing_text = bl_stts.spacing_text
+  assign spacing_content = bl_stts.spacing_text_content | split: ','
+  assign spacing_left = bl_stts.spacing_text_left
+  assign spacing_right = bl_stts.spacing_text_right
+
+  if spacing_content != blank and spacing_text == true
+    for spacing in spacing_content
+      assign spacing_text_code = spacing | prepend: '<span class="spacing_text--content" style="margin-left: [spacing_left]ch; margin-right: [spacing_right]ch;">' | append: '</span>' | replace: '[spacing_left]', spacing_left | replace: '[spacing_right]', spacing_right
+      assign text = text | replace: spacing, spacing_text_code
+    endfor
+  endif
+%}
 
 {%- capture text_block_classes -%}
   {%- if text_width == '100%' -%} text-block--align-{{ bl_stts.alignment }}{% if bl_stts.max_width == 'none' %} text-block--full-width {% endif %}{% endif %}
   {%- if bl_stts.type_preset == 'custom' -%} custom-typography
-    {%- if bl_stts.font_size != 'default' %} {{ type }}-{{ bl_stts.font_size }}-font-size {% endif -%}
+    {%- if bl_stts.font_size != '' %} custom-font-size {% endif -%}
     {% if bl_stts.color != '' -%} custom-color {% endif -%}
     {% if bl_stts.background -%} text-block--background {% endif -%}
     {% if is_rte -%} rte {% endif -%}
@@ -41,8 +68,8 @@
 {%- endcapture -%}
 
 {% capture attributes %}
-  class="{{ class }} {{ heading_border_classes }} spacing-style text-block text-block--{{ block.id }} {{ bl_stts.type_preset }}
-    {{ text_block_classes }}
+  class="{{ class }}{% if has_border %} {{ heading_border_classes }}{% endif %} spacing-style text-block max-w-full flex flex-column text-block--{{ block.id }} {{ bl_stts.type_preset }}
+    {{ text_block_classes }}{% if enable_border_bottom %} border-style text-border-style-bottom{% endif %}
   "
   style="
     {% render 'spacing-padding', settings: bl_stts %}
@@ -57,7 +84,7 @@
       --text-corner-radius: {{ bl_stts.corner_radius }}px;
       --text-padding: max(var(--padding-2xs), calc((var(--text-corner-radius) + var(--padding-xs)) * (1 - cos(45deg))));
     {% endif %}
-    {% if border != 'none' %}
+    {% if has_border or enable_border_bottom %}
       {%- render 'border-override', settings: bl_stts -%}
     {% endif %}
   "
@@ -73,19 +100,29 @@
   if is_rte
     assign element = 'rte-formatter'
   endif
+
+  assign text_class = 'inline-block relative z-1 w-auto max-w-full'
 %}
 
 {% if fallback_text != blank and plain_text == blank %}
   <div {{ attributes }}>
-    <div class="text">
+    {%- if has_border or is_card_heading -%}
+    <div class="text{% if has_border %} {{ text_class }}{% endif %}">
+    {%- endif -%}
       {{ fallback_text }}
+    {%- if has_border or is_card_heading -%}
     </div>
+    {%- endif -%}
   </div>
 {% elsif plain_text != blank %}
   <{{ element }} {{ attributes }}>
-    <div class="text">
-      {{ block.settings.text }}
+    {%- if has_border or is_card_heading -%}
+    <div class="text{% if has_border %} {{ text_class }}{% endif %}">
+    {%- endif -%}
+      {{ text }}
+    {%- if has_border or is_card_heading -%}
     </div>
+    {%- endif -%}
   </{{ element }}>
 {% endif %}
 
@@ -114,17 +151,35 @@
     --text-align-default: right;
   }
 
-  .heading-border--solid {
+  .text-border-style-bottom {
+    --border-style: solid;
     position: relative;
-    justify-content: center;
+    border: none;
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: var(--width-custom, 100%);
+      height: var(--border-width);
+      background: var(--border-color);
+    }
+  }
 
-    &.left {
+  .heading-border--solid {
+    .text {
+      width: auto;
+    }
+
+    &.text-block--align-left {
       --padding-inline: 0 2rem;
     }
-    &.right { 
+    &.text-block--align-right {
       --padding-inline: 2rem 0;
     }
-    &.center {
+    &.text-block--align-center {
       --padding-inline: 2rem;
     }
 
@@ -140,13 +195,8 @@
     }
 
     .text {
-      display: inline-block;
       padding-inline: var(--padding-inline);
-      position: relative;
-      z-index: 1;
-      background: rgba(var(--color-background));
-      width: auto;
-      max-width: 100%;
+      background: var(--color-background);
 
       @media screen and (width >= 1024px) {
         min-width: 42rem;
@@ -156,9 +206,6 @@
 
   .text-block {
     width: var(--width);
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
     align-items: var(--horizontal-alignment);
   }
 
@@ -220,12 +267,19 @@
     margin-block: var(--font-paragraph--spacing);
   }
 
+  .text-block .text > *:first-child,
   .text-block > *:first-child {
     margin-block-start: 0;
   }
 
+  .text-block .text > *:last-child,
   .text-block > *:last-child {
     margin-block-end: 0;
+  }
+
+  .text-block--align-left,
+  .text-block--align-left > * {
+    margin-inline-end: auto;
   }
 
   .text-block--align-center,

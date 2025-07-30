@@ -63,20 +63,20 @@
     endif
 -%}
 
-<side-drawer class="drawer pos-fixed top-0 left-0 z-index-9 wid-100v hei-100 dis-flex j-c-center no-js-hidden" element-s-popup id="Promotion-popup-{{ section.id }}" data-moved="false" tabindex="-1">
-    <div id="Drawer-Overlay-Promotion-{{ section.id }}" class="drawer__overlay pos-fixed inset-0 c-pointer"></div>
-    <promotion-popup class="popup__inner promotion-popup wid-100 hei-auto pos-absolute-c-c dis-flex f-column global-settings-popup gradient color-{{ section.settings.color_scheme }}"
+<side-drawer class="drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden" element-s-popup id="Promotion-popup-{{ section.id }}" data-moved="false" tabindex="-1">
+    <div id="Drawer-Overlay-Promotion-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
+    <promotion-popup class="popup__inner promotion-popup w-full h-auto absolute-c-c flex flex-column global-settings-popup gradient color-{{ section.settings.color_scheme }}"
         role="dialog"
         aria-modal="true"
         aria-label="{{ 'accessibility.promotion-popup' | t }}"
-        style="--popup-max-width: {{ width_content }}px; --popup-max-height: min(100%, 75vh); --pad-a-a: 0;"
+        style="--popup-max-width: {{ width_content }}px; --popup-max-height: min(100%, 75vh); --p: 0;"
         data-expire="{{ section.settings.popup_expire }}"
         data-delay="{{ section.settings.popup_delay | times: 1000 }}"
     >
-        <div class="dis-flex pos-relative wid-100 hei-100 over-a cus-scrollbar" style="--pad-a-a: 0 1rem 0 0;">
+        <div class="flex relative w-full h-full overflow-auto cus-scrollbar" style="--p: 0 1rem 0 0;">
             {%- if section.settings.image != blank -%}
-                <div class="promotion-popup__image small-hide" style="--wid-a: 45%; --wid-a-lg: 395px;">
-                    <div class="media pos-relative hei-100" style="padding-bottom: {{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%;">
+                <div class="promotion-popup__image small-hide" style="--w: 45%; --lg-w: 395px;">
+                    <div class="media relative h-full" style="padding-bottom: {{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%;">
                         <img
                             srcset="
                                 {%- if section.settings.image.width >= 165 -%}{{ section.settings.image | image_url: width: 165 }} 165w,{%- endif -%}
@@ -105,7 +105,7 @@
                 </div>
             {%- endif -%}
             {%- if blocks_size > 0 -%}
-                <div class="promotion-popup__info dis-flex f-column a-i-center hei-100 over-y-a over-x-h scroll-b-sm" style="--pad-a-a: 2.6rem 2rem; --pad-a-a-md: 5rem 3rem; --pad-a-a-lg: 5rem 3rem; --wid-a: 100%; --wid-a-md: {{ width_info_md }}%; --wid-a-lg: {{ width_info }};">
+                <div class="promotion-popup__info flex flex-column items-center h-full overflow-y-a overflow-x-h scroll-b-sm" style="--p: 2.6rem 2rem; --md-p: 5rem 3rem; --lg-p: 5rem 3rem; --w: 100%; --md-w: {{ width_info_md }}%; --lg-w: {{ width_info }};">
                     {%- for block in section.blocks -%}
                         {%- case block.type -%}
                             {%- when 'heading' -%}
@@ -121,7 +121,7 @@
                                     </div>
                                 {%- endif -%}
                             {%- when 'email_form' -%}
-                                <div class="wid-100" {{ block.shopify_attributes }}>
+                                <div class="w-full" {{ block.shopify_attributes }}>
                                     {% form 'customer', class: 'newsletter-form', id: 'ContactFormPopup' %}
                                         <input type="hidden" name="contact[tags]" value="newsletter">
                                         <div
@@ -200,21 +200,21 @@
                                         {% else %}
                                             href="{{ block.settings.button_link }}"
                                         {% endif %}
-                                        class="button wid-100{% if block.settings.button_style_secondary %} button-secondary{% else %} button--primary{% endif %}"
+                                        class="button w-full{% if block.settings.button_style_secondary %} button-secondary{% else %} button--primary{% endif %}"
                                         {{ block.shopify_attributes }}
                                     >
                                         {{ block.settings.button_label | escape }}
                                     </a>
                                 {%- endif -%}
                             {%- when 'social_media' -%}
-                                <div class="dis-flex j-c-center promotion--social" style="--blo-m-t-a: 1.2rem;" {{ block.shopify_attributes }}>
+                                <div class="flex justify-center promotion--social" style="--blo-m-t-a: 1.2rem;" {{ block.shopify_attributes }}>
                                     {%- render 'social-icons' -%}
                                 </div>
                         {%- endcase -%}
                     {%- endfor -%}
                 </div>
             {%- endif -%}
-            <button class="drawer__close dis-block t-button bor-none bor-circle c-pointer pos-absolute" type="button" onclick="this.closest('side-drawer').close()" aria-label="{{ 'accessibility.close' | t }}" style="--top-a: 0.3rem; --right-a: 0.3rem;">
+            <button class="drawer__close block t-button bor-none rounded-full cursor-pointer absolute" type="button" onclick="this.closest('side-drawer').close()" aria-label="{{ 'accessibility.close' | t }}" style="--top: 0.3rem; --right: 0.3rem;">
                 {{- 'icon-close.svg' | inline_asset_content -}}
             </button>
         </div>

@@ -26,7 +26,7 @@
         "
     >
         <side-drawer-opener
-            class="product-popup-modal__opener product-sizechar-popup-modal__opener dis-i-block"
+            class="product-popup-modal__opener product-sizechar-popup-modal__opener inline-block"
             data-side-drawer="#PopupModal-{{ block.id }}"
         >
             <button
@@ -44,31 +44,31 @@
     </div>
 
     <side-drawer
-        class="size-chart-popup-modal drawer pos-fixed top-0 left-0 z-index-9 wid-100v hei-100 dis-flex j-c-center no-js-hidden"
+        class="size-chart-popup-modal drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
         element-s-popup
         id="PopupModal-{{ block.id }}"
     >
-        <div id="Drawer-Overlay-Size-Chart" class="drawer__overlay pos-fixed inset-0 c-pointer"></div>
+        <div id="Drawer-Overlay-Size-Chart" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
         <div
-            class="popup__inner wid-auto hei-100v pos-absolute-c-c dis-flex f-column global-settings-popup gradient color-{{ block.settings.color_size_chart_scheme }}"
+            class="popup__inner w-auto h-fullv absolute-c-c flex flex-column global-settings-popup gradient color-{{ block.settings.color_size_chart_scheme }}"
             role="dialog"
             aria-modal="true"
             aria-label="Size chart"
             tabindex="-1"
             style="--popup-max-height: 85%;"
         >
-            <div class="wid-100 hei-100 over-a cus-scrollbar" style="--pad-a-a: 0 1rem;">
-                <div class="drawer__header dis-flex j-c-between a-i-center pos-relative center"
-                    style="--c-gap-a: 2rem; --pad-a-a: 1.5rem 0; --mar-b-a: 2.5rem;"
+            <div class="w-full h-full overflow-auto cus-scrollbar" style="--p: 0 1rem;">
+                <div class="drawer__header flex justify-between items-center relative center"
+                    style="--gap-x: 2rem; --p: 1.5rem 0; --mb: 2.5rem;"
                 >
-                    <h2 class="drawer__heading break mar-0">
+                    <h2 class="drawer__heading break m-0">
                         {{ size_chart_heading | default: 'products.product.size_chart.name_popup' }}
                     </h2>
-                    <button class="drawer__close dis-block t-button bor-none bor-circle c-pointer" type="button" onclick="this.closest('side-drawer').close()" aria-label="{{ 'accessibility.close' | t }}">
+                    <button class="drawer__close block t-button bor-none rounded-full cursor-pointer" type="button" onclick="this.closest('side-drawer').close()" aria-label="{{ 'accessibility.close' | t }}">
                         {{- 'icon-close.svg' | inline_asset_content -}}
                     </button>
                 </div>
-                <div class="size-chart-popup-modal__content-info mar-a">
+                <div class="size-chart-popup-modal__content-info m-auto">
                     <picture class="size-chart-details center">
                         {%- if size_chart_details != '' -%}
                             {%- if size_chart_type == 'metafield' -%}

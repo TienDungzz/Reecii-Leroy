@@ -1,6 +1,30 @@
+{%- liquid
+  assign sec_stts = section.settings
+
+  if sec_stts.direction_tablet == true
+    assign direction_tablet = 'column'
+  endif
+
+  if sec_stts.direction_mobile == true
+    assign direction_mobile = 'column'
+  endif
+
+  if sec_stts.wrap_tablet_down == true
+    assign wrap_tablet_down = 'wrap'
+  endif
+
+  if sec_stts.wrap_mobile == true
+    assign wrap_mobile = 'wrap'
+  endif
+-%}
+
+{%- capture class -%}
+  flex-section flex flex-{{ sec_stts.direction }}{% if sec_stts.direction_tablet == true %} max-md:flex-{{ direction_tablet }}{% endif %}{% if sec_stts.direction_mobile == true %} max-sm:flex-{{ direction_mobile }}{% endif %} flex-{{ sec_stts.wrap }}{% if sec_stts.wrap_tablet_down == true %} max-md:flex-{{ wrap_tablet_down }}{% endif %}{% if sec_stts.wrap_mobile == true %} max-sm:flex-{{ wrap_mobile }}{% endif %} align-{{ sec_stts.align_items}} justify-{{ sec_stts.justify_content }} {{ section.settings | class_list }} color-{{ sec_stts.color_scheme }}
+{%- endcapture -%}
+
 <div
-  class="flex-section flex flex-{{ section.settings.direction }} flex-{{ section.settings.wrap }} align-{{ section.settings.align_items}} justify-{{ section.settings.justify_content }} {{ section.settings | class_list }} color-{{ section.settings.color_scheme }}"
-  style="--pl:{{ section.settings.padding_left }}px; --pr:{{ section.settings.padding_right }}px; --pt:{{ section.settings.padding_top }}px; --pb:{{ section.settings.padding_bottom }}px; --gap-x: {{ section.settings.gap_x }}px; --gap-y: {{ section.settings.gap_y }}px;"
+  class="{{ class }}"
+  style="--pl:{{ sec_stts.padding_left }}px; --pr:{{ sec_stts.padding_right }}px; --pt:{{ sec_stts.padding_top }}px; --pb:{{ sec_stts.padding_bottom }}px; --gap-x: {{ sec_stts.gap_x }}px; --gap-y: {{ sec_stts.gap_y }}px;"
   {{ section.shopify_attributes }}
 >
   {% content_for 'blocks' %}
@@ -66,10 +90,24 @@
           "label": "⭢"
         },
         {
-          "value": "col",
+          "value": "column",
           "label": "⭣"
         }
       ]
+    },
+    {
+      "type": "checkbox",
+      "id": "direction_tablet",
+      "label": "Vertical below desktop",
+      "default": false,
+      "visible_if": "{{ section.settings.direction == 'row' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "direction_mobile",
+      "label": "Vertical on mobile",
+      "default": false,
+      "visible_if": "{{ section.settings.direction == 'row' }}"
     },
     {
       "type": "select",
@@ -86,6 +124,20 @@
           "label": "Yes"
         }
       ]
+    },
+    {
+      "type": "checkbox",
+      "id": "wrap_tablet_down",
+      "label": "Wrap below desktop",
+      "default": false,
+      "visible_if": "{{ section.settings.wrap == 'no-wrap' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "wrap_mobile",
+      "label": "Wrap on mobile",
+      "default": false,
+      "visible_if": "{{ section.settings.wrap == 'no-wrap' and section.settings.wrap_tablet_down == false }}"
     },
     {
       "type": "select",

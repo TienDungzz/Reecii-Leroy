@@ -7,32 +7,35 @@
 
     if settings.quick_add_type == 'icon' and block.blocks.size > 0
         assign quick_add_is_icon = true
-        assign class_group = 'pos-absolute-md top-0 right-0 z-index-2'
-        assign class_group_inner = 'pos-absolute-mb top-0 right-0 z-index-2'
-    elsif settings.quick_add_type == 'text'
-        assign class_group = 'pos-absolute top-0 right-0 z-index-2'
+        assign class_group = 'md:absolute top-0 right-0 z-2'
+        assign class_group_inner = 'max-sm:absolute top-0 right-0 z-2'
+    elsif settings.quick_add_type == 'text' or settings.quick_add_type == 'icon' and block.blocks.size == 0
+        assign quick_add_hidden = true
+        assign class_group = 'absolute top-0 right-0 z-2'
     endif
 -%}
 
 {%- if card_product and card_product != empty -%}
     <div class="card-product__group-wrapper{% if quick_add_is_icon %} {{ class_group }} quick-add-type-icon{% endif %}">
-        <div class="card--block-group card-product__group dis-flex f-column {% if settings.quick_add_type == 'text' %} {{ class_group }}{% endif %}{% if quick_add_is_icon %} {{ class_group_inner }}{% endif %}" style="--gap-y: 1rem; --pad-a-a: .5rem; --pad-b-a: 1rem; --pad-a-a-md: 1rem; --pad-b-a-md: 1rem; --pad-a-a-lg: 1.6rem; --pad-b-a-lg: 1rem;">
-            {%- assign class_button = 'card-product__group-btn bor-circle bor-none center c-pointer dis-flex a-i-center j-c-center pos-relative' -%}
-            
+        <div class="card--block-group card-product__group flex flex-column{% if quick_add_hidden %} {{ class_group }}{% endif %}{% if quick_add_is_icon %} {{ class_group_inner }}{% endif %}" style="--gap-y: 1rem; --p: .5rem; --pb: 1rem; --md-p: 1rem; --md-pb: 1rem; --lg-p: 1.6rem; --lg-pb: 1rem;">
+            {%- assign class_button = 'card-product__group-btn rounded-full bor-none center cursor-pointer flex items-center justify-center relative leading-none' -%}
+            {%- assign class_text = 'text whitespace-nowrap overflow-hidden pointer-events-none absolute-c-y z--1 opacity-0' -%}
+            {%- assign class_text_inner = 'text-inner text-sm inline-block' -%}
+
             {% comment %} ------ Wishlist ------ {% endcomment %}
             {%- if enable_wishlist -%}
-                {% render 'product-wishlist-button', card_product: card_product, class_button: class_button %}
-                
+                {% render 'product-wishlist-button', card_product: card_product, class_button: class_button, class_text: class_text, class_text_inner: class_text_inner %}
+
             {%- endif -%}
-    
+
             {% comment %} ------ Quick view ------ {% endcomment %}
              {%- if enable_quick_view -%}
-                {% render 'quick-view-button', card_product: card_product, class_button: class_button %}
+                {% render 'quick-view-button', card_product: card_product, class_button: class_button, class_text: class_text, class_text_inner: class_text_inner %}
              {%- endif -%}
-    
+
             {% comment %} ------ Compare ------ {% endcomment %}
              {%- if enable_compare -%}
-                 {% render 'product-compare-button', card_product: card_product, class_button: class_button, sectionId: section_id %}
+                 {% render 'product-compare-button', card_product: card_product, class_button: class_button, sectionId: section_id, class_text: class_text, class_text_inner: class_text_inner %}
              {%- endif -%}
         </div>
 

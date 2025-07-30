@@ -22,9 +22,9 @@
     </summary>
     <div
       id="MegaMenu-Content-{{ forloopIndex }}"
-      class="details__list list-menu--wrapper mega-menu__content z-index-1 color-{{ section.settings.menu_color_scheme }} gradient motion-reduce global-settings-popup"
+      class="details__list list-menu--wrapper mega-menu__content z-1 color-{{ section.settings.menu_color_scheme }} gradient motion-reduce global-settings-popup"
       tabindex="-1"
-      style="--columns-count: {{ block.settings.grid }}; --c-gap-a: 1.6rem; --gap-y: 1.6rem"
+      style="--columns-count: {{ block.settings.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
     >
       <ul
         class="mega-menu__list header__mega-submenu page-width{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
@@ -73,7 +73,7 @@
           endif
         endif
       -%}
-      
+
         {%- for i in (1..2) -%}
           {%- capture capture_image -%}image_{{ i }}{%- endcapture -%}
           {%- liquid
@@ -83,11 +83,11 @@
             endif
           -%}
         {%- endfor -%}
-        <div class="mega-menu__collage collage collage-3-columns collage--{{ block.settings.promotion_banner_layout }} collage--{{ mega_menu_images_size }}-items dis-grid contains-card contains-card--card"
+        <div class="mega-menu__collage collage collage-3-columns collage--{{ block.settings.promotion_banner_layout }} collage--{{ mega_menu_images_size }}-items grid contains-card contains-card--card"
           style="--border-radius: {{ block.settings.image_corner_radius | divided_by: 10.0 }}rem;
           --border-width: {{ block.settings.image_border_thickness | divided_by: 10.0 }}rem;
           --border-opacity: {{ block.settings.image_border_opacity | divided_by: 100.0 }};
-          --c-gap-a: 1rem;
+          --gap-x: 1rem;
           --gap-y: 1rem;"
         >
           {%- if has_mega_menu_images == true -%}
@@ -100,8 +100,8 @@
               -%}
               {%- if image != blank -%}
                 {%- assign image_index = image_index | plus: 1 -%}
-                <div class="collage-card collage__item collage__item--{{ image_index }} over-h">
-                  <a class="dis-block pos-relative hei-100"
+                <div class="collage-card collage__item collage__item--{{ image_index }} overflow-hidden">
+                  <a class="block relative h-full"
                     {% if link_url != blank %}
                       href="{{ link_url }}"
                     {% else %}
@@ -109,13 +109,13 @@
                     {% endif %}
                   >
                     {%- if settings.animations_reveal_on_scroll -%}
-                      <div data-animate="zoom-fade-in" class="theme-animate dis-block over-h pos-relative hei-100">
+                      <div data-animate="zoom-fade-in" class="theme-animate block overflow-hidden relative h-full">
                     {%- endif -%}
                     {%- liquid
                       assign ratio = image.aspect_ratio | default: 1
                       assign image_alt = image.alt | default: shop.name | escape
                     -%}
-                    <div class="media media--transparent media--adapt media--zoom pos-relative over-h hei-100"
+                    <div class="media media--transparent media--adapt media--zoom relative overflow-hidden h-full"
                       style="padding-bottom: {{ 1 | divided_by: ratio | times: 100 }}%;"
                     >
                       {{ image | image_url: width: 600 | image_tag:
@@ -135,7 +135,7 @@
             {%- endfor -%}
           {%- endif -%}
           {% if block.settings.show_brand %}
-            <div class="menu-dropdown__block menu-dropdown__brand collage-card collage__item collage__item--3 over-h">
+            <div class="menu-dropdown__block menu-dropdown__brand collage-card collage__item collage__item--3 overflow-hidden">
               {% if block.settings.brand_title %}
                 <h3 class="menu-dropdown__block--title">
                   <span>{{ block.settings.brand_title | escape }}</span>

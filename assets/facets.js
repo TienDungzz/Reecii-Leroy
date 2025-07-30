@@ -102,11 +102,11 @@ class FacetFiltersForm extends HTMLElement {
   static changeLayoutGrid (event) {
     const gridView = event.currentTarget.dataset.grid;
     document.querySelectorAll('.button--grid-view').forEach((button) => {
-      button.classList.add('c-pointer');
+      button.classList.add('cursor-pointer');
       button.classList.remove('active');
     });
 
-    event.currentTarget.classList.remove('c-pointer');
+    event.currentTarget.classList.remove('cursor-pointer');
     event.currentTarget.classList.add('active');
     document.querySelector('.product-grid-container .product-grid').setAttribute('data-view', gridView);
   }

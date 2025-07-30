@@ -51,8 +51,8 @@
     </div>
   </pickup-availability-preview>
 
-  <pickup-availability-drawer class="drawer pos-fixed top-0 left-0 z-index-9 wid-100v hei-100 dis-flex j-c-end no-js-hidden">
-    <div id="PickupAvailabilityDrawer-Overlay" class="drawer__overlay pos-fixed inset-0 c-pointer"></div>
+  <pickup-availability-drawer class="drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-end no-js-hidden">
+    <div id="PickupAvailabilityDrawer-Overlay" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
     <div id="PickupAvailabilityDrawer" class="pickup-availability-drawer">
       <div
         class="drawer__inner gradient cus-scrollbar"
@@ -62,11 +62,11 @@
         aria-label="Pickup Availability Heading"
         tabindex="-1"
       >
-        <div class="pickup-availability-header pos-relative dis-flex">
+        <div class="pickup-availability-header relative flex">
           <h2 class="h3 pickup-availability-drawer-title" id="PickupAvailabilityHeading">
             {{ product_variant.product.title | escape }}
           </h2>
-          <button class="drawer__close pos-absolute right-0 dis-block t-button bor-none bor-circle c-pointer" type="button" onclick="this.closest('pickup-availability-drawer').hide()" aria-label="{{ 'accessibility.close' | t }}">
+          <button class="drawer__close absolute right-0 block t-button bor-none rounded-full cursor-pointer" type="button" onclick="this.closest('pickup-availability-drawer').hide()" aria-label="{{ 'accessibility.close' | t }}">
             {{- 'icon-close.svg' | inline_asset_content -}}
           </button>
         </div>

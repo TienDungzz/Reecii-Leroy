@@ -5,8 +5,8 @@
   {% render 'cart-drawer' %}
 {% endcomment %}
 
-<cart-drawer id="Cart-Drawer" class="drawer pos-fixed top-0 left-0 wid-100v hei-100 z-index-9 dis-flex j-c-end no-js-hidden{% if cart == empty %} is-empty{% endif %}" data-moved="false">
-  <div id="CartDrawer-Overlay" class="drawer__overlay pos-fixed inset-0 c-pointer"></div>
+<cart-drawer id="Cart-Drawer" class="drawer fixed top-0 left-0 w-screen h-full z-9 flex justify-end no-js-hidden{% if cart == empty %} is-empty{% endif %}" data-moved="false">
+  <div id="CartDrawer-Overlay" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
   <div id="CartDrawer" class="cart-drawer">
     <div
       class="drawer__inner color-{{ section.settings.color_scheme }} gradient cus-scrollbar"
@@ -16,13 +16,13 @@
       tabindex="-1"
     >
       {%- if cart == empty -%}
-        <div class="drawer__inner-empty hei-100 over-h dis-flex f-column" style="--pad-a-a: 0 1.5rem;">
-          <div class="drawer__header dis-flex j-c-end a-i-center pos-relative" style="--pad-a-a: 1.5rem 0;">
-            <button class="drawer__close dis-block t-button bor-none bor-circle c-pointer" type="button" onclick="this.closest('cart-drawer').close()" aria-label="{{ 'accessibility.close' | t }}">
+        <div class="drawer__inner-empty h-full overflow-hidden flex flex-column" style="--p: 0 1.5rem;">
+          <div class="drawer__header flex justify-end items-center relative" style="--p: 1.5rem 0;">
+            <button class="drawer__close block t-button bor-none rounded-full cursor-pointer" type="button" onclick="this.closest('cart-drawer').close()" aria-label="{{ 'accessibility.close' | t }}">
               {{- 'icon-close.svg' | inline_asset_content -}}
             </button>
           </div>
-          <div class="cart-drawer__warnings dis-flex f-column f-1 j-c-center center{% if section.settings.cart_drawer_collection != blank %} cart-drawer__warnings--has-collection{% endif %}">
+          <div class="cart-drawer__warnings flex flex-column flex-1 justify-center center{% if section.settings.cart_drawer_collection != blank %} cart-drawer__warnings--has-collection{% endif %}">
             <div class="cart-drawer__empty-content">
               <h2 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h2>
               <a href="{{ routes.all_products_collection_url }}" class="button">
@@ -38,15 +38,15 @@
             </div>
           </div>
           {%- if section.settings.cart_drawer_collection != blank -%}
-            <div class="cart-drawer__collection" style="--mar-a-a: 0 2.5rem 1.5rem;">
+            <div class="cart-drawer__collection" style="--m: 0 2.5rem 1.5rem;">
               {% render 'card-collection', card_collection: section.settings.cart_drawer_collection, columns: 1 %}
             </div>
           {%- endif -%}
         </div>
       {%- else -%}
-        <div class="drawer__header dis-flex j-c-between a-i-center pos-relative" style="--pad-a-a: 1.5rem 0;">
-          <h2 class="drawer__heading break mar-0">{{ 'sections.cart.title' | t }}</h2>
-          <button class="drawer__close dis-block t-button bor-none bor-circle c-pointer" type="button" onclick="this.closest('cart-drawer').close()" aria-label="{{ 'accessibility.close' | t }}">
+        <div class="drawer__header flex justify-between items-center relative" style="--p: 1.5rem 0;">
+          <h2 class="drawer__heading break m-0">{{ 'sections.cart.title' | t }}</h2>
+          <button class="drawer__close block t-button bor-none rounded-full cursor-pointer" type="button" onclick="this.closest('cart-drawer').close()" aria-label="{{ 'accessibility.close' | t }}">
             {{- 'icon-close.svg' | inline_asset_content -}}
           </button>
         </div>
@@ -59,10 +59,10 @@
         <form
           action="{{ routes.cart_url }}"
           id="CartDrawer-Form"
-          class="cart__contents cart-drawer__form f-grow dis-flex f-wrap"
+          class="cart__contents cart-drawer__form flex-grow flex flex-wrap"
           method="post"
         >
-          <div id="CartDrawer-CartItems" class="drawer__contents f-grow dis-flex f-column js-contents">
+          <div id="CartDrawer-CartItems" class="drawer__contents flex-grow flex flex-column js-contents">
             {%- if cart != empty -%}
               <div class="drawer__cart-items-wrapper">
                 <table class="cart-items" role="table">

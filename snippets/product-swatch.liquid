@@ -11,10 +11,19 @@
         assign number_limit = 4
     endif
 -%}
+
+{%- capture class_swatch -%}
+    swatch cursor-pointer block max-w-full
+{%- endcapture -%}
+
+{%- capture class_tooltip -%}
+    tooltip center absolute bottom-full left-50 z-1 whitespace-nowrap capitalize text-sm
+{%- endcapture -%}
+
 {%- if variantCount > 0 and product.variants.first.title != 'Default Title' -%}
-    <div class="card__swatch pos-relative z-index-2" id="product-swatch-{{ product.id }}">
+    <div class="card__swatch relative z-2" id="product-swatch-{{ product.id }}">
         <color-swatch>
-            <ul class="swatch-list list-unstyled dis-flex f-wrap a-i-center j-c-{{ alignment | replace: 'left', 'start' | replace: 'right', 'end' }}" style="--gap-a: 0.6rem;">
+            <ul class="swatch-list list-unstyled flex flex-wrap items-center justify-{{ alignment | replace: 'left', 'start' | replace: 'right', 'end' }}" style="--gap: 0.6rem;">
                 {%- for variant in product.variants -%}
                     {%- assign color = variant.options[index] -%}
                     {%- assign color_check = color | prepend: "|" | append: "|" -%}
@@ -55,34 +64,34 @@
                         endcase
                         -%}
                         {%- if count < number_limit -%}
-                            <li class="swatch-item">
+                            <li class="swatch-item relative">
                                 <div class="swatch-wrapper">
                                     <span
                                         {% if enable_variant_image %}
-                                          class="swatch color-swacth-color--{{ color | handle }}"
+                                          class="{{ class_swatch }} color-swacth-color--{{ color | handle }}"
                                           style="{%- if swatch_type == 'color' -%}--swatch--background-color: {{ color | split: ' ' | last | handle }};{%- endif -%}
-                                            {%- if has_metaobject and metaobject_color != blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
-                                            {%- if has_metaobject and metaobject_color == blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
+                                            {%- if has_metaobject -%}--swatch--background-color: {{ background_color }};{%- endif -%}
+                                            {% comment %} {%- if has_metaobject and metaobject_color == blank -%}--swatch--background-color: {{ background_color }};{%- endif -%} {% endcomment %}
                                             {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}"
                                             data-title="{{ color | handle }}"
                                             data-variant-id="{{ variant.id }}"
                                             data-variant-img="{{ variant.image.src | product_img_url: '800x' }}"
                                         {% else %}
-                                          class="swatch color-swacth-color--{{ color | handle }} swatch--unavailable"
+                                          class="{{ class_swatch }} color-swacth-color--{{ color | handle }} swatch--unavailable"
                                         {% endif %}
                                     ></span>
-                                    <span class="tooltip visually-hidden">{{ color | escape }}</span>
+                                    <span class="{{ class_tooltip }}">{{ color | escape }}</span>
                                 </div>
                             </li>
                         {%- else -%}
                             {%- if count == number_limit -%}
-                                <li class="group-swatch " style="--c-gap-a: 0.5rem; display: none">
+                                <li class="group-swatch " style="--gap-x: 0.5rem; display: none">
                             {%- endif -%}
-                                <div class="swatch-item">
+                                <div class="swatch-item relative">
                                     <div class="swatch-wrapper">
                                         <span
                                             {% if enable_variant_image %}
-                                            class="swatch color-swacth-color--{{ color | handle }}"
+                                            class="{{ class_swatch }} color-swacth-color--{{ color | handle }}"
                                             style="{%- if swatch_type == 'color' -%}--swatch--background-color: {{ color | split: ' ' | last | handle }};{%- endif -%}
                                                 {%- if has_metaobject and metaobject_color != blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
                                                 {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}"
@@ -90,10 +99,10 @@
                                                 data-variant-id="{{ variant.id }}"
                                                 data-variant-img="{{ variant.image.src | product_img_url: '800x' }}"
                                             {% else %}
-                                            class="swatch color-swacth-color--{{ color | handle }} swatch--unavailable"
+                                            class="{{ class_swatch }} color-swacth-color--{{ color | handle }} swatch--unavailable"
                                             {% endif %}
                                         ></span>
-                                        <span class="tooltip visually-hidden">{{ color | escape }}</span>
+                                        <span class="{{ class_tooltip }}">{{ color | escape }}</span>
                                     </div>
                                 </div>
                             {%- if forloop.last -%}
@@ -108,10 +117,9 @@
                     {%- endunless -%}
                 {%- endfor -%}
                 {%- if count > number_limit -%}
-                    <li class="item-swatch-more item"><button type="button" class="number-showmore t-button c-pointer" title="More Color"><span>+</span> <span class="text-number">{{ count | minus : number_limit }}</span></button></li>
+                    <li class="item-swatch-more item"><button type="button" class="number-showmore t-button cursor-pointer" title="More Color"><span>+</span> <span class="text-number">{{ count | minus : number_limit }}</span></button></li>
                 {%- endif -%}
             </ul>
         </color-swatch>
     </div>
 {%- endif -%}
-

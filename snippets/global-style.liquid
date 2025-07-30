@@ -43,40 +43,40 @@
       /* -------------------------------------------- BADGE COLOR -------------------------------------------- */
       --color-sale-badge-foreground: rgba({{ scheme.settings.sale_badge_color.rgba }});
       --color-sale-badge-background: rgba({{ scheme.settings.sale_badge_background.rgba }});
-      --color-sale-badge-border: 
+      --color-sale-badge-border:
         {% if scheme.settings.sale_badge_background.red == 255 and scheme.settings.sale_badge_background.green == 255 and scheme.settings.sale_badge_background.blue == 255 %}
           rgba({{ scheme.settings.sale_badge_color.rgba }})
         {% else %}
           rgba({{ scheme.settings.sale_badge_background.rgba }})
         {% endif %};
-      
+
       --color-sold-out-badge-foreground: rgba({{ scheme.settings.sold_out_badge_color.rgba }});
       --color-sold-out-badge-background: rgba({{ scheme.settings.sold_out_badge_background.rgba }});
-      --color-sold-out-badge-border: 
+      --color-sold-out-badge-border:
         {% if scheme.settings.sold_out_badge_background.red == 255 and scheme.settings.sold_out_badge_background.green == 255 and scheme.settings.sold_out_badge_background.blue == 255 %}
           rgba({{ scheme.settings.sold_out_badge_color.rgba }})
         {% else %}
           rgba({{ scheme.settings.sold_out_badge_background.rgba }})
         {% endif %};
-      
+
       --color-new-badge-foreground: rgba({{ scheme.settings.new_badge_color.rgba }});
       --color-new-badge-background: rgba({{ scheme.settings.new_badge_background.rgba }});
-      --color-new-badge-border: 
+      --color-new-badge-border:
         {% if scheme.settings.new_badge_background.red == 255 and scheme.settings.new_badge_background.green == 255 and scheme.settings.new_badge_background.blue == 255 %}
           rgba({{ scheme.settings.new_badge_color.rgba }})
         {% else %}
           rgba({{ scheme.settings.new_badge_background.rgba }})
         {% endif %};
-      
+
       --color-custom-badge-foreground: rgba({{ scheme.settings.custom_badge_color.rgba }});
       --color-custom-badge-background: rgba({{ scheme.settings.custom_badge_background.rgba }});
-      --color-custom-badge-border: 
+      --color-custom-badge-border:
         {% if scheme.settings.custom_badge_background.red == 255 and scheme.settings.custom_badge_background.green == 255 and scheme.settings.custom_badge_background.blue == 255 %}
           rgba({{ scheme.settings.custom_badge_color.rgba }})
         {% else %}
           rgba({{ scheme.settings.custom_badge_background.rgba }})
         {% endif %};
-      
+
       /* -------------------------------------------- END BADGE COLOR -------------------------------------------- */
 
         --payment-terms-background-color: rgb({{ scheme.settings.background.rgb }});
@@ -88,9 +88,19 @@
         --compare-button-background: {{ scheme.settings.compare_background }};
 
         /* Arrows */
-      --arrow-color: rgba({{ scheme.settings.arrow_color.rgba }});
-      --arrow-background: rgba({{ scheme.settings.arrow_background.rgba }});
-      --arrow-border: rgba({{ scheme.settings.arrow_border.rgba }});
+        --arrow-width: {{ settings.arrows_width }}px;
+        --arrow-height: {{ settings.arrows_height }}px;
+        --arrow-icon-size: {{ settings.arrows_icon_size }}px;
+        --arrow-radius: {{ settings.arrows_radius }}px;
+        --arrow-color: rgba({{ scheme.settings.arrow_color.rgba }});
+        --arrow-background: rgba({{ scheme.settings.arrow_background.rgba }});
+        --arrow-border: rgba({{ scheme.settings.arrow_border.rgba }});
+        --arrow-border-thickness: {{ settings.arrows_border_thickness }}px;
+        --arrow-border-color: rgba(from var(--arrow-color) r g b / {{ settings.arrows_border_opacity | divided_by: 100.0 }});
+
+        /* Pagination */
+        --pagination-color: rgba({{ scheme.settings.pagination_color.rgba }});
+        --pagination-active-color: rgba({{ scheme.settings.pagination_active_color.rgba }});
     }
   {% endfor %}
 
@@ -100,7 +110,23 @@
   }
 
   :root {
-    
+   /* Section Heights */
+   --section-height-small: 15rem;
+    --section-height-medium: 25rem;
+    --section-height-large: 35rem;
+
+    @media screen and (min-width: 40em) {
+      --section-height-small: 40svh;
+      --section-height-medium: 55svh;
+      --section-height-large: 70svh;
+    }
+
+    @media screen and (min-width: 60em) {
+      --section-height-small: 50svh;
+      --section-height-medium: 65svh;
+      --section-height-large: 80svh;
+    }
+
     /* Line height / Leading */
     /* --- Body --- */
     --body-3xl-font-size: 2.8rem;
@@ -189,6 +215,10 @@
         else
           assign fluid_size_rem = font_size_value | divided_by: 10.0
           echo '--font-size--[font_size]: [fluid_size_rem]rem;' | replace: '[font_size]', font_size | replace: '[fluid_size_rem]', fluid_size_rem
+          if font_size == 'paragraph'
+            echo '--font-size--[font_size]-md: calc([fluid_size_rem]rem + 0.2rem);' | replace: '[font_size]', font_size | replace: '[fluid_size_rem]', fluid_size_rem
+            echo '--font-size--[font_size]-sm: clamp(1rem, calc([fluid_size_rem]rem - 0.2rem), [fluid_size_rem]rem);' | replace: '[font_size]', font_size | replace: '[fluid_size_rem]', fluid_size_rem
+          endif
         endif
       endfor
 
@@ -440,7 +470,7 @@
     --sp-47: 4.7rem;
     --sp-48: 4.8rem;
 
-    --spacing-scale-sm: 0.6;
+    --spacing-scale-max-sm: 0.6;
     --spacing-scale-md: 0.7;
     --spacing-scale-default: 1.0;
 
@@ -450,6 +480,7 @@
     /* Animation */
     --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
     --ease-out-quad: cubic-bezier(0.32, 0.72, 0, 1);
+    --ease-out-smooth: cubic-bezier(0.61, 0.22, 0.23, 1);
     --animation-speed: 0.125s;
     --animation-speed-slow: 0.2s;
     --animation-speed-medium: 0.15s;
@@ -464,6 +495,15 @@
     --animation-timing-default: cubic-bezier(0, 0, 0.2, 1);
     --animation-timing-fade-in: cubic-bezier(0.16, 1, 0.3, 1);
     --animation-timing-fade-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* multi-level-category */
+    --color-label-multiLevel-categories: {{ settings.color_filter_label }};
+    --bg-label-multiLevel-categories: {{ settings.bg_filter_label }};
+    --color-button-multiLevel-categories: {{ settings.text_button_filter_color }};
+    --bg-button-multiLevel-categories: {% if settings.bg_gradient_button_filter_color != blank %}{{ settings.bg_gradient_button_filter_color }}{% else %}{{ settings.bg_button_filter_color }}{% endif %};
+    --border-button-multiLevel-categories: {{ settings.border_button_filter_color }};
+    --hover-color-button-multiLevel-categories: {{ settings.hover_text_button_filter_color }};
+    --hover-bg-button-multiLevel-categories: {% if settings.hover_bg_gradient_button_filter_color != blank %}{{ settings.hover_bg_gradient_button_filter_color }}{% else %}{{ settings.hover_bg_button_filter_color }}{% endif %};
   }
 
   @media screen and (width >= 750px) {
@@ -496,8 +536,6 @@
     font-style: var(--font-body--style);
     font-weight: var(--font-body--weight);
   }
-
-
 {% endstyle %}
 {%- unless settings.type_body_font.system? -%}
   {% comment %}theme-check-disable AssetPreload{% endcomment %}

@@ -51,7 +51,7 @@
             assign new_badge_time = settings.new_badge_time
             if date_difference < new_badge_time
               assign new_badge = true
-            endif 
+            endif
         else
             for tag in card_product.tags
             assign tag_handle = tag | handle
@@ -81,20 +81,20 @@
           assign variant_selected = option.selected_value
           if settings.show_quick_shop
               for variant in card_product.variants limit: 1
-                  if variant.image != null  
+                  if variant.image != null
                       assign variant_img = variant.image
                   endif
               endfor
           endif
         break
-      else 
+      else
           assign variant_selected = nil
       endif
     endfor
 
     if settings.badge_position == 'top left'
         assign check_pos_badge = 'top-left'
-    elsif settings.badge_position == 'top right'  
+    elsif settings.badge_position == 'top right'
         assign check_pos_badge = 'top-right'
     elsif settings.badge_position == 'bottom left'
         assign check_pos_badge = 'bottom-left'
@@ -123,16 +123,16 @@
         style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
       >
         {%- render 'card-product-media', show_secondary_image: show_secondary_image, card_product: card_product -%}
-        
+
         <div class="card-product__group-wrapper">
-          <div class="card-product__group dis-flex f-column pos-absolute top-0 right-0 z-index-2" style="--gap-y: 1rem; --pad-a-a: .5rem; --pad-b-a: 1rem; --pad-a-a-md: 1rem; --pad-b-a-md: 1rem; --pad-a-a-lg: 1.6rem; --pad-b-a-lg: 1rem;">
-              {%- assign class_button = 'card-product__group-btn bor-circle bor-none center c-pointer dis-flex a-i-center j-c-center pos-relative' -%}
+          <div class="card-product__group flex flex-column absolute top-0 right-0 z-2" style="--gap-y: 1rem; --p: .5rem; --pb: 1rem; --md-p: 1rem; --md-pb: 1rem; --lg-p: 1.6rem; --lg-pb: 1rem;">
+              {%- assign class_button = 'card-product__group-btn rounded-full bor-none center cursor-pointer flex items-center justify-center relative' -%}
               {% comment %} ------ Wishlist ------ {% endcomment %}
               {%- if enable_wishlist -%}
                   <div class="card-product__group-item card-wishlist">
                       <wisht-list>
                           <button type="button" title="{{ 'wishlist.general.add' | t }}" class="{{ class_button }} wishlist-button " data-wishlist data-wishlist-handle="{{ card_product.handle }}" data-product-id="{{ card_product.id }}">
-                              <span class="text pointer-e-none pos-absolute-c-y z-index--1">
+                              <span class="text pointer-events-none absolute-c-y z--1">
                                   <span class="text-inner">{{ 'wishlist.general.add' | t }}</span>
                               </span>
                               {% render 'icon', icon: 'heart' %}
@@ -140,12 +140,12 @@
                       </wisht-list>
                   </div>
               {%- endif -%}
-      
+
               {% comment %} ------ Quick view ------ {% endcomment %}
                {%- if enable_quick_view -%}
                 {% render 'quick-view-button', card_product: card_product, class_button: class_button %}
                {%- endif -%}
-      
+
               {% comment %} ------ Compare ------ {% endcomment %}
                {%- if enable_compare -%}
                  {% render 'product-compare-button', card_product: card_product, class_button: class_button, sectionId: section_id %}
@@ -162,8 +162,8 @@
               {%- render 'card-product-heading', card_product: card_product -%}
             </div>
           {%- endif -%}
-          
-          <div class="card__badge {{ settings.badge_position }}">
+
+          <div class="card__badge relative {{ settings.badge_position }}">
             {%- render 'product-badge'
               card_product: card_product,
               new_badge: new_badge,
@@ -178,7 +178,7 @@
               assign countdown_time = settings.countdown_time
               assign countdown_collection = settings.countdown_collection | downcase | handle
           -%}
-              <div class="card__countDown pos-absolute-c-x z-index-2" style="--bottom-a: 4rem;">
+              <div class="card__countDown absolute-c-x z-2" style="--bottom: 4rem;">
                   {% render 'product-countdown',
                     product: card_product,
                     countdown_type: countdown_type,
@@ -189,11 +189,11 @@
         {%- endif -%}
 
         {%- if settings.show_product_marquee -%}
-          {% render 'product-card-marquee', product: card_product %}  
+          {% render 'product-card-marquee', product: card_product %}
         {%- endif -%}
       </div>
       <div class="card__content">
-        
+
         {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id %}
         {% if quick_add == 'standard' %}
           <div class="quick-add">
@@ -504,7 +504,7 @@
           </div>
         </div>
         {%- if settings.card_style == 'card' -%}
-          <div class="card__badge {{ settings.badge_position }}">
+          <div class="card__badge relative {{ settings.badge_position }}">
             {%- render 'product-badge'
               card_product: card_product,
               new_badge: new_badge,
