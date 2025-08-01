@@ -1,41 +1,40 @@
+{% assign icon_block_class = 'icon-block__media icon-block-' | append: block.id %}
+
+{% capture icon %}
+  {% render 'icon-or-image',
+    icon: block.settings.icon,
+    image_upload: block.settings.image_upload,
+    width: block.settings.width,
+    class_name: icon_block_class,
+    attributes: block.shopify_attributes
+  %}
+{% endcapture %}
+
+{%- if block.settings.link != blank -%}
+  <a
+    href="{{ block.settings.link }}"
+    class="text-inherit"
+    {% if block.settings.open_in_new_tab %}
+      target="_blank" rel="noopener"
+    {% endif %}
+  >
+    {{ icon }}
+  </a>
+{%- else -%}
+  {{ icon }}
+{%- endif -%}
+
 {% stylesheet %}
-  /* Icon */
   .icon-block {
     display: flex;
-    fill: currentColor;
+    fill: currentcolor;
+    flex-shrink: 0;
   }
 
-  .icon-block > svg,
-  .icon-block > img {
+  .icon-block__media {
     height: auto;
   }
-
-  .icon-block__icon {
-    width: var(--width);
-  }
 {% endstylesheet %}
-
-{%- if block.settings.icon != 'none' and block.settings.image_upload == blank -%}
-  <svg
-    class="icon-block__icon"
-    style="--width: {{ block.settings.width }}px;"
-    aria-hidden="true"
-    focusable="false"
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    {{ block.shopify_attributes }}
-  >
-    {%- render 'icon', icon: block.settings.icon -%}
-  </svg>
-{%- elsif block.settings.image_upload != blank -%}
-  {{
-    block.settings.image_upload
-    | image_url: width: 500
-    | image_tag: widths: '50, 100, 200, 300, 400, 500', class: 'icon-block__icon'
-  }}
-{%- endif -%}
 
 {% schema %}
 {
@@ -265,23 +264,38 @@
     {
       "type": "image_picker",
       "id": "image_upload",
-      "label": "Custom icon"
-    },
-    {
-      "type": "header",
-      "content": "Size"
+      "label": "t:settings.image_icon"
     },
     {
       "type": "range",
       "id": "width",
-      "label": "Width",
-      "min": 22,
+      "label": "t:settings.width",
+      "min": 12,
       "max": 200,
       "step": 2,
       "unit": "px",
-      "default": 44
+      "default": 24
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": false
     }
   ],
-  "presets": [{ "name": "Icon" }]
+  "presets": [
+    {
+      "name": "t:names.icon",
+      "category": "t:categories.basic",
+      "settings": {
+        "icon": "price_tag"
+      }
+    }
+  ]
 }
 {% endschema %}
