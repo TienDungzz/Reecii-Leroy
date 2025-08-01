@@ -71,7 +71,7 @@
     {% assign media_count = media_count | plus: 1 %}
 
     <picture
-      class="media h-full{% if sec_stts.image_behavior != 'none' %} animate--{{ sec_stts.image_behavior }}{% endif %}"
+      class="media media--transparent h-full{% if sec_stts.image_behavior != 'none' %} animate--{{ sec_stts.image_behavior }}{% endif %}"
       data-swiper-parallax="35%"
     >
       {%- if has_image_mb_1 -%}
@@ -108,7 +108,7 @@
   {%- if has_image_2 or has_image_mb_2 -%}
     {% assign media_count = media_count | plus: 1 %}
     <picture
-      class="media h-full{% if sec_stts.image_behavior != 'none' %} animate--{{ sec_stts.image_behavior }}{% endif %}"
+      class="media media--transparent h-full{% if sec_stts.image_behavior != 'none' %} animate--{{ sec_stts.image_behavior }}{% endif %}"
       data-swiper-parallax="35%"
     >
       {%- if has_image_mb_2 -%}
@@ -142,7 +142,7 @@
     }}
   {%- endif -%}
 
-  {% if has_media == false and is_transparent %}
+  {% if has_media == false %}
     {%- assign placeholder_slide = blockIndex | modulo: 2 -%}
     {%- if placeholder_slide == 1 -%}
       {{ 'hero-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
@@ -152,9 +152,14 @@
   {%- endif -%}
 {% endcapture %}
 
+{%- capture class_slide_item -%}
+  slideshow__slide flex relative justify-center size-full
+  {% if block_stts.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}
+{%- endcapture -%}
+
 <div
   id="slide-{{ block.id }}"
-  class="slideshow__slide color-{{ block.settings.color_scheme }}"
+  class="{{ class_slide_item }}"
   aria-hidden="{% if blockIndex == 1 %}false{% else %}true{% endif %}"
   {{ block.shopify_attributes }}
 >
@@ -163,16 +168,21 @@
       {%- liquid
         if block_stts.image_1 != blank and block_stts.image_2 == blank
           assign ratio = block_stts.image_1.aspect_ratio
+          assign ratio_mb = block_stts.image_mb_1.aspect_ratio
         elsif block_stts.image_2 != blank and block_stts.image_1 == blank
           assign ratio = block_stts.image_2.aspect_ratio
+          assign ratio_mb = block_stts.image_mb_2.aspect_ratio
         elsif block_stts.image_1 != blank and block_stts.image_2 != blank
           if block_stts.image_1.aspect_ratio > block_stts.image_2.aspect_ratio
             assign ratio = block_stts.image_1.aspect_ratio | times: 2
+            assign ratio_mb = block_stts.image_mb_1.aspect_ratio | times: 2
           else
             assign ratio = block_stts.image_2.aspect_ratio | times: 2
+            assign ratio_mb = block_stts.image_mb_2.aspect_ratio | times: 2
           endif
         else
           assign ratio = 1
+          assign ratio_mb = 1
         endif
       -%}
       #slideshow-{{ section.id }}.slideshow--has-right-banner .slideshow__slides {
@@ -182,10 +192,31 @@
       #slideshow-{{ section.id }}:not(.slideshow--has-right-banner, .slideshow--has-left-banner) .slideshow__slides {
         aspect-ratio: {{ ratio }};
       }
+
+      @media screen and (max-width: 749px){
+      {%- if has_image_mb_1 or has_image_mb_2 -%}
+        #slideshow-{{ section.id }}.slideshow--has-right-banner.slideshow.slideshow--stack-mobile .slideshow__slides,
+        #slideshow-{{ section.id }}.slideshow.slideshow--stack-mobile:not(.slideshow--has-right-banner, .slideshow--has-left-banner) .slideshow__slides {
+          aspect-ratio: auto;
+        }
+
+        #slideshow-{{ section.id }}.slideshow.slideshow--stack-mobile .slideshow__slide#slide-{{ block.id }} .media {
+          aspect-ratio: {{ ratio_mb | divided_by: 2 }};
+        }
+
+        #slideshow-{{ section.id }}.slideshow--has-right-banner:not(.slideshow.slideshow--stack-mobile) .slideshow__slides {
+          aspect-ratio: {{ ratio_mb }};
+        }
+
+        #slideshow-{{ section.id }}:not(.slideshow--has-right-banner, .slideshow--has-left-banner, .slideshow.slideshow--stack-mobile) .slideshow__slides {
+          aspect-ratio: {{ ratio_mb }};
+        }
+      {%- endif -%}
+      }
     {%- endif -%}
   {% endstyle %}
 
-  <div class="slide__image-container">
+  <div class="slide__image-container flex size-full overflow-hidden absolute">
     <div
       class="slide__img-wrapper grid w-full"
       {%- if block_stts.image_1 != blank -%}
@@ -196,8 +227,8 @@
     </div>
   </div>
 
-  <div class="{{ block_stts.container }}">
-    <div class="{{ block.settings | class_list }} slide__content">
+  <div class="{{ block_stts.container }} h-{{ block_stts.height }}">
+    <div class="{{ block.settings | class_list }} slide__content relative size-full">
       {% content_for 'blocks' %}
     </div>
   </div>
@@ -212,7 +243,14 @@
 {% schema %}
 {
   "name": "Slide",
-  "blocks": [{ "type": "@theme" }, { "type": "@app" }, { "type": "group-global" }, { "type": "group" }],
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" },
+    { "type": "group-global" },
+    { "type": "group" },
+    { "type": "scrolling-text" },
+    { "type": "marquee" }
+  ],
   "class": "swiper-slide",
   "settings": [
     {
@@ -234,6 +272,22 @@
           "label": "t:sections.layout.container.option2"
         }
       ]
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "fit",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "full",
+          "label": "t:options.fill"
+        }
+      ],
+      "default": "fit"
     },
     {
       "type": "header",
@@ -300,10 +354,17 @@
       "content": "t:settings.color"
     },
     {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "t:settings.color_scheme",
-      "default": "scheme-1"
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
     }
   ],
   "presets": [

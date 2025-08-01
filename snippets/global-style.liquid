@@ -102,7 +102,103 @@
         --pagination-color: rgba({{ scheme.settings.pagination_color.rgba }});
         --pagination-active-color: rgba({{ scheme.settings.pagination_active_color.rgba }});
     }
+
   {% endfor %}
+  {% for scheme in settings.color_schemes -%}
+    @media screen and (max-width: 749px){
+      {% if forloop.index == 1 -%}
+        :root,
+      {%- endif %}
+      .color-mobile-{{ scheme.id }}  {
+        --color-background: rgba({{ scheme.settings.background.rgba }});
+        {% if scheme.settings.background_gradient != empty %}
+          --gradient-background: {{ scheme.settings.background_gradient }};
+        {% else %}
+          --gradient-background: {{ scheme.settings.background }};
+        {% endif %}
+
+        --color-foreground: rgba({{ scheme.settings.text.rgba }});
+        --color-shadow: rgba({{ scheme.settings.shadow.rgba }});
+        --color-border: rgba({{ scheme.settings.border.rgba }});
+        --color-primary-button-text: rgba({{ scheme.settings.primary_button_text.rgba }});
+        --color-primary-button-background: rgba({{ scheme.settings.primary_button_background.rgba }});
+        --color-primary-button-border: rgba({{ scheme.settings.primary_button_border.rgba }});
+        --color-primary-button-hover-text: rgba({{ scheme.settings.primary_button_hover_text.rgba }});
+        --color-primary-button-hover-background: rgba({{ scheme.settings.primary_button_hover_background.rgba }});
+        --color-primary-button-hover-border: rgba({{ scheme.settings.primary_button_hover_border.rgba }});
+        --color-secondary-button-text: rgba({{ scheme.settings.secondary_button_text.rgba }});
+        --color-secondary-button-background: rgba({{ scheme.settings.secondary_button_background.rgba }});
+        --color-secondary-button-border: rgba({{ scheme.settings.secondary_button_border.rgba }});
+        --color-secondary-button-hover-text: rgba({{ scheme.settings.secondary_button_hover_text.rgba }});
+        --color-secondary-button-hover-background: rgba({{ scheme.settings.secondary_button_hover_background.rgba }});
+        --color-secondary-button-hover-border: rgba({{ scheme.settings.secondary_button_hover_border.rgba }});
+        --color-link: rgba({{ scheme.settings.secondary_button_text.rgba }});
+
+        /* -------------------------------------------- BADGE COLOR -------------------------------------------- */
+        --color-sale-badge-foreground: rgba({{ scheme.settings.sale_badge_color.rgba }});
+        --color-sale-badge-background: rgba({{ scheme.settings.sale_badge_background.rgba }});
+        --color-sale-badge-border:
+          {% if scheme.settings.sale_badge_background.red == 255 and scheme.settings.sale_badge_background.green == 255 and scheme.settings.sale_badge_background.blue == 255 %}
+            rgba({{ scheme.settings.sale_badge_color.rgba }})
+          {% else %}
+            rgba({{ scheme.settings.sale_badge_background.rgba }})
+          {% endif %};
+
+        --color-sold-out-badge-foreground: rgba({{ scheme.settings.sold_out_badge_color.rgba }});
+        --color-sold-out-badge-background: rgba({{ scheme.settings.sold_out_badge_background.rgba }});
+        --color-sold-out-badge-border:
+          {% if scheme.settings.sold_out_badge_background.red == 255 and scheme.settings.sold_out_badge_background.green == 255 and scheme.settings.sold_out_badge_background.blue == 255 %}
+            rgba({{ scheme.settings.sold_out_badge_color.rgba }})
+          {% else %}
+            rgba({{ scheme.settings.sold_out_badge_background.rgba }})
+          {% endif %};
+
+        --color-new-badge-foreground: rgba({{ scheme.settings.new_badge_color.rgba }});
+        --color-new-badge-background: rgba({{ scheme.settings.new_badge_background.rgba }});
+        --color-new-badge-border:
+          {% if scheme.settings.new_badge_background.red == 255 and scheme.settings.new_badge_background.green == 255 and scheme.settings.new_badge_background.blue == 255 %}
+            rgba({{ scheme.settings.new_badge_color.rgba }})
+          {% else %}
+            rgba({{ scheme.settings.new_badge_background.rgba }})
+          {% endif %};
+
+        --color-custom-badge-foreground: rgba({{ scheme.settings.custom_badge_color.rgba }});
+        --color-custom-badge-background: rgba({{ scheme.settings.custom_badge_background.rgba }});
+        --color-custom-badge-border:
+          {% if scheme.settings.custom_badge_background.red == 255 and scheme.settings.custom_badge_background.green == 255 and scheme.settings.custom_badge_background.blue == 255 %}
+            rgba({{ scheme.settings.custom_badge_color.rgba }})
+          {% else %}
+            rgba({{ scheme.settings.custom_badge_background.rgba }})
+          {% endif %};
+
+        /* -------------------------------------------- END BADGE COLOR -------------------------------------------- */
+
+          --payment-terms-background-color: rgb({{ scheme.settings.background.rgb }});
+          --wishtlist-button-color: {{ scheme.settings.wishlist_icon }};
+          --wishtlist-button-background: {{ scheme.settings.wishlist_background }};
+          --quickview-button-color: {{ scheme.settings.quick_view_icon }};
+          --quickview-button-background: {{ scheme.settings.quick_view_background }};
+          --compare-button-color: {{ scheme.settings.compare_icon }};
+          --compare-button-background: {{ scheme.settings.compare_background }};
+
+          /* Arrows */
+          --arrow-width: {{ settings.arrows_width }}px;
+          --arrow-height: {{ settings.arrows_height }}px;
+          --arrow-icon-size: {{ settings.arrows_icon_size }}px;
+          --arrow-radius: {{ settings.arrows_radius }}px;
+          --arrow-color: rgba({{ scheme.settings.arrow_color.rgba }});
+          --arrow-background: rgba({{ scheme.settings.arrow_background.rgba }});
+          --arrow-border: rgba({{ scheme.settings.arrow_border.rgba }});
+          --arrow-border-thickness: {{ settings.arrows_border_thickness }}px;
+          --arrow-border-color: rgba(from var(--arrow-color) r g b / {{ settings.arrows_border_opacity | divided_by: 100.0 }});
+
+          /* Pagination */
+          --pagination-color: rgba({{ scheme.settings.pagination_color.rgba }});
+          --pagination-active-color: rgba({{ scheme.settings.pagination_active_color.rgba }});
+      }
+    }
+  {% endfor %}
+
 
   {{ scheme_classes | prepend: 'body' }} {
     color: var(--color-foreground);

@@ -1,4 +1,5 @@
 {{ 'component-slideshow.css' | asset_url | stylesheet_tag }}
+{{ 'slideshow-masonry.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
   assign sec_stts = section.settings
@@ -8,6 +9,7 @@
   assign slide_height = sec_stts.slide_height
 
   assign color_scheme = sec_stts.color_scheme
+  assign color_scheme_mobile = sec_stts.color_scheme_mobile
 
   assign enable_navigation = false
   if sec_stts.navigation == 'arrows-pagination' or sec_stts.navigation == 'arrows'
@@ -30,12 +32,36 @@
   assign slideshow_type = sec_stts.slideshow_type
   assign is_layout_masonry = false
   if slideshow_type == 'masonry'
-   assign is_layout_masonry = true
+    assign is_layout_masonry = true
   endif
 -%}
 
+{%- capture masonry_class -%}
+  slideshow--masonry grid-layout grid-layout--3
+{%- endcapture -%}
+
+{%- capture masonry_style -%}
+  {%- for i in (1..4) -%}
+    {%- assign row_index = 'm_row_' | append: i -%}
+    {%- assign row_height = sec_stts[row_index] -%}
+  --slideshow-masonry-row-{{ i }}-height: {{ row_height }}px;
+  {%- endfor -%}
+  --slideshow-masonry-gap: {{ sec_stts.masonry_gap }}px;
+  --card-grid-gap: var(--slideshow-masonry-gap);
+  --slideshow-masonry-column-left-width: {{ sec_stts.masonry_column_left }}%;
+  --slideshow-masonry-column-right-width: {{ sec_stts.masonry_column_right }}%;
+  --card-grid-template: var(--slideshow-masonry-column-left-width) var(--slideshow-masonry-column-right-width);
+  --image-border-radius: {{ sec_stts.masonry_image_radisus }}px;
+{%- endcapture -%}
+
 {%- capture class_slideshow -%}
-  slideshow slideshow--{{ slideshow_type }} slideshow--{{ slide_height }}{% if show_left_categories or show_right_banner %} flex flex-wrap{% endif %}{% if show_left_categories %} slideshow--has-categories{% endif %}{% if show_right_banner %} slideshow--has-right-banner{% endif %}
+  slideshow slideshow--{{ slide_height }}
+  {% if show_left_categories or show_right_banner and is_layout_masonry == false %} flex flex-wrap{% endif %}
+  {% if show_left_categories and is_layout_masonry == false %} slideshow--has-categories{% endif %}
+  {% if show_right_banner and is_layout_masonry == false %} slideshow--has-right-banner{% endif %}
+  {% if is_layout_masonry %} {{ masonry_class }}{% endif %}
+  {% if settings.enable_multi_level_category %} slideshow--multicate{% endif %}
+  {% if sec_stts.stack_content_mobile %} slideshow--stack-mobile{% endif %}
 {%- endcapture -%}
 
 {%- capture style_slideshow -%}
@@ -46,10 +72,13 @@
   {% elsif slide_height != 'adapt_image' %}
     --hero-min-height: var(--section-height-{{ slide_height }});
   {% endif %}
+  {%- if is_layout_masonry -%}
+    {{ masonry_style }}
+  {%- endif -%}
 {%- endcapture -%}
 
 <div
-  class="section section--{{ page_width }} color-{{ color_scheme }} gradient spacing-style"
+  class="section section--{{ page_width }} color-{{ color_scheme }} color-mobile-{{ color_scheme_mobile }} gradient spacing-style"
   style="{%  render 'spacing-padding', settings: section.settings %}"
 >
   <div
@@ -96,6 +125,27 @@
       </div>
     {% endif %}
 
+    {% if is_layout_masonry %}
+      {%- for i in (1..9) -%}
+        {%- assign image_index = 'm_image_' | append: i -%}
+        {%- assign image = section.settings[image_index] -%}
+        {%- assign link_index = 'm_link_' | append: i -%}
+        {%- assign link = section.settings[link_index] -%}
+        <div class="slideshow--masonry-item slideshow--masonry-item--{{ i }}">
+          <a
+            href="{{ link }}"
+            class="media decoration-none h-full{% if image != blank %} media--transparent{% else %} text-currentColor{% endif %}"
+          >
+            {%- if image != blank -%}
+              {%- render 'image', image: image, sizes: '50vw' -%}
+            {%- else -%}
+              <span class="h3 flex-i flex-center text-currentColor text-stroke">Image {{ i }}</span>
+            {%- endif -%}
+          </a>
+        </div>
+      {%- endfor -%}
+    {% endif %}
+
     {%- liquid
       assign pagination_type = sec_stts.pagination_type
       assign arrows_position = sec_stts.arrows_position
@@ -110,7 +160,7 @@
       {%- render 'swiper-data', settings: section.settings, space_between: 0, parallax: true, speed: 800 -%}
     >
       <div class="swiper">
-        <div class="swiper-wrapper slideshow__slides">
+        <div class="swiper-wrapper slideshow__slides w-full">
           {% content_for 'blocks' %}
         </div>
 
@@ -157,8 +207,10 @@
     </swiper-component>
 
     {%- if settings.enable_multi_level_category -%}
-      <div class="home-category-filter-sections{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--fade-in{% endif %}">{% render 'multi-level-category' %}</div>
-      {%- endif -%}
+      <div class="home-category-filter-sections{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--fade-in{% endif %}">
+        {% render 'multi-level-category' %}
+      </div>
+    {%- endif -%}
 
     {% if show_right_banner and is_layout_masonry == false %}
       <div class="right-banner">
@@ -195,10 +247,6 @@
 
   .slideshow .swiper-slide {
     height: auto;
-  }
-
-  .slideshow .slideshow__slide {
-    height: 100%;
   }
 
   .slideshow .slideshow__slides {
@@ -248,10 +296,6 @@
     @media screen and (min-width: 1280px) {
       bottom: 4rem;
     }
-  }
-
-  .slideshow .slide__content {
-    padding-block: 3rem;
   }
 
   .slideshow .swiper-actions--bottom_right .swiper-btns-wrap {
@@ -468,7 +512,21 @@
     }
   }
 
-  /* RIGHT BANNER */
+  /* Stack in mobile */
+  @media screen and (width <= 749px) {
+    .slideshow.slideshow--stack-mobile .slideshow__slides {
+      min-height: auto;
+    }
+
+    .slideshow.slideshow--stack-mobile .slide__image-container {
+      min-height: var(--hero-min-height, auto);
+      position: relative;
+    }
+
+    .slideshow--stack-mobile .slideshow__slide {
+      flex-direction: column;
+    }
+  }
 {%- endstylesheet -%}
 
 {% schema %}
@@ -511,7 +569,7 @@
           "label": "Full"
         }
       ],
-      "default": "page-width"
+      "default": "full-width"
     },
     {
       "type": "header",
@@ -519,8 +577,52 @@
       "visible_if": "{{ section.settings.slideshow_type == 'masonry' }}"
     },
     {
+      "type": "range",
+      "id": "masonry_image_radisus",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_radius",
+      "default": 0,
+      "visible_if": "{{ section.settings.slideshow_type == 'masonry' }}"
+    },
+    {
+      "type": "range",
+      "id": "masonry_gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap",
+      "default": 22,
+      "visible_if": "{{ section.settings.slideshow_type == 'masonry' }}"
+    },
+    {
+      "type": "range",
+      "id": "masonry_column_left",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Column left width",
+      "default": 30,
+      "visible_if": "{{ section.settings.slideshow_type == 'masonry' }}"
+    },
+    {
+      "type": "range",
+      "id": "masonry_column_right",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Column right width",
+      "default": 30,
+      "visible_if": "{{ section.settings.slideshow_type == 'masonry' }}"
+    },
+    {
       "type": "text",
-      "id": "m_first_row",
+      "id": "m_row_1",
       "label": "First row height",
       "default": "244",
       "info": "Unit px",
@@ -528,7 +630,7 @@
     },
     {
       "type": "text",
-      "id": "m_second_row",
+      "id": "m_row_2",
       "label": "Second row height",
       "default": "244",
       "info": "Unit px",
@@ -536,17 +638,17 @@
     },
     {
       "type": "text",
-      "id": "m_third_row",
+      "id": "m_row_3",
       "label": "Third row height",
-      "default": "244",
+      "default": "381",
       "info": "Unit px",
       "visible_if": "{{ section.settings.slideshow_type == 'masonry' }}"
     },
     {
       "type": "text",
-      "id": "m_four_row",
+      "id": "m_row_4",
       "label": "Four row height",
-      "default": "244",
+      "default": "306",
       "info": "Unit px",
       "visible_if": "{{ section.settings.slideshow_type == 'masonry' }}"
     },
@@ -660,7 +762,8 @@
     },
     {
       "type": "header",
-      "content": "Slideshow height"
+      "content": "Slideshow height",
+      "visible_if": "{{ section.settings.slideshow_type != 'masonry' }}"
     },
     {
       "type": "select",
@@ -688,7 +791,8 @@
         }
       ],
       "default": "medium",
-      "label": "Slide height"
+      "label": "Slide height",
+      "visible_if": "{{ section.settings.slideshow_type != 'masonry' }}"
     },
     {
       "type": "header",
@@ -847,6 +951,16 @@
     },
     {
       "type": "header",
+      "content": "t:sections.collection-list.settings.header_mobile.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "stack_content_mobile",
+      "label": "t:options.stack",
+      "default": false
+    },
+    {
+      "type": "header",
       "content": "Left categories",
       "visible_if": "{{ section.settings.slideshow_type == 'default' }}"
     },
@@ -960,6 +1074,12 @@
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme_mobile",
+      "label": "t:settings.color_scheme_mobile",
       "default": "scheme-1"
     },
     {

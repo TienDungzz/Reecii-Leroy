@@ -442,10 +442,13 @@ table:not([class]) th {
 
 /* Start: CSS */
 /* NOTE: sm = mobile <= 749px; md = tablet >= 750px; lg = desktop >= 1025px; xl = large desktop >= 1280px*/
-img,
-video {
-  height: auto;
-  max-width: 100%;
+img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+}
+
+img {
+  width: 100%;
 }
 
 .left {
@@ -554,6 +557,10 @@ video {
 
 .flex {
   display: flex;
+}
+
+.flex-i {
+  display: flex !important;
 }
 
 .grid {
@@ -833,6 +840,7 @@ video {
   width: auto;
 }
 
+.size-full,
 .w-full {
   width: 100%;
 }
@@ -853,6 +861,7 @@ video {
   height: auto;
 }
 
+.size-full,
 .h-full {
   height: 100%;
 }
@@ -913,6 +922,16 @@ video {
 
 .duration-slide-in {
   transition: var(--animation-slide-in);
+}
+
+.text-currentColor {
+  color: currentColor;
+}
+
+.text-stroke {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: rgb(var(--color-foreground));
 }
 
 [style*="--corner-radius"] {
@@ -4771,10 +4790,19 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
 
 /* khinh Start: Swiper */
 
+swiper-component {
+  display: block;
+  width: 100%;
+}
+
 .swiper-component-mobile {
   @media screen and (width >= 750px) {
     .swiper-wrapper.md\:block {
       display: block;
+    }
+
+     .swiper-wrapper.md\:grid {
+      display: grid;
     }
   }
 

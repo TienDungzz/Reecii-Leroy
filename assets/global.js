@@ -451,11 +451,21 @@ class QuantityInput extends HTMLElement {
 customElements.define("quantity-input", QuantityInput);
 
 function debounce(fn, wait) {
-  let t;
-  return (...args) => {
-    clearTimeout(t);
-    t = setTimeout(() => fn.apply(this, args), wait);
+  /** @type {number | undefined} */
+  let timeout;
+
+  /** @param {...any} args */
+  function debounced(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn.apply(this, args), wait);
+  }
+
+  // Add the .cancel method:
+  debounced.cancel = () => {
+    clearTimeout(timeout);
   };
+
+  return /** @type {T & { cancel(): void }} */ (debounced);
 }
 
 function throttle(fn, delay) {
