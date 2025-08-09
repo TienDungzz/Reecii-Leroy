@@ -1,4 +1,4 @@
-{%- doc -%}
+{% doc %}
   Intended for use in a block similar to the button block.
 
   @param {string} link - link to render
@@ -6,9 +6,17 @@
 
   @example
   {% render 'button', link: '/collections/all' %}
-{%- enddoc -%}
+{% enddoc %}
 
-{% assign block_settings = block.settings %}
+{%- liquid
+  assign link = link | default: block.settings.link
+  assign style_class = style_class | default: block.settings.style_class
+  assign link_underline = link_underline | default: block.settings.link_underline
+  assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab
+  assign shopify_attributes = shopify_attributes | default: block.shopify_attributes
+  assign label = label | default: block.settings.label
+  assign button_style = button_style | default: block.settings.button_style
+-%}
 
 <a
   {% if link == blank %}
@@ -18,28 +26,53 @@
     href="{{ link }}"
   {% endif %}
   class="
+    {{ class }}
     size-style
-    {{ block_settings.style_class }}
-    {{ block_settings.style_class }}--{{ block.id }}
+    {{ style_class }}
+    {% if link_underline %}link--underline{% endif %}
+    {% if button_style == 'outline' %}button--outline{% endif %}
+    {{ style_class }}--{{ block.id }}
   "
-  style="{% render 'size-style', settings: block_settings %}"
-  {%- if block_settings.open_in_new_tab -%}
+  style="{% render 'size-style', settings: block.settings %}"
+  {%- if open_in_new_tab -%}
     target="_blank"
     rel="noopener noreferrer"
   {%- endif -%}
-  {{ block.shopify_attributes }}
+  {{ shopify_attributes }}
 >
-  {{ block_settings.label }}
+  {{ label }}
 </a>
 
 {% stylesheet %}
+  .button.button--outline {
+    background-color: transparent;
+    border: 1px solid var(--color-primary-button-text);
+    color: var(--color-primary-button-text);
+    &:hover {
+      background-color: var(--color-primary-button-hover-text);
+      color: var(--color-primary-button-hover-text);
+    }
+  }
+
   .link {
     text-decoration: none;
     text-decoration-color: currentcolor;
 
     &:hover {
-      color: var(--color-primary-hover);
+      color: var(--color-primary-button-hover-text);
       text-decoration-color: transparent;
+    }
+
+    &.link--underline {
+      text-decoration: underline;
+      text-underline-offset: 1rem;
+    }
+
+    &.link--hover-underline {
+      &:hover {
+        text-decoration: underline;
+        text-decoration-color: currentcolor;
+      }
     }
   }
 {% endstylesheet %}

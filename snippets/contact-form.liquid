@@ -1,12 +1,11 @@
-{%- doc -%}
+{% comment %}
   Renders a contact form with name, email, phone, and comment fields.
 
-  @param {object} settings - Block settings, required for the 'spacing-style' and 'size-style' snippets.
-  @param {string} submit_button - HTML for the submit button, rendered via a `content_for` block.
+  Accepts:
 
-  @example
-  {% render 'contact-form', settings: block.settings, submit_button: content_for_submit_button %}
-{%- enddoc -%}
+  @param {object} settings - Settings for 'spacing-style' and 'size-style' snippets in the contact form.
+  @param {string} submit_button - HTML for the submit button (rendered via content_for block)
+{% endcomment %}
 
 <div
   class="
@@ -43,7 +42,7 @@
         autofocus
       >
         {{- 'icon-checkmark.svg' | inline_asset_content -}}
-        {{- 'blocks.contact_form.post_success' | t -}}
+        {{- 'templates.contact.form.post_success' | t -}}
       </div>
     {%- endif -%}
 
@@ -52,7 +51,7 @@
         class="visually-hidden"
         for="ContactForm-name"
       >
-        {{- 'blocks.contact_form.name' | t -}}
+        {{- 'templates.contact.form.name' | t -}}
       </label>
       <input
         type="text"
@@ -61,14 +60,14 @@
         autocomplete="name"
         name="contact[name]"
         value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
-        placeholder="{{ 'blocks.contact_form.name' | t }}"
+        placeholder="{{ 'templates.contact.form.name' | t }}"
       >
 
       <label
         class="visually-hidden"
         for="ContactForm-email"
       >
-        {{- 'blocks.contact_form.email' | t -}}
+        {{- 'templates.contact.form.email' | t -}}
         <span aria-hidden="true">*</span></label
       >
       <input
@@ -85,7 +84,7 @@
           aria-invalid="true"
           aria-describedby="ContactForm-email-error"
         {% endif %}
-        placeholder="{{ 'blocks.contact_form.email' | t }}"
+        placeholder="{{ 'templates.contact.form.email' | t }}"
       >
     </div>
 
@@ -93,7 +92,7 @@
       class="visually-hidden"
       for="ContactForm-phone"
     >
-      {{- 'blocks.contact_form.phone' | t -}}
+      {{- 'templates.contact.form.phone' | t -}}
     </label>
     <input
       type="tel"
@@ -103,21 +102,21 @@
       name="contact[phone]"
       pattern="[0-9\-]*"
       value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
-      placeholder="{{ 'blocks.contact_form.phone' | t }}"
+      placeholder="{{ 'templates.contact.form.phone' | t }}"
     >
 
     <label
       class="visually-hidden"
       for="ContactForm-body"
     >
-      {{- 'blocks.contact_form.comment' | t -}}
+      {{- 'templates.contact.form.comment' | t -}}
     </label>
     <textarea
       rows="10"
       id="ContactForm-body"
       class="contact-form__input contact-form__input--textarea"
       name="contact[body]"
-      placeholder="{{ 'blocks.contact_form.comment' | t }}"
+      placeholder="{{ 'templates.contact.form.comment' | t }}"
     >
       {{- form.body -}}
     </textarea>
@@ -138,7 +137,7 @@
     flex-direction: column;
     gap: var(--gap-md);
 
-    @media screen and (min-width: 750px) {
+    @media screen and (width >= 750px) {
       flex-direction: row;
       align-items: center;
     }

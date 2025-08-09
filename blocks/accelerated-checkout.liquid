@@ -1,4 +1,6 @@
-{%- doc -%}
+
+
+{% doc %}
   This block is used to display the accelerated checkout button.
   Intended for product-form.liquid block.
 
@@ -6,32 +8,14 @@
 
   @example
   {% content_for 'block', type: 'accelerated-checkout', id: 'accelerated-checkout', can_add_to_cart: can_add_to_cart %}
-{%- enddoc -%}
+{% enddoc %}
 
 {% liquid
-  assign product = closest.product
+  assign product = block.settings.product
   if request.visual_preview_mode and product == blank
     assign product = collections.all.products.first
   endif
 %}
-
-<div
-  class="accelerated-checkout-block"
-  ref="acceleratedCheckoutButtonContainer"
-  {{ block.shopify_attributes }}
-  {% if request.visual_preview_mode %}
-    data-shopify-visual-preview
-  {% endif %}
-  {% unless can_add_to_cart %}
-    hidden
-  {% endunless %}
->
-  {% if product != blank %}
-    {%- form 'product', product -%}
-      {{ form | payment_button }}
-    {%- endform -%}
-  {% endif %}
-</div>
 
 {% stylesheet %}
   .accelerated-checkout-block[data-shopify-visual-preview] {
@@ -55,9 +39,43 @@
   }
 {% endstylesheet %}
 
+<div
+  class="accelerated-checkout-block"
+  ref="acceleratedCheckoutButtonContainer"
+  {{ block.shopify_attributes }}
+  {% if request.visual_preview_mode %}
+    data-shopify-visual-preview
+  {% endif %}
+  {% unless can_add_to_cart %}
+    hidden
+  {% endunless %}
+>
+  {% if product != blank %}
+    {%- form 'product', product -%}
+      {{ form | payment_button }}
+    {%- endform -%}
+  {% endif %}
+</div>
+
 {% schema %}
 {
-  "name": "t:names.accelerated_checkout",
-  "tag": null
+  "name": "Accelerated checkout",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Accelerated checkout",
+      "settings": {
+        "product": "{{ closest.product }}"
+      },
+      "category": "t:categories.product"
+    }
+  ]
 }
 {% endschema %}

@@ -1,24 +1,22 @@
-{%- doc -%}
-  Renders block content for all blocks that extend the group block.
+{% comment %}
+  Renders block content for all blocks that extends the group block.
 
-  @param {string} children - The DOM content of the group block.
-  @param {object} settings - The settings of the group block.
-  @param {string} shopify_attributes - String with Shopify attributes for the editor.
-  @param {string} [class] - Custom classes for the group block.
-  @param {string} [style] - Custom inline styles for the group block.
-
-  @example
-  {% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
-{%- enddoc -%}
+  @param {object} children - The DOM content of the group block
+  @param {object} settings - The settings of the group block
+  @param {string} shopify_attributes - String with shopify attributes for the editor
+  @param {string} [class] - Custom classes of the group block
+  @param {string} [style] - Custom inline styles of the group block
+{% endcomment %}
 
 <div
   class="
-    group-block
+    group-block relative
     group-block--height-{{ settings.height }}
     group-block--width-{{ settings.width }}
     border-style
     spacing-style
     size-style
+    shadow-style
     {% if settings.inherit_color_scheme == false %} color-{{ settings.color_scheme }}{% endif %}
     {{ class }}
   "
@@ -26,6 +24,7 @@
     {% render 'border-override', settings: settings %}
     {% render 'spacing-style', settings: settings %}
     {% render 'size-style', settings: settings %}
+    {% render 'shadow-style', settings: settings %}
     {{ style }}
   "
   {{ shopify_attributes }}
@@ -41,7 +40,7 @@
     ></a>
   {%- endif -%}
 
-  <div class="group-block__media-wrapper">
+  <div class="group-block__media-wrapper{% if settings.background_image == blank %} media--empty{% endif %}">
     {% render 'background-media',
       background_media: settings.background_media,
       background_video: settings.video,
@@ -57,7 +56,7 @@
 
   <div
     class="
-      group-block-content
+      group-block-content relative
       {% if request.design_mode %}group-block-content--design-mode{% endif %}
       layout-panel-flex
       layout-panel-flex--{{ settings.content_direction | default: 'column' }}
@@ -70,6 +69,10 @@
 </div>
 
 {% stylesheet %}
+  .group-block__media-wrapper.media--empty {
+    aspect-ratio: 1/1;
+  }
+
   .group-block__link {
     position: absolute;
     inset: 0;

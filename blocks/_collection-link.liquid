@@ -1,71 +1,4 @@
-{%- doc -%}
-  Renders a collection link block.
 
-  @param {number} index
-  @param {boolean} [current]
-  @param {boolean} [image_only]
-{%- enddoc -%}
-
-{% unless current %}
-  {% assign loading = 'lazy' %}
-{% endunless %}
-
-{% if block.settings.show_count %}
-  {% assign count = closest.collection.all_products_count %}
-  {%- capture count -%}
-    &nbsp;<sup class="collection-links__count">{{ count }}</sup>
-  {%- endcapture -%}
-
-  {% if closest.collection == empty %}
-    {%- capture count -%}
-      &nbsp;<sup class="collection-links__count">5</sup>
-    {%- endcapture -%}
-  {% endif %}
-{% endif %}
-
-{% capture title_block %}
-  {% content_for 'block', type: '_inline-collection-title', id: 'title', suffix: count %}
-{% endcapture %}
-
-{% capture image_block %}
-  {%- liquid
-    assign placeholder_variant = index | modulo: 4 | plus: 1
-    assign placeholder_name = 'collection-apparel-' | append: placeholder_variant
-  -%}
-  {% content_for 'block', type: '_image', id: 'image', loading: loading, placeholder: placeholder_name %}
-{% endcapture %}
-
-{% if image_only %}
-  <a
-    href="{{ closest.collection.url }}"
-    class="collection-links__image"
-    size="{{ section.settings.image_height }}"
-  >
-    {{ image_block }}
-  </a>
-{% else %}
-  <a
-    href="{{ closest.collection.url }}"
-    class="collection-links__link"
-    ref="links[]"
-    on:pointerenter="/select/{{ index }}"
-    on:focus="/select/{{ index }}"
-    aria-current="{{ current }}"
-    {{ block.shopify_attributes }}
-  >
-    {{ title_block }}
-
-    {% if section.settings.layout == 'text' %}
-      <div
-        class="collection-links__image"
-        ref="images[]"
-        hidden
-      >
-        {{ image_block }}
-      </div>
-    {% endif %}
-  </a>
-{% endif %}
 
 {% stylesheet %}
   .collection-links__link {
@@ -86,7 +19,7 @@
       opacity: var(--disabled-opacity);
     }
 
-    &[aria-current='true'] {
+    &[aria-selected='true'] {
       opacity: 1;
     }
 
@@ -94,7 +27,7 @@
       display: inline-block;
     }
 
-    @media (max-width: 749px) {
+    @media (width < 750px) {
       --min-font-size: var(--font-size--3xl);
       --max-font-size: var(--font-size--5xl);
 
@@ -137,21 +70,83 @@
 
       image-block {
         --image-height-basis: 5rem;
-
         height: var(--image-height);
       }
     }
   }
 {% endstylesheet %}
 
+{% unless selected %}
+  {% assign loading = 'lazy' %}
+{% endunless %}
+
+{% if closest.collection.url == block.settings.collection.url %}
+  {% assign is_current = true %}
+{% endif %}
+
+{% if block.settings.show_count %}
+  {% assign count = block.settings.collection.all_products_count %}
+  {%- capture count -%}
+    &nbsp;<sup class="collection-links__count">{{ count }}</sup>
+  {%- endcapture -%}
+
+  {% if block.settings.collection == empty %}
+    {%- capture count -%}
+      &nbsp;<sup class="collection-links__count">5</sup>
+    {%- endcapture -%}
+  {% endif %}
+{% endif %}
+
+{% capture title_block %}
+  {% content_for 'block', type: '_inline-collection-title', id: 'title', suffix: count %}
+{% endcapture %}
+
+{% capture image_block %}
+  {% content_for 'block', type: '_image', id: 'image', loading: loading %}
+{% endcapture %}
+
+{% if image_only %}
+  <a
+    href="{{ closest.collection.url }}"
+    class="collection-links__image"
+    size="{{ section.settings.image_height }}"
+  >
+    {{ image_block }}
+  </a>
+{% else %}
+  <a
+    href="{{ closest.collection.url }}"
+    class="collection-links__link"
+    ref="links[]"
+    on:pointerenter="/select/{{ index }}"
+    on:focus="/select/{{ index }}"
+    aria-selected="{{ selected }}"
+    aria-current="{{ is_current }}"
+    {{ block.shopify_attributes }}
+  >
+    {{ title_block }}
+
+    {% if section.settings.layout == 'text' %}
+      <div
+        class="collection-links__image"
+        ref="images[]"
+        hidden
+      >
+        {{ image_block }}
+      </div>
+    {% endif %}
+  </a>
+{% endif %}
+
 {% schema %}
 {
-  "name": "t:names.collection",
+  "name": "Collection",
   "tag": null,
   "settings": [
     {
-      "type": "paragraph",
-      "content": "t:content.resource_reference_collection_card"
+      "type": "collection",
+      "id": "collection",
+      "label": "t:settings.collection"
     },
     {
       "type": "checkbox",

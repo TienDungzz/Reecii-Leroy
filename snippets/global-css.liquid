@@ -1,0 +1,33 @@
+{{ 'base.css' | asset_url | stylesheet_tag }}
+{{ 'base-dukeh.css' | asset_url | stylesheet_tag }}
+{{ 'base-khinh.css' | asset_url | stylesheet_tag }}
+{{ 'base-hyun.css' | asset_url | stylesheet_tag }}
+{{ 'vendor.css' | asset_url | stylesheet_tag: preload: true }}
+
+{{ 'component-slider.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'component-card.css' | asset_url | stylesheet_tag: preload: true }}
+
+{%- if settings.show_countdown -%}
+    {{ 'component-card-countdown.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{%- if settings.show_product_marquee -%}
+    {{ 'component-card-marquee.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{{ 'component-price.css' | asset_url | stylesheet_tag: preload: true }}
+
+{%- if settings.swatch != blank -%}
+    {{ 'component-swatch.css' | asset_url | stylesheet_tag: preload: true }}
+{%- endif -%}
+
+{%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
+    {{ 'component-localization-form.css' | asset_url | stylesheet_tag: preload: true }}
+    <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- if settings.predictive_search_enabled -%}
+    <link rel="stylesheet" href="{{ 'component-predictive-search.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- endif -%}
+
+<link rel="stylesheet" href="{{ 'animation.css' | asset_url }}" media="print" onload="this.media='all'">

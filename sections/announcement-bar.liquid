@@ -1,0 +1,132 @@
+<announcement-bar class="group-block group-block--{{ section.id }} page-width">
+  {% content_for 'blocks' %}
+</announcement-bar>
+
+{% schema %}
+{
+  "name": "t:sections.announcement-bar.name",
+  "class": "section-header",
+  "limit": 1,
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "blocks": [
+    { "type": "@app" },
+    { "type": "group-announcement-bar" },
+    { "type": "group-sale-banner" }
+  ],
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:sections.header.settings.margin_bottom.label",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.name"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.announcement-bar.name",
+      "settings": {
+        "color_scheme": "scheme-3"
+      },
+      "blocks": [
+        {
+          "type": "group-announcement-bar",
+          "settings": {
+            "color_scheme": "scheme-3"
+          },
+          "blocks": [
+            {
+              "type": "group-announcement",
+              "settings": {
+                "color_scheme": "scheme-1",
+                "width_grid_item": 33
+              },
+              "blocks": [
+                {
+                  "type": "announcement-text",
+                  "settings": {
+                    "text": "Welcome to our store"
+                  }
+                },
+                {
+                  "type": "announcement-text",
+                  "settings": {
+                    "text": "Welcome to our store"
+                  }
+                },
+                {
+                  "type": "announcement-text",
+                  "settings": {
+                    "text": "Welcome to our store"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "group-social",
+              "settings": {
+                "width_grid_item": 33
+              }
+            },
+            {
+              "type": "group-regional",
+              "settings": {
+                "width_grid_item": 33,
+                "enable_country_selector": true,
+                "enable_language_selector": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "group-sale-banner",
+          "settings": {
+            "color_scheme": "scheme-3"
+          },
+          "blocks": [
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

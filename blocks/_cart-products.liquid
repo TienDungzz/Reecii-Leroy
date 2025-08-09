@@ -1,4 +1,4 @@
-{% render 'cart-products' %}
+
 
 {% stylesheet %}
   .cart-page--empty .cart-items__wrapper {
@@ -13,10 +13,19 @@
     margin-block-start: var(--margin-lg);
   }
 {% endstylesheet %}
+<style>
+  .cart-items__wrapper {
+    --cart-secondary-font-family: var(--font-{{ settings.cart_price_font }}--family);
+    --cart-secondary-font-style: var(--font-{{ settings.cart_price_font }}--style);
+    --cart-secondary-font-weight: var(--font-{{ settings.cart_price_font }}--weight);
+  }
+</style>
+
+{% render 'cart-products' %}
 
 {% schema %}
 {
-  "name": "t:names.cart_products",
+  "name": "Cart products",
   "tag": null,
   "settings": [
     {
@@ -35,7 +44,7 @@
       "options": [
         {
           "value": "adapt",
-          "label": "t:options.auto"
+          "label": "t:options.adapt_to_image"
         },
         {
           "value": "portrait",
@@ -47,7 +56,7 @@
         }
       ],
       "default": "adapt",
-      "label": "t:settings.aspect_ratio"
+      "label": "t:settings.image_ratio"
     },
     {
       "type": "checkbox",
@@ -108,7 +117,7 @@
   ],
   "presets": [
     {
-      "name": "t:names.cart_items"
+      "name": "Cart items"
     }
   ]
 }

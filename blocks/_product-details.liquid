@@ -1,36 +1,8 @@
-{%- assign block_settings = block.settings -%}
 
-<div
-  id="ProductInformation-{{ section.id }}"
-  class="
-    product-details
-    {% if block_settings.sticky_details_desktop %} sticky-content--desktop{% endif %}
-    {% if block_settings.height == 'fill' -%} full-height--desktop{% endif -%}
-  "
-  style="--details-position: {{ block_settings.details_position }};"
-  data-testid="product-information-details"
-  {% if settings.transition_to_main_product %}
-    data-view-transition-type="product-details"
-  {% endif %}
->
-  {% capture children %}
-    <div class="view-product-title">
-      <a
-        href="{{ product.selected_or_first_available_variant.url }}"
-        class="link"
-      >
-        {{- product.title }}
-      </a>
-    </div>
-    {% content_for 'blocks' %}
-  {% endcapture %}
-
-  {% render 'group', children: children, settings: block_settings, shopify_attributes: block.shopify_attributes %}
-</div>
 
 {% stylesheet %}
   /* Clear padding on mobile, if not full-width */
-  @media screen and (max-width: 749px) {
+  @media screen and (width < 750px) {
     .product-information.section--page-width .product-details > .group-block {
       padding-inline: 0;
     }
@@ -47,26 +19,39 @@
     justify-content: center;
   }
 
-  @media screen and (min-width: 750px) {
+  @media screen and (width >= 750px) {
     .product-details > .group-block {
       height: min-content;
-    }
-
-    .full-height--desktop {
-      height: 100%;
-      max-height: calc(100vh - var(--header-group-height, 0));
-      min-height: fit-content;
-    }
-
-    .full-height--desktop .group-block {
-      align-self: var(--details-position, 'flex-start');
     }
   }
 {% endstylesheet %}
 
+<div
+  id="ProductInformation-{{ section.id }}"
+  class="product-details{% if block.settings.sticky_details_desktop %} sticky-content--desktop{% endif %}"
+  data-testid="product-information-details"
+  {% if settings.transition_to_main_product %}
+    data-view-transition-type="product-details"
+  {% endif %}
+>
+  <div class="view-product-title">
+    <a
+      href="{{ product.selected_or_first_available_variant.url }}"
+      class="link"
+    >
+      {{- product.title }}
+    </a>
+  </div>
+  {% capture children %}
+    {% content_for 'blocks' %}
+  {% endcapture %}
+
+  {% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+</div>
+
 {% schema %}
 {
-  "name": "t:names.details",
+  "name": "Details",
   "blocks": [
     {
       "type": "@theme"
@@ -128,6 +113,26 @@
   ],
   "tag": null,
   "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_details_desktop",
+      "label": "t:settings.make_details_sticky_desktop",
+      "default": false
+    },
     {
       "type": "header",
       "content": "t:content.size"
@@ -193,63 +198,6 @@
       "unit": "%",
       "default": 100,
       "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
-    },
-    {
-      "type": "select",
-      "id": "height",
-      "label": "t:settings.height",
-      "options": [
-        {
-          "value": "fit",
-          "label": "t:options.fit_content"
-        },
-        {
-          "value": "fill",
-          "label": "t:options.fill"
-        }
-      ],
-      "default": "fit"
-    },
-    {
-      "type": "header",
-      "content": "t:content.layout"
-    },
-    {
-      "type": "select",
-      "id": "details_position",
-      "label": "t:settings.position",
-      "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.top"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.bottom"
-        }
-      ],
-      "default": "flex-start",
-      "visible_if": "{{ block.settings.height == \"fill\" }}"
-    },
-    {
-      "type": "range",
-      "id": "gap",
-      "label": "t:settings.gap",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 12
-    },
-    {
-      "type": "checkbox",
-      "id": "sticky_details_desktop",
-      "label": "t:settings.make_details_sticky_desktop",
-      "default": false
     },
     {
       "type": "header",
@@ -429,7 +377,7 @@
   ],
   "presets": [
     {
-      "name": "t:names.details",
+      "name": "Details",
       "settings": {
         "width": "custom",
         "custom_width": 100,
@@ -450,32 +398,25 @@
         "text_TMtYp8": {
           "type": "text",
           "settings": {
-            "text": "<p>Home → Shirts</p>",
-            "alignment": "left",
-            "padding-block-start": 16,
-            "padding-inline-end": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0
+            "text": "<p>Home → Shirts</p>"
           }
         },
         "heading_m7KmQQ": {
           "type": "text",
           "settings": {
-            "text": "<h1>{{ closest.product.title }}</h1>",
-            "type_preset": "h2",
-            "alignment": "left"
+            "text": "<h1>{{ closest.product.title }}</h1>"
           }
         },
         "text_GMQR8L": {
           "type": "text",
           "settings": {
-            "text": "<p>★★★★★ 368 Reviews</p>",
-            "alignment": "left"
+            "text": "<p>★★★★★ 368 Reviews</p>"
           }
         },
         "price_a7krng": {
           "type": "price",
           "settings": {
+            "product": "{{ closest.product }}",
             "show_tax_info": true,
             "type_preset": "h4",
             "alignment": "left"
@@ -484,6 +425,7 @@
         "variant_picker_R3rGDr": {
           "type": "variant-picker",
           "settings": {
+            "product": "{{ closest.product }}",
             "variant_style": "pills",
             "padding-block-start": 0,
             "padding-block-end": 8,
@@ -494,6 +436,7 @@
         "buy_buttons_eYQEYi": {
           "type": "buy-buttons",
           "settings": {
+            "product": "{{ closest.product }}",
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
@@ -504,12 +447,16 @@
               "type": "add-to-cart",
               "static": true,
               "settings": {
+                "product": "{{ closest.product }}",
                 "style_class": "button-secondary"
               }
             },
             "accelerated-checkout": {
               "type": "accelerated-checkout",
-              "static": true
+              "static": true,
+              "settings": {
+                "product": "{{ closest.product }}"
+              }
             }
           },
           "block_order": []
@@ -566,18 +513,13 @@
                   "type": "icon",
                   "settings": {
                     "icon": "truck",
-                    "width": 16
+                    "width": 22
                   }
                 },
                 "text_83R7CQ": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Free shipping over $50</p>",
-                    "alignment": "left",
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
+                    "text": "<p>Free shipping over $50</p>"
                   }
                 }
               },
@@ -611,18 +553,13 @@
                   "type": "icon",
                   "settings": {
                     "icon": "return",
-                    "width": 16
+                    "width": 22
                   }
                 },
                 "text_EmGGUV": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Free 30-day returns</p>",
-                    "alignment": "left",
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
+                    "text": "<p>Free 30-day returns</p>"
                   }
                 }
               },
@@ -677,14 +614,14 @@
         "complementary_products": {
           "type": "product-recommendations",
           "settings": {
+            "product": "{{ closest.product }}",
             "recommendation_type": "complementary"
           },
           "blocks": {
             "recommendations-header": {
               "type": "text",
               "settings": {
-                "text": "<h3>Styled with</h3>",
-                "type_preset": "h5"
+                "text": "<h3>Styled with</h3>"
               }
             }
           },

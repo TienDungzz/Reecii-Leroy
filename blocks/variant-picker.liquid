@@ -1,5 +1,7 @@
+
+
 {% liquid
-  assign product_resource = closest.product
+  assign product_resource = block.settings.product
   if request.visual_preview_mode and product_resource == blank
     assign product_resource = collections.all.products.first
   endif
@@ -9,16 +11,17 @@
 
 {% schema %}
 {
-  "name": "t:names.product_variant_picker",
+  "name": "Product variant picker",
   "tag": null,
   "settings": [
     {
       "type": "paragraph",
-      "content": "t:content.resource_reference_product_variant_picker"
+      "content": "t:content.edit_variants_in_theme_settings"
     },
     {
-      "type": "paragraph",
-      "content": "t:content.edit_variants_in_theme_settings"
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
     },
     {
       "type": "select",
@@ -95,8 +98,11 @@
   ],
   "presets": [
     {
-      "name": "t:names.product_variant_picker",
-      "category": "t:categories.product"
+      "name": "Product variant picker",
+      "category": "t:categories.product",
+      "settings": {
+        "product": "{{ closest.product }}"
+      }
     }
   ]
 }

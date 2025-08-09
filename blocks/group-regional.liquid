@@ -1,0 +1,80 @@
+{% comment %} [START block.markup] {% endcomment %}
+<div
+  class="group-block group-block--{{ block.id }} grid__item block{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+  style="--width-header-col: {{ block.settings.width_grid_item }}%;"
+  {{ block.shopify_attributes }}
+>
+  <div class="flex flex-wrap justify-center flex-column h-full">
+    <div class="localization-wrapper{% if block.settings.enable_country_selector or block.settings.enable_language_selector %} header-localization{% endif %}">
+      {%- if block.settings.enable_country_selector and localization.available_countries.size > 1 -%}
+        <localization-form class="small-hide medium-hide" activate-event="hover">
+          {%- form 'localization', id: 'AnnouncementCountryForm', class: 'localization-form' -%}
+            <div>
+              <h2 class="visually-hidden" id="AnnouncementCountryLabel">{{ 'localization.country_label' | t }}</h2>
+              {%- render 'country-localization', localPosition: 'AnnouncementCountry' -%}
+            </div>
+          {%- endform -%}
+        </localization-form>
+      {% endif %}
+
+      {%- if block.settings.enable_language_selector and localization.available_languages.size > 1 -%}
+        <localization-form class="small-hide medium-hide" activate-event="hover">
+          {%- form 'localization', id: 'AnnouncementLanguageForm', class: 'localization-form' -%}
+            <div>
+              <h2 class="visually-hidden" id="AnnouncementLanguageLabel">{{ 'localization.language_label' | t }}</h2>
+              {%- render 'language-localization', localPosition: 'AnnouncementLanguage' -%}
+            </div>
+          {%- endform -%}
+        </localization-form>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+{% comment %} [END block.markup] {% endcomment %}
+
+{% comment %} [START block.preset] {% endcomment %}
+{% schema %}
+{
+  "name": "Group: Regional",
+  "tag": null,
+  "settings": [
+    {
+      "type": "range",
+      "id": "width_grid_item",
+      "min": 15,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:sections.header.settings.grid_item.label__1",
+      "info": "t:sections.header.settings.grid_item.info",
+      "default": 25
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement-bar.settings.header__3.content",
+      "info": "t:sections.announcement-bar.settings.header__3.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_country_selector",
+      "default": false,
+      "label": "t:sections.announcement-bar.settings.enable_country_selector.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement-bar.settings.header__4.content",
+      "info": "t:sections.announcement-bar.settings.header__4.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_language_selector",
+      "default": false,
+      "label": "t:sections.announcement-bar.settings.enable_language_selector.label"
+    }
+  ],
+  "presets": [
+    { "name": "Group: Regional" }
+  ]
+}
+{% endschema %}
+{% comment %} [END block.preset {% endcomment %}

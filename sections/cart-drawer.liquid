@@ -1,0 +1,47 @@
+{% comment %}
+    "groups": ["custom.popup"]
+{% endcomment %}
+
+{%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}
+    {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
+
+    {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
+    {{ 'component-cart.css' | asset_url | stylesheet_tag }}
+    {{ 'component-totals.css' | asset_url | stylesheet_tag }}
+    {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+
+    {%- render 'cart-drawer' -%}
+
+    {%- liquid
+        assign files = 'cart.js, quantity-popover.js, cart-drawer.js'
+
+        assign files = files | split: ', '
+        render 'theme-loader', files: files
+    -%}
+{%- endif -%}
+
+{% schema %}
+{
+    "name": "t:sections.popup-cart-drawer.name",
+    "tag": "section",
+    "class": "section-cart-drawer",
+    "settings": [
+        {
+            "type": "paragraph",
+            "content": "t:sections.popup-cart-drawer.info"
+        },
+        {
+            "type": "collection",
+            "id": "cart_drawer_collection",
+            "label": "t:sections.popup-cart-drawer.settings.collection.label",
+            "info": "t:sections.popup-cart-drawer.settings.collection.info"
+        },
+        {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:sections.all.colors.label",
+            "default": "scheme-1"
+        }
+    ]
+}
+{% endschema %}
