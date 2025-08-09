@@ -1,97 +1,173 @@
-
-
-{% doc %}
+{%- doc -%}
   Renders product recommendations.
   {section.id} - identifies the parent section for the Section Rendering API
 
   https://shopify.dev/docs/api/section-rendering-api
-{% enddoc %}
+{%- enddoc -%}
 
 <script
   src="{{ 'product-recommendations.js' | asset_url }}"
   type="module"
 ></script>
 
+{% liquid
+  assign block_settings = block.settings
+  case block_settings.layout_type
+    when 'grid'
+      assign classes = 'resource-list--grid'
+    when 'carousel'
+      assign classes = 'resource-list--carousel'
+  endcase
+%}
+
+{% comment %}
+  [data-section-id] {section.id} - used to fetch the product recommendations from the Section Rendering API
+{% endcomment %}
+
+<product-recommendations
+  id="product-recommendations-{{ block.id }}"
+  class="product-recommendations"
+  data-url="{{ routes.product_recommendations_url }}?limit={{ block_settings.max_products }}"
+  data-section-id="{{ section.id }}"
+  data-product-id="{{ closest.product.id }}"
+  data-intent="{{ block_settings.recommendation_type }}"
+  data-recommendations-performed="{{ recommendations.performed }}"
+  {% if request.visual_preview_mode %}
+    data-shopify-editor-preview
+  {% endif %}
+  data-testid="product-recommendations-block"
+  {{ block.shopify_attributes }}
+>
+  <div
+    class="
+      color-{{ section.settings.color_scheme }}
+      block-resource-list
+      spacing-style
+      gap-style
+    "
+    style="
+      {%  render 'spacing-style', settings: block_settings %}
+      {%  render 'gap-style', value: block_settings.gap %}
+      --resource-list-column-gap-desktop: {{ block_settings.columns_gap }}px;
+      --resource-list-row-gap-desktop: {{ block_settings.rows_gap }}px;
+      --resource-list-columns-mobile: repeat(auto-fill, minmax(9.25rem, 1fr));
+    "
+  >
+    <div class="section-resource-list__content">
+      {% content_for 'blocks' %}
+    </div>
+
+    {%- if recommendations.performed or closest.product == blank -%}
+      {% liquid
+        assign products = recommendations.products
+
+        if closest.product == blank
+          # Onboarding mode: Show placeholder products
+          for i in (1..block_settings.max_products)
+            assign products = products | append: ', '
+            assign products = products | split: ','
+          endfor
+        elsif recommendations.performed and recommendations.products_count == 0
+          # No recommendations found, pull from catalog
+          if block_settings.recommendation_type == 'related'
+            assign products = collections.all.products | reject: 'id', closest.product.id
+          elsif block_settings.recommendation_type == 'complementary'
+            # Do not recommend the All collection as complementary products
+            assign products = null
+          endif
+        else
+          assign products = recommendations.products
+        endif
+      %}
+      {% capture list_items %}
+        {% for product in products limit: block_settings.max_products %}
+          <div class="resource-list__item">
+            {% content_for 'block',
+              type: '_product-card',
+              id: 'static-product-card',
+              closest.product: product
+            %}
+          </div>
+          {% if block_settings.layout_type == 'carousel' or block_settings.carousel_on_mobile %}
+            {% unless forloop.last %}
+              <!--@list/split-->
+            {% endunless %}
+          {% endif %}
+        {% endfor %}
+      {% endcapture %}
+
+      {% liquid
+        # Create an array from the list items to be used in the carousel
+        assign slide_content = list_items | strip
+        assign slides = slide_content | split: '<!--@list/split-->'
+
+        if products != blank and products.size > 0
+          assign has_recommendations = 'true'
+        else
+          assign has_recommendations = 'false'
+        endif
+      %}
+
+      <div
+        class="
+          resource-list
+          {% if block_settings.carousel_on_mobile and block_settings.layout_type != 'carousel' %}
+            hidden--mobile
+          {% endif %}
+          {{ classes }}
+        "
+        {% if block_settings.layout_type == 'grid' %}
+          data-testid="resource-list-grid"
+        {% endif %}
+        data-has-recommendations="{{ has_recommendations }}"
+      >
+        {% case block_settings.layout_type %}
+          {% when 'grid' %}
+            {{ list_items }}
+          {% when 'carousel' %}
+            {% render 'resource-list-carousel',
+              ref: 'resourceListCarousel',
+              slides: slides,
+              slide_count: recommendations.products.size,
+              settings: block_settings
+            %}
+        {% endcase %}
+      </div>
+
+      {% if block_settings.carousel_on_mobile and block_settings.layout_type != 'carousel' %}
+        {% liquid
+          assign mobile_carousel_gap = block_settings.columns_gap
+        %}
+        <div
+          class="
+            resource-list
+            hidden--desktop
+            force-full-width
+          "
+          style="--resource-list-gap: {{ mobile_carousel_gap }}px;"
+        >
+          {% render 'resource-list-carousel',
+            ref: 'resourceListCarouselMobile',
+            slides: slides,
+            slide_count: recommendations.products.size,
+            settings: block_settings
+          %}
+        </div>
+      {% endif %}
+    {%- else -%}
+      <div class="resource-list resource-list--grid">
+        {% for i in (1..block_settings.max_products) %}
+          <div
+            class="resource-list__item product-recommendations__skeleton-item"
+            aria-label="{{ 'accessibility.loading_product_recommendations' | t }}"
+          ></div>
+        {% endfor %}
+      </div>
+    {%- endif -%}
+  </div>
+</product-recommendations>
+
 {% stylesheet %}
-  .block-resource-list {
-    display: flex;
-    flex-direction: column;
-    row-gap: var(--gap);
-    min-width: 0;
-    min-height: 0;
-  }
-
-  .resource-list--carousel-mobile {
-    display: block;
-
-    @media screen and (width >= 750px) {
-      display: none;
-    }
-  }
-
-  .resource-list {
-    --resource-list-mobile-gap-max: 12px;
-    --resource-list-column-gap: min(var(--resource-list-column-gap-desktop), var(--resource-list-mobile-gap-max));
-    --resource-list-row-gap: min(var(--resource-list-row-gap-desktop), var(--resource-list-mobile-gap-max));
-
-    width: 100%;
-
-    @media screen and (width >= 750px) {
-      --resource-list-column-gap: var(--resource-list-column-gap-desktop);
-      --resource-list-row-gap: var(--resource-list-row-gap-desktop);
-    }
-  }
-
-  .block-resource-list {
-    container-type: inline-size;
-    container-name: resource-list;
-  }
-
-  .resource-list--grid {
-    display: grid;
-    column-gap: var(--resource-list-column-gap);
-    row-gap: var(--resource-list-row-gap);
-
-    @container resource-list (width < 750px) {
-      grid-template-columns: var(--resource-list-columns-mobile);
-    }
-
-    @container resource-list (width >= 750px) {
-      grid-template-columns: repeat(var(--resource-list-columns-per-row), 1fr);
-
-      &:has(.resource-list__item:first-child:nth-last-child(n + 9)) {
-        --resource-list-columns-per-row: 5;
-      }
-
-      &:has(.resource-list__item:first-child:nth-last-child(n + 7):nth-last-child(-n + 8)) {
-        --resource-list-columns-per-row: 4;
-      }
-
-      &:has(.resource-list__item:first-child:nth-last-child(6)) {
-        --resource-list-columns-per-row: 3;
-      }
-
-      &:has(.resource-list__item:first-child:nth-last-child(5)) {
-        --resource-list-columns-per-row: 5;
-      }
-
-      &:has(.resource-list__item:first-child:nth-last-child(-n + 4)) {
-        --resource-list-columns-per-row: 4;
-      }
-    }
-
-    @container resource-list (width >= 1200px) {
-      &:has(.resource-list__item:first-child:nth-last-child(6)) {
-        --resource-list-columns-per-row: 6;
-      }
-    }
-  }
-
-  .resource-list__item {
-    color: var(--color-foreground);
-    text-decoration: none;
-  }
-
   .product-recommendations-wrapper {
     width: 100%;
   }
@@ -112,161 +188,9 @@
   }
 {% endstylesheet %}
 
-{% liquid
-  case block.settings.layout_type
-    when 'grid'
-      assign classes = 'resource-list--grid'
-    when 'carousel'
-      assign classes = 'resource-list--carousel'
-  endcase
-%}
-
-{% comment %}
-  [data-section-id] {section.id} - used to fetch the product recommendations from the Section Rendering API
-{% endcomment %}
-
-<product-recommendations
-  id="product-recommendations-{{ block.id }}"
-  class="product-recommendations"
-  data-url="{{ routes.product_recommendations_url }}?limit={{ block.settings.max_products }}"
-  data-section-id="{{ section.id }}"
-  data-product-id="{{ block.settings.product.id }}"
-  data-intent="{{ block.settings.recommendation_type }}"
-  data-recommendations-performed="{{ recommendations.performed }}"
-  {% if request.visual_preview_mode %}
-    data-shopify-editor-preview
-  {% endif %}
-  data-testid="product-recommendations-block"
-  {{ block.shopify_attributes }}
->
-  <div
-    class="
-      color-{{ section.settings.color_scheme }}
-      block-resource-list
-      spacing-style
-      gap-style
-    "
-    style="
-      {%  render 'spacing-style', settings: block.settings %}
-      {%  render 'gap-style', value: block.settings.gap %}
-      --resource-list-column-gap-desktop: {{ block.settings.columns_gap }}px;
-      --resource-list-row-gap-desktop: {{ block.settings.rows_gap }}px;
-      --resource-list-columns-mobile: repeat(auto-fill, minmax(9.25rem, 1fr));'
-    "
-  >
-    <div class="section-resource-list__content">
-      {% content_for 'blocks' %}
-    </div>
-
-    {%- if recommendations.performed or block.settings.product == blank -%}
-      {% liquid
-        assign products = recommendations.products
-
-        if block.settings.product == blank
-          if request.design_mode or request.visual_preview_mode
-            # Onboarding mode: Show placeholder products
-            for i in (1..block.settings.max_products)
-              assign products = products | append: ', '
-              assign products = products | split: ','
-            endfor
-          endif
-        elsif recommendations.performed and recommendations.products_count == 0
-          # No recommendations found, pull from catalog
-          if block.settings.recommendation_type == 'related'
-            assign products = collections.all.products | reject: 'id', block.settings.product.id
-          elsif block.settings.recommendation_type == 'complementary'
-            # Do not recommend the All collection as complementary products
-            assign products = null
-          endif
-        else
-          assign products = recommendations.products
-        endif
-      %}
-      {% capture list_items %}
-        {% for product in products limit: block.settings.max_products %}
-          <div class="resource-list__item">
-            {% content_for 'block',
-              type: 'product-card',
-              id: 'static-product-card',
-              closest.product: product
-            %}
-          </div>
-          {% if block.settings.layout_type == 'carousel' or block.settings.carousel_on_mobile %}
-            {% unless forloop.last %}
-              <!--@list/split-->
-            {% endunless %}
-          {% endif %}
-        {% endfor %}
-      {% endcapture %}
-
-      {% liquid
-        # Create an array from the list items to be used in the carousel
-        assign slide_content = list_items | strip
-        assign slides = slide_content | split: '<!--@list/split-->'
-      %}
-
-      <div
-        class="
-          resource-list resource-list--{{ block.id }}
-          {% if block.settings.carousel_on_mobile and block.settings.layout_type != 'carousel' %}
-            hidden--mobile
-          {% endif %}
-          {{ classes }}
-        "
-        {% if block.settings.layout_type == 'grid' %}
-          data-testid="resource-list-grid"
-        {% endif %}
-        data-has-recommendations="{% if products.size > 0 %}true{% else %}false{% endif %}"
-      >
-        {% case block.settings.layout_type %}
-          {% when 'grid' %}
-            {{ list_items }}
-          {% when 'carousel' %}
-            {% render 'resource-list-carousel',
-              ref: 'resourceListCarousel',
-              slides: slides,
-              slide_count: recommendations.products.size,
-              settings: block.settings
-            %}
-        {% endcase %}
-      </div>
-
-      {% if block.settings.carousel_on_mobile and block.settings.layout_type != 'carousel' %}
-        {% liquid
-          assign mobile_carousel_gap = block.settings.columns_gap
-        %}
-        <div
-          class="
-            resource-list resource-list--{{ block.id }}
-            hidden--desktop
-            force-full-width
-          "
-          style="--resource-list-gap: {{ mobile_carousel_gap }}px;"
-        >
-          {% render 'resource-list-carousel',
-            ref: 'resourceListCarouselMobile',
-            slides: slides,
-            slide_count: recommendations.products.size,
-            settings: block.settings
-          %}
-        </div>
-      {% endif %}
-    {%- else -%}
-      <div class="resource-list resource-list--grid">
-        {% for i in (1..2) %}
-          <div
-            class="resource-list__item product-recommendations__skeleton-item"
-            aria-label="{{ 'accessibility.loading_product_recommendations' | t }}"
-          ></div>
-        {% endfor %}
-      </div>
-    {%- endif -%}
-  </div>
-</product-recommendations>
-
 {% schema %}
 {
-  "name": "Product recommendations",
+  "name": "t:names.product_recommendations",
   "class": "product-recommendations-wrapper",
   "blocks": [
     {
@@ -278,9 +202,8 @@
   ],
   "settings": [
     {
-      "type": "product",
-      "id": "product",
-      "label": "t:settings.product"
+      "type": "paragraph",
+      "content": "t:content.resource_reference_product_recommendations"
     },
     {
       "type": "select",
@@ -462,10 +385,9 @@
   ],
   "presets": [
     {
-      "name": "Product recommendations",
+      "name": "t:names.product_recommendations",
       "category": "t:categories.product",
       "settings": {
-        "product": "{{ closest.product }}",
         "recommendation_type": "related"
       },
       "blocks": {
@@ -476,50 +398,74 @@
           }
         },
         "static-product-card": {
-          "type": "product-card",
+          "type": "_product-card",
           "static": true,
           "settings": {
-            "product": "{{ closest.product }}"
+            "product_card_gap": 4
           },
           "blocks": {
             "product-card-gallery": {
               "type": "_product-card-gallery",
               "settings": {
-                "product": "{{ closest.product }}"
+                "image_ratio": "adapt",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
               }
             },
-            "group": {
-              "type": "group",
+            "product_title": {
+              "type": "product-title",
+              "name": "t:names.product_title",
               "settings": {
-                "content_direction": "column",
-                "gap": 4
-              },
-              "blocks": {
-                "text": {
-                  "type": "product-title",
-                  "settings": {
-                    "product": "{{ closest.product }}",
-                    "type_preset": "paragraph"
-                  }
-                },
-                "price": {
-                  "type": "price",
-                  "settings": {
-                    "product": "{{ closest.product }}",
-                    "show_tax_info": false
-                  }
-                },
-                "swatches": {
-                  "type": "swatches",
-                  "settings": {
-                    "product": "{{ closest.product }}"
-                  }
-                }
-              },
-              "block_order": ["text", "price", "swatches"]
+                "width": "fit-content",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "color": "var(--color-foreground)",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
+            },
+            "price": {
+              "type": "price",
+              "name": "t:names.product_price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "h6",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "color": "var(--color-foreground)",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              }
             }
           },
-          "block_order": ["product-card-gallery", "group"]
+          "block_order": ["product-card-gallery", "product_title", "price"]
         }
       },
       "block_order": ["heading"]

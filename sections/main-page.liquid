@@ -1,143 +1,93 @@
-{{ 'section-media-banner.css' | asset_url | stylesheet_tag }}
-{{ 'section-main-page.css' | asset_url | stylesheet_tag }}
-
-{%- style -%}
-  .main-page-media.banner__media:after {
-    opacity: {{ section.settings.image_overlay_opacity | divided_by: 100.0 }};
-    background: var(--color-background);
-  }
-{%- endstyle -%}
-
-{%- capture banner_media -%}
-  {%- if section.settings.image != blank -%}
-    <div class="banner banner--content-align-mobile-bottom-center banner--medium color-{{ section.settings.color_scheme }} gradient">
-      {%- liquid
-        assign loading = 'lazy'
-        assign fetch_priority = 'auto'
-        if section.index == 1
-          assign loading = 'eager'
-          assign fetch_priority = 'high'
-        endif
-        assign image_height = section.settings.image.width | divided_by: section.settings.image.aspect_ratio
-      -%}
-
-      <div class="main-page-media banner__media media">
-        {{
-          section.settings.image
-          | image_url: width: 3840
-          | image_tag:
-            width: section.settings.image.width,
-            height: image_height,
-            sizes: '100vw',
-            widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840',
-            loading: loading,
-            fetchpriority: fetch_priority
-        }}
-      </div>
-      <div class="page__text-wrapper banner__content banner__content--bottom-center">
-        <div class="page__text banner__box{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-          <h1 class="main-page-title page-title h0 m-0">
-            {{ page.title | escape }}
-          </h1>
-          {%- if section.settings.subheading != blank -%}
-            <div class="banner__text rte">
-              <p>{{ section.settings.subheading }}</p>
-            </div>
-          {%- endif -%}
-        </div>
-      </div>
-    </div>
-  {%- else -%}
-    <h1 class="main-page-title page-title h0{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
-      style="--mb: 3rem; --md-mb: 4rem;"
-    >
-      {{ page.title | escape }}
-    </h1>
-    {%- if section.settings.subheading != blank -%}
-      <div class="banner__text rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-        <p>{{ section.settings.subheading }}</p>
-      </div>
-    {%- endif -%}
-  {%- endif -%}
-{%- endcapture -%}
-
-{% unless section.settings.image != blank %}
-<div class="color-{{ section.settings.color_scheme }} gradient">
-{% endunless %}
-  <div class="main-page{% unless section.settings.image != blank %} page-width spacing{% endunless %}"
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div class="section page-width-content color-{{ section.settings.color_scheme }}">
+  <div
+    class="
+      spacing-style
+      layout-panel-flex
+      layout-panel-flex--column
+      section-content-wrapper
+      mobile-column
+    "
     style="
-      --p-spacing-t: {{ section.settings.padding_top }}px;
-      --p-spacing-b: {{ section.settings.padding_bottom }}px;
+      {% render 'layout-panel-style', settings: section.settings %}
+      {% render 'spacing-style', settings: section.settings %}
     "
   >
-    {{ banner_media }}
-    <div class="rte{% if section.settings.image != blank %} page-width spacing{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-      {{ page.content }}
-    </div>
+    {% content_for 'blocks' %}
   </div>
-{% unless section.settings.image != blank %}
 </div>
-{% endunless %}
 
 {% schema %}
 {
-  "name": "t:sections.main-page.name",
-  "tag": "section",
-  "class": "section",
-  "settings": [
+  "name": "t:names.page",
+  "class": "section-wrapper",
+  "blocks": [
     {
-      "type": "inline_richtext",
-      "id": "subheading",
-      "label": "t:sections.main-page.settings.subheading.label"
+      "type": "@theme"
     },
     {
-      "type": "image_picker",
-      "id": "image",
-      "label": "t:sections.main-page.settings.image.label"
+      "type": "@app"
+    },
+    {
+      "type": "_divider"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "content_direction",
+      "label": "t:settings.direction",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        }
+      ],
+      "default": "column",
+      "visible_if": "{{ section.settings.gap < 0 }}"
     },
     {
       "type": "range",
-      "id": "image_overlay_opacity",
+      "id": "gap",
+      "label": "t:settings.gap",
       "min": 0,
       "max": 100,
-      "step": 10,
-      "unit": "%",
-      "label": "t:sections.main-page.settings.image_overlay_opacity.label",
-      "default": 40
-    },
-    {
-      "type": "header",
-      "content": "t:sections.all.colors.name"
+      "step": 1,
+      "unit": "px",
+      "default": 12
     },
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "t:sections.all.colors.label",
+      "label": "t:settings.color_scheme",
       "default": "scheme-1"
     },
     {
       "type": "header",
-      "content": "t:sections.all.padding.name"
+      "content": "t:content.padding"
     },
     {
       "type": "range",
-      "id": "padding_top",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
-      "default": 36
+      "default": 0
     },
     {
       "type": "range",
-      "id": "padding_bottom",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
+      "default": 0
     }
   ]
 }

@@ -1,371 +1,324 @@
-{%- stylesheet -%}
-  .quick-add-modal {
-    inset: 0;
-    background: rgba(var(--color-foreground), 0.2);
+{%- doc -%}
+  Renders a quick add component.
 
-    .product-form__buttons-wrapper {
-      grid-template-columns: 1fr;
-      margin-top: 1rem;
+  @param {object} product - The product object
+  @param {string} section_id - The section ID
+  @param {object} [block] - The block object
+{%- enddoc -%}
+
+{% liquid
+  assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: block.id
+  assign add_to_cart_text = 'actions.add' | t
+
+  # Logic to determine which variant to use (matching swatch selection logic from product-card)
+  assign variant_to_use = product.selected_or_first_available_variant
+  assign combined_listing_count = product.options_with_values | map: 'values' | map: 'product_url' | compact | size
+
+  unless combined_listing_count > 0
+    assign first_image = product.media.first
+    assign variant_images = product.images | where: 'attached_to_variant?', true
+    # Get swatchable options (options that have swatch values)
+    assign swatch_variant_picker = null
+    for option in product.options_with_values
+      assign swatch_count = option.values | map: 'swatch' | compact | size
+      if swatch_count > 0
+        assign swatch_variant_picker = option
+        break
+      endif
+    endfor
+
+    if swatch_variant_picker
+      assign swatch_count = swatch_variant_picker.values | map: 'swatch' | compact | size
+
+      if swatch_count == 1
+        # Single swatch: use that variant
+        assign variant_to_use = swatch_variant_picker.values.first.variant
+      elsif swatch_count > 1
+        if first_image and variant_images contains first_image
+          # First image is a variant image - find which variant it belongs to
+          for option_value in swatch_variant_picker.values
+            if option_value.variant.featured_media.id == first_image.id
+              assign variant_to_use = option_value.variant
+              break
+            endif
+          endfor
+        elsif variant_images.size == 0
+          # No variants have images - use first swatch variant
+          assign variant_to_use = swatch_variant_picker.values.first.variant
+        endif
+        # else: First image is NOT a variant image - keep default (selected_or_first_available_variant)
+      endif
+    endif
+  endunless
+
+  if variant_to_use.available
+    assign can_add_to_cart = true
+  else
+    assign can_add_to_cart = false
+  endif
+%}
+
+<quick-add-component
+  class="quick-add color-{{ settings.quick_add_color_scheme }} "
+  ref="quickAdd"
+  data-product-title="{{ product.title }}"
+>
+  <product-form-component
+    data-section-id="{{ section_id }}"
+    data-product-id="{{ product.id }}"
+    on:submit="/handleSubmit"
+    class="
+      quick-add__product-form-component
+      {% if product.options.size == 1 %} quick-add__product-form-component--single-option {% else %} quick-add__product-form-component--multi-option {% endif %}
+      {% if product.variants.size == 1 %} quick-add__product-form-component--single-variant {% else %} quick-add__product-form-component--multi-variant {% endif %}
+    "
+  >
+    <div
+      class="visually-hidden"
+      aria-live="assertive"
+      role="status"
+      aria-atomic="true"
+      ref="liveRegion"
+    ></div>
+    {%- form 'product', product, id: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+      <input
+        type="hidden"
+        name="id"
+        ref="variantId"
+        value="{{ variant_to_use.id }}"
+        {% if variant_to_use.available == false %}
+          disabled
+        {% endif %}
+      >
+      <input
+        type="hidden"
+        name="quantity"
+        value="{% if variant_to_use.quantity_rule.min %}{{ variant_to_use.quantity_rule.min }}{% else %}1{% endif %}"
+      >
+      {% comment %} If there is one variant option but it's swatches or if it's a single variant product, then use add to cart button {% endcomment %}
+      {%- if product.variants.size == 1 or product.options.size == 1 -%}
+        {% render 'add-to-cart-button',
+          add_to_cart_text: add_to_cart_text,
+          class: 'button quick-add__button quick-add__button--add',
+          can_add_to_cart: can_add_to_cart,
+          icon_only_on_mobile: true,
+          product: product
+        %}
+      {%- endif -%}
+      {%- if product.variants.size > 1 -%}
+        <button
+          class="button quick-add__button quick-add__button--choose"
+          {% comment %} type="submit" is the default, so we explicitly set it to "button" to prevent the ProductFormComponent.handleSubmit from being triggered {% endcomment %}
+          type="button"
+          name="add"
+          on:click="quick-add-component/handleClick"
+        >
+          <span
+            class="add-to-cart-text"
+          >
+            <span
+              class="svg-wrapper add-to-cart-icon"
+            >
+              {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+            </span>
+            <span class="add-to-cart-text__content is-visually-hidden-mobile">
+              {{ add_to_cart_text }}
+            </span>
+          </span>
+        </button>
+      {%- endif -%}
+    {%- endform -%}
+  </product-form-component>
+</quick-add-component>
+
+{% stylesheet %}
+  /* Quick Add */
+  .quick-add {
+    --quick-add-offset: var(--padding-sm);
+    --quick-add-top: calc(var(--quick-add-offset) + var(--padding-block-start));
+    --quick-add-right: calc(var(--quick-add-offset) + var(--padding-inline-end));
+    --quick-add-bottom: calc(var(--quick-add-offset) + var(--padding-block-end));
+    --quick-add-left: calc(var(--quick-add-offset) + var(--padding-inline-end));
+
+    position: absolute;
+    display: var(--quick-add-mobile-display, none);
+    flex-direction: column;
+    justify-content: flex-end;
+    inset: max(var(--quick-add-top), calc((var(--border-radius) + var(--quick-add-top)) * (1 - cos(45deg))))
+      max(var(--quick-add-right), calc((var(--border-radius) + var(--quick-add-right)) * (1 - cos(45deg))))
+      max(var(--quick-add-bottom), calc((var(--border-radius) + var(--quick-add-bottom)) * (1 - cos(45deg))))
+      max(var(--quick-add-left), calc((var(--border-radius) + var(--quick-add-left)) * (1 - cos(45deg))));
+    width: auto;
+    height: auto;
+    z-index: var(--layer-raised);
+    cursor: default;
+    pointer-events: none;
+
+    @media screen and (min-width: 750px) {
+      --quick-add-offset: var(--padding-md);
+
+      display: var(--quick-add-display, flex);
+    }
+  }
+
+  .quick-add .variant-option__button-label input[data-option-available='false'] {
+    cursor: not-allowed;
+  }
+
+  .quick-add[class*='color-scheme-'] {
+    background-color: transparent;
+  }
+
+  .quick-add__button {
+    display: grid;
+    padding: var(--padding-xs);
+    align-items: center;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border-color: transparent;
+    box-shadow: var(--shadow-popover);
+    pointer-events: all;
+    position: relative;
+    overflow: hidden;
+    border-radius: 100px;
+
+    @media screen and (min-width: 750px) {
+      display: none;
+      padding: var(--padding-xs) var(--padding-sm);
     }
 
-    &[open] {
-      z-index: 101;
+    .quick-add[stay-visible] & {
+      display: grid;
     }
+  }
 
-    .scroll-trigger.scroll-trigger {
-      animation: none;
-      opacity: 1;
-      transform: none;
+  .quick-add__button .add-to-cart-text {
+    gap: 0;
+    line-height: 1;
+    grid-row: 1 / span 1;
+    grid-column: 1 / span 1;
+    animation: none;
+
+    @media screen and (min-width: 750px) {
+      /* offset button padding to show a round button in a collapsed state */
+      margin-inline: calc(var(--padding-sm) * -1);
+      padding-inline: var(--padding-xs);
     }
+  }
 
-    .quick-order-list__container {
-      padding-bottom: 1.5rem;
+  .quick-add__button .add-to-cart-text--added {
+    position: relative;
+    grid-row: 1 / span 1;
+    grid-column: 1 / span 1;
+    justify-self: end;
+    line-height: 1;
+
+    @media screen and (min-width: 750px) {
+      width: 0;
     }
+  }
 
-    .product-form__submit {
-      min-height: 4.4rem;
-      font-size: initial;
-    }
+  .quick-add__button .add-to-cart-text__content {
+    width: 0;
+    opacity: 0;
+    transform: translateX(1em);
+    transition: width var(--animation-speed) ease-in-out, opacity var(--animation-speed) ease-in-out,
+      transform var(--animation-speed) ease-in-out;
+    interpolate-size: allow-keywords;
+    will-change: width, opacity, transform;
+  }
 
-    .product__tax {
-      margin-top: 0;
-    }
+  @container (min-width: 99px) {
+    .quick-add[stay-visible] .add-to-cart-text,
+    .quick-add__button:is(:focus, :hover) .add-to-cart-text {
+      gap: var(--gap-2xs);
 
-    @media screen and (width >= 990px) {
-      .shopify-payment-button {
-        width: 100%;
+      @media screen and (min-width: 750px) {
+        /* offset button padding to show a round button in a collapsed state */
+        margin-inline: 0;
+        padding-inline: 0;
       }
     }
-  }
 
-  .quick-add-modal__content.quick-add-modal__content--bulk {
-    width: 90%;
-  }
-
-  .quick-add-modal__content {
-    --modal-height-offset: 3.2rem;
-    padding: 1rem 0.5rem;
-    max-width: 47.5rem;
-    width: calc(100% - 3rem);
-    min-height: 35rem;
-
-    @media screen and (width >= 750px) {
-      width: 80%;
+    .quick-add[stay-visible] .add-to-cart-text__content,
+    .quick-add__button:is(:focus, :hover) .add-to-cart-text__content {
+      width: fit-content;
+      opacity: 1;
+      transform: translateX(0);
     }
   }
 
-  .quick-add-modal__content img {
-    max-width: 100%;
+  .quick-add__button.atc-added .add-to-cart-text {
+    opacity: 0;
   }
 
-  .quick-add-modal__content-info.quick-add-modal__content-info--bulk {
-    padding-bottom: 0;
-  }
-
-  .quick-add-modal__content-info--bulk h3 {
-    margin-block: 0 0.5rem;
-  }
-
-  .quick-add-modal__content-info--bulk :is(.price, .card__information-volume-pricing-note) {
-    display: inline-block;
-  }
-
-  .quick-add-modal__content-info--bulk :is(.quick-add__product-media, .quick-add__product-container, .quick-add__info) {
-    width: 4.8rem;
-    height: 7rem;
-  }
-
-  .quick-add-modal__content-info--bulk-details {
-    padding-left: 1rem;
-  }
-
-  .quick-add-modal__content-info--bulk-details > a:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.3rem;
-  }
-
-  .quick-add-modal__content-info--bulk :is(.quick-add__product-media, .quick-add__product-container, .quick-add__info) {
-    width: 4.8rem;
-    height: 7rem;
-  }
-
-  .quick-add-modal__content-info--bulk .quick-add__product-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .quick-add-modal__content-info--bulk .quick-add__info {
-    display: flex;
-  }
-
-  .quick-add-modal__content-info--bulk .quick-add__content-info__media {
+  .quick-add__button.atc-added .add-to-cart-text--added {
+    opacity: 1;
     width: auto;
+
+    @supports (width: calc-size(auto, size)) {
+      width: calc-size(auto, size);
+    }
   }
 
-  .quick-add-modal__content-info {
-    --modal-padding: 1.5rem;
-    padding-inline-end: 4.4rem;
-    display: flex;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: var(--modal-padding);
+  .quick-add__button.atc-added .add-to-cart-text {
+    animation-name: atc-fade-out;
+  }
+
+  .quick-add__button.atc-added .add-to-cart-text--added {
+    animation-name: atc-fade-in;
+  }
+
+  .quick-add__product-form-component {
     height: 100%;
   }
 
-  .quick-add-modal__content-info > * {
-    height: auto;
-    margin: 0 auto;
-    max-width: 100%;
-    width: 100%;
-  }
-
-  .quick-add-modal__content-info > product-info {
-    padding: 0;
-  }
-
-  .quick-add-modal__toggle {
-    background-color: rgb(var(--color-background));
-    border: 0.1rem solid rgba(var(--color-foreground), 0.1);
-    border-radius: 50%;
-    color: rgba(var(--color-foreground), 0.55);
+  .quick-add__product-form-component .shopify-product-form {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 1.2rem;
-    z-index: 5;
-    width: 4.4rem;
-    position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
+    justify-content: flex-end;
+    align-items: flex-end;
+    container-type: inline-size;
+    height: 100%;
   }
 
-  .quick-add-modal__toggle:hover {
-    color: rgba(var(--color-foreground), 0.75);
-  }
-
-  .quick-add-modal__toggle .icon {
-    height: auto;
-    margin: 0;
-    width: 2.2rem;
-  }
-
-  quick-add-modal .product:not(.featured-product) .product__view-details {
-    display: block;
-  }
-
-  .quick-add-modal__content--bulk .product__view-details .icon {
-    margin-left: 1.2rem;
-  }
-
-  quick-add-modal
-    :is(
-      .quick-add-hidden,
-      .product__modal-opener:not(.product__modal-opener--image),
-      .product__media-item:not(:first-child)
-    ) {
-    display: none !important;
-  }
-
-  quick-add-modal .slider.slider--mobile {
-    overflow: visible;
-  }
-
-  quick-add-modal .product__column-sticky .product__media-list {
-    margin-bottom: 0;
-  }
-
-  quick-add-modal .product__media-list .deferred-media {
-    display: block;
+  .quick-add-modal .product-media {
     width: 100%;
+    height: 100%;
   }
 
-  quick-add-modal .product__column-sticky {
-    top: 0;
-    position: relative;
-  }
-
-  quick-add-modal .page-width {
-    padding: 0;
-  }
-
-  quick-add-modal .product__title > h1 {
+  .quick-add-modal deferred-media {
     display: none;
   }
 
-  quick-add-modal .product__title > a {
-    display: block;
-    text-decoration: none;
+  .quick-add-modal .media-gallery--carousel slideshow-component {
+    --cursor: default;
   }
 
-  quick-add-modal .product__title > a:hover {
-    color: rgb(var(--color-foreground));
-    text-decoration: underline;
-    text-underline-offset: 0.2rem;
-    text-decoration-thickness: 0.3rem;
-  }
-
-  quick-add-modal .product-form__buttons {
-    max-width: initial;
-  }
-
-  quick-add-modal .product-media-container.constrain-height {
-    --viewport-offset: calc((var(--modal-height-offset) + var(--modal-padding) + var(--popup-border-width)) * 2);
-  }
-
-  @media screen and (max-width: 989px) {
-    .quick-add-modal__content-info--bulk .quick-add__content-info__media {
-      display: flex;
-      margin: 0;
+  @keyframes atc-fade-in {
+    from {
+      opacity: 0;
+      transform: translateX(1em);
+      position: absolute;
     }
 
-    .quick-add-modal__content-info--bulk quick-order-list {
-      padding-inline: 0;
-    }
-
-    .quick-add-modal__content-info.quick-add-modal__content-info--bulk {
-      --modal-padding: 1.5rem;
-    }
-    .quick-add-modal__content-info--bulk {
-      flex-direction: column;
+    to {
+      opacity: 1;
+      transform: translateX(0);
+      position: inherit;
     }
   }
 
-  @media screen and (max-width: 749px) {
-    quick-add-modal .slider .product__media-item.grid__item {
-      margin-inline: 1.5rem;
+  @keyframes atc-fade-out {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+      position: inherit;
     }
 
-    .quick-add-modal__content {
-      bottom: var(--modal-height-offset);
-    }
-
-    .quick-add-modal__content-info > * {
-      max-height: 100%;
-    }
-
-    quick-add-modal .product--mobile-columns .product__media-item {
-      width: calc(100% - 3rem - var(--grid-mobile-horizontal-spacing));
+    to {
+      opacity: 0;
+      transform: translateX(-1em);
+      position: absolute;
     }
   }
-
-  @media screen and (min-width: 750px) {
-    quick-add-modal .quick-add-modal__toggle {
-      top: 2rem;
-      right: 2rem;
-    }
-
-    .quick-add-modal__content-info--bulk .card__information-volume-pricing-note {
-      padding-left: 1.6rem;
-    }
-
-    quick-add-modal .product:not(.product--no-media) .product__media-wrapper {
-      width: calc(45% - var(--grid-desktop-horizontal-spacing) / 2);
-    }
-
-    quick-add-modal .product--columns .product__media-item:not(.product__media-item--single):not(:only-child) {
-      max-width: 100%;
-      width: 100%;
-    }
-
-    quick-add-modal .thumbnail-slider .thumbnail-list.slider--tablet-up {
-      display: none;
-    }
-
-    quick-add-modal .product-media-container.constrain-height {
-      --constrained-min-height: 400px;
-    }
-  }
-
-  @media screen and (min-width: 990px) {
-    .quick-add-modal__content {
-      width: 70%;
-    }
-    .quick-add-modal__content-info.quick-add-modal__content-info--bulk {
-      overflow-y: initial;
-    }
-
-    .quick-add-modal__content-info--bulk .quick-order-list__table th {
-      padding-top: 2.5rem;
-    }
-
-    .quick-add-modal__content-info--bulk thead {
-      position: sticky;
-      z-index: 3;
-      top: 0;
-      background-color: rgb(var(--color-background));
-    }
-    .quick-add-modal__content-info--bulk
-      :is(.quick-add__product-media, .quick-add__product-container, .quick-add__info) {
-      width: 17rem;
-      height: 22rem;
-    }
-
-    .quick-add-modal__content-info--bulk-details,
-    .quick-add-modal__content-info--bulk quick-order-list {
-      padding: 0 2.5rem;
-    }
-    .quick-add-modal__content-info--bulk .quick-add__info {
-      flex-direction: column;
-      position: sticky;
-      top: 0;
-      margin-block-start: -2.5rem;
-      padding-block-start: 2.5rem;
-    }
-  }
-{%- endstylesheet -%}
-<quick-add-modal
-  class="quick-add-modal modal--popup fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
-  element-s-popup
-  id="QuickAddStandard"
->
-  <div id="Modal-Overlay" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-  <div
-    class="popup__inner quick-add-modal__content w-auto h-fullv absolute-c-c flex flex-column gradient global-settings-popup"
-    role="dialog"
-    aria-modal="true"
-    aria-label="{{ 'products.product.choose_product_options' | t: product_name: product.title | escape }}"
-    tabindex="-1"
-    style="--popup-max-height: 85%;"
-  >
-    <button
-      class="quick-add-modal__toggle drawer__close block t-button bor-none rounded-full cursor-pointer"
-      type="button"
-      onclick="this.closest('quick-add-modal').hide()"
-      aria-label="{{ 'accessibility.close' | t }}"
-    >
-      {{- 'icon-close.svg' | inline_asset_content -}}
-    </button>
-    <div id="QuickStandardModal" class="quick-add-modal__content-info cus-scrollbar"></div>
-  </div>
-</quick-add-modal>
-
-<bulk-modal
-  class="quick-add-modal modal--popup fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
-  element-s-popup
-  id="QuickAddBulk"
->
-  <div id="Modal-Overlay" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-  <div
-    class="popup__inner quick-add-modal__content quick-add-modal__content--bulk w-auto h-full md:h-auto absolute-c-c flex flex-column gradient global-settings-popup"
-    role="dialog"
-    aria-modal="true"
-    aria-label="{{ 'products.product.choose_product_options' | t: product_name: product.title | escape }}"
-    tabindex="-1"
-    style="--popup-max-height: 85%;"
-  >
-    <button
-      class="quick-add-modal__toggle drawer__close block t-button bor-none rounded-full cursor-pointer"
-      type="button"
-      onclick="this.closest('bulk-modal').hide()"
-      aria-label="{{ 'accessibility.close' | t }}"
-    >
-      {{- 'icon-close.svg' | inline_asset_content -}}
-    </button>
-    <div
-      id="QuickBulkModal"
-      class="quick-add-modal__content-info quick-add-modal__content-info--bulk cus-scrollbar"
-    ></div>
-  </div>
-</bulk-modal>
+{% endstylesheet %}

@@ -1,180 +1,148 @@
-/* Base */
-html {
-  font-size: 62.5%;
-  box-sizing: border-box;
-  height: 100%;
-}
-
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  letter-spacing: 0.07rem;
-  max-width: var(--page-width);
-  margin: 0 auto;
-  flex: 1 0 auto;
-  font-family: var(--font-body--family);
-  font-style: var(--font-body--style);
-  font-weight: var(--font-body--weight);
-}
-
-.button {
-  text-align: center;
-  border: none;
-  padding: 1.5rem 3rem;
-  font-size: 1.5rem;
-  letter-spacing: .1rem;
-}
-
-.button::selection {
-  background-color: rgba(var(--color-primary-button-background-label), 0.3);
-}
-
-.button-secondary {
-  color: var(--color-secondary-button-text);
-  box-shadow: 0 0 0 0.1rem var(--color-secondary-button-text);
-  background-color: transparent;
-}
-
-.button-secondary::selection {
-  background-color: color-mix(in srgb, var(--color-secondary-button-text), transparent 70%);
-}
-
 .gift-card {
-  padding: 3rem;
+  padding-block: var(--padding-4xl);
+  padding-inline: var(--padding-lg);
+
+  --buttons-max-width: min(16rem, 100%);
+  --gift-card-image-max-width: var(--max-width--heading-normal);
+  --gift-card-image-max-height: 35rem;
+  --gift-card-image-max-width: 21rem;
+
+  @media only screen and (min-width: 750px) {
+    padding-block: var(--padding-6xl) var(--padding-5xl);
+    padding-inline: var(--padding-6xl);
+  }
 }
 
-@media only screen and (min-width: 750px) {
-  .gift-card {
-    padding: 5rem 5rem 3rem;
-  }
+.gift-card__main {
+  display: flex;
+  flex-direction: column;
 }
 
 .gift-card__image-wrapper {
-  margin: 3rem auto;
-  max-width: 40rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  padding: var(--padding-4xl);
+  margin-block: var(--padding-4xl);
+  margin-inline: auto;
+  max-width: var(--gift-card-image-max-width);
+  border: 1px solid var(--color-border);
+  border-radius: var(--style-border-radius-lg);
+  overflow: hidden;
+}
+
+.gift-card__image-wrapper:has(.gift-card__image-generic) {
+  padding: 0;
+  border: none;
 }
 
 .gift-card__image {
-  max-width: 100%;
-  height: auto;
-  object-fit: scale-down;
-  max-height: 26rem;
-}
-
-@media only screen and (min-width: 750px) {
-  .gift-card__image {
-    padding: 0;
-  }
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  padding: 0.5rem;
 }
 
 .gift-card__price {
-  gap: 0rem 1rem;
-  letter-spacing: 1px;
-  opacity: 0.8;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--gap-lg);
+  align-items: center;
+  justify-content: center;
 }
 
-.gift-card__number {
-  color: var(--color-foreground);
-  font-size: 1.8rem;
-  letter-spacing: 0.25rem;
-  opacity: 0.8;
-  margin: 3rem 0;
+.gift-card__code,
+.gift-card__text-wrapper h1,
+.gift-card__price h2 {
+  font-family: var(--font-paragraph--family);
+  font-style: var(--font-paragraph--style);
+  font-weight: var(--font-paragraph--weight);
+  text-align: center;
+  margin-block-end: var(--margin-xl);
+}
+
+.gift-card__code,
+.gift-card__text-wrapper h1 {
+  font-size: var(--font-size--2xl);
+  margin-block-end: 0;
+}
+
+.gift-card__price h2 {
+  font-size: var(--font-size--5xl);
+  margin-block-end: var(--padding-4xl);
 }
 
 .gift-card__text-wrapper {
-  max-width: 30rem;
+  text-align: center;
+  max-width: var(--max-width--body-normal);
   margin: 0 auto;
 }
 
-.gift-card__text {
-  font-size: 1.7rem;
-  opacity: 0.6;
-  margin: 0;
+.gift-card__badge {
+  border: 1px solid var(--color-border);
+  border-radius: var(--style-border-radius-buttons);
+  display: inline-block;
+  line-height: 0.25;
+  padding: var(--padding-md);
+  text-align: center;
+  background-color: rgb(var(--color-background));
+  border-color: rgb(var(--color-foreground), var(--opacity-5));
+  color: rgb(var(--color-foreground));
+  margin-block: 0;
 }
 
-.badge {
-  border: 1px solid transparent;
-  border-radius: 4rem;
-  font-size: 1.2rem;
-  letter-spacing: 0.1rem;
-  line-height: 1;
-  padding: 0.6rem 1.3rem;
-  background-color: var(--color-background);
-  border-color: color-mix(in srgb, var(--color-foreground), transparent 96%);
-  color: var(--color-foreground);
-}
-
-.badge--expired {
-  background-color: rgb(var(--color-soldout-badge));
-  color: rgb(var(--color-soldout-badge-label));
-  border-color: rgba(var(--color-soldout-badge-label), 0.04);
+.gift-card__badge--expired {
+  opacity: var(--disabled-opacity);
 }
 
 .gift-card__qr-code {
-  margin: 3rem 0;
+  margin: var(--margin-4xl) 0;
 }
 
 .gift-card__qr-code img {
   margin: 0 auto;
-}
-
-.gift_card__apple-wallet {
-  line-height: 0;
-  margin-bottom: 3rem;
+  width: auto;
 }
 
 .gift-card__buttons {
-  max-width: 25rem;
+  display: flex;
+  flex-flow: column wrap;
+  width: var(--buttons-max-width);
+  margin: 0 auto;
+  align-items: center;
+  gap: var(--gap-sm);
 }
 
-.gift-card__buttons > .button {
-  display: block;
-  margin: 1rem 0;
+.gift-card__buttons-full-width {
+  width: 100%;
 }
 
-/* Fallback - for browsers that don't support :focus-visible, a fallback is set for :focus */
-.focused {
-  outline: 0.2rem solid color-mix(in srgb, var(--color-foreground), transparent 50%);
-  outline-offset: 0.3rem;
-  box-shadow: 0 0 0 0.3rem var(--color-background), 0 0 0.5rem 0.4rem color-mix(in srgb, var(--color-foreground), transparent 70%);
+.gift-card__buttons .button {
+  width: 100%;
+  justify-content: center;
 }
 
-.button:focus-visible {
-  box-shadow: 0 0 0 0.1rem var(--color-primary-button-background), 0 0 0 0.3rem var(--color-background),
-    0 0 0.5rem 0.4rem color-mix(in srgb, var(--color-foreground), transparent 70%);
-}
-
-.button:focus {
-  box-shadow: 0 0 0 0.1rem var(--color-primary-button-background), 0 0 0 0.3rem var(--color-background),
-    0 0 0.5rem 0.4rem color-mix(in srgb, var(--color-foreground), transparent 70%);
-}
-
-.button-secondary:focus-visible {
-  box-shadow: 0 0 0 0.1rem var(--color-secondary-button-text), 0 0 0 0.3rem var(--color-background),
-    0 0 0.5rem 0.4rem color-mix(in srgb, var(--color-foreground), transparent 70%);
-}
-
-.button-secondary:focus {
-  box-shadow: 0 0 0 0.1rem var(--color-secondary-button-text), 0 0 0 0.3rem var(--color-background),
-    0 0 0.5rem 0.4rem color-mix(in srgb, var(--color-foreground), transparent 70%);
+.gift-card__copy-button {
+  position: relative;
 }
 
 .form__message {
-  font-size: 1.2rem;
-  line-height: 1.5rem;
-  margin-bottom: 0.5rem;
-  opacity: 0.8;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: calc(var(--padding-lg) * -1);
+  left: 0;
+  right: 0;
+  transition: opacity var(--animation-speed) var(--animation-easing),
+    transform var(--animation-speed) var(--animation-easing);
+  opacity: 0;
+  transform: translateY(var(--padding-md));
 }
 
-.form__message .icon {
-  flex-shrink: 0;
-  height: 1.3rem;
-  margin-right: 0.5rem;
-  width: 1.3rem;
-}
-
-@media print {
-  .no-print {
-    display: none;
-  }
+.form__message:not(.visually-hidden) {
+  opacity: 1;
+  transform: translateY(0);
 }

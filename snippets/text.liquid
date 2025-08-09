@@ -3,89 +3,68 @@
 
   @param {string} [class] - custom class to define in addition to text-block classes
   @param {string} [fallback_text] - fallback text if settings.text does not exist
+  @param {object} [block] - The block object
   @param {string} [width] - width of the text block
-  @param {object} block - block object
 {%- enddoc -%}
 
 {% liquid
-  assign bl_stts = block.settings
-  assign plain_text = bl_stts.text | strip_newlines | strip_html | strip
-  assign text_width = width | default: bl_stts.width
+  assign block_settings = block.settings
+  assign plain_text = block_settings.text | strip_newlines | strip_html | strip
+  assign text_width = width | default: block_settings.width
 
-  assign text = bl_stts.text
-
-  if bl_stts.font_size contains 'heading-lg' or bl_stts.font_size contains 'heading-xl'
+  if block_settings.font_size contains 'heading-lg' or block_settings.font_size contains 'heading-xl'
     assign type = 'display'
-  elsif bl_stts.font_size contains 'heading'
+  elsif block_settings.font_size contains 'heading'
     assign type = 'heading'
   else
     assign type = 'body'
   endif
-  if bl_stts.type_preset == 'rte' or bl_stts.type_preset == 'paragraph'
+  if block_settings.type_preset == 'rte' or block_settings.type_preset == 'paragraph'
     assign is_rte = true
   endif
 
-  assign border = bl_stts.border
-  if border == 'solid' and text_width == '100%' and class_heading == 'section-header'
-    assign has_border = true
-    assign heading_border_classes = 'heading-border--solid relative justify-center'
-  elsif bl_stts.enable_border_bottom == true
-    assign enable_border_bottom = true
-  endif
-
-  assign highlight_text = bl_stts.highlight_text
-  assign highlight_content = bl_stts.highlight_text_content | split: ','
-  assign highlight_color = bl_stts.highlight_text_color
-
-  if highlight_content != blank and highlight_text == true
-    for highlight in highlight_content
-      assign highlight_text_code = highlight | prepend: '<span class="highlight_text--content" style="color: [highlight_color];">' | append: '</span>' | replace: '[highlight_color]', highlight_color
-      assign text = text | replace: highlight, highlight_text_code
-    endfor
-  endif
-
-  assign spacing_text = bl_stts.spacing_text
-  assign spacing_content = bl_stts.spacing_text_content | split: ','
-  assign spacing_left = bl_stts.spacing_text_left
-  assign spacing_right = bl_stts.spacing_text_right
-
-  if spacing_content != blank and spacing_text == true
-    for spacing in spacing_content
-      assign spacing_text_code = spacing | prepend: '<span class="spacing_text--content" style="margin-left: [spacing_left]ch; margin-right: [spacing_right]ch;">' | append: '</span>' | replace: '[spacing_left]', spacing_left | replace: '[spacing_right]', spacing_right
-      assign text = text | replace: spacing, spacing_text_code
-    endfor
-  endif
+  capture text_block_classes
+    if text_width == '100%'
+      echo 'text-block--align-' | append: block_settings.alignment
+      if block_settings.max_width == 'none'
+        echo ' text-block--full-width '
+      endif
+    endif
+    if block_settings.type_preset == 'custom'
+      echo ' custom-typography '
+      if block_settings.font_size != ''
+        echo ' custom-font-size '
+      endif
+      if block_settings.color != ''
+        echo ' custom-color '
+      endif
+    endif
+    if block_settings.background
+      echo ' text-block--background '
+    endif
+    if is_rte
+      echo ' rte '
+    endif
+  endcapture
 %}
 
-{%- capture text_block_classes -%}
-  {%- if text_width == '100%' -%} text-block--align-{{ bl_stts.alignment }}{% if bl_stts.max_width == 'none' %} text-block--full-width {% endif %}{% endif %}
-  {%- if bl_stts.type_preset == 'custom' -%} custom-typography
-    {%- if bl_stts.font_size != '' %} custom-font-size {% endif -%}
-    {% if bl_stts.color != '' -%} custom-color {% endif -%}
-    {% if bl_stts.background -%} text-block--background {% endif -%}
-    {% if is_rte -%} rte {% endif -%}
-  {% endif %}
-{%- endcapture -%}
-
 {% capture attributes %}
-  class="{{ class }}{% if has_border %} {{ heading_border_classes }}{% endif %} spacing-style text-block max-w-full flex flex-column text-block--{{ block.id }} {{ bl_stts.type_preset }}
-    {{ text_block_classes }}{% if enable_border_bottom %} border-style text-border-style-bottom{% endif %}
+  class="{{ class }} spacing-style text-block text-block--{{ block.id }} {{ block_settings.type_preset }}
+    {{ text_block_classes }}
   "
+
   style="
-    {% render 'spacing-padding', settings: bl_stts %}
-    {% render 'typography-style', settings: bl_stts %}
+    {% render 'spacing-padding', settings: block_settings %}
+    {% render 'typography-style', settings: block_settings %}
     --width: {{ text_width }};
-    --max-width: var(--max-width--{{ type }}-{{ bl_stts.max_width }});
+    --max-width: var(--max-width--{{ type }}-{{ block_settings.max_width }});
     {% if text_width == "100%" %}
-      --text-align: {{ bl_stts.alignment }};
+      --text-align: {{ block_settings.alignment }};
     {% endif %}
-    {% if bl_stts.background %}
-      --text-background-color: {{ bl_stts.background_color | default: 'rgb(255 255 255 / 1.0)' }};
-      --text-corner-radius: {{ bl_stts.corner_radius }}px;
+    {% if block_settings.background %}
+      --text-background-color: {{ block_settings.background_color | default: 'rgb(255 255 255 / 1.0)' }};
+      --text-corner-radius: {{ block_settings.corner_radius }}px;
       --text-padding: max(var(--padding-2xs), calc((var(--text-corner-radius) + var(--padding-xs)) * (1 - cos(45deg))));
-    {% endif %}
-    {% if has_border or enable_border_bottom %}
-      {%- render 'border-override', settings: bl_stts -%}
     {% endif %}
   "
 
@@ -100,29 +79,18 @@
   if is_rte
     assign element = 'rte-formatter'
   endif
-
-  assign text_class = 'inline-block relative z-1 w-auto max-w-full'
 %}
 
 {% if fallback_text != blank and plain_text == blank %}
   <div {{ attributes }}>
-    {%- if has_border or is_card_heading -%}
-    <div class="text{% if has_border %} {{ text_class }}{% endif %}">
-    {%- endif -%}
-      {{ fallback_text }}
-    {%- if has_border or is_card_heading -%}
-    </div>
-    {%- endif -%}
+    {{ fallback_text }}
   </div>
 {% elsif plain_text != blank %}
   <{{ element }} {{ attributes }}>
-    {%- if has_border or is_card_heading -%}
-    <div class="text{% if has_border %} {{ text_class }}{% endif %}">
-    {%- endif -%}
-      {{ text }}
-    {%- if has_border or is_card_heading -%}
-    </div>
-    {%- endif -%}
+    {% comment %}
+      Not using block_settings.text here because live replacement in editor doesn't work as well.
+    {% endcomment %}
+    {{ block.settings.text }}
   </{{ element }}>
 {% endif %}
 
@@ -151,61 +119,11 @@
     --text-align-default: right;
   }
 
-  .text-border-style-bottom {
-    --border-style: solid;
-    position: relative;
-    border: none;
-    &::before {
-      content: '';
-      display: block;
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: var(--width-custom, 100%);
-      height: var(--border-width);
-      background: var(--border-color);
-    }
-  }
-
-  .heading-border--solid {
-    .text {
-      width: auto;
-    }
-
-    &.text-block--align-left {
-      --padding-inline: 0 2rem;
-    }
-    &.text-block--align-right {
-      --padding-inline: 2rem 0;
-    }
-    &.text-block--align-center {
-      --padding-inline: 2rem;
-    }
-
-    &::before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: calc(50% - var(--border-width));
-      left: 0;
-      width: 100%;
-      height: var(--border-width);
-      background: var(--border-color);
-    }
-
-    .text {
-      padding-inline: var(--padding-inline);
-      background: var(--color-background);
-
-      @media screen and (width >= 1024px) {
-        min-width: 42rem;
-      }
-    }
-  }
-
   .text-block {
     width: var(--width);
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
     align-items: var(--horizontal-alignment);
   }
 
@@ -267,19 +185,12 @@
     margin-block: var(--font-paragraph--spacing);
   }
 
-  .text-block .text > *:first-child,
   .text-block > *:first-child {
     margin-block-start: 0;
   }
 
-  .text-block .text > *:last-child,
   .text-block > *:last-child {
     margin-block-end: 0;
-  }
-
-  .text-block--align-left,
-  .text-block--align-left > * {
-    margin-inline-end: auto;
   }
 
   .text-block--align-center,

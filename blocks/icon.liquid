@@ -1,20 +1,21 @@
+{% assign block_settings = block.settings %}
 {% assign icon_block_class = 'icon-block__media icon-block-' | append: block.id %}
 
 {% capture icon %}
   {% render 'icon-or-image',
-    icon: block.settings.icon,
-    image_upload: block.settings.image_upload,
-    width: block.settings.width,
+    icon: block_settings.icon,
+    image_upload: block_settings.image_upload,
+    width: block_settings.width,
     class_name: icon_block_class,
     attributes: block.shopify_attributes
   %}
 {% endcapture %}
 
-{%- if block.settings.link != blank -%}
+{%- if block_settings.link != blank -%}
   <a
-    href="{{ block.settings.link }}"
+    href="{{ block_settings.link }}"
     class="text-inherit"
-    {% if block.settings.open_in_new_tab %}
+    {% if block_settings.open_in_new_tab %}
       target="_blank" rel="noopener"
     {% endif %}
   >
@@ -38,225 +39,249 @@
 
 {% schema %}
 {
-  "name": "Icon",
+  "name": "t:names.icon",
   "class": "icon-block",
   "settings": [
     {
       "type": "select",
       "id": "icon",
-      "label": "Icon",
+      "label": "t:settings.icon",
       "options": [
         {
           "value": "none",
-          "label": "None"
+          "label": "t:options.none"
         },
         {
           "value": "apple",
-          "label": "Apple"
+          "label": "t:options.apple"
         },
         {
           "value": "arrow",
-          "label": "Arrow"
+          "label": "t:options.arrow"
         },
         {
           "value": "banana",
-          "label": "Banana"
+          "label": "t:options.banana"
         },
         {
           "value": "bottle",
-          "label": "Bottle"
+          "label": "t:options.bottle"
         },
         {
           "value": "box",
-          "label": "Box"
+          "label": "t:options.box"
         },
         {
           "value": "carrot",
-          "label": "Carrot"
+          "label": "t:options.carrot"
         },
         {
           "value": "chat_bubble",
-          "label": "Chat bubble"
+          "label": "t:options.chat_bubble"
         },
         {
-          "value": "check_mark",
-          "label": "Check mark"
+          "value": "check_box",
+          "label": "t:options.check_box"
         },
         {
           "value": "clipboard",
-          "label": "Clipboard"
+          "label": "t:options.clipboard"
         },
         {
           "value": "dairy",
-          "label": "Dairy"
+          "label": "t:options.dairy"
         },
         {
           "value": "dairy_free",
-          "label": "Dairy free"
+          "label": "t:options.dairy_free"
         },
         {
           "value": "dryer",
-          "label": "Dryer"
+          "label": "t:options.dryer"
         },
         {
           "value": "eye",
-          "label": "Eye"
-        },
-        {
-          "value": "facebook",
-          "label": "Facebook"
+          "label": "t:options.eye"
         },
         {
           "value": "fire",
-          "label": "Fire"
+          "label": "t:options.fire"
         },
         {
           "value": "gluten_free",
-          "label": "Gluten free"
+          "label": "t:options.gluten_free"
         },
         {
           "value": "heart",
-          "label": "Heart"
-        },
-        {
-          "value": "instagram",
-          "label": "Instagram"
+          "label": "t:options.heart"
         },
         {
           "value": "iron",
-          "label": "Iron"
+          "label": "t:options.iron"
         },
         {
           "value": "leaf",
-          "label": "Leaf"
+          "label": "t:options.leaf"
         },
         {
           "value": "leather",
-          "label": "Leather"
+          "label": "t:options.leather"
         },
         {
           "value": "lightning_bolt",
-          "label": "Lightning bolt"
+          "label": "t:options.lightning_bolt"
         },
         {
           "value": "lipstick",
-          "label": "Lipstick"
+          "label": "t:options.lipstick"
         },
         {
           "value": "lock",
-          "label": "Lock"
+          "label": "t:options.lock"
         },
         {
           "value": "map_pin",
-          "label": "Map pin"
+          "label": "t:options.map_pin"
         },
         {
           "value": "nut_free",
-          "label": "Nut free"
+          "label": "t:options.nut_free"
         },
         {
           "value": "pants",
-          "label": "Pants"
+          "label": "t:options.pants"
         },
         {
           "value": "paw_print",
-          "label": "Paw print"
+          "label": "t:options.paw_print"
         },
         {
           "value": "pepper",
-          "label": "Pepper"
+          "label": "t:options.pepper"
         },
         {
           "value": "perfume",
-          "label": "Perfume"
-        },
-        {
-          "value": "pinterest",
-          "label": "Pinterest"
+          "label": "t:options.perfume"
         },
         {
           "value": "plane",
-          "label": "Plane"
+          "label": "t:options.plane"
         },
         {
           "value": "plant",
-          "label": "Plant"
+          "label": "t:options.plant"
         },
         {
           "value": "price_tag",
-          "label": "Price tag"
+          "label": "t:options.price_tag"
         },
         {
           "value": "question_mark",
-          "label": "Question mark"
+          "label": "t:options.question_mark"
         },
         {
           "value": "recycle",
-          "label": "Recylce"
+          "label": "t:options.recycle"
         },
         {
           "value": "return",
-          "label": "Return"
+          "label": "t:options.return"
         },
         {
           "value": "ruler",
-          "label": "Ruler"
+          "label": "t:options.ruler"
         },
         {
           "value": "serving_dish",
-          "label": "Serving dish"
+          "label": "t:options.serving_dish"
         },
         {
           "value": "shirt",
-          "label": "Shirt"
+          "label": "t:options.shirt"
         },
         {
           "value": "shoe",
-          "label": "Shoe"
+          "label": "t:options.shoe"
         },
         {
           "value": "silhouette",
-          "label": "Silhouette"
+          "label": "t:options.silhouette"
+        },
+        {
+          "value": "bluesky",
+          "label": "t:options.social_bluesky"
+        },
+        {
+          "value": "facebook",
+          "label": "t:options.social_facebook"
+        },
+        {
+          "value": "instagram",
+          "label": "t:options.social_instagram"
+        },
+        {
+          "value": "linkedin",
+          "label": "t:options.social_linkedin"
+        },
+        {
+          "value": "pinterest",
+          "label": "t:options.social_pinterest"
         },
         {
           "value": "snapchat",
-          "label": "Snapchat"
+          "label": "t:options.social_snapchat"
         },
         {
-          "value": "snowflake",
-          "label": "Snowflake"
+          "value": "spotify",
+          "label": "t:options.social_spotify"
         },
         {
-          "value": "star",
-          "label": "Star"
-        },
-        {
-          "value": "stopwatch",
-          "label": "Stopwatch"
+          "value": "threads",
+          "label": "t:options.social_threads"
         },
         {
           "value": "tiktok",
-          "label": "Tiktok"
-        },
-        {
-          "value": "truck",
-          "label": "Truck"
+          "label": "t:options.social_tiktok"
         },
         {
           "value": "tumblr",
-          "label": "Tumblr"
+          "label": "t:options.social_tumblr"
         },
         {
           "value": "twitter",
-          "label": "X (Twitter)"
+          "label": "t:options.social_twitter"
         },
         {
           "value": "vimeo",
-          "label": "Vimeo"
+          "label": "t:options.social_vimeo"
+        },
+        {
+          "value": "youtube",
+          "label": "t:options.social_youtube"
+        },
+        {
+          "value": "whatsapp",
+          "label": "t:options.social_whatsapp"
+        },
+        {
+          "value": "snowflake",
+          "label": "t:options.snowflake"
+        },
+        {
+          "value": "star",
+          "label": "t:options.star"
+        },
+        {
+          "value": "stopwatch",
+          "label": "t:options.stopwatch"
+        },
+        {
+          "value": "truck",
+          "label": "t:options.truck"
         },
         {
           "value": "washing",
-          "label": "Washing"
+          "label": "t:options.washing"
         }
       ],
       "default": "apple"

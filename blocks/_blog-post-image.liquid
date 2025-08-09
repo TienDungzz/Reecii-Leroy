@@ -1,23 +1,10 @@
+{%- doc -%}
+  Renders the blog post image block.
 
+  @param {object} image - The image object
+{%- enddoc -%}
 
-{% style %}
-  .blog-post-card__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center center;
-    height: calc(var(--blog-post-card-img-height) * var(--blog-post-card-scale));
-  }
-  .blog-post-card__image--small {
-    --blog-post-card-img-height: 280px;
-  }
-  .blog-post-card__image--medium {
-    --blog-post-card-img-height: 340px;
-  }
-  .blog-post-card__image--large {
-    --blog-post-card-img-height: 400px;
-  }
-{% endstyle %}
+{%- assign block_settings = block.settings -%}
 
 <img
   srcset="
@@ -36,14 +23,35 @@
   class="
     border-style
     blog-post-card__image
-    blog-post-card__image--{{ block.settings.height }}
+    blog-post-card__image--{{ block_settings.height }}
   "
-  style="{% render 'border-override', settings: block.settings %}"
+  style="{% render 'border-override', settings: block_settings %}"
 >
+
+{% stylesheet %}
+  .blog-post-card__image {
+    width: 100%;
+    object-fit: cover;
+    object-position: center center;
+    height: calc(var(--blog-post-card-img-height) * var(--blog-post-card-scale));
+  }
+
+  .blog-post-card__image--small {
+    --blog-post-card-img-height: 280px;
+  }
+
+  .blog-post-card__image--medium {
+    --blog-post-card-img-height: 340px;
+  }
+
+  .blog-post-card__image--large {
+    --blog-post-card-img-height: 400px;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "Image",
+  "name": "t:names.image",
   "blocks": [],
   "settings": [
     {

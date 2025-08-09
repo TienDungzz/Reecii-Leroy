@@ -1,141 +1,93 @@
-{% comment %}
-  Renders a mega_menu for the header.
+{% liquid
+  assign block_settings = block.settings
+  assign menu_content_type = block_settings.menu_style | default: 'text'
+  assign image_border_radius = block_settings.image_border_radius
+  assign color_scheme_classes = ''
+  assign color_scheme_setting_id = 'color_scheme_' | append: section.settings.menu_row
+  assign current_color_scheme = block_settings.color_scheme
+  assign parent_color_scheme = section.settings[color_scheme_setting_id]
 
-  Usage:
-  {% render 'header-menu' %}
-{% endcomment %}
+  if parent_color_scheme.id != current_color_scheme.id
+    assign color_scheme_classes = ' color-' | append: current_color_scheme
+  endif
 
-<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-<noscript>
-  {{ 'component-list-menu.css' | asset_url | stylesheet_tag }}
-  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag }}
-</noscript>
+  # Check if header and menu colors match. This is used to apply different padding styles in css
+  if parent_color_scheme.settings.background.rgb == current_color_scheme.settings.background.rgb
+    assign color_scheme_classes = color_scheme_classes | append: ' color-scheme-matches-parent'
+  endif
 
-<div
-  class="header-block header-menu grid__item flex items-center justify-center"
-  style="--gap-x: {{ section.settings.gap_x }}px;"
->
-  {%- liquid
-    assign vertical_menu_blocks = blocks | where: 'type', 'vertical_menu'
+  if block_settings.menu_style == 'featured_collections'
+    assign ratio = block_settings.featured_collections_aspect_ratio
+  elsif block_settings.menu_style == 'featured_products'
+    assign ratio = block_settings.featured_products_aspect_ratio
+  endif
+%}
 
-    for block in vertical_menu_blocks
-      assign block_settings = block.settings
-      assign vertical_menu_style = block_settings.vertical_menu_style
-    endfor
+{% capture children %}
+  {% for link in block_settings.menu.links %}
+    <li
+      role="presentation"
+      class="menu-list__list-item"
+      on:focus="/activate"
+      on:blur="/deactivate"
+      on:pointerenter="/activate"
+      on:pointerleave="/deactivate"
+      on:touchstart="/handleTouchStart"
+    >
+      <a
+        href="{{ link.url }}"
+        class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}"
+        {%- if link.links != blank -%}
+          aria-controls="submenu-{{ forloop.index }}"
+          aria-haspopup="true"
+          aria-expanded="false"
+        {%- endif -%}
+        ref="menuitem"
+      >
+        <span class="menu-list__link-title">{{- link.title -}}</span>
+      </a>
+      {%- if link.links != blank -%}
+        <div class="menu-list__submenu{{ color_scheme_classes }}" ref="submenu[]">
+          <div
+            id="submenu-{{ forloop.index }}"
+            class="menu-list__submenu-inner"
+            style="{% render 'submenu-font-styles', settings: block_settings %}"
+          >
+            {% assign list_id = 'MegaMenuList-' | append: forloop.index %}
+            {% render 'mega-menu',
+              parent_link: link,
+              id: list_id,
+              menu_content_type: menu_content_type,
+              content_aspect_ratio: ratio,
+              image_border_radius: image_border_radius
+            %}
+          </div>
+        </div>
+      {%- endif -%}
+    </li>
+  {% endfor %}
+  <li
+    class="menu-list__list-item"
+    role="presentation"
+    slot="more"
+    on:focus="/activate"
+    on:blur="/deactivate"
+    on:pointerenter="/activate"
+    on:pointerleave="/deactivate"
+    on:touchstart="/handleTouchStart"
+  >
+    <button role="menuitem" class="button menu-list__link button-unstyled">
+      <span class="menu-list__link-title">{{ 'actions.more' | t }}</span>
+    </button>
+  </li>
+{% endcapture %}
 
-    if vertical_menu_style == 'style_1'
-      render 'header-menu-vertical', blocks: blocks, block_settings: block_settings
-    endif
-  -%}
-
-  <div class="header__menu-wrapper header__menu-multi-site-wrapper"></div>
-  <div class="header__menu-wrapper" data-main-menu>
-    <nav class="header__inline-menu">
-      <ul class="list-menu list-menu-desktop list-menu--inline" role="list">
-        {%- for link in header_settings.menu.links -%}
-          <li>
-            {%- if link.links != blank -%}
-              {%- liquid
-                assign mega_menu_1 = blocks | where: "type", "mega_menu_1"
-                assign mega_menu_2 = blocks | where: "type", "mega_menu_2"
-                assign mega_menu_3 = blocks | where: "type", "mega_menu_3"
-                assign mega_menu_4 = blocks | where: "type", "mega_menu_4"
-                assign mega_menu_5 = blocks | where: "type", "mega_menu_5"
-
-                assign check_mega_menu_1 = false
-                assign check_mega_menu_2 = false
-                assign check_mega_menu_3 = false
-                assign check_mega_menu_4 = false
-                assign check_mega_menu_5 = false
-
-                assign has_mega_menu_1 = false
-                assign has_mega_menu_2 = false
-                assign has_mega_menu_3 = false
-                assign has_mega_menu_4 = false
-                assign has_mega_menu_5 = false
-
-                assign menu_title = link.title | escape | downcase | handle
-
-                if mega_menu_1.size > 0
-                  assign check_mega_menu_1 = true
-                endif
-                for block in mega_menu_1
-                  assign block_title = block.settings.menu_item | escape | downcase | handle
-                  if block_title == menu_title
-                    assign block = block
-                    assign has_mega_menu_1 = true
-                  endif
-                endfor
-
-                if mega_menu_2.size > 0
-                  assign check_mega_menu_2 = true
-                endif
-                for block in mega_menu_2
-                  assign block_title = block.settings.menu_item | escape | downcase | handle
-                  if block_title == menu_title
-                    assign block = block
-                    assign has_mega_menu_2 = true
-                  endif
-                endfor
-
-                if mega_menu_3.size > 0
-                  assign check_mega_menu_3 = true
-                endif
-                for block in mega_menu_3
-                  assign block_title = block.settings.menu_item | escape | downcase | handle
-                  if block_title == menu_title
-                    assign block = block
-                    assign has_mega_menu_3 = true
-                  endif
-                endfor
-
-                if mega_menu_4.size > 0
-                  assign check_mega_menu_4 = true
-                endif
-                for block in mega_menu_4
-                  assign block_title = block.settings.menu_item | escape | downcase | handle
-                  if block_title == menu_title
-                    assign block = block
-                    assign has_mega_menu_4 = true
-                  endif
-                endfor
-
-                if mega_menu_5.size > 0
-                  assign check_mega_menu_5 = true
-                endif
-                for block in mega_menu_5
-                  assign block_title = block.settings.menu_item | escape | downcase | handle
-                  if block_title == menu_title
-                    assign block = block
-                    assign has_mega_menu_5 = true
-                  endif
-                endfor
-
-                if check_mega_menu_1 and has_mega_menu_1
-                    render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block
-                elsif check_mega_menu_2 and has_mega_menu_2
-                    render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block
-                elsif check_mega_menu_3 and has_mega_menu_3
-                    render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block
-                elsif check_mega_menu_4 and has_mega_menu_4
-                    render 'header-mega-menu-4', link: link, forloopIndex: forloop.index, block: block
-                elsif check_mega_menu_5 and has_mega_menu_5
-                    render 'header-mega-menu-5', link: link, forloopIndex: forloop.index, block: block
-                else
-                  render 'header-dropdown-menu', link: link, forloopIndex: forloop.index
-                endif
-              -%}
-            {%- else -%}
-              <a id="HeaderMenu-{{ link.handle }}" href="{{ link.url }}" class="header__menu-item list-menu__item link link--text focus-inset"{% if link.current %} aria-current="page"{% endif %}>
-                <span {%- if link.current %}class="header__active-menu-item"{% endif %}>
-                  {{- link.title | escape -}}
-                </span>
-              </a>
-            {%- endif -%}
-          </li>
-        {%- endfor -%}
-      </ul>
-    </nav>
+<nav header-menu>
+  <div
+    class="menu-list"
+    style="{% render 'menu-font-styles', settings: block_settings %}"
+  >
+    {% assign class = 'overflow-menu' | append: color_scheme_classes %}
+    {% render 'overflow-list', class: class, ref: 'overflowMenu', children: children, minimum-items: 2, defer: true %}
   </div>
-</div>
+</nav>
