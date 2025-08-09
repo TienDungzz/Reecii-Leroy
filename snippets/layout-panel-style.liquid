@@ -13,7 +13,7 @@
     assign vertical_alignment = 'last baseline'
   endif
 
-  unless settings.direction == 'row'
+  unless settings.content_direction == 'row'
     assign horizontal_alignment = settings.horizontal_alignment_flex_direction_column
     assign vertical_alignment = settings.vertical_alignment_flex_direction_column
   endunless
@@ -25,7 +25,7 @@
   endif
 -%}
 
---flex-direction: {{ settings.direction | default: 'column' }}; --flex-wrap: {{ settings.wrap | default: 'nowrap' }};
+--flex-direction: {{ settings.content_direction | default: 'column' }}; --flex-wrap: {{ settings.wrap | default: 'nowrap' }};
 
 {% render 'gap-style', value: settings.gap %}
 

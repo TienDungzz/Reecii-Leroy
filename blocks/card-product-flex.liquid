@@ -35,7 +35,7 @@
       {% if extend_height %} card--extend-height{% endif %}
       {% if card_product.featured_media == nil and settings.card_style == 'card' %} ratio{% endif %}
       {% if horizontal_class %} card--horizontal{% endif %}
-      flex-{{ block.settings.direction }} flex-{{ block.settings.wrap }} items-{{ block.settings.align_items}} justify-{{ block.settings.justify_content }}
+      flex-{{ block.settings.content_direction }} flex-{{ block.settings.wrap }} items-{{ block.settings.align_items}} justify-{{ block.settings.justify_content }}
     "
   >
     <template>
@@ -84,19 +84,19 @@
     },
     {
       "type": "select",
-      "id": "direction",
-      "label": "Direction",
-      "default": "column",
+      "id": "content_direction",
+      "label": "t:settings.direction",
       "options": [
         {
-          "value": "row",
-          "label": "⭢"
+          "value": "column",
+          "label": "t:options.vertical"
         },
         {
-          "value": "column",
-          "label": "⭣"
+          "value": "row",
+          "label": "t:options.horizontal"
         }
-      ]
+      ],
+      "default": "column"
     },
     {
       "type": "select",

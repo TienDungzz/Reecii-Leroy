@@ -34,7 +34,7 @@
 <{% if section.settings.sticky_header_type != 'none' %}sticky-header data-sticky-type="{{ section.settings.sticky_header_type }}"{% else %}div{% endif %} class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}">
   <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}">
     <div
-      class="group-block group-block--{{ section.id }} flex-section w-full flex flex-{{ section.settings.direction }} flex-{{ section.settings.wrap }} items-{{ section.settings.align_items}} justify-{{ section.settings.justify_content }} color-{{ section.settings.color_scheme }}"
+      class="group-block group-block--{{ section.id }} flex-section w-full flex flex-{{ section.settings.content_direction }} flex-{{ section.settings.wrap }} items-{{ section.settings.align_items}} justify-{{ section.settings.justify_content }} color-{{ section.settings.color_scheme }}"
       style="--pl:{{ section.settings.padding_left }}px; --pr:{{ section.settings.padding_right }}px; --pt:{{ section.settings.padding_top }}px; --pb:{{ section.settings.padding_bottom }}px; --gap-x: {{ section.settings.gap_x }}px; --gap-y: {{ section.settings.gap_y }}px;"
     >
       {%- case section.settings.logo_position -%}
@@ -977,13 +977,19 @@
     },
     {
       "type": "select",
-      "id": "direction",
-      "label": "Direction",
-      "default": "row",
+      "id": "content_direction",
+      "label": "t:settings.direction",
       "options": [
-        { "value": "row", "label": "⭢" },
-        { "value": "column", "label": "⭣" }
-      ]
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "row"
     },
     {
       "type": "select",

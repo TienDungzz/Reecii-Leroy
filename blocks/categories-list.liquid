@@ -22,12 +22,12 @@
     assign ratio = 1
   endif
 
-  if bl_stts.direction_tablet == true
-    assign direction_tablet = 'row'
+  if bl_stts.content_direction_tablet == true
+    assign content_direction_tablet = 'row'
   endif
 
-  if bl_stts.direction_mobile == true
-    assign direction_mobile = 'row'
+  if bl_stts.content_direction_mobile == true
+    assign content_direction_mobile = 'row'
   endif
 -%}
 
@@ -84,7 +84,7 @@
 {% endstyle %}
 
 {%- capture class_grid -%}
-  categories-grid categories-grid-{{ bl_id }} disable-srollbar flex flex-{{ bl_stts.direction }}{% if bl_stts.direction_tablet %} max-md:flex-{{ direction_tablet }}{% endif %}{% if bl_stts.direction_mobile %} max-sm:flex-{{ direction_mobile }}{% endif %}
+  categories-grid categories-grid-{{ bl_id }} disable-srollbar flex flex-{{ bl_stts.content_direction }}{% if bl_stts.content_direction_tablet %} max-md:flex-{{ content_direction_tablet }}{% endif %}{% if bl_stts.content_direction_mobile %} max-sm:flex-{{ content_direction_mobile }}{% endif %}
 {%- endcapture -%}
 
 <div
@@ -314,33 +314,33 @@
     },
     {
       "type": "select",
-      "id": "direction",
-      "label": "Direction",
-      "default": "column",
+      "id": "content_direction",
+      "label": "t:settings.direction",
       "options": [
         {
-          "value": "row",
-          "label": "⭢"
+          "value": "column",
+          "label": "t:options.vertical"
         },
         {
-          "value": "column",
-          "label": "⭣"
+          "value": "row",
+          "label": "t:options.horizontal"
         }
-      ]
+      ],
+      "default": "column"
     },
     {
       "type": "checkbox",
-      "id": "direction_tablet",
+      "id": "content_direction_tablet",
       "label": "Horizontal below desktop",
       "default": false,
-      "visible_if": "{{ block.settings.direction == 'column' }}"
+      "visible_if": "{{ block.settings.content_direction == 'column' }}"
     },
     {
       "type": "checkbox",
-      "id": "direction_mobile",
+      "id": "content_direction_mobile",
       "label": "Horizontal on mobile",
       "default": false,
-      "visible_if": "{{ block.settings.direction == 'column' and block.settings.direction_tablet == false }}"
+      "visible_if": "{{ block.settings.content_direction == 'column' and block.settings.content_direction_tablet == false }}"
     },
     {
       "type": "range",
@@ -360,13 +360,13 @@
     {
       "type": "header",
       "content": "Tablet",
-      "visible_if": "{{ block.settings.direction_tablet == 'row' }}"
+      "visible_if": "{{ block.settings.content_direction_tablet == 'row' }}"
     },
     {
       "type": "select",
       "id": "column_tablet",
       "label": "Column",
-      "visible_if": "{{ block.settings.direction_tablet == 'row' }}",
+      "visible_if": "{{ block.settings.content_direction_tablet == 'row' }}",
       "options": [
         {
           "value": "2",
@@ -386,13 +386,13 @@
     {
       "type": "header",
       "content": "t:sections.slideshow.settings.mobile.content",
-      "visible_if": "{{ block.settings.direction_mobile == 'row' }}"
+      "visible_if": "{{ block.settings.content_direction_mobile == 'row' }}"
     },
     {
       "type": "select",
       "id": "column_mobile",
       "label": "Column",
-      "visible_if": "{{ block.settings.direction_mobile == 'row' }}",
+      "visible_if": "{{ block.settings.content_direction_mobile == 'row' }}",
       "options": [
         {
           "value": "1",
