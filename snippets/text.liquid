@@ -55,6 +55,30 @@
       assign text = text | replace: spacing, spacing_text_code
     endfor
   endif
+
+  capture text_block_classes
+    if text_width == '100%'
+      echo 'text-block--align-' | append: bl_stts.alignment
+      if bl_stts.max_width == 'none'
+        echo ' text-block--full-width '
+      endif
+    endif
+    if bl_stts.type_preset == 'custom'
+      echo ' custom-typography '
+      if bl_stts.font_size != ''
+        echo ' custom-font-size '
+      endif
+      if bl_stts.color != ''
+        echo ' custom-color '
+      endif
+    endif
+    if bl_stts.background
+      echo ' text-block--background '
+    endif
+    if is_rte
+      echo ' rte '
+    endif
+  endcapture
 %}
 
 {%- capture text_block_classes -%}
@@ -66,6 +90,13 @@
   {% if bl_stts.background -%} text-block--background {% endif -%}
   {% if is_rte -%} rte {% endif -%}
 {%- endcapture -%}
+
+{% if bl_stts.typing_text %}
+  {% assign class = class | append: ' typing-text' %}
+  {%- capture text -%}
+    <span class="typing-text__content">{{ bl_stts.primary_text }}</span>
+  {%- endcapture -%}
+{% endif %}
 
 {% capture attributes %}
   class="{{ class }}{% if has_border %} {{ heading_border_classes }}{% endif %} spacing-style text-block max-w-full flex flex-column text-block--{{ block.id }} {{ bl_stts.type_preset }}
@@ -88,6 +119,7 @@
       {%- render 'border-override', settings: bl_stts -%}
     {% endif %}
   "
+  {% if bl_stts.typing_text %}data-texts='["{{ bl_stts.primary_text }}", "{{ bl_stts.secondary_text }}", "{{ bl_stts.third_text }}"]'{% endif %}
 
   {{ block.shopify_attributes }}
 {% endcapture %}
@@ -149,6 +181,28 @@
 
   [style*='--horizontal-alignment: flex-end'] > .text-block {
     --text-align-default: right;
+  }
+
+  @media screen and (max-width: 749px) {
+    [style*='--horizontal-alignment-mobile: center'] .text-block {
+      --text-align-default: center;
+    }
+
+    [style*='--horizontal-alignment-mobile: flex-end'] .text-block {
+      --text-align-default: right;
+    }
+
+    [style*='--horizontal-alignment-mobile: flex-start'] > .text-block {
+      --text-align-default: left;
+    }
+
+    [style*='--horizontal-alignment-mobile: center'] > .text-block {
+      --text-align-default: center;
+    }
+
+    [style*='--horizontal-alignment-mobile: flex-end'] > .text-block {
+      --text-align-default: right;
+    }
   }
 
   .text-border-style-bottom {

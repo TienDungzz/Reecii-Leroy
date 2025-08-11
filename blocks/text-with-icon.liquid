@@ -8,6 +8,8 @@
   {% capture icon %}
     {% render 'icon-or-image',
       icon: block.settings.icon,
+      icon_custom: block.settings.icon_custom,
+      svg_upload: block.settings.svg_upload,
       image_upload: block.settings.image_upload,
       width: block.settings.width,
       class_name: icon_block_class,
@@ -83,23 +85,48 @@
       "default": "phone"
     },
     {
-      "type": "image_picker",
-      "id": "image_upload",
-      "label": "Custom icon"
+      "type": "select",
+      "id": "icon_custom",
+      "label": "Custom icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "svg",
+          "label": "SVG"
+        },
+        {
+          "value": "image",
+          "label": "Image"
+        }
+      ],
+      "default": "none"
     },
     {
-      "type": "header",
-      "content": "Size"
+      "type": "liquid",
+      "id": "svg_upload",
+      "label": "SVG icon",
+      "info": "Go to this link [find your icon](https:\/\/fontawesome.com\/v5\/search). Find the icon you want, then copy the SVG code and paste it here.",
+      "visible_if": "{{ block.settings.icon_custom == 'svg' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_upload",
+      "label": "t:settings.image_icon",
+      "visible_if": "{{ block.settings.icon_custom == 'image' }}"
     },
     {
       "type": "range",
       "id": "width",
-      "label": "Width",
+      "label": "t:settings.width",
       "min": 12,
       "max": 200,
       "step": 2,
       "unit": "px",
-      "default": 20
+      "default": 40,
+      "visible_if": "{{ block.settings.icon_custom != 'svg' }}"
     },
     {
       "type": "richtext",

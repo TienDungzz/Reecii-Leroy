@@ -1,5 +1,83 @@
 {% render 'text', block: block %}
 
+{% javascript %}
+  class TypingText {
+    constructor(el) {
+      this.el = el;
+      this.texts = (JSON.parse(el.dataset.texts || '[]')).filter(t => t.trim() !== '');
+      this.contentEl = el.querySelector('.typing-text__content');
+      this.index = 0;
+      this.charIndex = 0;
+      this.isDeleting = false;
+      this.typeSpeed = 90;     // typing speed
+      this.deleteSpeed = 50;   // deleting speed
+      this.pauseDelay = 1000;  // typing completion delay
+      this.lastHeight = this.el.offsetHeight / 2;
+
+      this.type();
+    }
+
+    animateHeight() {
+      const newHeight = this.lastHeight + this.contentEl.offsetHeight;
+      console.log('Test new Height:', newHeight);
+      console.log('Test last Height:', this.lastHeight);
+      if (newHeight === this.lastHeight) return;
+      if (newHeight !== this.lastHeight) {
+        const duration = 0.1;
+        Motion.timeline([
+          [this.el, {
+            height: [`${this.contentEl.offsetHeight + this.lastHeight}px`],
+            duration,
+            easing: 'cubic-bezier(0.7, 0, 0.3, 1)'
+          }]
+        ]).finished;
+      }
+    }
+
+    type() {
+      const currentText = this.texts[this.index];
+      !this.isDeleting ? this.enterText(currentText) : this.updateText(currentText);
+
+      this.animateHeight();
+
+      const delay = this.isDeleting ? this.deleteSpeed : this.typeSpeed;
+      setTimeout(() => this.type(), delay);
+    }
+
+    enterText(currentText) {
+      this.contentEl.textContent = currentText.substring(0, this.charIndex + 1);
+      this.charIndex++;
+
+      if (this.charIndex === currentText.length) {
+        setTimeout(() => this.isDeleting = true, this.pauseDelay);
+      }
+    }
+
+    updateText(currentText) {
+      this.contentEl.textContent = currentText.substring(0, this.charIndex - 1);
+      this.charIndex--;
+
+      if (this.charIndex === 0) {
+        this.isDeleting = false;
+        this.index = (this.index + 1) % this.texts.length;
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          new TypingText(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.typing-text').forEach(el => observer.observe(el));
+  });
+{% endjavascript %}
+
 {% schema %}
 {
   "name": "t:names.text",
@@ -9,7 +87,8 @@
       "type": "richtext",
       "id": "text",
       "label": "t:settings.text",
-      "default": "t:html_defaults.share_information_about_your"
+      "default": "t:html_defaults.share_information_about_your",
+      "visible_if": "{{ block.settings.typing_text == false }}"
     },
     {
       "type": "header",
@@ -17,15 +96,43 @@
     },
     {
       "type": "checkbox",
+      "id": "typing_text",
+      "label": "Typing text",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "primary_text",
+      "label": "Primary text",
+      "default": "Welcome to our store!",
+      "visible_if": "{{ block.settings.typing_text == true }}"
+    },
+    {
+      "type": "text",
+      "id": "secondary_text",
+      "label": "Secondary text",
+      "default": "Exclusive offers just for you.",
+      "visible_if": "{{ block.settings.typing_text == true }}"
+    },
+    {
+      "type": "text",
+      "id": "third_text",
+      "label": "Third text",
+      "default": "Shop now and enjoy deals!",
+      "visible_if": "{{ block.settings.typing_text == true }}"
+    },
+    {
+      "type": "checkbox",
       "id": "highlight_text",
       "label": "Highlight",
-      "default": false
+      "default": false,
+      "visible_if": "{{ block.settings.typing_text == false }}"
     },
     {
       "type": "text",
       "id": "highlight_text_content",
       "label": "Select highlight content",
-      "visible_if": "{{ block.settings.highlight_text == true }}",
+      "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true }}",
       "info": "Enter the content you want to highlight, separated by commas and must be exact characters. Example: 'highlight, content'"
     },
     {
@@ -33,19 +140,20 @@
       "id": "highlight_text_color",
       "label": "Highlight color",
       "default": "#000000",
-      "visible_if": "{{ block.settings.highlight_text == true }}"
+      "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true }}"
     },
     {
       "type": "checkbox",
       "id": "spacing_text",
       "label": "Spacing text",
-      "default": false
+      "default": false,
+      "visible_if": "{{ block.settings.typing_text == false }}"
     },
     {
       "type": "text",
       "id": "spacing_text_content",
       "label": "Select spacing content",
-      "visible_if": "{{ block.settings.spacing_text == true }}",
+      "visible_if": "{{ block.settings.typing_text == false and block.settings.spacing_text == true }}",
       "info": "Enter the content you want to add spacing, separated by commas and must be exact characters. Example: 'spacing, content'"
     },
     {
@@ -56,7 +164,7 @@
       "step": 0.5,
       "label": "Spacing left",
       "default": 0,
-      "visible_if": "{{ block.settings.spacing_text == true }}"
+      "visible_if": "{{ block.settings.typing_text == false and block.settings.spacing_text == true }}"
     },
     {
       "type": "range",
@@ -66,7 +174,7 @@
       "step": 0.5,
       "label": "Spacing right",
       "default": 0,
-      "visible_if": "{{ block.settings.spacing_text == true }}"
+      "visible_if": "{{ block.settings.typing_text == false and block.settings.spacing_text == true }}"
     },
     {
       "type": "header",
