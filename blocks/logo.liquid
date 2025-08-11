@@ -63,7 +63,8 @@
       {{ logo_image }}
     </div>
   {% else %}
-    {% render 'jumbo-text', text: shop.name %}
+    {% comment %} {% render 'jumbo-text', text: shop.name %} {% endcomment %}
+     {%- render 'text', fallback_text: shop.name -%}
   {% endif %}
 </div>
 
@@ -176,8 +177,8 @@
       "id": "pixel_height",
       "label": "t:settings.height",
       "min": 16,
-      "max": 320,
-      "step": 8,
+      "max": 1440,
+      "step": 16,
       "unit": "px",
       "default": 48,
       "visible_if": "{{ block.settings.unit == 'pixel' }}"

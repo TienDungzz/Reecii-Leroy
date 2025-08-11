@@ -14,6 +14,7 @@
 {%- if background_video != blank -%}
   <video-background-component
     class="{{ video_classes }}"
+    style="{% if ratio %}--ratio: {{ ratio }};{% endif %}"
   >
     {% liquid
       assign media_width_desktop = 100 | append: 'vw'
@@ -27,19 +28,18 @@
       muted
       autoplay
       loop
-      ref="videoElement"
     >
       {%- for sourceElement in background_video.sources -%}
         <source
           data-video-source="{{ sourceElement.url }}"
           type="{{ sourceElement.mime_type }}"
-          ref="videoSources[]"
+          data-video
         >
       {%- endfor -%}
     </video>
   </video-background-component>
 {%- else -%}
-  <div class="{{ video_classes }}">
+  <div class="{{ video_classes }}" style="{% if ratio %}--ratio: {{ ratio }};{% endif %}">
     {%- assign placeholder_name = placeholder | default: 'hero-apparel-2' -%}
     {%- if placeholder_name == blank -%}
       {%- assign placeholder_name = 'hero-apparel-2' -%}

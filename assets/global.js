@@ -1338,13 +1338,27 @@ class SwiperComponent extends HTMLElement {
       }
     };
 
+    const baseSpaceBetween = getOption("space-between", 20);
+
+    const baseBreakpoints = getOption("breakpoints", null);
+
+    // Calculate default space between slides if not breakpoint provided
+    const defaultSpacebetween = !baseBreakpoints ? baseSpaceBetween * 0.5 : baseSpaceBetween; // Mobile
+
+    const defaultBreakpoints = !baseBreakpoints
+      ? {
+          750: { spaceBetween: baseSpaceBetween * 0.75 }, // Tablet
+          990: { spaceBetween: baseSpaceBetween }, // Desktop
+        }
+      : baseBreakpoints;
+
     // Options
     this.options = {
       watchSlidesProgress: getOption("watch-slides-progress", false),
       loop: getOption("loop", false),
       speed: getOption("speed", 500),
       parallax: getOption("parallax", false),
-      spaceBetween: getOption("space-between", 20),
+      spaceBetween: defaultSpacebetween,
       autoplay: {
         enabled: getOption("slide-autoplay", false),
         pauseOnMouseEnter: true,
@@ -1362,7 +1376,7 @@ class SwiperComponent extends HTMLElement {
         type: getOption("pagination-type", "bullets"),
         dynamicBullets: getOption("dynamic-bullets", false),
       },
-      breakpoints: getOption("breakpoints", null),
+      breakpoints: defaultBreakpoints,
     };
 
     this.initSwiperMobile();
@@ -1372,12 +1386,11 @@ class SwiperComponent extends HTMLElement {
     const breakpoint = window.matchMedia("(min-width:750px)");
 
     const enableSwiper = () => {
-       if (!this.swiperEl || !this.options) return;
+      if (!this.swiperEl || !this.options) return;
       this.initSwiper = new Swiper(this.swiperEl, this.options);
     };
 
     const breakpointChecker = () => {
-
       if (breakpoint.matches) {
         // Desktop
         if (this.initSwiper) {
@@ -1395,7 +1408,6 @@ class SwiperComponent extends HTMLElement {
     breakpoint.addEventListener("change", breakpointChecker);
 
     if (this.isMobileOnly) {
-
       breakpointChecker();
     } else {
       enableSwiper();
@@ -2054,11 +2066,15 @@ class ColorSwatch extends HTMLElement {
     if (productTitle.classList.contains("card-title-change")) {
       // productTitle.querySelector("[data-change-title]").textContent =
       //   " - " + title;
-      productTitle.querySelector(".text").setAttribute("data-change-title", " - " + title);
+      productTitle
+        .querySelector(".text")
+        .setAttribute("data-change-title", " - " + title);
     } else {
       productTitle.classList.add("card-title-change");
       // productTitle.innerHTML = `<span data-change-title> - ${title}</span>`;
-      productTitle.querySelector(".text").setAttribute("data-change-title", " - " + title);
+      productTitle
+        .querySelector(".text")
+        .setAttribute("data-change-title", " - " + title);
     }
 
     // CHANGE PRICE
@@ -2186,7 +2202,9 @@ class TabsComponent extends HTMLElement {
   }
 
   initRender() {
-    const activeTab = this.querySelector(".tabs-component-panel-trigger.--active");
+    const activeTab = this.querySelector(
+      ".tabs-component-panel-trigger.--active"
+    );
     if (activeTab) {
       const activeTabId = activeTab.getAttribute("href");
       const activeContent = document.querySelector(activeTabId);
@@ -2224,13 +2242,15 @@ class ShowMoreProductGrid extends HTMLElement {
   handleButtonClick(event) {
     event.preventDefault();
 
-    const sectionContent = this.closest('.section-global__content');
+    const sectionContent = this.closest(".section-global__content");
     if (!sectionContent) return;
 
-    const template = sectionContent.querySelector('template[data-product-grid-template-showmore]');
+    const template = sectionContent.querySelector(
+      "template[data-product-grid-template-showmore]"
+    );
     if (!template) return;
 
-    const productGrid = sectionContent.querySelector('.product-grid');
+    const productGrid = sectionContent.querySelector(".product-grid");
     if (!productGrid) return;
 
     const templateContent = template.content.cloneNode(true);
@@ -2240,3 +2260,78 @@ class ShowMoreProductGrid extends HTMLElement {
   }
 }
 customElements.define("show-more-product-grid", ShowMoreProductGrid);
+
+// const imageBlocks = document.querySelectorAll(".image-block--reveal");
+
+// imageBlocks.forEach(image => {
+//   const minExtra = 300;
+//   const blockHeight = image.offsetHeight;
+//   const img = image.querySelector("img");
+//   const react = img.getBoundingClientRect();
+//   let imgHeight = react.height;
+//   const speed = parseFloat(image.dataset.speed) || 0.5;
+
+//     if (imgHeight - blockHeight < minExtra) {
+//       imgHeight = react.height + minExtra;
+//     }
+
+//   const maxMove = (imgHeight - blockHeight) * speed;
+
+//   Motion.scroll(Motion.animate(image, { y: [-maxMove, maxMove] }),
+//     { target: image, offset: ["start end", "end start"] }
+//   );
+// });
+
+class ParallaxImg extends HTMLElement {
+  constructor() {
+    super();
+    this.img = null;
+  }
+
+  connectedCallback() {
+    if (this.getAttribute("data-parallax") !== "true") return;
+
+    this.img = this.querySelector(".image-parallax--target");
+    if (!this.img) return;
+
+    if (this.img.complete) {
+      this.setupParallax();
+    } else {
+      this.img.addEventListener("load", () => this.setupParallax(), { once: true });
+    }
+  }
+
+  setupParallax() {
+    const speed = parseFloat(this.dataset.speed) || 0.5;
+    const screenSpeed = window.innerWidth < 768 ? speed * 0.5 : speed;
+    const minExtra = parseInt(this.dataset.minExtra) || 100;
+
+    const viewportHeight = window.innerHeight;
+    const blockHeight = this.offsetHeight;
+
+    let imgHeight = this.img.getBoundingClientRect().height;
+
+    if (imgHeight - blockHeight < minExtra) {
+      imgHeight = this.img.getBoundingClientRect().height + minExtra;
+    }
+
+    // const maxMove = imgHeight - blockHeight;
+    const maxMove = (imgHeight - blockHeight) * (viewportHeight / blockHeight);
+    const startY = -maxMove * screenSpeed;
+    const endY = maxMove * screenSpeed;
+
+    // Motion.scroll(Motion.animate(this, { y: [startY, endY] }),
+    //   { target: this, offset: ["start end", "end start"] }
+    // );
+
+    Motion.scroll(
+      Motion.animate(this.img, { y: [startY, endY] }, {
+        ease: [0.25, 0.1, 0.25, 1],
+        duration: 0.3
+      }),
+      { target: this, offset: ["start end", "end start"] }
+    );
+  }
+}
+
+customElements.define("parallax-image", ParallaxImg);

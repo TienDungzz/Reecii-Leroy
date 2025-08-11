@@ -4,53 +4,55 @@
   fetchpriority="low" defer
 ></script>
 
-{% assign gap_between_elements = block.settings.gap_between_elements %}
+{% liquid
+  assign sec_stts = section.settings
+  assign movement_direction = sec_stts.movement_direction
+  assign gap_between_elements = sec_stts.gap_between_elements
+
+  assign marquee_type = sec_stts.marquee_type
+  if marquee_type == 'auto'
+    assign element_scroll = 'div'
+  else
+    assign element_scroll = 'marquee-scroll'
+  endif
+%}
+
+{%- capture attr_scroll -%}
+  data-speed="1" data-direction="{{ movement_direction | replace: 'normal', 'left' | replace: 'reverse', 'right' }}" data-parallax="1.5"
+{%- endcapture -%}
 
 <marquee-component
   class="
+    block w-full overflow-hidden
     spacing-style
     gap-style
-    {% if block.settings.inherit_color_scheme == false %}color-{{ block.settings.color_scheme }}{% endif %}
+    color-{{ sec_stts.color_scheme }}
   "
   style="
-    {%- render 'spacing-style', settings: block.settings %};
+    --marquee-direction: {{ movement_direction }};
+    {%- render 'spacing-style', settings: sec_stts %};
     {% render 'gap-style', value: gap_between_elements, name: 'marquee-gap' %}
-    --marquee-direction: {{ block.settings.movement_direction }};
-    {%- if block.settings.transparent_background == true -%}background-color: transparent;{%- endif -%}
   "
-  data-speed-factor="20"
-  data-movement-direction="{{ block.settings.movement_direction }}"
+  data-speed-factor="{{ sec_stts.speed }}"
+  data-movement-direction="{{ movement_direction }}"
 >
-  <div class="marquee__wrapper">
-    <div
-      class="marquee__content"
-      style="--marquee-duration: {{section.settings.speed | append: 's'}};"
-    >
-      <div class="marquee__repeated-items">
+  <{{element_scroll }} class="marquee__wrapper flex w-fit whitespace-nowrap" {% if marquee_type == 'scroll' %}{{ attr_scroll }}{% endif %} >
+    <div class="marquee__content flex">
+      <div class="marquee__repeated-items flex-center">
         {% content_for 'blocks' %}
       </div>
     </div>
-  </div>
+  </{{element_scroll }}>
 </marquee-component>
 
 {% stylesheet %}
-  marquee-component {
-    display: block;
-    width: 100%;
-    overflow: hidden;
-    background-color: var(--color-background);
-  }
-
   .marquee__wrapper {
-    display: flex;
     gap: var(--marquee-gap);
-    width: fit-content;
     white-space: nowrap;
   }
 
   .marquee__content {
     min-width: max-content;
-    display: flex;
     gap: var(--marquee-gap);
   }
 
@@ -64,10 +66,7 @@
 
   .marquee__repeated-items {
     min-width: max-content;
-    display: flex;
     gap: var(--marquee-gap);
-    align-items: center;
-    justify-content: center;
   }
 
   .marquee__repeated-items > * {
@@ -82,14 +81,22 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
+    marquee-scroll .marquee__content,
     marquee-component:not([data-disabled]) .marquee__wrapper {
       animation: marquee-motion var(--marquee-speed) linear infinite var(--marquee-direction);
+      will-change: transform;
+    }
+
+    marquee-scroll .marquee__content {
+      --percent: -100%;
+      width: max-content;
     }
   }
 
   @keyframes marquee-motion {
+
     to {
-      transform: translate3d(calc(-50% - (var(--marquee-gap) / 2)), 0, 0);
+      transform: translate3d(calc(var(--percent, -50%) - (var(--marquee-gap) / 2)), 0, 0);
     }
   }
 {% endstylesheet %}
@@ -97,13 +104,21 @@
 {% schema %}
 {
   "name": "t:names.marquee",
-  "tag": null,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
   "blocks": [
     {
       "type": "text"
     },
     {
       "type": "icon"
+    },
+    {
+      "type": "image"
+    },
+    {
+      "type": "logo"
     },
     {
       "type": "_divider"
@@ -127,23 +142,39 @@
       "default": "normal"
     },
     {
-      "type": "checkbox",
-      "id": "inherit_color_scheme",
-      "label": "t:settings.inherit_color_scheme",
-      "default": true
-    },
-    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "t:settings.color_scheme",
-      "default": "scheme-1",
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+      "default": "scheme-1"
     },
     {
-      "type": "checkbox",
-      "id": "transparent_background",
-      "label": "t:settings.transparent_background",
-      "default": true
+      "type": "header",
+      "content": "t:sections.all.animation.content"
+    },
+    {
+      "type": "select",
+      "id": "marquee_type",
+      "label": "Type",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "scroll",
+          "label": "Scroll"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "label": "Speed",
+      "default": 20
     },
     {
       "type": "header",
@@ -183,15 +214,15 @@
   "presets": [
     {
       "name": "t:names.marquee",
-      "category": "t:categories.decorative",
+      "category": "t:categories.banners",
       "blocks": {
         "text": {
           "type": "text",
           "settings": {
-            "text": "<p>We make things that work better and last longer.</p>",
+            "text": "<p>Timeless design, built for everyday use.</p>",
             "type_preset": "custom",
             "font": "var(--font-body--family)",
-            "font_size": "var(--font-size--h2)",
+            "font_size": "3.2rem",
             "line_height": "tight",
             "letter_spacing": "tight",
             "case": "none",

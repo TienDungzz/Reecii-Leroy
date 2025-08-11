@@ -1,0 +1,257 @@
+<script
+  src="{{ 'marquee.js' | asset_url }}"
+  type="module"
+  fetchpriority="low" defer
+></script>
+
+{% liquid
+  assign block_stts = block.settings
+  assign movement_direction = block_stts.movement_direction
+  assign gap_between_elements = block_stts.gap_between_elements
+
+  assign marquee_type = block_stts.marquee_type
+  if marquee_type == 'auto'
+    assign element_scroll = 'div'
+  else
+    assign element_scroll = 'marquee-scroll'
+  endif
+%}
+
+{%- capture attr_scroll -%}
+  data-speed="1" data-direction="{{ movement_direction | replace: 'normal', 'left' | replace: 'reverse', 'right' }}" data-parallax="1.5"
+{%- endcapture -%}
+
+<marquee-component
+  class="
+    block w-full overflow-hidden
+    spacing-style
+    gap-style
+    {% if block_stts.inherit_color_scheme == false %}color-{{ block_stts.color_scheme }}{% endif %}
+  "
+  style="
+    --marquee-direction: {{ movement_direction }};
+    {%- render 'spacing-style', settings: block_stts %};
+    {% render 'gap-style', value: gap_between_elements, name: 'marquee-gap' %}
+    {%- if block_stts.transparent_background == true -%}background-color: transparent;{%- endif -%}
+  "
+  data-speed-factor="{{ block_stts.speed }}"
+  data-movement-direction="{{ movement_direction }}"
+>
+  <{{element_scroll }} class="marquee__wrapper flex w-fit whitespace-nowrap" {% if marquee_type == 'scroll' %}{{ attr_scroll }}{% endif %} >
+    <div class="marquee__content flex">
+      <div class="marquee__repeated-items flex-center">
+        {% content_for 'blocks' %}
+      </div>
+    </div>
+  </{{element_scroll }}>
+</marquee-component>
+
+{% stylesheet %}
+  marquee-component {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--color-background);
+  }
+
+  .marquee__wrapper {
+    display: flex;
+    gap: var(--marquee-gap);
+    width: fit-content;
+    white-space: nowrap;
+  }
+
+  .marquee__content {
+    min-width: max-content;
+    display: flex;
+    gap: var(--marquee-gap);
+  }
+
+  .marquee__content :is(p, h1, h2, h3, h4, h5, h6) {
+    white-space: nowrap;
+  }
+
+  .marquee__content .marquee__repeated-items * {
+    max-width: none;
+  }
+
+  .marquee__repeated-items {
+    min-width: max-content;
+    display: flex;
+    gap: var(--marquee-gap);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .marquee__repeated-items > * {
+    align-content: center;
+  }
+
+  .hero__content-wrapper.layout-panel-flex--column marquee-component {
+    --margin-inline: var(--full-page-margin-inline-offset);
+
+    width: -webkit-fill-available;
+    min-height: max-content;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    marquee-scroll .marquee__content,
+    marquee-component:not([data-disabled]) .marquee__wrapper {
+      animation: marquee-motion var(--marquee-speed) linear infinite var(--marquee-direction);
+       will-change: transform;
+    }
+
+    marquee-scroll .marquee__content {
+      --percent: -100%;
+       width: max-content;
+    }
+  }
+
+  @keyframes marquee-motion {
+
+    to {
+      transform: translate3d(calc(var(--percent, -50%) - (var(--marquee-gap) / 2)), 0, 0);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.marquee",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "text"
+    },
+    {
+      "type": "icon"
+    },
+    {
+      "type": "_divider"
+    }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "movement_direction",
+      "label": "t:settings.motion_direction",
+      "options": [
+        {
+          "value": "reverse",
+          "label": "t:options.forward"
+        },
+        {
+          "value": "normal",
+          "label": "t:options.reverse"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_background",
+      "label": "t:settings.transparent_background",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.animation.content"
+    },
+    {
+      "type": "select",
+      "id": "marquee_type",
+      "label": "Type",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "scroll",
+          "label": "Scroll"
+        }
+      ],
+      "default": "scroll"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "label": "Speed",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "gap_between_elements",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.marquee",
+      "category": "t:categories.decorative",
+      "blocks": {
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>We make things that work better and last longer.</p>",
+            "type_preset": "custom",
+            "font": "var(--font-body--family)",
+            "font_size": "var(--font-size--h2)",
+            "line_height": "tight",
+            "letter_spacing": "tight",
+            "case": "none",
+            "wrap": "nowrap",
+            "width": "fit-content"
+          }
+        }
+      },
+      "block_order": ["text"]
+    }
+  ]
+}
+{% endschema %}

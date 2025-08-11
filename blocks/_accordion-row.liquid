@@ -1,5 +1,3 @@
-
-
 <accordion-custom
   {% if block.settings.open_by_default %}
     open-by-default-on-desktop
@@ -9,13 +7,19 @@
   <details
     class="details"
     {{ block.shopify_attributes }}
+    {% if block.settings.open_by_default %}
+      open
+    {% endif %}
   >
-    <summary class="details__header">
+    <summary
+      class="details__header spacing-style"
+      style="{% render 'spacing-style', settings: block.settings %}"
+    >
       {{ block.settings.heading }}
-      <span class="svg-wrapper icon-caret icon-animated">
+      <span class="svg-wrapper icon-caret-wrapper icon-animated">
         {{- 'icon-caret.svg' | inline_asset_content -}}
       </span>
-      <span class="svg-wrapper icon-plus">
+      <span class="svg-wrapper icon-plus-wrapper">
         {{- 'icon-plus.svg' | inline_asset_content -}}
       </span>
     </summary>
@@ -25,6 +29,9 @@
     </div>
   </details>
 </accordion-custom>
+
+{%- stylesheet -%}
+{%- endstylesheet -%}
 
 {% schema %}
 {
@@ -50,6 +57,50 @@
       "id": "open_by_default",
       "label": "t:settings.open_row_by_default",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     }
   ],
   "presets": [
@@ -59,7 +110,7 @@
         "text-1": {
           "type": "text",
           "settings": {
-            "text": "<p>We will work quickly to ship your order as soon as possible. Once your order has shipped, you will receive an email with further information. Delivery times vary depending on your location.</p>",
+            "text": "<p>We will work quickly to ship your order as soon as possible. Once your order has shipped, you will receive an email with further information. Delivery times vary depending on your location.</p>"
           }
         }
       },
