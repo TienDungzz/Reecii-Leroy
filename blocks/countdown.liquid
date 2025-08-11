@@ -1,95 +1,109 @@
-{% assign bl_id = block.id | replace: '_', '' | downcase %}
-
 {% style %}
-  .countdown-container-{{ bl_id }} {
+  .countdown-container {
     padding: {{ block.settings.padding }}px;
     background-color: {{ block.settings.background_color }};
   }
 
-  .countdown-heading-{{ bl_id }} {
+  .countdown-heading {
     font-size: {{ block.settings.heading_size }}px;
     color: {{ block.settings.heading_color }};
     margin:0 0 {{ block.settings.spacing }}px 0;font-weight: 600;
   }
 
-  .countdown-subheading-{{ bl_id }} {
+  .countdown-subheading {
     font-size: {{ block.settings.subheading_size }}px;
     color: {{ block.settings.subheading_color }};
     margin: 0 0 {{ block.settings.spacing }}px 0;
   }
 
-  .countdown-unit-{{ bl_id }} {
+  .countdown-unit {
+    position: relative;
     min-width: {{ block.settings.unit_width }}px;
     padding: {{ block.settings.unit_padding }}px;
     background-color: {{ block.settings.unit_background }};
     border-radius: {{ block.settings.unit_border_radius }}px;
-    border: {{ block.settings.unit_border_width }}px solid {{ block.settings.unit_border_color }};
+    border: none;
     aspect-ratio: 1;
+
+    &.countdown-unit--outline {
+      border: {{ block.settings.unit_border_width }}px solid {{ block.settings.unit_border_color }};
+    }
   }
 
-  .countdown-number-{{ bl_id }} {
+  .countdown-timer .countdown-unit--inline + .countdown-unit--inline:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: calc(((var(--gap, 0px) + {{ block.settings.unit_border_width }}px) / 2) * -1);
+    transform: translateY(-50%);
+    width: {{ block.settings.unit_border_width }}px;
+    height: calc(100% - 5.2rem);
+    background-color: {{ block.settings.unit_border_color }};
+  }
+
+  .countdown-number {
     font-size: {{ block.settings.number_size }}px;
     color: {{ block.settings.number_color }};
     margin-bottom: 4px;
   }
 
-  .countdown-label-{{ bl_id }} {
+  .countdown-label {
     font-size: {{ block.settings.label_size }}px;
     color: {{ block.settings.label_color }};
     letter-spacing: 0.5px;}
 
-  .countdown-expired-{{ bl_id }} {
+  .countdown-expired {
     font-size: {{ block.settings.expired_size }}px;
     color: {{ block.settings.expired_color }};
   }
 
   @media screen and (max-width: 749px) {
-    .countdown-timer-{{ bl_id }} {
+    .countdown-timer {
       gap: {{ block.settings.timer_gap | times: 0.7 }}px;
     }
 
-    .countdown-unit-{{ bl_id }} {
+    .countdown-unit {
       min-width: {{ block.settings.unit_width | times: 0.8 }}px;
       padding: {{ block.settings.unit_padding | times: 0.8 }}px;
     }
 
-    .countdown-number-{{ bl_id }} {
+    .countdown-number {
       font-size: {{ block.settings.number_size | times: 0.8 }}px;
     }
 
-    .countdown-label-{{ bl_id }} {
+    .countdown-label {
       font-size: {{ block.settings.label_size | times: 0.9 }}px;
     }
   }
 {% endstyle %}
 
-<countdown-timer-{{ bl_id }}
-  class="countdown-container-{{ bl_id }} {{ block.settings.text_alignment }}"
+<countdown-timer
+  class="countdown-container {{ block.settings.text_alignment }}"
   data-end-date="{{ block.settings.end_date }}"
   style="--corner-radius: {{ block.settings.border_radius }}px;"
   {{ block.shopify_attributes }}
 >
   {%- capture class_unit -%}
-    countdown-unit-{{ bl_id }} flex-center flex-column
+    countdown-unit flex-center flex-column countdown-unit--{{ block.settings.border_style }}
   {%- endcapture -%}
 
   {%- capture class_number -%}
-    countdown-number-{{ bl_id }} leading-none
+    countdown-number leading-none
   {%- endcapture -%}
 
   {%- capture class_label -%}
-    countdown-label-{{ bl_id }} uppercase
+    countdown-label uppercase
   {%- endcapture -%}
 
   {% if block.settings.heading != blank %}
-    <div class="countdown-heading-{{ bl_id }}">{{ block.settings.heading }}</div>
+    <div class="countdown-heading">{{ block.settings.heading }}</div>
   {% endif %}
 
   {% if block.settings.subheading != blank %}
-    <div class="countdown-subheading-{{ bl_id }}">{{ block.settings.subheading }}</div>
+    <div class="countdown-subheading">{{ block.settings.subheading }}</div>
   {% endif %}
 
-  <div class="countdown-timer-{{ bl_id }} flex justify-center flex-wrap" id="countdown-timer-{{ bl_id }}" style="--gap: {{ block.settings.timer_gap }}px;">
+  <div class="countdown-timer flex justify-center flex-wrap" style="--gap: {{ block.settings.timer_gap }}px;">
     {% if block.settings.show_days %}
       <div class="{{ class_unit }}">
         <span class="{{ class_number }}" data-days>00</span>
@@ -118,14 +132,14 @@
       </div>
     {% endif %}
   </div>
-  <div class="countdown-expired-{{ bl_id }} center" id="countdown-expired-{{ bl_id }}" style="display: none;">
+  <div class="countdown-expired center" style="display: none;">
     {{ block.settings.expired_message }}
   </div>
-</countdown-timer-{{ bl_id }}>
+</countdown-timer>
 
 <script>
   (function() {
-    class CountdownTimer{{ bl_id }} extends HTMLElement {
+    class CountdownTimer extends HTMLElement {
       constructor() {
         super();
         this.endDate = new Date(this.dataset.endDate).getTime();
@@ -133,8 +147,8 @@
       }
 
       connectedCallback() {
-        this.timerElement = this.querySelector('#countdown-timer-{{ bl_id }}');
-        this.expiredElement = this.querySelector('#countdown-expired-{{ bl_id }}');
+        this.timerElement = this.querySelector('.countdown-timer');
+        this.expiredElement = this.querySelector('.countdown-expired');
         this.daysElement = this.querySelector('[data-days]');
         this.hoursElement = this.querySelector('[data-hours]');
         this.minutesElement = this.querySelector('[data-minutes]');
@@ -196,7 +210,7 @@
       }
     }
 
-    customElements.define('countdown-timer-{{ bl_id }}', CountdownTimer{{ bl_id }});
+    customElements.define('countdown-timer', CountdownTimer);
   })();
 </script>
 
@@ -439,6 +453,22 @@
       "default": 8
     },
     {
+      "type": "select",
+      "id": "border_style",
+      "label": "t:settings.border",
+      "options": [
+        {
+          "value": "outline",
+          "label": "t:options.outline"
+        },
+        {
+          "value": "inline",
+          "label": "Inline"
+        }
+      ],
+      "default": "outline"
+    },
+    {
       "type": "range",
       "id": "unit_border_radius",
       "label": "Timer unit border radius",
@@ -446,7 +476,8 @@
       "max": 100,
       "step": 2,
       "unit": "px",
-      "default": 6
+      "default": 6,
+      "visible_if": "{{ block.settings.border_style != \"none\" and block.settings.border_style == \"outline\" }}"
     },
     {
       "type": "range",
@@ -456,7 +487,8 @@
       "max": 4,
       "step": 1,
       "unit": "px",
-      "default": 1
+      "default": 1,
+      "visible_if": "{{ block.settings.border_style != \"none\" }}"
     }
   ],
   "presets": [

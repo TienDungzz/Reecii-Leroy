@@ -1,12 +1,15 @@
-{% comment %}
-  Renders block content for all blocks that extends the group block.
+{%- doc -%}
+  Renders block content for all blocks that extend the group block.
 
-  @param {object} children - The DOM content of the group block
-  @param {object} settings - The settings of the group block
-  @param {string} shopify_attributes - String with shopify attributes for the editor
-  @param {string} [class] - Custom classes of the group block
-  @param {string} [style] - Custom inline styles of the group block
-{% endcomment %}
+  @param {string} children - The DOM content of the group block.
+  @param {object} settings - The settings of the group block.
+  @param {string} shopify_attributes - String with Shopify attributes for the editor.
+  @param {string} [class] - Custom classes for the group block.
+  @param {string} [style] - Custom inline styles for the group block.
+
+  @example
+  {% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+{%- enddoc -%}
 
 <div
   class="
@@ -40,7 +43,7 @@
     ></a>
   {%- endif -%}
 
-  <div class="group-block__media-wrapper{% if settings.background_image == blank %} media--empty{% endif %}">
+  <div class="group-block__media-wrapper{% if settings.background_image == blank %} media--empty{% endif %}{% if settings.background_media == 'none' %} none{% endif %}">
     {% render 'background-media',
       background_media: settings.background_media,
       background_video: settings.video,
@@ -49,17 +52,17 @@
       background_image_position: settings.background_image_position,
       placeholder: settings.placeholder
     %}
-    {% if settings.toggle_overlay %}
-      {% render 'overlay', settings: settings, layer: '0' %}
-    {% endif %}
   </div>
+  {% if settings.toggle_overlay %}
+    {% render 'overlay', settings: settings, layer: '0' %}
+  {% endif %}
 
   <div
     class="
       group-block-content relative
       {% if request.design_mode %}group-block-content--design-mode{% endif %}
       layout-panel-flex
-      layout-panel-flex--{{ settings.content_direction | default: 'column' }}
+      layout-panel-flex--{{ settings.content_direction | default: settings.direction | default: 'column' }}
       {% if settings.vertical_on_mobile %} mobile-column{% endif %}
     "
     style="{% render 'layout-panel-style', settings: settings %}"
@@ -69,11 +72,13 @@
 </div>
 
 {% stylesheet %}
-  .group-block__media-wrapper.media--empty {
+  .group-block__media-wrapper.media--empty:has(.background-image-container svg )  {
     aspect-ratio: 1/1;
   }
 
-  .group-block__link {
+  .group-block__link,
+  .group-block__link:empty {
+    display: block;
     position: absolute;
     inset: 0;
   }

@@ -8,34 +8,33 @@
 {%- enddoc -%}
 
 {% liquid
-  assign bl_stts = block.settings
-  assign plain_text = bl_stts.text | strip_newlines | strip_html | strip
-  assign text_width = width | default: bl_stts.width
+  assign plain_text = block.settings.text | strip_newlines | strip_html | strip
+  assign text_width = width | default: block.settings.width
 
-  assign text = bl_stts.text
+  assign text = block.settings.text
 
-  if bl_stts.font_size contains 'heading-lg' or bl_stts.font_size contains 'heading-xl'
+  if block.settings.font_size contains 'heading-lg' or block.settings.font_size contains 'heading-xl'
     assign type = 'display'
-  elsif bl_stts.font_size contains 'heading'
+  elsif block.settings.font_size contains 'heading'
     assign type = 'heading'
   else
     assign type = 'body'
   endif
-  if bl_stts.type_preset == 'rte' or bl_stts.type_preset == 'paragraph'
+  if block.settings.type_preset == 'rte' or block.settings.type_preset == 'paragraph'
     assign is_rte = true
   endif
 
-  assign border = bl_stts.border
+  assign border = block.settings.border
   if border == 'solid' and text_width == '100%' and class_heading == 'section-header'
     assign has_border = true
     assign heading_border_classes = 'heading-border--solid relative justify-center'
-  elsif bl_stts.enable_border_bottom == true
+  elsif block.settings.enable_border_bottom == true
     assign enable_border_bottom = true
   endif
 
-  assign highlight_text = bl_stts.highlight_text
-  assign highlight_content = bl_stts.highlight_text_content | split: ','
-  assign highlight_color = bl_stts.highlight_text_color
+  assign highlight_text = block.settings.highlight_text
+  assign highlight_content = block.settings.highlight_text_content | split: ','
+  assign highlight_color = block.settings.highlight_text_color
 
   if highlight_content != blank and highlight_text == true
     for highlight in highlight_content
@@ -44,10 +43,10 @@
     endfor
   endif
 
-  assign spacing_text = bl_stts.spacing_text
-  assign spacing_content = bl_stts.spacing_text_content | split: ','
-  assign spacing_left = bl_stts.spacing_text_left
-  assign spacing_right = bl_stts.spacing_text_right
+  assign spacing_text = block.settings.spacing_text
+  assign spacing_content = block.settings.spacing_text_content | split: ','
+  assign spacing_left = block.settings.spacing_text_left
+  assign spacing_right = block.settings.spacing_text_right
 
   if spacing_content != blank and spacing_text == true
     for spacing in spacing_content
@@ -55,39 +54,61 @@
       assign text = text | replace: spacing, spacing_text_code
     endfor
   endif
+
+  capture text_block_classes
+    if text_width == '100%'
+      echo 'text-block--align-' | append: block.settings.alignment
+      if block.settings.max_width == 'none'
+        echo ' text-block--full-width '
+      endif
+    endif
+    if block.settings.type_preset == 'custom'
+      echo ' custom-typography '
+      if block.settings.font_size != ''
+        echo ' custom-font-size '
+      endif
+      if block.settings.color != ''
+        echo ' custom-color '
+      endif
+    endif
+    if block.settings.background
+      echo ' text-block--background '
+    endif
+    if is_rte
+      echo ' rte '
+    endif
+  endcapture
 %}
 
-{%- capture text_block_classes -%}
-  {%- if text_width == '100%' -%} text-block--align-{{ bl_stts.alignment }}{% if bl_stts.max_width == 'none' %} text-block--full-width {% endif %}{% endif %}
-  {%- if bl_stts.type_preset == 'custom' -%} custom-typography
-    {%- if bl_stts.font_size != '' %} custom-font-size {% endif -%}
-    {% if bl_stts.color != '' -%} custom-color {% endif -%}
-    {% if bl_stts.background -%} text-block--background {% endif -%}
-    {% if is_rte -%} rte {% endif -%}
-  {% endif %}
-{%- endcapture -%}
+{% if block.settings.typing_text %}
+  {% assign class = class | append: ' typing-text' %}
+  {%- capture text -%}
+    <span class="typing-text__content">{{ block.settings.primary_text }}</span>
+  {%- endcapture -%}
+{% endif %}
 
 {% capture attributes %}
-  class="{{ class }}{% if has_border %} {{ heading_border_classes }}{% endif %} spacing-style text-block max-w-full flex flex-column text-block--{{ block.id }} {{ bl_stts.type_preset }}
+  class="{{ class }}{% if has_border %} {{ heading_border_classes }}{% endif %} spacing-style text-block max-w-full flex flex-column text-block--{{ block.id }} {{ block.settings.type_preset }}
     {{ text_block_classes }}{% if enable_border_bottom %} border-style text-border-style-bottom{% endif %}
   "
   style="
-    {% render 'spacing-padding', settings: bl_stts %}
-    {% render 'typography-style', settings: bl_stts %}
+    {% render 'spacing-padding', settings: block.settings %}
+    {% render 'typography-style', settings: block.settings %}
     --width: {{ text_width }};
-    --max-width: var(--max-width--{{ type }}-{{ bl_stts.max_width }});
+    --max-width: var(--max-width--{{ type }}-{{ block.settings.max_width }});
     {% if text_width == "100%" %}
-      --text-align: {{ bl_stts.alignment }};
+      --text-align: {{ block.settings.alignment }};
     {% endif %}
-    {% if bl_stts.background %}
-      --text-background-color: {{ bl_stts.background_color | default: 'rgb(255 255 255 / 1.0)' }};
-      --text-corner-radius: {{ bl_stts.corner_radius }}px;
+    {% if block.settings.background %}
+      --text-background-color: {{ block.settings.background_color | default: 'rgb(255 255 255 / 1.0)' }};
+      --text-corner-radius: {{ block.settings.corner_radius }}px;
       --text-padding: max(var(--padding-2xs), calc((var(--text-corner-radius) + var(--padding-xs)) * (1 - cos(45deg))));
     {% endif %}
     {% if has_border or enable_border_bottom %}
-      {%- render 'border-override', settings: bl_stts -%}
+      {%- render 'border-override', settings: block.settings -%}
     {% endif %}
   "
+  {% if block.settings.typing_text %}data-texts='["{{ block.settings.primary_text }}", "{{ block.settings.secondary_text }}", "{{ block.settings.third_text }}"]'{% endif %}
 
   {{ block.shopify_attributes }}
 {% endcapture %}
@@ -149,6 +170,28 @@
 
   [style*='--horizontal-alignment: flex-end'] > .text-block {
     --text-align-default: right;
+  }
+
+  @media screen and (max-width: 749px) {
+    [style*='--horizontal-alignment-mobile: center'] .text-block {
+      --text-align-default: center;
+    }
+
+    [style*='--horizontal-alignment-mobile: flex-end'] .text-block {
+      --text-align-default: right;
+    }
+
+    [style*='--horizontal-alignment-mobile: flex-start'] > .text-block {
+      --text-align-default: left;
+    }
+
+    [style*='--horizontal-alignment-mobile: center'] > .text-block {
+      --text-align-default: center;
+    }
+
+    [style*='--horizontal-alignment-mobile: flex-end'] > .text-block {
+      --text-align-default: right;
+    }
   }
 
   .text-border-style-bottom {
