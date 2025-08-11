@@ -1,4 +1,8 @@
-{% assign icon_block_class = 'icon-block__media icon-block-' | append: block.id %}
+{% comment %} {% assign icon_block_class = 'icon-block__media{% if block.settings.icon != 'none' %} icon-block__{{ block.settings.icon }}{% endif %} icon-block-' | append: block.id %} {% endcomment %}
+
+{%- capture icon_block_class -%}
+  icon-block__media{% if block.settings.icon != 'none' %} icon-block__{{ block.settings.icon }}{% endif %} icon-block-{{ block.id }}
+{%- endcapture -%}
 
 {% capture icon %}
   {% render 'icon-or-image',
@@ -73,6 +77,10 @@
         {
           "value": "carrot",
           "label": "Carrot"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
         },
         {
           "value": "chat_bubble",

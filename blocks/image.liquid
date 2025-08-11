@@ -16,7 +16,9 @@
 
   assign image = block.settings.image
   assign image_height = block.settings.image.height
+  assign image_height_2x = image_height | times: 2
   assign image_width = block.settings.image.width
+  assign image_width_2x = image_width | times: 2
   assign image_aspect_ratio = block.settings.image.aspect_ratio
 %}
 
@@ -36,20 +38,89 @@
   assign media_width_mobile = '100vw'
   assign sizes = 'auto, (min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
   assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
+
+  assign element = 'div'
+  if block.settings.enable_fancybox
+    assign element = 'a'
+  elsif block.settings.enable_parallax
+    assign element = 'parallax-image'
+  endif
 %}
+{%- if block.settings.enable_fancybox -%}
+  {%- render 'photoswipe_lib' -%}
+{%- endif -%}
 
+{% capture class_img %}
+  image-block__image{% if block.settings.enable_parallax %} image-parallax--target{% endif %}
+{% endcapture %}
 
-<div
+{% capture attributes_fancybox %}
+  href="{{ image | image_url : width: image_width_2x , height: image_height_2x  }}"
+  data-pswp-src="{{ image | image_url : width: image_width_2x , height: image_height_2x  }}"
+  data-pswp-width="{{ image_width_2x  }}"
+  data-pswp-height="{{ image_height_2x }}"
+  target="_blank"
+{% endcapture %}
+
+{% capture attributes_parllax %}
+  data-parallax="true"
+  data-speed="{{ block.settings.parallax_speed }}"
+{% endcapture %}
+
+{% capture attributes %}
+  {{ block.shopify_attributes }}
+  {% if block.settings.enable_fancybox %}
+    {{ attributes_fancybox }}
+  {% endif %}
+  {% if block.settings.enable_parallax %}
+    {{ attributes_parllax }}
+  {% endif %}
+{% endcapture %}
+
+<{{ element }}
   class="{{ class }}"
   style="{{ style }}"
-  {{ block.shopify_attributes }}
+  {{ attributes }}
 >
   {%- if image != blank -%}
-    {%- render 'image', image: image, class: 'image-block__image', height: image.height, sizes: sizes, widths: widths -%}
+    {%- render 'image',
+      image: image,
+      class: class_img,
+      height: image.height,
+      sizes: sizes,
+      widths: widths
+    -%}
   {%- else -%}
     {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
   {%- endif -%}
-</div>
+</{{ element }}>
+
+{%- if block.settings.enable_fancybox -%}
+  <script type="module">
+    import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
+    if (!window._myScriptLoaded) {
+      window._myScriptLoaded = true;
+
+      const sections = document.querySelectorAll('.section');
+
+      sections.forEach((section, index) => {
+        const uniqueGalleryID = `gallery-${index}`;
+
+        section.querySelectorAll('a[data-pswp-width]').forEach((el) => {
+          el.setAttribute('data-pswp-gallery', uniqueGalleryID);
+        });
+
+        const lightbox = new PhotoSwipeLightbox({
+          gallery: section,
+          children: 'a[data-pswp-gallery="' + uniqueGalleryID + '"]',
+          pswpModule: () => import('https://unpkg.com/photoswipe@5/dist/photoswipe.esm.js'),
+        });
+
+        lightbox.init();
+      });
+    }
+  </script>
+{%- endif -%}
 
 {%- stylesheet -%}
   .image-block--height-fill .image-block__image {
@@ -75,7 +146,8 @@
     {
       "type": "url",
       "id": "link",
-      "label": "Link"
+      "label": "Link",
+      "visible_if": "{{ block.settings.enable_fancybox == false }}"
     },
     {
       "type": "checkbox",
@@ -256,6 +328,34 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_fancybox",
+      "label": "Enable Fancybox",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_parallax == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable parallax scroll",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_fancybox == false }}"
+    },
+    {
+      "type": "range",
+      "id": "parallax_speed",
+      "label": "Parallax speed",
+      "min": 0,
+      "max": 4,
+      "step": 0.5,
+      "default": 0.5,
+      "visible_if": "{{ block.settings.enable_fancybox == false and block.settings.enable_parallax }}"
     },
     {
       "type": "header",

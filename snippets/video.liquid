@@ -157,7 +157,7 @@
         }}
 
         <span class="deferred-media__poster-icon">
-          <span class="visually-hidden">{{ 'accessibility.play_video' | t }}</span>
+          <span class="visually-hidden">{{ 'sections.video.play_video' | t }}</span>
           {{- 'icon-play.svg' | inline_asset_content -}}
         </span>
       </button>
@@ -171,11 +171,11 @@
         on:click="/toggleMedia"
       >
         <span class="deferred-media__poster-icon icon-play hidden">
-          <span class="visually-hidden">{{ 'accessibility.play_video' | t }}</span>
+          <span class="visually-hidden">{{ 'sections.video.play_video' | t }}</span>
           {{- 'icon-play.svg' | inline_asset_content -}}
         </span>
         <span class="deferred-media__poster-icon icon-pause hidden">
-          <span class="visually-hidden">{{ 'accessibility.pause_video' | t }}</span>
+          <span class="visually-hidden">{{ 'sections.video.pause_video' | t }}</span>
           {{- 'icon-pause.svg' | inline_asset_content -}}
         </span>
       </button>
@@ -206,14 +206,14 @@
     {% if video_preview_image != blank and video_autoplay == false %}
       {{ video_preview_image | image_url: width: 1946 | image_tag: widths: widths, sizes: sizes, loading: loading }}
     {% else %}
-      <placeholder-image
-        class="placeholder-video"
-        data-block-id="{{ section_id }}-{{ block.id }}"
-        data-type="general"
-      ></placeholder-image>
+      {%- assign placeholder_name = placeholder | default: 'hero-apparel-2' -%}
+      {%- if placeholder_name == blank -%}
+        {%- assign placeholder_name = 'hero-apparel-2' -%}
+      {%- endif -%}
+      {{ placeholder_name | placeholder_svg_tag: 'placeholder-svg' }}
     {% endif %}
     <span class="video-placeholder-wrapper__poster-icon icon-play">
-      <span class="visually-hidden">{{ 'accessibility.play_video' | t }}</span>
+      <span class="visually-hidden">{{ 'sections.video.play_video' | t }}</span>
       {{- 'icon-play.svg' | inline_asset_content -}}
     </span>
   </div>

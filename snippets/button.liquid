@@ -29,6 +29,7 @@
     {{ class }}
     size-style
     {{ style_class }}
+    {% if block.settings.link_reveal %}link--reveal{% endif %}
     {% if link_underline %}link--underline{% endif %}
     {% if button_style == 'outline' %}button--outline{% endif %}
     {{ style_class }}--{{ block.id }}
@@ -39,8 +40,14 @@
     rel="noopener noreferrer"
   {%- endif -%}
   {{ shopify_attributes }}
+  {% if block.settings.link_reveal %}
+    data-text="{{ label }}"
+  {% endif %}
 >
   {{ label }}
+  {% if block.settings.link_reveal %}
+    <span class="text-mask none" data-text="{{ label }}">{{ label }}</span>
+  {% endif %}
 </a>
 
 {% stylesheet %}
@@ -64,14 +71,46 @@
     }
 
     &.link--underline {
+      --offset-underline: 1rem;
       text-decoration: underline;
-      text-underline-offset: 1rem;
+      text-underline-offset: var(--offset-underline);
     }
 
-    &.link--hover-underline {
-      &:hover {
+    &.link--hover-underline:hover {
+      text-decoration: underline;
+      text-decoration-color: currentcolor;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) {
+    .group-block-content .link--reveal {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      color: transparent !important;
+
+      .text-mask {
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        color: var(--color-foreground);
+        transition: transform var(--animation-slowest-smooth);
+        transform: translateY(100%);
+      }
+    }
+
+    .group-block-content:hover .link--reveal .text-mask {
+      transform: translateY(0);
+    }
+
+    .group-block-content .link--reveal.link--underline {
+      padding-bottom: var(--offset-underline);
+      .text-mask {
         text-decoration: underline;
-        text-decoration-color: currentcolor;
+        text-underline-offset: var(--offset-underline);
       }
     }
   }

@@ -31,8 +31,9 @@
   }
 }
 
-.swiper-slide {
+.swiper .swiper-slide {
   overflow: hidden;
+  height: auto;
 }
 
 .swiper-pagination--outlined {
@@ -58,10 +59,10 @@
     --swiper-navigation-sides-offset: 0.1rem;
   }
 
-  &.swiper-watch-progress .swiper-slide:not(.swiper-slide-visible) {
+  /* &.swiper-watch-progress .swiper-slide:not(.swiper-slide-visible) {
     opacity: 0 !important;
     transition: var(--animation-speed-slow) var(--animation-timing-fade-in);
-  }
+  } */
 }
 
 .swiper-button {
@@ -349,6 +350,23 @@ h6,
   object-fit: contain;
 }
 
+.group-block---content-overlay {
+  position: relative;
+  isolation: isolate;
+  > .group-block__media-wrapper :is(.background-image-container, .video-background) {
+    position: relative;
+    aspect-ratio: var(--ratio, 1);
+    display: block;
+  }
+
+  > .group-block-content {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+  }
+}
+
 /* Base styles */
 .group-block:has(> video-background-component),
 .group-block:has(> .background-image-container) {
@@ -376,4 +394,228 @@ h6,
 
 .layout-panel-flex--column > .group-block--height-custom {
   flex-basis: var(--size-style-height);
+}
+
+/* Element hover effect */
+:root {
+  --hover-lift-amount: 4px;
+  --hover-scale-amount: 1.03;
+  --hover-subtle-zoom-amount: 1.015;
+  --hover-clip-path: inset(2% 2% 2% 2%);
+  --hover-shadow-color: var(--color-shadow);
+  --hover-transition-duration: 0.25s;
+  --hover-transition-timing: var(--ease-out-smooth);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card-hover--scale .group-block > .group-block__media-wrapper .background-image-container:has(> img) ,
+  .card-hover--lift .group-block > .group-block__media-wrapper .background-image-container:has(> img) {
+    transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+  }
+
+  .card-hover--clip-inset .group-block .group-block-content > .image-block:has(> img),
+  .card-hover--clip-inset .group-block .background-image-container:has(> img) {
+    clip-path: inset(0);
+    transition: clip-path var(--hover-transition-duration) var(--hover-transition-timing);
+  }
+
+  .card-hover--clip-inset .group-block > .group-block-content > .image-block > img ,
+  .card-hover--clip-inset .group-block > .group-block__media-wrapper .background-image-container > img {
+    transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .card-hover--lift .group-block:hover > .group-block__media-wrapper .background-image-container:has(> img),
+  .card-hover--lift .product-card:hover,
+  .card-hover--lift .collection-card:hover,
+  .card-hover--lift .resource-card:hover,
+  .card-hover--lift .predictive-search-results__card:hover {
+    transform: translateY(calc(-1 * var(--hover-lift-amount)));
+  }
+
+  .card-hover--lift .header .product-card:hover,
+  .card-hover--lift .header .collection-card:hover,
+  .card-hover--lift .header .resource-card:hover,
+  .card-hover--lift .header-drawer .product-card:hover,
+  .card-hover--lift .header-drawer .collection-card:hover,
+  .card-hover--lift .header-drawer .resource-card:hover {
+    transform: none;
+  }
+
+  .card-hover--scale .group-block:hover .background-image-container,
+  .card-hover--scale .product-card:hover,
+  .card-hover--scale .collection-card:hover,
+  .card-hover--scale .resource-card:hover,
+  .card-hover--scale .predictive-search-results__card:hover {
+    transform: scale(var(--hover-scale-amount));
+  }
+
+  .card-hover--scale .header .product-card:hover,
+  .card-hover--scale .header .collection-card:hover,
+  .card-hover--scale .header .resource-card:hover,
+  .card-hover--scale .header-drawer .product-card:hover,
+  .card-hover--scale .header-drawer .collection-card:hover,
+  .card-hover--scale .header-drawer .resource-card:hover {
+    transform: none;
+  }
+
+  .card-hover--subtle-zoom .background-image-container img,
+  .card-hover--subtle-zoom .card-gallery,
+  .card-hover--subtle-zoom .collection-card__image,
+  .card-hover--subtle-zoom .product-card__image,
+  .card-hover--subtle-zoom .resource-card__image {
+    overflow: hidden;
+    transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+  }
+
+  .predictive-search-results__card .card-gallery,
+  .predictive-search-results__card .collection-card__image,
+  .predictive-search-results__card .product-card__image,
+  .predictive-search-results__card .resource-card__image {
+    transition: none;
+  }
+
+  .card-hover--subtle-zoom .group-block:hover .background-image-container img,
+  .card-hover--subtle-zoom .product-card:hover .card-gallery,
+  .card-hover--subtle-zoom .collection-card:hover .collection-card__image,
+  .card-hover--subtle-zoom .product-card:hover .product-card__image,
+  .card-hover--subtle-zoom .resource-card:hover .resource-card__image,
+  .card-hover--subtle-zoom .predictive-search-results__card:hover {
+    transform: scale(var(--hover-subtle-zoom-amount));
+  }
+
+  .card-hover--subtle-zoom .header .product-card:hover .card-gallery,
+  .card-hover--subtle-zoom .header .collection-card:hover .collection-card__image,
+  .card-hover--subtle-zoom .header .product-card:hover .product-card__image,
+  .card-hover--subtle-zoom .header .resource-card:hover .resource-card__image,
+  .card-hover--subtle-zoom .header-drawer .product-card:hover .card-gallery,
+  .card-hover--subtle-zoom .header-drawer .collection-card:hover .collection-card__image,
+  .card-hover--subtle-zoom .header-drawer .product-card:hover .product-card__image,
+  .card-hover--subtle-zoom .header-drawer .resource-card:hover .resource-card__image {
+    transform: none;
+  }
+
+  .card-hover--clip-inset .group-block:hover > .group-block-content > .image-block:has(> img),
+  .card-hover--clip-inset .group-block:hover > .group-block__media-wrapper .background-image-container:has(> img) {
+    clip-path: var(--hover-clip-path);
+  }
+
+  .card-hover--clip-inset .group-block:hover > .group-block-content > .image-block > img ,
+  .card-hover--clip-inset .group-block:hover > .group-block__media-wrapper .background-image-container > img {
+    transform: scale(var(--hover-scale-amount));
+  }
+}
+
+/* direction mobile */
+@media screen and (max-width: 749px) {
+  .moible-direction--column {
+    flex-direction: column;
+  }
+
+  .moible-direction--row {
+    flex-direction: row;
+  }
+}
+
+/* gap style small device */
+
+@media screen and (max-width: 749px) {
+  .gap-style,
+  .layout-panel-flex {
+    --gap-scale: var(--spacing-scale-max-sm);
+  }
+}
+/* spacing style small device */
+@media screen and (max-width: 749px) {
+  .spacing-style,
+  .inherit-spacing {
+    --spacing-scale: var(--spacing-scale-max-sm);
+  }
+}
+
+/* video block */
+.deferred-media__poster-button  {
+  width: 100%;
+}
+
+deferred-media iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  aspect-ratio: var(--size-style-aspect-ratio, auto);
+}
+
+deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__poster-button ~ video) {
+  /* only apply this on the video block not product media */
+  object-fit: cover;
+  height: 100%;
+  aspect-ratio: var(--size-style-aspect-ratio, auto);
+}
+
+product-model model-viewer,
+/* Media that have a poster button sibling providing the size should be absolute-positioned.
+Otherwise, it should be a block to rely on its own size */
+:is(deferred-media, product-model) > .deferred-media__poster-button ~ *:not(template) {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  /* Required to make sure the absolute position respects the padding of the wrapper: */
+  padding: inherit;
+}
+
+.video-placeholder-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: var(--size-style-aspect-ratio, auto);
+}
+
+:not(deferred-media) > .video-placeholder-wrapper {
+  width: var(--video-placeholder-width);
+}
+
+.video-placeholder-wrapper > * {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.deferred-media__poster-icon,
+.video-placeholder-wrapper__poster-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deferred-media__poster-icon svg,
+.video-placeholder-wrapper__poster-icon svg {
+  width: var(--button-size);
+  height: var(--button-size);
+  color: var(--color-white);
+  filter: drop-shadow(var(--shadow-button));
+
+  &:hover {
+    color: rgba(from var(--color-white) r g b / 80%);
+  }
+
+  @media screen and (width >= 750px) {
+    width: 4rem;
+    height: 4rem;
+  }
+}
+
+/* summary base */
+summary {
+  padding-block: var(--padding-sm);
 }

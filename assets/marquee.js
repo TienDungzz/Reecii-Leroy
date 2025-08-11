@@ -221,3 +221,76 @@ function animateValue({
 }
 
 customElements.define("marquee-component", MarqueeComponent);
+
+class MarqueeScroll extends HTMLElement {
+  constructor() {
+    super();
+
+    this.speed = parseFloat(this.dataset.speed || 1.6), // 100px going to move for
+    this.space = 100, // 100px
+
+    Motion.inView(this, this.init.bind(this), { margin: '200px 0px 200px 0px' });
+  }
+
+  get childElement() {
+    return this.firstElementChild;
+  }
+
+  get maximum() {
+    return parseInt(this.dataset.maximum || 10);
+  }
+
+  get direction() {
+    return this.dataset.direction || 'left';
+  }
+
+  get parallax() {
+    return this.dataset.parallax ? parseFloat(this.dataset.parallax) : false;
+  }
+
+  init() {
+    // if (this.childElementCount === 1) {
+    //   this.childElement.classList.add('animate');
+
+    //   for (let index = 0; index < this.maximum; index++) {
+    //     this.clone = this.childElement.cloneNode(true);
+    //     this.clone.setAttribute('aria-hidden', true);
+    //     this.appendChild(this.clone);
+    //     this.clone.querySelectorAll('.media').forEach((media) => media.classList.remove('loading'));
+    //   }
+
+    //   const animationTimeFrame = (this.childElement.clientWidth / this.config.space) * this.config.moveTime;
+    //   this.style.setProperty('--duration', `${animationTimeFrame}s`);
+    // }
+
+    if (this.parallax) {
+      let translate = this.parallax * 100 / (1 + this.parallax);
+      if (this.direction === 'right') {
+        translate = translate * -1;
+      }
+      // if (theme.config.rtl) {
+      //   translate = translate * -1;
+      // }
+
+      Motion.scroll(
+        Motion.animate(this, { transform: [`translateX(${translate}%)`, `translateX(0)`] }, { ease: 'linear' }),
+        { target: this, offset: ['start end', 'end start'] }
+      );
+    }
+    else {
+      // pause when out of view
+      const observer = new IntersectionObserver((entries, _observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            this.classList.remove('paused');
+          }
+          else {
+            this.classList.add('paused');
+          }
+        });
+      }, { rootMargin: '0px 0px 50px 0px' });
+      observer.observe(this);
+    }
+  }
+}
+customElements.define('marquee-scroll', MarqueeScroll);
