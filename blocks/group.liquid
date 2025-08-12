@@ -1,5 +1,5 @@
 {% capture children %}
-  {% content_for 'blocks' %}
+  {% content_for 'blocks' %} 
 {% endcapture %}
 
 {% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
@@ -53,8 +53,8 @@
     },
     {
       "type": "select",
-      "id": "direction_mobile",
-      "label": "Dỉrection on mobile",
+      "id": "content_direction_mobile",
+      "label": "Direction on mobile",
       "options": [
         {
           "value": "column",
@@ -115,32 +115,7 @@
         }
       ],
       "default": "flex-start",
-      "visible_if": "{{ block.settings.direction == 'row' }}"
-    },
-    {
-      "type": "select",
-      "id": "horizontal_alignment_mobile",
-      "label": "Mobile alignment",
-      "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.left"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.right"
-        },
-        {
-          "value": "space-between",
-          "label": "t:options.space_between"
-        }
-      ],
-      "default": "flex-start",
-      "visible_if": "{{ block.settings.direction == 'row' }}"
+      "visible_if": "{{ block.settings.content_direction == 'row' }}"
     },
     {
       "type": "select",

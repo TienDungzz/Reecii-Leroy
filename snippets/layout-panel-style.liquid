@@ -26,14 +26,14 @@
   assign horizontal_alignment_mobile = horizontal_alignment_mobile | default: horizontal_alignment
   assign vertical_alignment_mobile = vertical_alignment
 
-  if settings.vertical_on_mobile and vertical_alignment == 'last baseline'
+  if settings.content_direction_mobile == 'column' and vertical_alignment == 'last baseline'
     assign vertical_alignment_mobile = 'flex-end'
   endif
 -%}
 
 --flex-direction: {{ content_direction | default: 'column' }}; --flex-wrap: {{ settings.wrap | default: 'nowrap' }};
 
---flex-direction-mobile: {{ settings.direction_mobile | default: 'column' }};
+--flex-direction-mobile: {{ settings.content_direction_mobile | default: 'column' }};
 
 {% render 'gap-style', value: settings.gap, scale_min: scale_min  %}
 

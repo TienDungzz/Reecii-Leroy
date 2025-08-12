@@ -12,26 +12,28 @@
       this.typeSpeed = 90;     // typing speed
       this.deleteSpeed = 50;   // deleting speed
       this.pauseDelay = 1000;  // typing completion delay
-      this.lastHeight = this.el.offsetHeight / 2;
+      this.baseHeight = this.el.offsetHeight - this.contentEl.offsetHeight;
+      this.prevContentHeight = this.contentEl.offsetHeight;
+      this.el.style.height = `${this.el.offsetHeight}px`;
 
       this.type();
     }
 
     animateHeight() {
-      const newHeight = this.lastHeight + this.contentEl.offsetHeight;
-      console.log('Test new Height:', newHeight);
-      console.log('Test last Height:', this.lastHeight);
-      if (newHeight === this.lastHeight) return;
-      if (newHeight !== this.lastHeight) {
-        const duration = 0.1;
-        Motion.timeline([
-          [this.el, {
-            height: [`${this.contentEl.offsetHeight + this.lastHeight}px`],
-            duration,
-            easing: 'cubic-bezier(0.7, 0, 0.3, 1)'
-          }]
-        ]).finished;
+      let newContentHeight = this.contentEl.offsetHeight;
+      if (newContentHeight === this.prevContentHeight) return;
+      if (newContentHeight === 0 && this.prevContentHeight) {
+        newContentHeight = this.prevContentHeight;
       }
+      const targetHeight = newContentHeight + this.baseHeight;
+      Motion.timeline([
+        [this.el, {
+          height: [`${targetHeight}px`],
+          duration: 0.01,
+          easing: 'cubic-bezier(0.7, 0, 0.3, 1)'
+        }]
+      ]).finished;
+      this.prevContentHeight = newContentHeight;
     }
 
     type() {

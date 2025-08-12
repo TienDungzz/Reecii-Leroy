@@ -7,13 +7,13 @@
   assign grid_gap = bl_stts.grid_gap | default: 20
   assign alignment = bl_stts.alignment | default: 'left'
 
-  case block.settings.image_ratio
+  case bl_stts.image_ratio
   when 'landscape'
     assign ratio = '16 / 9'
   when 'portrait'
     assign ratio = '4 / 5'
   when 'adapt'
-    assign ratio = block.settings.image.aspect_ratio
+    assign ratio = bl_stts.image.aspect_ratio
   when 'custom'
     assign ratio = 'initial'
   endcase
@@ -55,8 +55,8 @@
 {% style %}
   .categories-list-container-{{ bl_id }} .category-item__image {
     --ratio: {{ ratio }};
-  {% if block.settings.image_ratio == 'custom' %}
-    --image-height: {{ block.settings.image_height }}px;
+  {% if bl_stts.image_ratio == 'custom' %}
+    --image-height: {{ bl_stts.image_height }}px;
   {% else %}
     --image-height: auto;
   {% endif %}
