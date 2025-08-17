@@ -1,0 +1,42 @@
+{%- liquid
+  assign card_article = block.settings.article
+-%}
+
+{% stylesheet %}
+    .blog-post-block__image-container .group-article-information{
+        position: absolute;
+        bottom: 0;
+    }
+{% endstylesheet %}
+
+<div class="blog-post-block__image-container relative">
+    <a href="{{ card_article.url }}">
+        {% content_for 'block', id: 'image', type: '_blog-post-image', image: card_article.image, card_article: card_article %}
+    </a>
+    {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+    "name": "Group: Article media",
+    "class": "group-article-media",
+    "tag": null,
+    "blocks": [
+        {
+            "type": "_card-article-group-infor"
+        }
+    ],
+    "settings": [
+        {
+            "type": "article",
+            "id": "article",
+            "label": "Article"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Group: Article media"
+        }
+    ]
+}
+{% endschema %}

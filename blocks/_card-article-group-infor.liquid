@@ -2,27 +2,25 @@
   {% content_for 'blocks' %} 
 {% endcapture %}
 
-{% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+{% render 'group', class: 'group-article-information', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
 
 {% schema %}
 {
-  "name": "t:names.group",
+  "name": "Group: Article infor",
   "tag": null,
   "blocks": [
-    {
-      "type": "@theme"
-    },
-    {
-      "type": "@app"
-    },
-    {
-      "type": "_divider"
-    },
-    {
-      "type": "_group-hover"
-    }
+    { "type": "@app" },
+    { "type": "_card-article-button-flex" },
+    { "type": "_card-article-title-flex" },
+    { "type": "_card-article-description-flex" },
+    { "type": "_card-article-details-flex" }
   ],
   "settings": [
+    {
+      "type": "article",
+      "id": "article",
+      "label": "Article"
+    },
     {
       "type": "url",
       "id": "link",
@@ -702,8 +700,7 @@
   ],
   "presets": [
     {
-      "name": "t:names.group",
-      "category": "t:categories.layout"
+      "name": "Group: Article infor"
     }
   ]
 }
