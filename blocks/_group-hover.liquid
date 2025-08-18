@@ -1,12 +1,26 @@
+{% stylesheet %}
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (min-width: 1025px) {
+    .group-block-content .group--reveal {
+      overflow: hidden;
+      transition: max-height 2s;
+      max-height: 0;
+    }
+
+    .group-block-content:hover .group--reveal {
+      max-height: 100%;
+    }
+  }
+{% endstylesheet %}
+
 {% capture children %}
   {% content_for 'blocks' %} 
 {% endcapture %}
 
-{% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+{% render 'group-hover', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
 
 {% schema %}
 {
-  "name": "t:names.group",
+  "name": "Group: Hover",
   "tag": null,
   "blocks": [
     {
@@ -17,9 +31,6 @@
     },
     {
       "type": "_divider"
-    },
-    {
-      "type": "_group-hover"
     }
   ],
   "settings": [
@@ -32,6 +43,12 @@
       "type": "checkbox",
       "id": "open_in_new_tab",
       "label": "t:settings.open_new_tab",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "group_reveal",
+      "label": "Reveal on hover",
       "default": false
     },
     {
@@ -391,7 +408,7 @@
       "default": false,
       "visible_if": "{{ block.settings.background_media == 'image' or block.settings.background_media == 'video' }}"
     },
-   {
+    {
       "type": "select",
       "id": "image_ratio",
       "options": [
@@ -441,6 +458,17 @@
       "unit": "px",
       "label": "t:settings.border_width",
       "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.border_opacity",
+      "default": 100,
       "visible_if": "{{ block.settings.border != 'none' }}"
     },
     {
@@ -507,18 +535,27 @@
     {
       "type": "color",
       "id": "shadow_color",
-      "label": "t:settings.shadow_color",
-      "default": "#000000",
-      "alpha": true
+      "label": "t:settings_schema.colors.settings.color.label",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "shadow_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "t:settings_schema.global.settings.opacity.label",
+      "default": 0
     },
     {
       "type": "range",
       "id": "shadow_horizontal_offset",
       "min": -12,
       "max": 12,
-      "step": 1,
+      "step": 2,
       "unit": "px",
-      "label": "t:settings.horizontal_offset",
+      "label": "t:settings_schema.global.settings.horizontal_offset.label",
       "default": 0
     },
     {
@@ -526,9 +563,9 @@
       "id": "shadow_vertical_offset",
       "min": -12,
       "max": 12,
-      "step": 1,
+      "step": 2,
       "unit": "px",
-      "label": "t:settings.vertical_offset",
+      "label": "t:settings_schema.global.settings.vertical_offset.label",
       "default": 0
     },
     {
@@ -536,7 +573,7 @@
       "id": "shadow_blur",
       "min": 0,
       "max": 20,
-      "step": 2,
+      "step": 5,
       "unit": "px",
       "label": "t:settings_schema.global.settings.blur.label",
       "default": 0
@@ -682,9 +719,10 @@
   ],
   "presets": [
     {
-      "name": "t:names.group",
+      "name": "Group: Hover",
       "category": "t:categories.layout"
     }
   ]
 }
 {% endschema %}
+  

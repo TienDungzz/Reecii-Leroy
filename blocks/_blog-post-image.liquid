@@ -1,45 +1,56 @@
+{%- liquid
+  assign media_aspect_ratio = block.settings.image_ratio
+  assign ratio = 1
+  if image and media_aspect_ratio == 'portrait'
+    assign ratio = 0.8
+  elsif image and media_aspect_ratio == 'adapt'
+    assign ratio = image.aspect_ratio
+  endif
+  if ratio == 0 or ratio == null
+    assign ratio = 1
+  endif
+-%}
 
-
-{% style %}
-  .blog-post-card__image {
-    width: 100%;
+{% stylesheet %}
+  .blog-post-block__image-container img {
     height: 100%;
     object-fit: cover;
     object-position: center center;
-    height: calc(var(--blog-post-card-img-height) * var(--blog-post-card-scale));
+    width: 100%;
+    transition-property: opacity, transform;
+    transition-duration: var(--duration-long);
+    transition-timing-function: var(--cubic-fast);
   }
-  .blog-post-card__image--small {
-    --blog-post-card-img-height: 280px;
+  .blog-post-block__image-container .ratio img {
+    position: absolute;
+    bottom: 0;
+    top: 0;
   }
-  .blog-post-card__image--medium {
-    --blog-post-card-img-height: 340px;
-  }
-  .blog-post-card__image--large {
-    --blog-post-card-img-height: 400px;
-  }
-{% endstyle %}
+{% endstylesheet %}
 
-<img
-  srcset="
-    {% if image.width >= 350 %}{{ image | image_url: width: 350 }} 350w,{% endif %}
-    {% if image.width >= 750 %}{{ image | image_url: width: 750 }} 750w,{% endif %}
-    {% if image.width >= 1100 %}{{ image | image_url: width: 1100 }} 1100w,{% endif %}
-    {% if image.width >= 1500 %}{{ image | image_url: width: 1500 }} 1500w,{% endif %}
-    {{ image | image_url }} {{ image.width }}w
-  "
-  src="{{ image | image_url: width: 1100 }}"
-  loading="eager"
-  fetchpriority="high"
-  width="{{ image.width }}"
-  height="{{ image.height }}"
-  alt="{{ image.alt | escape }}"
-  class="
-    border-style
-    blog-post-card__image
-    blog-post-card__image--{{ block.settings.height }}
-  "
-  style="{% render 'border-override', settings: block.settings %}"
->
+<div class="ratio hiepne-{{ media_aspect_ratio }}" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
+  <img
+    srcset="
+      {% if image.width >= 350 %}{{ image | image_url: width: 350 }} 350w,{% endif %}
+      {% if image.width >= 750 %}{{ image | image_url: width: 750 }} 750w,{% endif %}
+      {% if image.width >= 1100 %}{{ image | image_url: width: 1100 }} 1100w,{% endif %}
+      {% if image.width >= 1500 %}{{ image | image_url: width: 1500 }} 1500w,{% endif %}
+      {{ image | image_url }} {{ image.width }}w
+    "
+    src="{{ image | image_url: width: 1100 }}"
+    loading="eager"
+    fetchpriority="high"
+    width="{{ image.width }}"
+    height="{{ image.height }}"
+    alt="{{ image.alt | escape }}"
+    class="
+      border-style
+      blog-post-card__image
+      blog-post-card__image--{{ block.settings.height }}
+    "
+    style="{% render 'border-override', settings: block.settings %}"
+  >
+</div>
 
 {% schema %}
 {
@@ -47,24 +58,24 @@
   "blocks": [],
   "settings": [
     {
-      "type": "select",
-      "id": "height",
-      "label": "t:settings.height",
-      "options": [
+    "type": "select",
+    "id": "image_ratio",
+    "options": [
         {
-          "value": "small",
-          "label": "t:options.small"
+        "value": "adapt",
+        "label": "t:sections.featured-collection.settings.image_ratio.options__1.label"
         },
         {
-          "value": "medium",
-          "label": "t:options.medium"
+        "value": "portrait",
+        "label": "t:sections.featured-collection.settings.image_ratio.options__2.label"
         },
         {
-          "value": "large",
-          "label": "t:options.large"
+        "value": "square",
+        "label": "t:sections.featured-collection.settings.image_ratio.options__3.label"
         }
-      ],
-      "default": "large"
+    ],
+    "default": "adapt",
+    "label": "t:sections.featured-collection.settings.image_ratio.label"
     },
     {
       "type": "select",
