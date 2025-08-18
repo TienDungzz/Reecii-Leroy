@@ -27,8 +27,10 @@
 
   assign border = bl_stts.border
   if border == 'solid' and text_width == '100%' and class_heading == 'section-header'
-    assign has_border = true
+    assign has_heading_border = true
     assign heading_border_classes = 'heading-border--solid relative justify-center'
+  elsif bl_stts.enable_border == true
+    assign has_border = true
   elsif bl_stts.enable_border_bottom == true
     assign enable_border_bottom = true
   endif
@@ -53,6 +55,15 @@
     for spacing in spacing_content
       assign spacing_text_code = spacing | prepend: '<span class="spacing_text--content" style="margin-left: [spacing_left]ch; margin-right: [spacing_right]ch;">' | append: '</span>' | replace: '[spacing_left]', spacing_left | replace: '[spacing_right]', spacing_right
       assign text = text | replace: spacing, spacing_text_code
+    endfor
+  endif
+
+  assign stroke_text = bl_stts.stroke_text
+  assign stroke_content = bl_stts.stroke_text_content | split: ','
+  if stroke_content != blank and stroke_text == true
+    for stroke in stroke_content
+      assign stroke_text_code = stroke | prepend: '<stroke-text class="stoke_text--content">' | append: '</stroke-text>'
+      assign text = text | replace: stroke, stroke_text_code
     endfor
   endif
 
@@ -87,8 +98,12 @@
 {% endif %}
 
 {% capture attributes %}
-  class="{{ class }}{% if has_border %} {{ heading_border_classes }}{% endif %} size-style spacing-style text-block max-w-full flex flex-column text-block--{{ block.id }} {{ bl_stts.type_preset }}
-    {{ text_block_classes }}{% if enable_border_bottom %} border-style text-border-style-bottom{% endif %}
+  class="
+    size-style spacing-style text-block max-w-full flex flex-column text-block--{{ block.id }}
+    {{ bl_stts.type_preset }} {{ class }} {{ text_block_classes }}
+    {% if has_heading_border %} {{ heading_border_classes }}{% endif %}
+    {% if enable_border_bottom %} border-style text-border-style-bottom{% endif %}
+    {% if has_border %} border-style{% endif %}
   "
   style="
     {% render 'size-style', settings: bl_stts %}
@@ -103,7 +118,7 @@
       --text-corner-radius: {{ bl_stts.corner_radius }}px;
       --text-padding: max(var(--padding-2xs), calc((var(--text-corner-radius) + var(--padding-xs)) * (1 - cos(45deg))));
     {% endif %}
-    {% if has_border or enable_border_bottom %}
+    {% if has_heading_border or enable_border_bottom or has_border %}
       {%- render 'border-override', settings: bl_stts -%}
     {% endif %}
   "
@@ -136,23 +151,21 @@
 {% endif %}
 {% if fallback_text != blank and plain_text == blank %}
   <div {{ attributes }}>
-    {%- if has_border or is_card_heading -%}
-    <div class="text{% if has_border %} {{ text_class }}{% endif %}">
+    {%- if has_heading_border or is_card_heading -%}
+    <div class="text{% if has_heading_border %} {{ text_class }}{% endif %}">
     {%- endif -%}
       {{ fallback_text }}
-    {%- if has_border or is_card_heading -%}
+    {%- if has_heading_border or is_card_heading -%}
     </div>
     {%- endif -%}
   </div>
 {% elsif plain_text != blank %}
   <{{ element }} {{ attributes }}>
-    {%- if has_border or is_card_heading -%}
-      <div class="text{% if has_border %} {{ text_class }}{% endif %}{% if text_element %} text-animation-line{% endif %}">
-    {% elsif text_element %}
-      <div class="text-animation-line">
+    {%- if has_heading_border or is_card_heading or text_element -%}
+      <div class="{% if has_heading_border or is_card_heading %}text {{ text_class }}{% endif %}{% if text_element %} text-animation-line{% endif %}">
     {%- endif -%}
       {{ text }}
-    {%- if has_border or is_card_heading or text_element -%}
+    {%- if has_heading_border or is_card_heading or text_element -%}
       </div>
     {%- endif -%}
   </{{ element }}>
@@ -366,6 +379,23 @@
   .custom-color,
   .custom-color > :is(h1, h2, h3, h4, h5, h6, p, *) {
     color: var(--color);
+  }
+
+  .stoke_text--content {
+     --fill-color: var(--color-foreground);
+      position: relative;
+      display: inline-block;
+      text-decoration: none;
+      text-transform: uppercase;
+      -webkit-text-stroke: 1px var(--fill-color);
+      background: linear-gradient(var(--fill-color) 0 100%) left / 0 no-repeat;
+      color: transparent;
+      background-clip: text;
+      transition: background-size var(--animation-slowest-smooth);
+
+      /* &:hover {
+        background-size: 100%;
+      } */
   }
 
   @media (prefers-reduced-motion: no-preference) {

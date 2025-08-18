@@ -1382,7 +1382,9 @@ class SwiperComponent extends HTMLElement {
     const baseBreakpoints = getOption("breakpoints", null);
 
     // Calculate default space between slides if not breakpoint provided
-    const defaultSpacebetween = !baseBreakpoints ? baseSpaceBetween * 0.5 : baseSpaceBetween; // Mobile
+    const defaultSpacebetween = !baseBreakpoints
+      ? baseSpaceBetween * 0.5
+      : baseSpaceBetween; // Mobile
 
     const defaultBreakpoints = !baseBreakpoints
       ? {
@@ -2191,77 +2193,6 @@ class ColorSwatch extends HTMLElement {
 }
 customElements.define("color-swatch", ColorSwatch);
 
-// Tabs Component khinh
-class TabsComponent extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.init();
-  }
-
-  init() {
-    this.tabs = this.querySelectorAll(".tabs-component-panel-trigger");
-    this.tabContents = this.querySelectorAll(".tabs-component-content");
-
-    this.initRender();
-    this.tabs.forEach((tab) => {
-      tab.addEventListener("click", this.handleTabClick.bind(this));
-    });
-  }
-
-  handleTabClick(event) {
-    event.preventDefault();
-
-    let target = event.target,
-      tabId = target.getAttribute("href");
-
-    if (target.classList.contains("--active")) return;
-
-    this.tabs.forEach((tab) => {
-      tab.classList.remove("--active");
-    });
-
-    target.classList.add("--active");
-
-    this.tabContents.forEach((content) => {
-      content.classList.remove("--active");
-
-      if (content.id === tabId.substring(1)) {
-        const template = content.querySelector("template");
-        if (template && !content.hasAttribute("data-rendered")) {
-          const templateContent = template.content.cloneNode(true);
-          content.appendChild(templateContent);
-          content.setAttribute("data-rendered", "true");
-        }
-        content.classList.add("--active");
-      }
-    });
-  }
-
-  initRender() {
-    const activeTab = this.querySelector(
-      ".tabs-component-panel-trigger.--active"
-    );
-    if (activeTab) {
-      const activeTabId = activeTab.getAttribute("href");
-      const activeContent = document.querySelector(activeTabId);
-
-      if (activeContent) {
-        const template = activeContent.querySelector("template");
-        if (template && !activeContent.hasAttribute("data-rendered")) {
-          const templateContent = template.content.cloneNode(true);
-          activeContent.appendChild(templateContent);
-          activeContent.setAttribute("data-rendered", "true");
-        }
-      }
-    }
-    this.hasInitialized = true;
-  }
-}
-customElements.define("tabs-component", TabsComponent);
-
 // Product Grid Show More
 
 class ShowMoreProductGrid extends HTMLElement {
@@ -2300,27 +2231,6 @@ class ShowMoreProductGrid extends HTMLElement {
 }
 customElements.define("show-more-product-grid", ShowMoreProductGrid);
 
-// const imageBlocks = document.querySelectorAll(".image-block--reveal");
-
-// imageBlocks.forEach(image => {
-//   const minExtra = 300;
-//   const blockHeight = image.offsetHeight;
-//   const img = image.querySelector("img");
-//   const react = img.getBoundingClientRect();
-//   let imgHeight = react.height;
-//   const speed = parseFloat(image.dataset.speed) || 0.5;
-
-//     if (imgHeight - blockHeight < minExtra) {
-//       imgHeight = react.height + minExtra;
-//     }
-
-//   const maxMove = (imgHeight - blockHeight) * speed;
-
-//   Motion.scroll(Motion.animate(image, { y: [-maxMove, maxMove] }),
-//     { target: image, offset: ["start end", "end start"] }
-//   );
-// });
-
 class ParallaxImg extends HTMLElement {
   constructor() {
     super();
@@ -2336,7 +2246,9 @@ class ParallaxImg extends HTMLElement {
     if (this.img.complete) {
       this.setupParallax();
     } else {
-      this.img.addEventListener("load", () => this.setupParallax(), { once: true });
+      this.img.addEventListener("load", () => this.setupParallax(), {
+        once: true,
+      });
     }
   }
 
@@ -2359,15 +2271,15 @@ class ParallaxImg extends HTMLElement {
     const startY = -maxMove * screenSpeed;
     const endY = maxMove * screenSpeed;
 
-    // Motion.scroll(Motion.animate(this, { y: [startY, endY] }),
-    //   { target: this, offset: ["start end", "end start"] }
-    // );
-
     Motion.scroll(
-      Motion.animate(this.img, { y: [startY, endY] }, {
-        ease: [0.25, 0.1, 0.25, 1],
-        duration: 0.3
-      }),
+      Motion.animate(
+        this.img,
+        { y: [startY, endY] },
+        {
+          ease: [0.25, 0.1, 0.25, 1],
+          duration: 0.3,
+        }
+      ),
       { target: this, offset: ["start end", "end start"] }
     );
   }
@@ -2401,3 +2313,58 @@ class RTEFormatter extends HTMLElement {
 if (!customElements.get('rte-formatter')) {
   customElements.define('rte-formatter', RTEFormatter);
 }
+class StrokeText extends HTMLElement {
+  constructor() {
+    super();
+    this._animation = null;
+  }
+
+  connectedCallback() {
+    this.style.backgroundSize = "0% 100%";
+    this.style.backgroundRepeat = "no-repeat";
+    this.style.transition = "none";
+
+    this.addEventListener("mouseenter", (e) => {
+      this.updatePosition(e);
+      this.play(true);
+    });
+
+    this.addEventListener("mouseleave", (e) => {
+      this.updatePosition(e);
+      this.play(false);
+    });
+
+    this.addEventListener("mousemove", (e) => this.updatePosition(e));
+  }
+
+  play(toFull) {
+    if (this._animation) this._animation.cancel();
+
+    this._animation = Motion.animate(
+      this,
+      { backgroundSize: toFull ? "100% 100%" : "0% 100%" },
+      { duration: 0.4, easing: [0.61, 0.22, 0.23, 1] }
+    );
+  }
+
+  updatePosition(e) {
+    const rect = this.getBoundingClientRect();
+    // console.log("e.clientX", e.clientX)
+    // console.log("rect.left", rect.left)
+    // console.log("rect.width", rect.width)
+    const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
+    // console.log("xPercent", xPercent)
+    this.style.backgroundPosition = `${xPercent}% 50%`;
+  }
+}
+
+customElements.define("stroke-text", StrokeText);
+
+function initSplitting() {
+  const buttons = document.querySelectorAll("[data-splitting-target]");
+  buttons.forEach((button) => {
+    Splitting({ target: button, by: button.dataset.splittingTextBy });
+  });
+}
+
+initSplitting();

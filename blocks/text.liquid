@@ -179,6 +179,18 @@
       "visible_if": "{{ block.settings.typing_text == false and block.settings.spacing_text == true }}"
     },
     {
+      "type": "checkbox",
+      "id": "stroke_text",
+      "label": "Stroke",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "stroke_text_content",
+      "label": "Select stroke content",
+      "visible_if": "{{ block.settings.stroke_text == true }}",
+    },
+    {
       "type": "header",
       "content": "t:content.layout"
     },
@@ -511,11 +523,36 @@
       "type": "header",
       "content": "t:settings.border"
     },
+     {
+      "type": "checkbox",
+      "id": "enable_border",
+      "label": "Enable border",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_border_bottom == false }}"
+    },
     {
       "type": "checkbox",
       "id": "enable_border_bottom",
       "label": "Enable bottom border",
-      "default": false
+      "default": false,
+      "visible_if": "{{ block.settings.enable_border == false }}"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.borders",
+      "visible_if": "{{  block.settings.enable_border_bottom == true or block.settings.enable_border == true }}",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
     },
     {
       "type": "range",
@@ -526,7 +563,7 @@
       "unit": "px",
       "label": "Thickness",
       "default": 0,
-      "visible_if": "{{ block.settings.enable_border_bottom == true }}"
+      "visible_if": "{{ block.settings.enable_border_bottom == true or block.settings.enable_border == true }}"
     },
     {
       "type": "select",
@@ -555,6 +592,17 @@
       "label": "Custom width",
       "default": 100,
       "visible_if": "{{ block.settings.border_width_type == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_border == true }}"
     },
     {
       "type": "header",

@@ -1,0 +1,79 @@
+{%- assign labels = labels | split: ',' -%}
+
+{%- for label in labels -%}
+  {%- capture class_default -%}
+    {{ class }} tabs-component-panel-trigger
+    {% if forloop.first %} --active{% endif %}
+  {%- endcapture -%}
+
+  {%- capture link -%}#tabs-{{ id }}-{{ forloop.index }}{%- endcapture -%}
+
+  {% render 'button',
+    link: link,
+    label: label,
+    class: class_default,
+    style_class: settings.style_class,
+    button_style: settings.button_style,
+    link_underline: settings.link_underline,
+    splitting_text: splitting_text,
+    splitting_text_by: splitting_text_by
+  %}
+{%- endfor -%}
+
+{%- if settings.style_class == 'button' -%}
+  <span class="mask-background absolute top-0 left-0 whitespace-nowrap flex-center"></span>
+{%- endif -%}
+
+{%- stylesheet -%}
+  .tabs-component-panel-trigger:hover,
+  .tabs-component-panel-trigger.--active {
+    --button-color: var(--color-tab-active);
+    --button-background-color: var(--background-tab-active);
+    background: var(--background-tab-active);
+    &.button--outline {
+      --border-outline-color: var(--color-tab-active);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (min-width: 1025px) {
+    .splitting.chars {
+      .char {
+        overflow: hidden;
+        color: transparent;
+
+        &:before,
+        &:after {
+          visibility: visible;
+          color: var(--button-color);
+          transition: transform 0.35s var(--ease-out-smooth);
+          transition-delay: calc(0.2s + (0.02s * (var(--char-index))));
+        }
+
+        &:before {
+          color: var(--color-tab-active);
+          transition-delay: calc(0.02s * (var(--char-index)));
+        }
+      }
+
+      &:hover .char:before {
+        transition-delay: calc(0.2s + (0.02s * (var(--char-index))));
+      }
+      &:hover .char:after {
+        transition-delay: calc(0.02s * (var(--char-index)));
+      }
+    }
+
+    .splitting.chars {
+      .char:before {
+        transform: translateY(100%);
+      }
+      &:hover .char:before {
+        transform: translateY(0%);
+      }
+      &:hover .char:after {
+        transform: translateY(-100%);
+      }
+    }
+  }
+
+{%- endstylesheet -%}

@@ -2,6 +2,10 @@
   assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
   assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
   assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
+
+  assign secondary_font_bold = settings.type_subheading_font | font_modify: 'weight', 'bold'
+  assign secondary_font_italic = settings.type_subheading_font | font_modify: 'style', 'italic'
+  assign secondary_font_bold_italic = secondary_font_bold | font_modify: 'style', 'italic'
 -%}
 {% style %}
   {{ settings.type_body_font | font_face: font_display: 'swap' }}
@@ -9,6 +13,11 @@
   {{ body_font_italic | font_face: font_display: 'swap' }}
   {{ body_font_bold_italic | font_face: font_display: 'swap' }}
   {{ settings.type_header_font | font_face: font_display: 'swap' }}
+
+  {{ settings.type_subheading_font | font_face: font_display: 'swap' }}
+  {{ secondary_font_bold | font_face: font_display: 'swap' }}
+  {{ secondary_font_italic | font_face: font_display: 'swap' }}
+  {{ secondary_font_bold_italic | font_face: font_display: 'swap' }}
 
   {% for scheme in settings.color_schemes -%}
     {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
@@ -228,6 +237,11 @@
     --arrow-radius: {{ settings.arrows_radius }}px;
     --arrow-border-thickness: {{ settings.arrows_border_thickness }}px;
     --arrow-border-color: var(--arrow-color);
+    
+    /* Font families */
+    --font-subheading--family: {{ settings.type_subheading_font.family }}, {{ settings.type_subheading_font.fallback_families }};
+    --font-subheading--style: {{ settings.type_subheading_font.style }};
+    --font-subheading--weight: {{ settings.type_subheading_font.weight }};
 
    /* Section Heights */
     --section-height-small: 15rem;
@@ -480,6 +494,15 @@
     --minimum-touch-target: 4.4rem;  /* 44px */
     --button-size: var(--minimum-touch-target);
 
+    /* Icons */
+    --icon-size-2xs: 0.8rem;
+    --icon-size-xs: 1.2rem;
+    --icon-size-sm: 1.6rem;
+    --icon-size-md: 2rem;
+    --icon-size-lg: 2.4rem;
+    --icon-size-xl: 3.2rem;
+    --icon-stroke-width: {% if settings.icon_stroke == 'thin' %}1px{% elsif settings.icon_stroke == 'heavy' %}2px{% else %}1.5px{% endif %};
+
     /* Inputs */
     --inputs-radius: {{ settings.inputs_radius }}px;
     --inputs-border-width: {{ settings.inputs_border_thickness }}px;
@@ -600,6 +623,7 @@
 
     /** Z-Index / Layering */
     --layer-section-background: -2;
+    --layer-raised: 2;
 
     /* Animation */
     --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);

@@ -22,25 +22,25 @@
 {% endcomment %}
 
 {%- liquid
-  assign card_product = block.settings.product
+  assign product = closest.product
 -%}
 
 <div class="card--block card-wrapper product-card-wrapper underline-links-hover color-{{ block.settings.color_scheme }}">
   <div
     class="
       card card--{{ settings.card_style }} card--quickadd-type-{{ settings.quick_add_type }}
-      {% if card_product.featured_media %} card--media{% else %} card--text{% endif %}
-      {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }}{% endif %}
+      {% if product.featured_media %} card--media{% else %} card--text{% endif %}
+      {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }} gradient{% endif %}
       {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
       {% if extend_height %} card--extend-height{% endif %}
-      {% if card_product.featured_media == nil and settings.card_style == 'card' %} ratio{% endif %}
+      {% if product.featured_media == nil and settings.card_style == 'card' %} ratio{% endif %}
       {% if horizontal_class %} card--horizontal{% endif %}
       flex-{{ block.settings.content_direction }} flex-{{ block.settings.wrap }} items-{{ block.settings.align_items}} justify-{{ block.settings.justify_content }}
     "
   >
     <template>
       <div
-        data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'
+        data-json-product='{"id": {{product.id}},"handle": "{{product.handle}}","media": {{product.media | json | escape}},"variants": {{ product.variants | json | escape}}}'
       ></div>
     </template>
     {% content_for 'blocks' %}
@@ -66,11 +66,6 @@
     { "type": "_card-product-countdown-flex" }
   ],
   "settings": [
-    {
-      "type": "product",
-      "id": "product",
-      "label": "t:sections.collage.blocks.product.settings.product.label"
-    },
     {
       "type": "color_scheme",
       "id": "color_scheme",

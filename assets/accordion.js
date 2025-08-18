@@ -74,7 +74,7 @@ class AccordionCustom extends HTMLElement {
   }
 
   async transition(value) {
-    this.details.style.overflow = "hidden";
+    // this.details.style.overflow = "hidden";
 
     if (value) {
       this.details.setAttribute("open", "");
@@ -83,7 +83,11 @@ class AccordionCustom extends HTMLElement {
         [
           this.details,
           {
-            height: [
+            height: this.contentElement.classList.contains(
+              "floating-panel-component"
+            )
+              ? `${this.summaryElement.clientHeight}px`
+              : [
               `${this.summaryElement.clientHeight}px`,
               `${this.details.scrollHeight}px`,
             ],
@@ -92,7 +96,11 @@ class AccordionCustom extends HTMLElement {
         ],
         [
           this.contentElement,
-          { opacity: [0, 1], transform: ["translateY(10px)", "translateY(0)"] },
+          {
+            opacity: [0, 1],
+            height: [ 0, `${this.contentElement.scrollHeight}px`],
+            transform: ["translateY(10px)", "translateY(0)"],
+          },
           { duration: 0.15, at: "-0.1" },
         ],
       ]).finished;
@@ -114,8 +122,8 @@ class AccordionCustom extends HTMLElement {
       this.details.removeAttribute("open");
     }
 
-    this.details.style.height = "auto";
-    this.details.style.overflow = "visible";
+    // this.details.style.height = "auto";
+    // this.details.style.overflow = "visible";
   }
 
   dispatchEventHandler() {
