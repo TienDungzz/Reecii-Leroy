@@ -138,7 +138,7 @@ class MarqueeComponent extends HTMLElement {
   #addRepeatedItems(numberOfCopies = this.#calculateNumberOfCopies()) {
     if (!this.wrapper) return;
 
-    for (let i = 0; i < numberOfCopies - 1; i++) {
+    for (let i = 0; i < numberOfCopies; i++) {
       const clone = this.wrapper.querySelector('.marquee__repeated-items').cloneNode(true);
 
       this.content.appendChild(clone);

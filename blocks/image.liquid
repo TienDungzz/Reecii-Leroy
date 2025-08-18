@@ -54,11 +54,13 @@
   image-block__image{% if block.settings.enable_parallax %} image-parallax--target{% endif %}
 {% endcapture %}
 
+{% comment %} href="{{ image | image_url : width: image_width_2x , height: image_height_2x  }}" {% endcomment %}
 {% capture attributes_fancybox %}
-  href="{{ image | image_url : width: image_width_2x , height: image_height_2x  }}"
+  href="{{ block.settings.fancybox_link }}"
   data-pswp-src="{{ image | image_url : width: image_width_2x , height: image_height_2x  }}"
   data-pswp-width="{{ image_width_2x  }}"
   data-pswp-height="{{ image_height_2x }}"
+  data-pswp-type="video"
   target="_blank"
 {% endcapture %}
 
@@ -98,6 +100,7 @@
 {%- if block.settings.enable_fancybox -%}
   <script type="module">
     import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
+    import PhotoSwipeVideoPlugin from 'https://raw.githubusercontent.com/dimsemenov/photoswipe-video-plugin/refs/heads/main/dist/photoswipe-video-plugin.esm.js';
     if (!window._myScriptLoaded) {
       window._myScriptLoaded = true;
 
@@ -155,6 +158,12 @@
       "id": "link",
       "label": "Link",
       "visible_if": "{{ block.settings.enable_fancybox == false }}"
+    },
+    {
+      "type": "url",
+      "id": "fancybox_link",
+      "label": "Fancybox link",
+      "visible_if": "{{ block.settings.enable_fancybox }}"
     },
     {
       "type": "checkbox",
@@ -370,7 +379,7 @@
     },
     {
       "type": "range",
-      "id": "padding_top",
+      "id": "padding-block-start",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -379,7 +388,7 @@
     },
     {
       "type": "range",
-      "id": "padding_right",
+      "id": "padding-inline-end",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -388,7 +397,7 @@
     },
     {
       "type": "range",
-      "id": "padding_bottom",
+      "id": "padding-block-end",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -397,7 +406,7 @@
     },
     {
       "type": "range",
-      "id": "padding_left",
+      "id": "padding-inline-start",
       "min": 0,
       "max": 100,
       "step": 1,

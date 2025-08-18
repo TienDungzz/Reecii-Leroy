@@ -88,9 +88,12 @@
 
 {%- capture attr_tabs_header -%}
   class="tabs-product-header flex xl:justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }} overflow-x-a"
-  style="--gap-x: {{ sec_stts.tabs_header_gap }}px; --pt: {{ sec_stts.tabs_header_padding_top | times: 0.1 }}rem; --pb: {{ sec_stts.tabs_header_padding_bottom | times: 0.1 }}rem;
-  --bg-color-active: {{ sec_stts.tabs_header_background_active }};
-  --color-active: {{ sec_stts.tabs_header_color_active }};
+  style="
+    --gap-x: {{ sec_stts.tabs_header_gap }}px;
+    --pt: {{ sec_stts.tabs_header_padding_top | times: 0.1 }}rem;
+    --pb: {{ sec_stts.tabs_header_padding_bottom | times: 0.1 }}rem;
+    --background-tab-active: {{ sec_stts.background_tab_active }};
+    --color-tab-active: {{ sec_stts.color_tab_active }};
   "
 {%- endcapture -%}
 
@@ -104,12 +107,6 @@
 {% comment %} End For layout type tabs-grid and tabs-carousel {% endcomment %}
 
 {%- stylesheet -%}
-  .tabs-product-header__item {
-    &.--active {
-      color: var(--color-active);
-      background: var(--bg-color-active);
-    }
-  }
   @media screen and (width <= 750px) {
     .swiper-component-mobile .swiper-wrapper {
       flex-wrap: nowrap;
@@ -474,7 +471,7 @@
             <tabs-component class="{% if has_media_banner %}block overflow-hidden{% endif %}">
               {%- if section_collections_list != blank -%}
                 <div {{ attr_tabs_header }}>
-                  {% for collection in section_collections_list %}
+                  {% comment %} {% for collection in section_collections_list %}
                     <a
                       href="#tabs-{{ sec_id }}-{{ forloop.index }}"
                       class="{{ class_tabs_product_header_item }}{% if forloop.first %} --active{% endif %}"
@@ -482,7 +479,24 @@
                     >
                       {{ collection.title | escape | default: 'Collection title' }}
                     </a>
-                  {% endfor %}
+                  {% endfor %} {% endcomment %}
+                  {%- capture labels -%}
+                    {%- for collection in section_collections_list -%}
+                      {{ collection.title | escape | default: 'Collection title' }}
+                      {%- unless forloop.last -%}
+                        ,
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  {%- endcapture -%}
+
+                  {%- render 'tab-header-item',
+                    settings: sec_stts,
+                    id: sec_id,
+                    labels: labels,
+                    splitting_text: true,
+                    splitting_text_by: "chars",
+                    class: class_tabs_product_header_item
+                  -%}
                 </div>
                 {% for collection in section_collections_list %}
                   {%- liquid
@@ -505,56 +519,60 @@
                     id="tabs-{{ sec_id }}-{{ forloop.index }}"
                     class="{{ class_tabs_product_grid }}{% if forloop.first %} --active{% endif %}"
                   >
-                    <template>
-                      {%- if show_mobile_slider -%}
-                        <swiper-component
-                          class="swiper-component-mobile"
-                          data-swiper-mobile
-                          {%- render 'swiper-data',
-                            settings: section.settings,
-                            loop: false,
-                            slides_per_view: columns_mobile,
-                            space_between: columns_gap
-                          -%}
-                        >
-                          <div class="swiper">
-                      {%- endif -%}
-                      <ul
-                        {{ attr_ul }}
-                        class="grid grid-layout product-grid list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+                    {%- unless forloop.first -%}
+                      <template>
+                    {%- endunless -%}
+                    {%- if show_mobile_slider -%}
+                      <swiper-component
+                        class="swiper-component-mobile"
+                        data-swiper-mobile
+                        {%- render 'swiper-data',
+                          settings: section.settings,
+                          loop: false,
+                          slides_per_view: columns_mobile,
+                          space_between: columns_gap
+                        -%}
                       >
-                        {% for product in section_collections limit: max_tiems %}
-                          <li
-                            id="Grid-item-{{ product.id }}-{{ forloop.index }}"
-                            class="grid__item{% if show_mobile_slider or layout_type == 'carousel' %} swiper-slide{% endif %}{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
-                            {% if scroll_reveal %}
-                              style="--animation-order: {{ forloop.index }};"
-                            {% endif %}
-                          >
-                            {% content_for 'block',
-                              type: 'card-product-flex',
-                              id: 'product-slide-item',
-                              closest.product: product
-                            %}
-                          </li>
-                        {% endfor %}
-                      </ul>
-                      {%- if show_mobile_slider -%}
-                        </div>
-                        </swiper-component>
-                      {%- endif -%}
-                      {%- if show_view_all and more_in_collection -%}
-                        <div class="center collection__view-all{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}">
-                          <a
-                            href="{{ collection.url }}"
-                            class="{% if view_all_style == 'link' %}link underlined-link{% elsif view_all_style == 'solid' %}button{% else %}button button-secondary{% endif %}"
-                            aria-label="{{ 'sections.featured_collection.view_all_label' | t: collection_name: sec_stts.collection.title | escape }}"
-                          >
-                            {{ 'sections.featured_collection.view_all' | t }}
-                          </a>
-                        </div>
-                      {%- endif -%}
-                    </template>
+                        <div class="swiper">
+                    {%- endif -%}
+                    <ul
+                      {{ attr_ul }}
+                      class="grid grid-layout product-grid list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+                    >
+                      {% for product in section_collections limit: max_tiems %}
+                        <li
+                          id="Grid-item-{{ product.id }}-{{ forloop.index }}"
+                          class="grid__item{% if show_mobile_slider or layout_type == 'carousel' %} swiper-slide{% endif %}{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
+                          {% if scroll_reveal %}
+                            style="--animation-order: {{ forloop.index }};"
+                          {% endif %}
+                        >
+                          {% content_for 'block',
+                            type: 'card-product-flex',
+                            id: 'product-slide-item',
+                            closest.product: product
+                          %}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                    {%- if show_mobile_slider -%}
+                      </div>
+                      </swiper-component>
+                    {%- endif -%}
+                    {%- if show_view_all and more_in_collection -%}
+                      <div class="center collection__view-all{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}">
+                        <a
+                          href="{{ collection.url }}"
+                          class="{% if view_all_style == 'link' %}link underlined-link{% elsif view_all_style == 'solid' %}button{% else %}button button-secondary{% endif %}"
+                          aria-label="{{ 'sections.featured_collection.view_all_label' | t: collection_name: sec_stts.collection.title | escape }}"
+                        >
+                          {{ 'sections.featured_collection.view_all' | t }}
+                        </a>
+                      </div>
+                    {%- endif -%}
+                    {%- unless forloop.first -%}
+                      </template>
+                    {%- endunless -%}
                   </div>
                 {% endfor %}
 
@@ -1032,7 +1050,12 @@
                       {%- endif -%}
                     </div>
                     <swiper-component
-                      {%- render 'swiper-data', settings: section.settings, loop: false, slides_per_view: columns_block_items, space_between: columns_gap -%}
+                      {%- render 'swiper-data',
+                        settings: section.settings,
+                        loop: false,
+                        slides_per_view: columns_block_items,
+                        space_between: columns_gap
+                      -%}
                     >
                       <div class="swiper">
                         <ul class="swiper-wrapper list-unstyled">
@@ -1104,7 +1127,6 @@
   -%}
 {%- endif -%}
 
-
 {% schema %}
 {
   "name": "t:sections.featured-collection.name",
@@ -1145,7 +1167,7 @@
     {
       "type": "collection_list",
       "id": "collection_list",
-      "label": "Collection list",
+      "label": "Collection list"
     },
     {
       "type": "range",
@@ -1273,20 +1295,66 @@
     },
     {
       "type": "paragraph",
-      "content": "Items",
+      "content": "Button",
       "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
     },
     {
+      "type": "select",
+      "id": "style_class",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "button",
+          "label": "t:options.primary"
+        },
+        {
+          "value": "button-secondary",
+          "label": "t:options.secondary"
+        },
+        {
+          "value": "link",
+          "label": "t:options.link"
+        }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:settings.type",
+      "visible_if": "{{ section.settings.style_class == 'button' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_underline",
+      "label": "Underline",
+      "default": false,
+      "visible_if": "{{ section.settings.style_class == 'link' }}"
+    },
+    {
       "type": "color",
-      "id": "tabs_header_color_active",
+      "id": "color_tab_active",
       "label": "Active color",
+      "alpha": true,
       "default": "#232323",
       "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
     },
     {
       "type": "color",
-      "id": "tabs_header_background_active",
+      "id": "background_tab_active",
       "label": "Active background",
+      "alpha": true,
       "default": "#f8f8f8",
       "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
     },
@@ -2220,7 +2288,7 @@
           },
           "blocks": {
             "media": {
-              "type": "card-product-media-flex",
+              "type": "_card-product-media-flex",
               "name": "Group: Product media",
               "settings": {
                 "product": "{{ closest.product }}",
@@ -2236,25 +2304,25 @@
               }
             },
             "vendor": {
-              "type": "card-product-vendor-flex",
+              "type": "_card-product-vendor-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
             },
             "title": {
-              "type": "card-product-title-flex",
+              "type": "_card-product-title-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
             },
             "price": {
-              "type": "card-product-price-flex",
+              "type": "_card-product-price-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
             },
             "variant": {
-              "type": "card-product-variant-flex",
+              "type": "_card-product-variant-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
@@ -2300,7 +2368,7 @@
           },
           "blocks": {
             "media": {
-              "type": "card-product-media-flex",
+              "type": "_card-product-media-flex",
               "name": "Group: Product media",
               "settings": {
                 "product": "{{ closest.product }}",
@@ -2316,25 +2384,25 @@
               }
             },
             "vendor": {
-              "type": "card-product-vendor-flex",
+              "type": "_card-product-vendor-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
             },
             "title": {
-              "type": "card-product-title-flex",
+              "type": "_card-product-title-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
             },
             "price": {
-              "type": "card-product-price-flex",
+              "type": "_card-product-price-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
             },
             "variant": {
-              "type": "card-product-variant-flex",
+              "type": "_card-product-variant-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
@@ -2372,7 +2440,7 @@
           },
           "blocks": {
             "media": {
-              "type": "card-product-media-flex",
+              "type": "_card-product-media-flex",
               "name": "Group: Product media",
               "settings": {
                 "product": "{{ closest.product }}",
@@ -2390,7 +2458,7 @@
               }
             },
             "group": {
-              "type": "card-product-information",
+              "type": "_card-product-information",
               "name": "Group: Information",
               "settings": {
                 "content_direction": "column",
@@ -2398,7 +2466,7 @@
               },
               "blocks": {
                 "vendor": {
-                  "type": "card-product-vendor-flex",
+                  "type": "_card-product-vendor-flex",
                   "settings": {
                     "product": "{{ closest.product }}"
                   }
@@ -2410,7 +2478,7 @@
                   }
                 },
                 "title": {
-                  "type": "card-product-title-flex",
+                  "type": "_card-product-title-flex",
                   "settings": {
                     "product": "{{ closest.product }}"
                   }
@@ -2422,7 +2490,7 @@
                   }
                 },
                 "price": {
-                  "type": "card-product-price-flex",
+                  "type": "_card-product-price-flex",
                   "settings": {
                     "product": "{{ closest.product }}"
                   }
@@ -2473,7 +2541,7 @@
           },
           "blocks": {
             "media": {
-              "type": "card-product-media-flex",
+              "type": "_card-product-media-flex",
               "name": "Group: Product media",
               "settings": {
                 "product": "{{ closest.product }}",
@@ -2489,25 +2557,25 @@
               }
             },
             "vendor": {
-              "type": "card-product-vendor-flex",
+              "type": "_card-product-vendor-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
             },
             "title": {
-              "type": "card-product-title-flex",
+              "type": "_card-product-title-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
             },
             "price": {
-              "type": "card-product-price-flex",
+              "type": "_card-product-price-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }
             },
             "variant": {
-              "type": "card-product-variant-flex",
+              "type": "_card-product-variant-flex",
               "settings": {
                 "product": "{{ closest.product }}"
               }

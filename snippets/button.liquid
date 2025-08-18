@@ -25,11 +25,15 @@
   {% else %}
     href="{{ link }}"
   {% endif %}
+  {%- if splitting_text -%}
+    data-splitting-target
+    data-splitting-text-by="{{ splitting_text_by }}"
+  {%- endif -%}
   class="
     {{ class }}
     size-style
     {{ style_class }}
-    {% if block.settings.link_reveal %}link--reveal{% endif %}
+    {% if block.settings.link_reveal and block.settings.style_class == 'link' %}link--reveal{% endif %}
     {% if link_underline %}link--underline{% endif %}
     {% if button_style == 'outline' %}button--outline{% endif %}
     {{ style_class }}--{{ block.id }}
@@ -40,24 +44,28 @@
     rel="noopener noreferrer"
   {%- endif -%}
   {{ shopify_attributes }}
-  {% if block.settings.link_reveal %}
+  {% if block.settings.link_reveal and block.settings.style_class == 'link' %}
     data-text="{{ label }}"
   {% endif %}
 >
   {{ label }}
-  {% if block.settings.link_reveal %}
+  {% if block.settings.link_reveal and block.settings.style_class == 'link' %}
     <span class="text-mask none" data-text="{{ label }}">{{ label }}</span>
   {% endif %}
 </a>
 
 {% stylesheet %}
   .button.button--outline {
+    --button-color: var(--button-background-color);
+    --border-outline-color: var(--button-background-color);
     background-color: transparent;
-    border: 1px solid var(--color-primary-button-text);
-    color: var(--color-primary-button-text);
-    &:hover {
-      background-color: var(--color-primary-button-hover-text);
-      color: var(--color-primary-button-hover-text);
+    border: 1px solid var(--border-outline-color);
+  }
+
+  .button {
+    transition: color var(--animation-speed) var(--animation-easing), box-shadow var(--animation-speed) var(--animation-easing), background-color var(--animation-speed) var(--animation-easing), transform var(--animation-speed) var(--animation-easing);
+    &:active {
+      transform: scale(0.9);
     }
   }
 
