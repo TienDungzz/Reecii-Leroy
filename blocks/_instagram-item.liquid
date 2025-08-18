@@ -115,7 +115,7 @@
     %}
 {% endcapture %}
 
-<div class="instagram-item relative" {% if background_video != blank %}data-video-enabled="true"{% endif %}>
+<div class="instagram-item relative" {% if background_video != blank %}data-video-enabled="true"{% endif %} style="--icon-button-bg-color: {{ block.settings.icon_button_bg_color }}; --icon-button-color: {{ block.settings.icon_button_color }}; --icon-button-size: {{ block.settings.icon_button_size }}px; --icon-button-position-right: {{ block.settings.icon_button_position_right }}px; --icon-button-position-bottom: {{ block.settings.icon_button_position_bottom }}px; --icon-button-position-left: {{ block.settings.icon_button_position_left }}px;">
     <div class="instagram-item__image">
         <{{ element }}
             class="{{ class }}"
@@ -137,9 +137,26 @@
             {%- endif -%}
             
             {% if block.settings.enable_fancybox %}
-                <span class="icon_plus"></span>
+                {% if block.settings.icon_link != blank %}
+                    <a href="{{ block.settings.icon_link }}" class="text-inherit" 
+                    {% if block.settings.icon_open_in_new_tab %}
+                        target="_blank" rel="noopener"
+                    {% endif %}
+                    >
+                        <span class="icon_media icon_media--circle{% if block.settings.icon_button_position == 'left' %} position-left{% endif %}">
+                            <div class="svg-wrapper">
+                                {{ icon }}
+                            </div>
+                        </span>
+                    </a>
+                {% else %}
+                    <span class="icon_media icon_media--circle {% if block.settings.icon_button_position == 'left' %} position-left{% endif %}">
+                        <div class="svg-wrapper">
+                            {{ icon }}
+                        </div>
+                    </span>
+                {% endif %}
             {% endif %}
-            
         {% else %}
             {%- if background_video != blank -%}
                 {% if block.settings.enable_fancybox %}
@@ -164,9 +181,11 @@
                     {%- endfor -%}
                   </video>
 
-                  <span class="icon_video">
-                    {{ icon }}
-                  </span>
+                <span class="icon_media">
+                    <div class="svg-wrapper">
+                        {{ icon }}
+                    </div>
+                </span>
 
                 </video-background-component>
                 {% if block.settings.enable_fancybox %}
@@ -247,6 +266,20 @@
     </script>
 {%- endif -%}
 
+{% if image != blank and block.settings.icon_link != blank %}
+    <script>
+        (function(){
+            const iconMedia = document.querySelector('.instagram-item__image .icon_media');
+
+            console.log("iconMedia", iconMedia)
+
+            iconMedia.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        })();
+    </script>
+{% endif %}
+
 {%- if block.settings.enable_fancybox -%}
   <script type="module">
     import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
@@ -302,7 +335,7 @@
       aspect-ratio: var(--ratio);
     }
 
-    .icon_video {
+    .icon_media {
         display: flex;
         fill: currentcolor;
         flex-shrink: 0;
@@ -310,6 +343,24 @@
         right: 0;
         bottom: 0;
         z-index: 1;
+        right: var(--icon-button-position-right);
+        bottom: var(--icon-button-position-bottom);
+    }
+    .icon_media.position-left {
+        right: unset;
+        left: var(--icon-button-position-left);
+    }
+
+    .icon_media.icon_media--circle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--icon-button-bg-color);
+        color: var(--icon-button-color);
+        border-radius: 50%;
+        width: var(--icon-button-size);
+        height: var(--icon-button-size);
+        
     }
   {%- endstylesheet -%}
 
@@ -433,7 +484,7 @@
                 "label": "Custom"
                 }
             ],
-            "default": "fit-content"
+            "default": "custom"
         },
         {
             "type": "range",
@@ -460,7 +511,7 @@
                 "label": "Custom"
                 }
             ],
-            "default": "fit-content"
+            "default": "custom"
         },
         {
             "type": "range",
@@ -487,7 +538,7 @@
                 "label": "Custom"
                 }
             ],
-            "default": "fit-content"
+            "default": "custom"
         },
         {
             "type": "range",
@@ -550,6 +601,17 @@
         },
         {
             "type": "range",
+            "id": "border_opacity",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "label": "t:settings_schema.global.settings.opacity.label",
+            "default": 100,
+            "visible_if": "{{ block.settings.border != 'none' }}"
+        },
+        {
+            "type": "range",
             "id": "border_radius",
             "label": "t:settings_schema.global.settings.corner_radius.label",
             "min": 0,
@@ -560,7 +622,7 @@
         },
         {
             "type": "header",
-            "content": "Content Position 123"
+            "content": "Content Position"
         },
         {
             "type": "checkbox",
@@ -647,11 +709,11 @@
                     "label": "None"
                 },
                 {
-                    "value": "apple",
-                    "label": "Apple"
+                    "value": "instagram-cart",
+                    "label": "Instagram Cart"
                 }
             ],
-            "default": "apple"
+            "default": "instagram-cart"
         },
         {
             "type": "select",
@@ -698,14 +760,99 @@
             "visible_if": "{{ block.settings.icon_custom != 'svg' }}"
         },
         {
+            "type": "url",
+            "id": "icon_link",
+            "label": "t:settings.link",
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
+            "type": "checkbox",
+            "id": "icon_open_in_new_tab",
+            "label": "t:settings.open_new_tab",
+            "default": false,
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
+            "type": "color",
+            "id": "icon_button_bg_color",
+            "label": "Icon button background color",
+            "default": "#ffffff",
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
+            "type": "color",
+            "id": "icon_button_color",
+            "label": "Icon button color",
+            "default": "#232323",
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
+            "type": "range",
+            "id": "icon_button_size",
+            "label": "Icon button size",
+            "min": 20,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 40,
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
+            "type": "select",
+            "id": "icon_button_position",
+            "label": "Icon button position",
+            "options": [
+                {
+                    "value": "right",
+                    "label": "Right"
+                },
+                {
+                    "value": "left",
+                    "label": "Left"
+                }
+            ],
+            "default": "right",
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
+            "type": "range",
+            "id": "icon_button_position_right",
+            "label": "Icon button position right",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "visible_if": "{{ block.settings.background_media == 'image' and block.settings.icon_button_position == 'right' }}"
+        },
+        {
+            "type": "range",
+            "id": "icon_button_position_left",
+            "label": "Icon button position left",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "visible_if": "{{ block.settings.background_media == 'image' and block.settings.icon_button_position == 'left' }}"
+        },
+        {
+            "type": "range",
+            "id": "icon_button_position_bottom",
+            "label": "Icon button position bottom",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
             "type": "header",
-            "content": "Animation"
+            "content": "Animation 1234"
         },
         {
             "type": "checkbox",
             "id": "enable_fancybox",
             "label": "Enable Fancybox",
-            "default": false,
+            "default": true,
             "visible_if": "{{ block.settings.enable_parallax == false }}"
         },
         {
