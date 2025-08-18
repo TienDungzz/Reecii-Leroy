@@ -78,7 +78,7 @@
 
     &:hover {
       transform: translateY(-{{ bl_stts.hover_lift }}px);
-      box-shadow: 0 {{ bl_stts.shadow_blur }}px {{ bl_stts.shadow_spread }}px rgb(0 0 0 / {{ bl_stts.shadow_opacity | divided_by: 100.0 }});
+      box-shadow: 0 {{ bl_stts.shadow_blur }}px {{ bl_stts.shadow_spread }}px rgb({{ bl_stts.shadow_color.rgba }});
     }
   }
 {% endstyle %}
@@ -471,15 +471,12 @@
       "default": 4
     },
     {
-      "type": "range",
-      "id": "shadow_opacity",
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "unit": "%",
-      "label": "Shadow opacity",
-      "default": 15
-    },
+			"type": "color",
+			"id": "shadow_color",
+			"label": "t:settings.shadow_color",
+			"default": "#00000000",
+			"alpha": true	
+		},
     {
       "type": "header",
       "content": "t:content.size"
