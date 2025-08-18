@@ -1406,6 +1406,7 @@ class SwiperComponent extends HTMLElement {
         disableOnInteraction: false,
       },
       slidesPerView: getOption("slides-per-view", 1),
+      centeredSlides: getOption("centered-slides", false),
       autoHeight: getOption("auto-height", false),
       navigation: {
         nextEl: this.swiperEl.querySelector(".swiper-button-next"),
