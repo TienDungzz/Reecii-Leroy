@@ -1,0 +1,806 @@
+{% comment %} add liquid code to change position of icon and button  {% endcomment %}
+
+{% liquid
+  assign ratio = 1
+
+  case block.settings.image_ratio
+    when 'landscape'
+      assign ratio = '16 / 9'
+    when 'portrait'
+      assign ratio = '4 / 5'
+    when 'adapt'
+      assign ratio = block.settings.image.aspect_ratio
+  endcase
+
+  if ratio == 0 or ratio == null
+    assign ratio = 1
+  endif
+
+  assign image = block.settings.background_image
+  assign image_height = block.settings.image.height
+  assign image_height_2x = image_height | times: 2
+  assign image_width = block.settings.image.width
+  assign image_width_2x = image_width | times: 2
+  assign image_aspect_ratio = block.settings.image.aspect_ratio
+
+  assign video_classes = 'video-block video-block--' | append: block.settings.video_position
+  assign background_media = block.settings.background_media
+  assign background_video = block.settings.video
+  assign background_video_position = block.settings.video_position
+  assign background_image = block.settings.background_image
+  assign background_image_position = block.settings.background_image_position
+
+%}
+
+{% capture class %}
+  image-block image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}
+{% endcapture %}
+
+{% capture style %}
+  --ratio: {{ ratio }};
+  {% render 'size-style', settings: block.settings %}
+  {% render 'spacing-style', settings: block.settings %}
+  {% render 'border-override', settings: block.settings %}
+{% endcapture %}
+
+{% liquid
+  assign media_width_desktop = '100vw'
+  assign media_width_mobile = '100vw'
+  assign sizes = 'auto, (min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
+  assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
+
+  assign element = 'div'
+  if block.settings.enable_fancybox
+    assign element = 'a'
+  elsif block.settings.enable_parallax
+    assign element = 'parallax-image'
+  endif
+
+  assign enable_content_position = block.settings.enable_content_position
+  assign content_type = block.settings.content_type
+  assign content_position = block.settings.content_position
+%}
+{%- if block.settings.enable_fancybox -%}
+  {%- render 'photoswipe_lib' -%}
+{%- endif -%}
+
+{% capture class_img %}
+  image-block__image{% if block.settings.enable_parallax %} image-parallax--target{% endif %}
+{% endcapture %}
+
+{% capture attributes_fancybox %}
+  href="{{ image | image_url : width: image_width_2x , height: image_height_2x  }}"
+  data-pswp-src="{{ image | image_url : width: image_width_2x , height: image_height_2x  }}"
+  data-pswp-width="{{ image_width_2x  }}"
+  data-pswp-height="{{ image_height_2x }}"
+  target="_blank"
+{% endcapture %}
+
+{% capture attributes_fancybox_video %}
+  href="{{ background_video.sources.first.url }}"
+  data-pswp-src="{{ background_video.sources.first.url }}"
+  data-pswp-type="video"
+  data-pswp-width="1920"
+  data-pswp-height="1080"
+  target="_blank"
+{% endcapture %}
+
+{% capture attributes_parllax %}
+  data-parallax="true"
+  data-speed="{{ block.settings.parallax_speed }}"
+{% endcapture %}
+
+{% capture attributes %}
+  {{ block.shopify_attributes }}
+  {% if block.settings.enable_fancybox %}
+    {% if block.settings.background_media == 'image' %}
+      {{ attributes_fancybox }}
+    {% elsif block.settings.background_media == 'video' %}
+      {{ attributes_fancybox_video }}
+    {% endif %}
+  {% endif %}
+  {% if block.settings.enable_parallax %}
+    {{ attributes_parllax }}
+  {% endif %}
+{% endcapture %}
+
+{% capture icon %}
+    {% render 'icon-or-image',
+        icon: block.settings.icon,
+        icon_custom: block.settings.icon_custom,
+        svg_upload: block.settings.svg_upload,
+        image_upload: block.settings.image_upload,
+        width: block.settings.icon_width,
+        attributes: block.shopify_attributes
+    %}
+{% endcapture %}
+
+<div class="instagram-item relative" {% if background_video != blank %}data-video-enabled="true"{% endif %}>
+    <div class="instagram-item__image">
+        <{{ element }}
+            class="{{ class }}"
+            style="{{ style }}"
+            {{ attributes }}
+        >
+        {% if block.settings.background_media == 'image' %}
+            {%- if image != blank -%}
+                {%- render 'image',
+                image: image,
+                class: class_img,
+                height: image.height,
+                sizes: sizes,
+                widths: widths
+                -%}
+                
+            {%- else -%}
+                {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
+            {%- endif -%}
+            
+            {% if block.settings.enable_fancybox %}
+                <span class="icon_plus"></span>
+            {% endif %}
+            
+        {% else %}
+            {%- if background_video != blank -%}
+                {% if block.settings.enable_fancybox %}
+                    <a {{ attributes }}>
+                {% endif %}
+                <video-background-component
+                  class="{{ video_classes }}"
+                  style="{% if ratio %}--ratio: {{ ratio }};{% endif %}"
+                >
+                  <video
+                    playsinline
+                    muted
+                    loop
+                    class="video-block"
+                  >
+                    {%- for sourceElement in background_video.sources -%}
+                      <source
+                        data-video-source="{{ sourceElement.url }}"
+                        type="{{ sourceElement.mime_type }}"
+                        data-video
+                      >
+                    {%- endfor -%}
+                  </video>
+
+                  <span class="icon_video">
+                    {{ icon }}
+                  </span>
+
+                </video-background-component>
+                {% if block.settings.enable_fancybox %}
+                    </a>
+                {% endif %}
+              {%- else -%}
+                <div class="{{ video_classes }}" style="{% if ratio %}--ratio: {{ ratio }};{% endif %}">
+                  {%- assign placeholder_name = placeholder | default: 'hero-apparel-2' -%}
+                  {%- if placeholder_name == blank -%}
+                    {%- assign placeholder_name = 'hero-apparel-2' -%}
+                  {%- endif -%}
+                  {{ placeholder_name | placeholder_svg_tag }}
+                </div>
+              {%- endif -%}
+        {% endif %}
+        </{{ element }}>
+    </div>
+    <div class="instagram-item__content {% if enable_content_position != blank %} {{ content_type }}{% endif %}">
+        {%- content_for 'blocks' -%}
+    </div>
+</div>
+
+{%- if background_video != blank -%}
+    <script>
+        (function() {
+            'use strict';
+            
+            // Use more specific selector to avoid conflicts
+            const instagramItems = document.querySelectorAll('.instagram-item[data-video-enabled="true"]');
+            
+            if (instagramItems.length === 0) return;
+            
+            // Debounce function to prevent rapid play/pause calls
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+            
+            // Optimized event handlers
+            const handleMouseOver = debounce(function(video) {
+                if (video && video.readyState >= 2) { // HAVE_CURRENT_DATA
+                    video.play().catch(e => console.warn('Video play failed:', e));
+                }
+            }, 100);
+            
+            const handleMouseOut = debounce(function(video) {
+                if (video && video.readyState >= 2) {
+                    video.pause();
+                }
+            }, 100);
+            
+            // Add event listeners with proper cleanup
+            instagramItems.forEach(item => {
+                const video = item.querySelector('video');
+                if (!video) return;
+                
+                // Mark item as video-enabled for future reference
+                item.setAttribute('data-video-enabled', 'true');
+                
+                // Use event delegation for better performance
+                const mouseOverHandler = () => handleMouseOver(video);
+                const mouseOutHandler = () => handleMouseOut(video);
+                
+                item.addEventListener('mouseenter', mouseOverHandler, { passive: true });
+                item.addEventListener('mouseleave', mouseOutHandler, { passive: true });
+                
+                // Store handlers for potential cleanup
+                item._videoHandlers = { mouseOver: mouseOverHandler, mouseOut: mouseOutHandler };
+            });
+        })();
+    </script>
+{%- endif -%}
+
+{%- if block.settings.enable_fancybox -%}
+  <script type="module">
+    import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
+    if (!window._myScriptLoaded) {
+      window._myScriptLoaded = true;
+
+      const sections = document.querySelectorAll('.section');
+
+      sections.forEach((section, index) => {
+        const uniqueGalleryID = `gallery-${index}`;
+
+        section.querySelectorAll('a[data-pswp-width]').forEach((el) => {
+          el.setAttribute('data-pswp-gallery', uniqueGalleryID);
+        });
+
+        const lightbox = new PhotoSwipeLightbox({
+          gallery: section,
+          children: 'a[data-pswp-gallery="' + uniqueGalleryID + '"]',
+          pswpModule: () => import('https://unpkg.com/photoswipe@5/dist/photoswipe.esm.js'),
+        });
+
+        lightbox.init();
+      });
+    }
+  </script>
+{%- endif -%}
+
+
+{%- stylesheet -%}
+    .image-block {
+        display: flex;
+        justify-content: var(--horizontal-alignment, 'inline-start');
+    }
+  
+    .image-block--height-fill .image-block__image,
+    .image-block--height-fill .video-block {
+        height: 100%;
+    }
+
+    .image-block--height-fill .video-block img {
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-block--height-fill .video-block video {
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-block__image,
+    .video-block {
+      object-fit: cover;
+      aspect-ratio: var(--ratio);
+    }
+
+    .icon_video {
+        display: flex;
+        fill: currentcolor;
+        flex-shrink: 0;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+  {%- endstylesheet -%}
+
+{% schema %}
+{
+    "name": "Instagram item",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Item Media"
+        },
+        {
+            "type": "select",
+            "id": "background_media",
+            "label": "t:settings.background_media",
+            "options": [
+                {
+                    "value": "image",
+                    "label": "t:options.image"
+                },
+                {
+                    "value": "video",
+                    "label": "t:options.video"
+                }
+            ],
+            "default": "image"
+        },
+        {
+            "type": "video",
+            "id": "video",
+            "label": "t:settings.video",
+            "visible_if": "{{ block.settings.background_media == 'video' }}"
+        },
+        {
+            "type": "select",
+            "id": "video_position",
+            "label": "t:settings.video_position",
+            "options": [
+                {
+                "value": "cover",
+                "label": "t:options.cover"
+                },
+                {
+                "value": "contain",
+                "label": "t:options.contain"
+                }
+            ],
+            "default": "cover",
+            "visible_if": "{{ block.settings.background_media == 'video' }}"
+        },
+        {
+            "type": "image_picker",
+            "id": "background_image",
+            "label": "t:settings.image",
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
+            "type": "select",
+            "id": "background_image_position",
+            "label": "t:settings.image_position",
+            "options": [
+                {
+                "value": "cover",
+                "label": "t:options.cover"
+                },
+                {
+                "value": "fit",
+                "label": "t:options.fit"
+                }
+            ],
+            "default": "cover",
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
+            "type": "url",
+            "id": "link",
+            "label": "Link",
+            "visible_if": "{{ block.settings.enable_fancybox == false }}"
+        },
+        {
+            "type": "checkbox",
+            "id": "hide_on_mobile",
+            "label": "Hide on mobile",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Size"
+        },
+        {
+            "type": "select",
+            "id": "image_ratio",
+            "options": [
+                {
+                "value": "adapt",
+                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label"
+                },
+                {
+                "value": "portrait",
+                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
+                },
+                {
+                "value": "square",
+                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label"
+                }
+            ],
+            "default": "adapt",
+            "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
+        },
+        {
+            "type": "select",
+            "id": "width",
+            "label": "Desktop width",
+            "options": [
+                {
+                "value": "fit-content",
+                "label": "Fit"
+                },
+                {
+                "value": "custom",
+                "label": "Custom"
+                }
+            ],
+            "default": "fit-content"
+        },
+        {
+            "type": "range",
+            "id": "custom_width",
+            "label": "Custom (%)",
+            "min": 1,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 100,
+            "visible_if": "{{ block.settings.width == 'custom' }}"
+        },
+        {
+            "type": "select",
+            "id": "width_tablet",
+            "label": "Tablet width",
+            "options": [
+                {
+                "value": "fit-content",
+                "label": "Fit"
+                },
+                {
+                "value": "custom",
+                "label": "Custom"
+                }
+            ],
+            "default": "fit-content"
+        },
+        {
+            "type": "range",
+            "id": "custom_width_tablet",
+            "label": "Custom (%)",
+            "min": 1,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 100,
+            "visible_if": "{{ block.settings.width_tablet == 'custom' }}"
+        },
+        {
+            "type": "select",
+            "id": "width_mobile",
+            "label": "Mobile width",
+            "options": [
+                {
+                "value": "fit-content",
+                "label": "Fit"
+                },
+                {
+                "value": "custom",
+                "label": "Custom"
+                }
+            ],
+            "default": "fit-content"
+        },
+        {
+            "type": "range",
+            "id": "custom_width_mobile",
+            "label": "Custom (%)",
+            "min": 1,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 100,
+            "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+        },
+        {
+            "type": "select",
+            "id": "height",
+            "label": "t:settings.height",
+            "options": [
+                {
+                "value": "fit",
+                "label": "t:options.fit_content"
+                },
+                {
+                "value": "fill",
+                "label": "t:options.fill"
+                }
+            ],
+            "default": "fit",
+            "visible_if": "{{ block.settings.image_ratio == 'adapt' }}"
+        },
+        {
+            "type": "header",
+            "content": "t:settings_schema.global.settings.header__border.content"
+            },
+            {
+            "type": "select",
+            "id": "border",
+            "label": "t:settings.style",
+            "options": [
+                {
+                "value": "none",
+                "label": "None"
+                },
+                {
+                "value": "solid",
+                "label": "Solid"
+                }
+            ],
+            "default": "none"
+        },
+        {
+            "type": "range",
+            "id": "border_width",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "label": "t:settings_schema.global.settings.thickness.label",
+            "default": 1,
+            "visible_if": "{{ block.settings.border != 'none' }}"
+        },
+        {
+            "type": "range",
+            "id": "border_opacity",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "label": "t:settings_schema.global.settings.opacity.label",
+            "default": 100,
+            "visible_if": "{{ block.settings.border != 'none' }}"
+        },
+        {
+            "type": "range",
+            "id": "border_radius",
+            "label": "t:settings_schema.global.settings.corner_radius.label",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "header",
+            "content": "Content Position 123"
+        },
+        {
+            "type": "checkbox",
+            "label": "Enable content position",
+            "id": "enable_content_position",
+            "default": true
+        },
+        {
+            "type": "select",
+            "id": "content_type",
+            "label": "Content type",
+            "options": [
+                {
+                    "value": "absolute-c-c",
+                    "label": "Center Center"
+                },
+                {
+                    "value": "absolute-c-x",
+                    "label": "Center Horizontal"
+                },
+                {
+                    "value": "absolute-c-y",
+                    "label": "Center Vertical"
+                },
+                {
+                    "value": "custom",
+                    "label": "Custom"
+                }
+            ],
+            "default": "absolute-c-c",
+            "visible_if": "{{ block.settings.enable_content_position }}"
+        },
+        {
+            "type": "range",
+            "id": "content_position_top",
+            "label": "Top",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "visible_if": "{{ block.settings.content_type == 'custom' }}"
+        },
+        {
+            "type": "range",
+            "id": "content_position_left",
+            "label": "Left",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "visible_if": "{{ block.settings.content_type == 'custom' }}"
+        },
+        {
+            "type": "range",
+            "id": "content_position_right",
+            "label": "Right",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "visible_if": "{{ block.settings.content_type == 'custom' }}"
+        },
+        {
+            "type": "range",
+            "id": "content_position_bottom",
+            "label": "Bottom",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "visible_if": "{{ block.settings.content_type == 'custom' }}"
+        },
+        {
+            "type": "header",
+            "content": "Icon"
+        },
+        {
+            "type": "select",
+            "id": "icon",
+            "label": "Icon",
+            "options": [
+                {
+                    "value": "none",
+                    "label": "None"
+                },
+                {
+                    "value": "apple",
+                    "label": "Apple"
+                }
+            ],
+            "default": "apple"
+        },
+        {
+            "type": "select",
+            "id": "icon_custom",
+            "label": "Custom icon",
+            "options": [
+                {
+                "value": "none",
+                "label": "None"
+                },
+                {
+                "value": "svg",
+                "label": "SVG"
+                },
+                {
+                "value": "image",
+                "label": "Image"
+                }
+            ],
+            "default": "none"
+        },
+        {
+            "type": "liquid",
+            "id": "svg_upload",
+            "label": "SVG icon",
+            "info": "Go to this link [find your icon](https:\/\/fontawesome.com\/v5\/search). Find the icon you want, then copy the SVG code and paste it here.",
+            "visible_if": "{{ block.settings.icon_custom == 'svg' }}"
+        },
+        {
+            "type": "image_picker",
+            "id": "image_upload",
+            "label": "t:settings.image_icon",
+            "visible_if": "{{ block.settings.icon_custom == 'image' }}"
+        },
+        {
+            "type": "range",
+            "id": "icon_width",
+            "label": "t:settings.width",
+            "min": 12,
+            "max": 200,
+            "step": 2,
+            "unit": "px",
+            "default": 40,
+            "visible_if": "{{ block.settings.icon_custom != 'svg' }}"
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_fancybox",
+            "label": "Enable Fancybox",
+            "default": false,
+            "visible_if": "{{ block.settings.enable_parallax == false }}"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_parallax",
+            "label": "Enable parallax scroll",
+            "default": false,
+            "visible_if": "{{ block.settings.enable_fancybox == false }}"
+        },
+        {
+            "type": "range",
+            "id": "parallax_speed",
+            "label": "Parallax speed",
+            "min": 0,
+            "max": 4,
+            "step": 0.5,
+            "default": 0.5,
+            "visible_if": "{{ block.settings.enable_fancybox == false and block.settings.enable_parallax }}"
+        },
+        {
+            "type": "header",
+            "content": "Padding"
+        },
+        {
+            "type": "range",
+            "id": "padding_top",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
+        },
+        {
+            "type": "range",
+            "id": "padding_right",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
+        },
+        {
+            "type": "range",
+            "id": "padding_bottom",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
+        },
+        {
+            "type": "range",
+            "id": "padding_left",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "_divider"
+        },
+        {
+            "type": "group"
+        },
+        {
+            "type": "image"
+        },
+        {
+            "type": "text"
+        },
+        {
+            "type": "button"
+        },
+        {
+            "type": "heading"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Instagram item"
+        }
+    ]
+}
+{% endschema %}
