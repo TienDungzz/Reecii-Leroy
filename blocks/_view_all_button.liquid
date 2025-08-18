@@ -58,10 +58,81 @@
       "default": "button"
     },
     {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:settings.type",
+      "visible_if": "{{ block.settings.style_class == 'button' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "header",
+      "content": "t:content.link",
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "button_type_size_link",
+      "label": "t:settings.size",
+      "visible_if": "{{ block.settings.style_class == 'link' }}",
+      "options": [
+        {
+          "value": "28",
+          "label": "28px"
+        },
+        {
+          "value": "24",
+          "label": "24px"
+        },
+        {
+          "value": "20",
+          "label": "20px"
+        },
+        {
+          "value": "18",
+          "label": "18px"
+        },
+        {
+          "value": "16",
+          "label": "16px"
+        },
+        {
+          "value": "14",
+          "label": "14px"
+        },
+        {
+          "value": "12",
+          "label": "12px"
+        },
+        {
+          "value": "10",
+          "label": "10px"
+        }
+      ],
+      "default": "12"
+    },
+    {
       "type": "checkbox",
       "id": "link_underline",
       "label": "Underline",
       "default": false,
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_reveal",
+      "label": "Reveal on hover",
+      "default": false,
+      "info": "Only works inside a Group block",
       "visible_if": "{{ block.settings.style_class == 'link' }}"
     },
     {
@@ -93,7 +164,7 @@
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width == \"custom\" }}"
+      "visible_if": "{{ block.settings.width == 'custom' }}"
     },
     {
       "type": "select",
@@ -120,7 +191,7 @@
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width_mobile == \"custom\" }}"
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
     }
   ],
   "presets": [

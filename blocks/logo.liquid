@@ -63,7 +63,6 @@
       {{ logo_image }}
     </div>
   {% else %}
-    {% comment %} {% render 'jumbo-text', text: shop.name %} {% endcomment %}
      {%- render 'text', fallback_text: shop.name -%}
   {% endif %}
 </div>
@@ -76,7 +75,7 @@
     font-size: var(--logo-height);
     display: flex;
 
-    @media screen and (width <= 750px) {
+    @media screen and (max-width: 749px) {
       max-height: calc(
         var(--logo-height-mobile, var(--logo-height, 100%)) + var(--padding-block-start) + var(--padding-block-end)
       );
@@ -122,16 +121,8 @@
           "label": "t:options.body"
         },
         {
-          "value": "subheading",
-          "label": "t:options.subheading"
-        },
-        {
           "value": "heading",
           "label": "t:options.heading"
-        },
-        {
-          "value": "accent",
-          "label": "t:options.accent"
         }
       ],
       "default": "heading",

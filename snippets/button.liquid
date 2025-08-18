@@ -11,13 +11,14 @@
 {%- liquid
   assign link = link | default: block.settings.link
   assign style_class = style_class | default: block.settings.style_class
+  assign button_type_size_link = button_type_size_link | default: block.settings.button_type_size_link
   assign link_underline = link_underline | default: block.settings.link_underline
+  assign link_reveal = link_reveal | default: block.settings.link_reveal
   assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab
   assign shopify_attributes = shopify_attributes | default: block.shopify_attributes
   assign label = label | default: block.settings.label
   assign button_style = button_style | default: block.settings.button_style
 -%}
-
 <a
   {% if link == blank %}
     role="link"
@@ -28,24 +29,29 @@
   class="
     {{ class }}
     size-style
+    padding-style
     {{ style_class }}
-    {% if block.settings.link_reveal %}link--reveal{% endif %}
     {% if link_underline %}link--underline{% endif %}
+    {% if link_reveal %}link--reveal{% endif %}
     {% if button_style == 'outline' %}button--outline{% endif %}
     {{ style_class }}--{{ block.id }}
   "
-  style="{% render 'size-style', settings: block.settings %}"
+  style="
+    {% render 'size-style', settings: block.settings %}
+    {% render 'padding-style', settings: block.settings %}
+    {% if button_type_size_link %}--button-font-size-link: {{ button_type_size_link | divided_by: 10.0 }}rem;{% endif %}
+  "
   {%- if open_in_new_tab -%}
     target="_blank"
     rel="noopener noreferrer"
   {%- endif -%}
-  {{ shopify_attributes }}
-  {% if block.settings.link_reveal %}
+  {% if link_reveal %}
     data-text="{{ label }}"
   {% endif %}
+  {{ shopify_attributes }}
 >
   {{ label }}
-  {% if block.settings.link_reveal %}
+  {% if link_reveal %}
     <span class="text-mask none" data-text="{{ label }}">{{ label }}</span>
   {% endif %}
 </a>
@@ -62,6 +68,7 @@
   }
 
   .link {
+    font-size: var(--button-font-size-link);
     text-decoration: none;
     text-decoration-color: currentcolor;
 

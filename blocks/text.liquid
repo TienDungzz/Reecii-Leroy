@@ -194,29 +194,24 @@
         {
           "value": "100%",
           "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "fit-content"
     },
     {
-      "type": "select",
-      "id": "max_width",
-      "label": "t:settings.max_width",
-      "options": [
-        {
-          "value": "narrow",
-          "label": "t:options.narrow"
-        },
-        {
-          "value": "normal",
-          "label": "t:options.normal"
-        },
-        {
-          "value": "none",
-          "label": "t:options.none"
-        }
-      ],
-      "default": "normal"
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
     },
     {
       "type": "text_alignment",
@@ -284,16 +279,8 @@
           "label": "t:options.body"
         },
         {
-          "value": "var(--font-subheading--family)",
-          "label": "t:options.subheading"
-        },
-        {
           "value": "var(--font-heading--family)",
           "label": "t:options.heading"
-        },
-        {
-          "value": "var(--font-accent--family)",
-          "label": "t:options.accent"
         }
       ],
       "default": "var(--font-body--family)",
@@ -442,6 +429,10 @@
         {
           "value": "uppercase",
           "label": "t:options.uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "t:options.capitalize"
         }
       ],
       "default": "none",
@@ -538,17 +529,6 @@
       "visible_if": "{{ block.settings.enable_border_bottom == true }}"
     },
     {
-      "type": "range",
-      "id": "border_opacity",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "%",
-      "label": "Opacity",
-      "default": 100,
-      "visible_if": "{{ block.settings.enable_border_bottom == true }}"
-    },
-    {
       "type": "select",
       "id": "border_width_type",
       "label": "Width",
@@ -575,6 +555,37 @@
       "label": "Custom width",
       "default": 100,
       "visible_if": "{{ block.settings.border_width_type == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:names.animations"
+    },
+    {
+      "type": "select",
+      "id": "text_effect",
+      "label": "t:settings.effects",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "blur",
+          "label": "t:options.blur"
+        },
+        {
+          "value": "reveal",
+          "label": "t:options.reveal"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "checkbox",
+      "id": "animation_repeat",
+      "label": "t:settings.animation_repeat",
+      "default": false,
+      "visible_if": "{{ block.settings.text_effect == 'blur' or block.settings.text_effect == 'reveal' }}"
     },
     {
       "type": "header",

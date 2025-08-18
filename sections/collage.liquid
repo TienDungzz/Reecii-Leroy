@@ -1,7 +1,7 @@
 {{ 'component-modal-video.css' | asset_url | stylesheet_tag }}
 {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
 
-<div class="color-{{ section.settings.color_scheme }} gradient relative z-0">
+<div class="color-{{ section.settings.color_scheme }} relative z-0">
   <div class="page-width spacing"
     style="
       --p-spacing-t: {{ section.settings.padding_top }}px;
@@ -27,7 +27,7 @@
           {%- assign placeholder_image_index = forloop.index0 | modulo: 4 | plus: 1 -%}
           {%- case block.type -%}
             {%- when 'image' -%}
-              <div class="collage-card card-wrapper {{ section.settings.card_styles }} color-{{ settings.card_color_scheme }} gradient">
+              <div class="collage-card card-wrapper {{ section.settings.card_styles }} color-{{ settings.card_color_scheme }}">
                 <div
                   class="media media--transparent ratio"
                   {% if block.settings.image != blank %}
@@ -101,7 +101,7 @@
                 placeholder_image: placeholder_image
               %}
             {%- when 'video' -%}
-              <div class="collage-card {{ section.settings.card_styles }} color-{{ settings.card_color_scheme }} gradient">
+              <div class="collage-card {{ section.settings.card_styles }} color-{{ settings.card_color_scheme }}">
                 <modal-opener data-modal="#PopupModal-{{ block.id }}">
                   <div class="deferred-media">
                     <button
@@ -156,7 +156,7 @@
                 >
                   <div id="Modal-Overlay" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
                   <div
-                    class="popup__inner modal-video__content w-auto h-full absolute-c-c flex flex-column gradient color-{{ settings.color_schemes | first }} global-settings-popup"
+                    class="popup__inner modal-video__content w-auto h-full absolute-c-c flex flex-column color-{{ settings.color_schemes | first }} global-settings-popup"
                     role="dialog"
                     aria-modal="true"
                     aria-label="{{ block.settings.description | escape }}"

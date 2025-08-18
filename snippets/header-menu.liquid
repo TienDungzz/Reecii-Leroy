@@ -20,12 +20,12 @@
     assign vertical_menu_blocks = blocks | where: 'type', 'vertical_menu'
 
     for block in vertical_menu_blocks
-      assign block_settings = block.settings
-      assign vertical_menu_style = block_settings.vertical_menu_style
+      assign bl_stts = block.settings
+      assign vertical_menu_style = bl_stts.vertical_menu_style
     endfor
 
     if vertical_menu_style == 'style_1'
-      render 'header-menu-vertical', blocks: blocks, block_settings: block_settings
+      render 'header-menu-vertical', blocks: blocks, bl_stts: bl_stts
     endif
   -%}
 

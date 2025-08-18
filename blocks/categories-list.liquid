@@ -71,14 +71,14 @@
   .categories-list-container-{{ bl_id }} .category-item {
     --border-width: {{ bl_stts.border_width }}px;
     --border-style: {{ bl_stts.border }};
-    --border-color: rgba(from var(--color-border) r g b / {{ bl_stts.border_opacity | divided_by: 100.0 }});
+    --border-color: var(--color-border);
     --border-radius: {{ bl_stts.border_radius }}px;
     {% if bl_stts.border_radius > 0 %} overflow: hidden; {% endif %}
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     &:hover {
       transform: translateY(-{{ bl_stts.hover_lift }}px);
-      box-shadow: 0 {{ bl_stts.shadow_blur }}px {{ bl_stts.shadow_spread }}px rgba(0, 0, 0, {{ bl_stts.shadow_opacity | divided_by: 100.0 }});
+      box-shadow: 0 {{ bl_stts.shadow_blur }}px {{ bl_stts.shadow_spread }}px rgb(0 0 0 / {{ bl_stts.shadow_opacity | divided_by: 100.0 }});
     }
   }
 {% endstyle %}
@@ -138,7 +138,7 @@
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width == \"custom\" }}"
+      "visible_if": "{{ block.settings.width == 'custom' }}"
     },
     {
       "type": "select",
@@ -169,7 +169,7 @@
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width_tablet == \"custom\" }}"
+      "visible_if": "{{ block.settings.width_tablet == 'custom' }}"
     },
     {
       "type": "select",
@@ -200,7 +200,7 @@
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width_mobile == \"custom\" }}"
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
     },
     {
       "type": "header",
@@ -482,7 +482,7 @@
     },
     {
       "type": "header",
-      "content": "Kích thước font"
+      "content": "t:content.size"
     },
     {
       "type": "range",
@@ -491,7 +491,7 @@
       "max": 48,
       "step": 2,
       "unit": "px",
-      "label": "Kích thước tiêu đề",
+      "label": "Heading size",
       "default": 32
     },
     {
@@ -501,7 +501,7 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "label": "Kích thước mô tả",
+      "label": "Description size",
       "default": 16
     },
     {
@@ -511,7 +511,7 @@
       "max": 20,
       "step": 1,
       "unit": "px",
-      "label": "Kích thước số lượng",
+      "label": "Category count size",
       "default": 14
     },
     {

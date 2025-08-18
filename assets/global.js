@@ -470,24 +470,63 @@ function debounce(fn, wait) {
 
 function throttle(fn, delay) {
   let lastCall = 0;
-  return function (...args) {
-    const now = new Date().getTime();
-    if (now - lastCall < delay) {
-      return;
+
+  /** @param {...any} args */
+  function throttled(...args) {
+    const now = performance.now();
+    // If the time since the last call exceeds the delay, execute the callback
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      fn.apply(this, args);
     }
-    lastCall = now;
-    return fn(...args);
+  }
+
+  throttled.cancel = () => {
+    lastCall = performance.now();
+  };
+
+  return /** @type {T & { cancel(): void }} */ (throttled);
+}
+
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+function prefersReducedMotion() {
+  return reducedMotion.matches;
+}
+
+function fetchConfig(type = 'json', config = {}) {
+  /** @type {Headers} */
+  const headers = { 'Content-Type': 'application/json', Accept: `application/${type}`, ...config.headers };
+
+  if (type === 'javascript') {
+    headers['X-Requested-With'] = 'XMLHttpRequest';
+    delete headers['Content-Type'];
+  }
+
+  return {
+    method: 'POST',
+    headers: /** @type {HeadersInit} */ (headers),
+    body: config.body,
   };
 }
 
-function fetchConfig(type = "json") {
-  return {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: `application/${type}`,
-    },
-  };
+class ResizeNotifier extends ResizeObserver {
+  #initialized = false;
+
+  /**
+   * @param {ResizeObserverCallback} callback
+   */
+  constructor(callback) {
+    super((entries) => {
+      if (this.#initialized) return callback(entries, this);
+      this.#initialized = true;
+    });
+  }
+
+  disconnect() {
+    this.#initialized = false;
+    super.disconnect();
+  }
 }
 
 /*
@@ -710,7 +749,7 @@ class MenuDrawer extends HTMLElement {
         ? this.closeMenuDrawer(event, summaryElement)
         : this.openMenuDrawer(summaryElement);
 
-      if (window.matchMedia("(max-width: 990px)")) {
+      if (window.matchMedia("(max-width: 989px)")) {
         document.documentElement.style.setProperty(
           "--viewport-height",
           `${window.innerHeight}px`
@@ -2335,3 +2374,30 @@ class ParallaxImg extends HTMLElement {
 }
 
 customElements.define("parallax-image", ParallaxImg);
+
+/**
+ * A custom element that formats rte content for easier styling
+ */
+class RTEFormatter extends HTMLElement {
+  connectedCallback() {
+    this.querySelectorAll('table').forEach(this.#formatTable);
+  }
+
+  /**
+   * Formats a table for easier styling
+   * @param {HTMLTableElement} table
+   */
+  #formatTable(table) {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('rte-table-wrapper');
+    const parent = table.parentNode;
+    if (parent) {
+      parent.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    }
+  }
+}
+
+if (!customElements.get('rte-formatter')) {
+  customElements.define('rte-formatter', RTEFormatter);
+}

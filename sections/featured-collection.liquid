@@ -111,7 +111,7 @@
   --border-radius: {{ sec_stts.tabs_header_corner_radius }}px;
   --border-width: {{ sec_stts.tabs_header_border_thickness }}px;
   --border-style: solid;
-  --border-color: rgba(from {{ sec_stts.tabs_header_border_color }} r g b / {{ sec_stts.tabs_header_border_opacity }}%);
+  --border-color: var(--color-border);
 {%- endcapture -%}
 {% comment %} End For layout type tabs-grid and tabs-carousel {% endcomment %}
 
@@ -122,7 +122,7 @@
       background: var(--bg-color-active);
     }
   }
-  @media screen and (width <= 750px) {
+  @media screen and (max-width: 749px) {
     .swiper-component-mobile .swiper-wrapper {
       flex-wrap: nowrap;
       gap: 0px;
@@ -189,7 +189,7 @@
     }
   }
 
-  @media screen and (width >= 750px) {
+  @media screen and (min-width: 750px) {
     .section--featured-collection .has-media-banner {
       grid-template-columns: var(--columns-vertical-int, 1fr 2fr);
       grid-template-areas: var(--grid-template-areas, 'banner content');
@@ -216,7 +216,7 @@
 {%- endstylesheet -%}
 
 <div
-  class="section section--{{ page_width }} color-{{ sec_stts.color_scheme }} gradient relative z-0 spacing"
+  class="section section--{{ page_width }} color-{{ sec_stts.color_scheme }} relative z-0 spacing"
   style=" --p-spacing-t: {{ sec_stts.padding_top }}px;--p-spacing-b: {{ sec_stts.padding_bottom }}px;"
 >
   <div>
@@ -1128,6 +1128,10 @@
         {
           "value": "uppercase",
           "label": "t:options.uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "t:options.capitalize"
         }
       ],
       "default": "none",
@@ -1268,6 +1272,10 @@
         {
           "value": "uppercase",
           "label": "t:options.uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "t:options.capitalize"
         }
       ],
       "default": "none",
@@ -1408,6 +1416,10 @@
         {
           "value": "uppercase",
           "label": "t:options.uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "t:options.capitalize"
         }
       ],
       "default": "none",

@@ -20,7 +20,7 @@
 
   .swiper-pagination {
     --swiper-pagination-bullet-inactive-color: var(--pagination-color);
-    --swiper-pagination-bullet-inactive-opacity: 1;
+    --swiper-pagination-bullet-inactive-opacity: var(--opacity-100);
     --swiper-pagination-bullet-size: 1rem;
     --swiper-pagination-color: var(--pagination-active-color);
     --swiper-pagination-bullet-horizontal-gap: 0.7rem;
@@ -86,14 +86,14 @@
     }
 
     &.swiper-button-disabled {
-      opacity: 0;
+      opacity: var(--opacity-0);
     }
 
     &:active {
       transform: scale(0.9);
     }
 
-    @media screen and (width >= 750px) {
+    @media screen and (min-width: 750px) {
       --button-width: max(4rem, calc(var(--arrow-width) * 0.75));
       --button-height: max(4rem, calc(var(--arrow-height) * 0.75));
       --button-icon-size: max(1.4rem, calc(var(--arrow-icon-size) * 0.75));
@@ -116,8 +116,8 @@
     height: var(--button-icon-size);
   }
 
-  @media screen and (width > 1024px) {
-    opacity: 0;
+  @media screen and (min-width: 1025px) {
+    opacity: var(--opacity-0);
     &.swiper-button-prev {
       transform: translateX(0.5rem);
     }
@@ -128,7 +128,7 @@
 
     .swiper:hover & {
       &:not(.swiper-button-disabled) {
-        opacity: 1;
+        opacity: var(--opacity-100);
       }
 
       &.swiper-button-prev,
@@ -293,7 +293,7 @@ h6,
 .shadow-style {
   box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset)
     var(--shadow-blur) var(--shadow-spread-radius, 0px)
-    rgb(var(--shadow-color) / var(--shadow-opacity));
+    var(--shadow-color);
 }
 
 /* START: Display Srollbar */
@@ -606,10 +606,10 @@ Otherwise, it should be a block to rely on its own size */
   filter: drop-shadow(var(--shadow-button));
 
   &:hover {
-    color: rgba(from var(--color-white) r g b / 80%);
+    color: rgba(var(--color-white-rgb) / var(--opacity-80));
   }
 
-  @media screen and (width >= 750px) {
+  @media screen and (min-width: 750px) {
     width: 4rem;
     height: 4rem;
   }

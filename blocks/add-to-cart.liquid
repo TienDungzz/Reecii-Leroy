@@ -15,7 +15,7 @@
 
 <span
   {{ block.shopify_attributes }}
-  style="--add-to-cart-font-case: {{ settings.button_text_case }};"
+  style="--add-to-cart-font-case: {{ settings.button_text_case_primary }};"
 >
   {% render 'add-to-cart-button',
     id: id,
@@ -51,6 +51,23 @@
         }
       ],
       "default": "button-secondary"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:settings.type",
+      "visible_if": "{{ block.settings.style_class == 'button' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        }
+      ],
+      "default": "default"
     }
   ]
 }

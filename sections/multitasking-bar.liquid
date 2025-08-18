@@ -5,9 +5,9 @@
             width: auto;
             padding: 0.2rem;
             border-radius: 3rem;
-            box-shadow: 0.2rem 0.4rem 0.9rem 0 rgba(176, 173, 173, 0.35);
+            box-shadow: 0.2rem 0.4rem 0.9rem 0 rgb(176 173 173 / var(--opacity-35));
             background: var(--color-background);
-            opacity: 0;
+            opacity: var(--opacity-0);
             visibility: hidden;
             transform: translate3d(2rem,-50%,0);
             transition: opacity var(--duration-long) ease, visibility var(--duration-long) ease, transform var(--duration-long) ease;
@@ -61,7 +61,7 @@
             width: 4.6rem;
             height: 4.6rem;
             z-index: 1;
-            color: rgb(var(--color-foreground) / 0.1);
+            color: rgb(var(--color-foreground-rgb) / var(--opacity-10));
             margin: 0 auto 1rem auto;
         }
 
@@ -80,7 +80,7 @@
 
         .target-block.active .multi-t__button .icon,
         .button__back-to-top[data-index="1"].active.hide + .target-block .multi-t__button .icon {
-            color: rgba(var(--secondary-icon), 1);
+            color: rgb(var(--secondary-icon) / var(--opacity-100));
         }
 
         .multi-t__wrap [data-index="1"].active ~ .glider {
@@ -107,8 +107,8 @@
             right: calc(100% + 0.5rem);
             padding-inline: 0.5rem;
             border-radius: 3rem;
-            box-shadow: 0.2rem 0.4rem 0.9rem 0 rgba(176, 173, 173, 0.35);
-            opacity: 0;
+            box-shadow: 0.2rem 0.4rem 0.9rem 0 rgb(176 173 173 / var(--opacity-35));
+            opacity: var(--opacity-0);
             visibility: hidden;
             transform: translate(2rem);
             transition: opacity var(--duration-long) ease, visibility var(--duration-long) ease, transform var(--duration-long) ease;
@@ -116,7 +116,7 @@
         }
 
         .multi-t__social.active {
-            opacity: 1;
+            opacity: var(--opacity-100);
             visibility: visible;
             transform: translateX(0);
             pointer-events: auto;
@@ -130,7 +130,7 @@
             height: 4rem;
             width: 4rem;
             z-index: -1;
-            background-color: rgba(var(--secondary-icon-background), 1);
+            background-color: rgb(var(--secondary-icon-background) / var(--opacity-100));
             transition: 0.25s ease-out;
         }
 
@@ -140,7 +140,7 @@
         }
 
         .button__back-to-top.hide {
-            opacity: 0;
+            opacity: var(--opacity-0);
         }
 
         body.overflow-hidden .multitasking-bar {
@@ -148,7 +148,7 @@
         }
 
         body:not(.has--preload-screen) .multitasking-bar {
-            opacity: 1;
+            opacity: var(--opacity-100);
             visibility: visible;
             pointer-events: auto;
             transform: translate3d(0, -50%, 0);
@@ -175,7 +175,7 @@
     {% endstyle %}
 
     <multitasking-bar
-        class="multitasking-bar fixed h-auto z-2 gradient no-js-hidden"
+        class="multitasking-bar fixed h-auto z-2 no-js-hidden"
         id="multitasking-bar"
         style="
             --right: 0.5%;
@@ -195,7 +195,7 @@
                             data-index="{{ forloop.index }}"
                         >
                             <button
-                                class="multi-t__button p-0 flex items-center justify-center relative cursor-pointer bor-none rounded-full gradient"
+                                class="multi-t__button p-0 flex items-center justify-center relative cursor-pointer bor-none rounded-full"
                                 data-target="multitasking-recently-viewed"
                                 type="button"
                                 aria-haspopup="dialog"
@@ -217,7 +217,7 @@
 
                             <div id="Drawer-Overlay-Multitasking-Bar" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
                             <div
-                                class="drawer__inner gradient cus-scrollbar"
+                                class="drawer__inner cus-scrollbar"
                                 role="dialog"
                                 aria-modal="true"
                                 aria-label="{{ 'sections.recently_viewed.title' | t }}"
@@ -309,7 +309,7 @@
                     {%- when 'social_media' -%}
                         <div class="target-block relative{% if forloop.first %} active{% endif %}" data-index="{{ forloop.index }}">
                             <button
-                                class="multi-t__button p-0 flex items-center justify-center relative cursor-pointer bor-none rounded-full gradient"
+                                class="multi-t__button p-0 flex items-center justify-center relative cursor-pointer bor-none rounded-full"
                                 data-target="multitasking-social-media"
                                 type="button"
                                 aria-haspopup="dialog"
@@ -321,14 +321,14 @@
                                 </span>
                             </button>
 
-                            <div class="multi-t__wrapper multi-t__social pointer-events-none absolute top-0 gradient">
+                            <div class="multi-t__wrapper multi-t__social pointer-events-none absolute top-0">
                                 {%- render 'social-icons', class: 'multi-t__list' -%}
                             </div>
                         </div>
                     {%- when 'back_to_top' -%}
                         <div class="target-block relative button__back-to-top{% if forloop.first %} active{% endif %} hide" data-index="{{ forloop.index }}">
                             <button
-                                class="multi-t__button p-0 flex items-center justify-center relative cursor-pointer bor-none rounded-full gradient"
+                                class="multi-t__button p-0 flex items-center justify-center relative cursor-pointer bor-none rounded-full"
                                 data-target="back-to-top"
                                 role="button"
                                 aria-haspopup="dialog"
@@ -477,24 +477,28 @@
             "type": "color",
             "id": "background",
             "default": "#ffffff",
+            "alpha": true,
             "label": "t:sections.multitasking-bar.settings.colors.settings.icon_background.label"
         },
         {
             "type": "color",
             "id": "icon",
             "default": "#000000",
+            "alpha": true,
             "label": "t:sections.multitasking-bar.settings.colors.settings.icon.label"
         },
         {
             "type": "color",
             "id": "secondary_background",
             "default": "#1199BB",
+            "alpha": true,
             "label": "t:sections.multitasking-bar.settings.colors.settings.secondary_icon_background.label"
         },
         {
             "type": "color",
             "id": "secondary_icon",
             "default": "#FFFFFF",
+            "alpha": true,
             "label": "t:sections.multitasking-bar.settings.colors.settings.secondary_icon.label"
         }
     ],

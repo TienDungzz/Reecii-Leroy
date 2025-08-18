@@ -62,7 +62,49 @@
     },
     {
       "type": "header",
-      "content": "t:content.link"
+      "content": "t:content.link",
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "button_type_size_link",
+      "label": "t:settings.size",
+      "visible_if": "{{ block.settings.style_class == 'link' }}",
+      "options": [
+        {
+          "value": "28",
+          "label": "28px"
+        },
+        {
+          "value": "24",
+          "label": "24px"
+        },
+        {
+          "value": "20",
+          "label": "20px"
+        },
+        {
+          "value": "18",
+          "label": "18px"
+        },
+        {
+          "value": "16",
+          "label": "16px"
+        },
+        {
+          "value": "14",
+          "label": "14px"
+        },
+        {
+          "value": "12",
+          "label": "12px"
+        },
+        {
+          "value": "10",
+          "label": "10px"
+        }
+      ],
+      "default": "12"
     },
     {
       "type": "checkbox",
@@ -100,6 +142,23 @@
       "default": "fit-content"
     },
     {
+      "type": "select",
+      "id": "unit",
+      "label": "t:settings.unit",
+      "visible_if": "{{ block.settings.width == 'custom' }}",
+      "options": [
+        {
+          "value": "pixel",
+          "label": "t:options.pixel"
+        },
+        {
+          "value": "percent",
+          "label": "t:options.percent"
+        }
+      ],
+      "default": "percent"
+    },
+    {
       "type": "range",
       "id": "custom_width",
       "label": "t:settings.custom_width",
@@ -108,7 +167,40 @@
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width == \"custom\" }}"
+      "visible_if": "{{ block.settings.width == 'custom' and block.settings.unit == 'percent' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_pixel",
+      "label": "t:settings.custom_width",
+      "min": 100,
+      "max": 500,
+      "step": 5,
+      "unit": "px",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' and block.settings.unit == 'pixel' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_padding_vertical",
+      "label": "t:settings.vertical_padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_padding_horizontal",
+      "label": "t:settings.horizontal_padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
     },
     {
       "type": "select",
@@ -127,6 +219,23 @@
       "default": "fit-content"
     },
     {
+      "type": "select",
+      "id": "unit_mobile",
+      "label": "t:settings.unit",
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}",
+      "options": [
+        {
+          "value": "pixel",
+          "label": "t:options.pixel"
+        },
+        {
+          "value": "percent",
+          "label": "t:options.percent"
+        }
+      ],
+      "default": "percent"
+    },
+    {
       "type": "range",
       "id": "custom_width_mobile",
       "label": "t:settings.custom_width",
@@ -135,7 +244,40 @@
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width_mobile == \"custom\" }}"
+      "visible_if": "{{ block.settings.width_mobile == 'custom' and block.settings.unit_mobile == 'percent' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_pixel_mobile",
+      "label": "t:settings.custom_width",
+      "min": 100,
+      "max": 500,
+      "step": 5,
+      "unit": "px",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' and block.settings.unit_mobile == 'pixel' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_padding_vertical_mobile",
+      "label": "t:settings.vertical_padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_padding_horizontal_mobile",
+      "label": "t:settings.horizontal_padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
     }
   ],
   "presets": [

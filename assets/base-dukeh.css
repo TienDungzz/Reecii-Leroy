@@ -3,7 +3,7 @@
 .layout-panel-flex {
   --gap-scale: var(--spacing-scale-md);
 
-  @media screen and (width >= 990px) {
+  @media screen and (min-width: 990px) {
     --gap-scale: var(--spacing-scale-default);
   }
 }
@@ -26,7 +26,7 @@
   justify-content: var(--vertical-alignment);
 }
 
-@media screen and (width < 750px) {
+@media screen and (max-width: 749px) {
   .mobile-column {
     flex-flow: column nowrap;
     align-items: var(--horizontal-alignment);
@@ -48,7 +48,7 @@
   }
 }
 
-@media (width >= 750px) {
+@media (min-width: 750px) {
   .layout-panel-flex {
     flex-direction: var(--flex-direction);
   }
@@ -58,7 +58,7 @@
 .spacing-style {
   --spacing-scale: var(--spacing-scale-md);
 
-  @media screen and (width >= 990px) {
+  @media screen and (min-width: 990px) {
     --spacing-scale: var(--spacing-scale-default);
   }
 
@@ -82,15 +82,28 @@
 .size-style {
   width: var(--size-style-width-mobile, var(--size-style-width));
   height: var(--size-style-height-mobile, var(--size-style-height));
+  padding-block: var(--size-style-padding-vertical-mobile, var(--size-style-padding-vertical));
+  padding-inline: var(--size-style-padding-horizontal-mobile, var(--size-style-padding-horizontal));
 
-  @media screen and (1024px > width >= 750px) {
+  @media screen and (min-width: 750px) and (max-width: 1024px) {
     width: var(--size-style-width-tablet, var(--size-style-width));
     height: var(--size-style-height-tablet, var(--size-style-height));
   }
 
-  @media screen and (width >= 1024px) {
+  @media screen and (min-width: 1025px) {
     width: var(--size-style-width);
     height: var(--size-style-height);
+  }
+}
+
+/* Padding style */
+.padding-style {
+  padding-block: var(--padding-style-vertical-mobile, var(--padding-style-vertical));
+  padding-inline: var(--padding-style-horizontal-mobile, var(--padding-style-horizontal));
+
+  @media screen and (min-width: 1025px) {
+    padding-block: var(--padding-style-vertical);
+    padding-inline: var(--padding-style-horizontal);
   }
 }
 
@@ -152,7 +165,7 @@
 .section--full-width.section--full-width-margin > * {
   grid-column: 1 / -1;
 
-  @media screen and (width >= 750px) {
+  @media screen and (min-width: 750px) {
     padding-left: var(--page-margin);
     padding-right: var(--page-margin);
   }
@@ -203,10 +216,6 @@
 
 .video-background--contain * {
   object-fit: contain;
-}
-
-.text-block {
-  width: 100%;
 }
 
 .text-block > *:first-child,

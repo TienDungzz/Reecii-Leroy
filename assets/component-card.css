@@ -44,7 +44,7 @@
   position: relative;
   box-sizing: border-box;
   border-radius: var(--border-radius);
-  border: var(--border-width) solid rgb(var(--color-foreground) / var(--border-opacity));
+  border: var(--border-width) solid var(--color-foreground);
 }
 
 .card--card:after,
@@ -57,8 +57,7 @@
   top: calc(var(--border-width) * -1);
   left: calc(var(--border-width) * -1);
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius)
-    rgb(var(--color-shadow) / var(--shadow-opacity));
+  box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) var(--color-shadow);
 }
 
 /* Needed for gradient continuity with or without animation, the transform scopes the gradient to its container which happens already when animation are turned on */
@@ -139,7 +138,7 @@
 
 .card-information .card__information-volume-pricing-note {
   margin-top: 0.6rem;
-  color: rgb(var(--color-foreground) / 0.75);
+  color: rgb(var(--color-foreground-rgb) / var(--opacity-75));
 }
 
 .card__information-volume-pricing-note--button,
@@ -371,13 +370,13 @@
 }
 
 .card__heading a:focus:after {
-  box-shadow: 0 0 0 0.3rem var(--color-background), 0 0 0.5rem 0.4rem rgb(var(--color-foreground) / 0.3);
-  outline: 0.2rem solid rgb(var(--color-foreground) / 0.5);
+  box-shadow: 0 0 0 0.3rem var(--color-foreground), 0 0 0.5rem 0.4rem rgb(var(--color-foreground-rgb) / var(--opacity-30));
+  outline: 0.2rem solid rgb(var(--color-foreground-rgb) / var(--opacity-50));
 }
 
 .card__heading a:focus-visible:after {
-  box-shadow: 0 0 0 0.3rem var(--color-background), 0 0 0.5rem 0.4rem rgb(var(--color-foreground) / 0.3);
-  outline: 0.2rem solid rgb(var(--color-foreground) / 0.5);
+  box-shadow: 0 0 0 0.3rem var(--color-foreground), 0 0 0.5rem 0.4rem rgb(var(--color-foreground-rgb) / var(--opacity-30));
+  outline: 0.2rem solid rgb(var(--color-foreground-rgb) / var(--opacity-50));
 }
 
 .card__heading a:focus:not(:focus-visible):after {
@@ -402,11 +401,11 @@
   }
 
   .card__media:hover .media.media--hover-effect > img:first-child:not(:only-child) {
-    opacity: 0;
+    opacity: var(--opacity-0);
   }
 
   .card__media:hover .media.media--hover-effect > img + img {
-    opacity: 1;
+    opacity: var(--opacity-100);
     transform: scale(1.03);
   }
 
@@ -500,7 +499,7 @@
 
 .grid[data-view="list"] .card-information > .price,
 .card--horizontal .card-information > .price {
-  color: rgb(var(--color-foreground) / 0.75);
+  color: rgb(var(--color-foreground-rgb) / var(--opacity-75));
 }
 
 .card-information > .rating {
@@ -538,8 +537,7 @@
   /* Border is not currently compatible with image shapes for standard cards. */
   background-color: transparent;
   filter: drop-shadow(
-    var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius)
-      rgb(var(--color-shadow) / var(--shadow-opacity))
+    var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) var(--color-shadow)
   );
 }
 
@@ -642,10 +640,10 @@
   width: 0;
   right: calc(100% - 3rem);
   height: 3rem;
-  background-color: var(--color-background-icon);
+  background: var(--color-background-icon);
   padding: 0 3rem 0 1.5rem;
   border-radius: 3.6rem;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 40px 0px;
+  box-shadow: rgb(99 99 99 / var(--opacity-20)) 0px 2px 40px 0px;
 }
 
 .card-product__group-wrapper .card-product__group-btn .text-inner {
@@ -672,7 +670,7 @@
   }
 
   .card-product__group-wrapper .card-product__group-btn:hover .text {
-    opacity: 1;
+    opacity: var(--opacity-100);
     pointer-events: auto;
     width: auto;
     left: auto;
@@ -697,7 +695,7 @@
 .wishlist-button.wishlist-added {
   color: var(--color-background-icon);
   background-color: var(--color-icon);
-  box-shadow: rgba(99, 99, 99, 0.2) 0px .2rem .8rem 0px;
+  box-shadow: rgb(99 99 99 / var(--opacity-20)) 0px .2rem .8rem 0px;
 }
 
 .card-product__group-btn.quickview-button {
@@ -778,7 +776,7 @@
   .card--quickadd-type-text .card-product__group-wrapper .card--block-button {
     position: absolute;
     bottom: 0;
-    opacity: 0;
+    opacity: var(--opacity-0);
     transform: translateY(100%);
   }
 
@@ -793,7 +791,7 @@
 
   .card-product__group-wrapper.quick-add-type-icon,
   .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group {
-    opacity: 0;
+    opacity: var(--opacity-0);
     transform: translateX(0.5rem);
   }
 }
@@ -801,14 +799,14 @@
 @media (hover: hover) and (min-width: 1025px) {
 
   .card-wrapper .card--block-content .card--block-button {
-    opacity: 0;
+    opacity: var(--opacity-0);
     transform: translateY(1rem);
   }
 
   :is(.card-wrapper:not(.card--block):hover .card__countDown,
   .card-wrapper.card--block:hover .card--block-media__bottom .card__countDown),
   .card-wrapper:hover :is(.card--block-media__bottom .card-marquee, .card--block-content > *:not(.card--block-button)) {
-    opacity: 0;
+    opacity: var(--opacity-0);
   }
 
   .card-wrapper:not(.card--block):hover .card__countDown {
@@ -825,12 +823,12 @@
   }
 
   .card-wrapper:hover .card--block-button {
-    opacity: 1;
+    opacity: var(--opacity-100);
     transform: translateY(0);
   }
 
   .card-wrapper:hover :is(.card-product__group-wrapper.quick-add-type-icon, .card-product__group-wrapper:not(.quick-add-type-icon) .card-product__group) {
-    opacity: 1;
+    opacity: var(--opacity-100);
     transform: translateX(0);
   }
 
@@ -839,7 +837,7 @@
   }
 
   .card-wrapper:hover .card--block-content .card--block-button {
-    opacity: 1;
+    opacity: var(--opacity-100);
     transform: translateY(0);
   }
 }
