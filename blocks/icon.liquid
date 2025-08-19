@@ -1,26 +1,23 @@
-{% comment %} {% assign icon_block_class = 'icon-block__media{% if block.settings.icon != 'none' %} icon-block__{{ block.settings.icon }}{% endif %} icon-block-' | append: block.id %} {% endcomment %}
-
-{%- capture icon_block_class -%}
-  icon-block__media{% if block.settings.icon != 'none' %} icon-block__{{ block.settings.icon }}{% endif %} icon-block-{{ block.id }}
-{%- endcapture -%}
+{% assign block_settings = block.settings %}
+{% assign icon_block_class = 'icon-block__media icon-block_' | append: block_settings.icon | append: ' icon-block-' | append: block.id %}
 
 {% capture icon %}
   {% render 'icon-or-image',
-    icon: block.settings.icon,
-    icon_custom: block.settings.icon_custom,
-    svg_upload: block.settings.svg_upload,
-    image_upload: block.settings.image_upload,
-    width: block.settings.width,
+    icon: block_settings.icon,
+    icon_custom: block_settings.icon_custom,
+    svg_upload: block_settings.svg_upload,
+    image_upload: block_settings.image_upload,
+    width: block_settings.width,
     class_name: icon_block_class,
     attributes: block.shopify_attributes
   %}
 {% endcapture %}
 
-{%- if block.settings.link != blank -%}
+{%- if block_settings.link != blank -%}
   <a
-    href="{{ block.settings.link }}"
+    href="{{ block_settings.link }}"
     class="text-inherit"
-    {% if block.settings.open_in_new_tab %}
+    {% if block_settings.open_in_new_tab %}
       target="_blank" rel="noopener"
     {% endif %}
   >
@@ -33,8 +30,8 @@
 {% stylesheet %}
   .icon-block {
     display: flex;
-    fill: currentcolor;
     flex-shrink: 0;
+    fill: currentcolor;
   }
 
   .icon-block__media {
@@ -131,6 +128,10 @@
         {
           "value": "instagram",
           "label": "Instagram"
+        },
+        {
+          "value": "instagram-black",
+          "label": "Instagram Black"
         },
         {
           "value": "iron",
@@ -313,7 +314,7 @@
       "step": 2,
       "unit": "px",
       "default": 40,
-      "visible_if": "{{ block.settings.icon_custom != 'svg' }}"
+      "visible_if": "{{ block.settings.icon_custom != 'svg' and block.settings.icon != 'none' }}"
     },
     {
       "type": "url",

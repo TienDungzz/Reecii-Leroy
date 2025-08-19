@@ -5,8 +5,11 @@
 {%- endcomment -%}
 
 {%- if settings.width == 'custom' -%}
-  --size-style-width:
-  {{- settings.custom_width }}%;
+  {% if settings.unit == 'pixel' %}
+    --size-style-width: {{ settings.custom_width_pixel }}px;
+  {% else %}
+    --size-style-width: {{ settings.custom_width }}%;
+  {% endif %}
 {%- elsif settings.width == 'fill' -%}
   --size-style-width: 100%;
 {%- else -%}
@@ -14,8 +17,7 @@
 {%- endif -%}
 
 {%- if settings.height == 'custom' -%}
-  --size-style-height:
-  {{- settings.custom_height }}%;
+  --size-style-height: {{ settings.custom_height }}%;
 {%- elsif settings.height == 'fill' -%}
   --size-style-height: 100%;
 {%- else -%}
@@ -23,8 +25,7 @@
 {%- endif -%}
 
 {%- if settings.width_tablet == 'custom' -%}
-  --size-style-width-tablet:
-  {{- settings.custom_width_tablet }}%;
+  --size-style-width-tablet: {{ settings.custom_width_tablet }}%;
 {%- elsif settings.width_tablet == 'fill' -%}
   --size-style-width-tablet: 100%;
 {%- elsif settings.width_tablet == 'fit-content' -%}
@@ -32,11 +33,16 @@
 {%- endif -%}
 
 {% if settings.width_mobile == 'custom' %}
-  --size-style-width-mobile:
-  {{- settings.custom_width_mobile }}%; --size-style-width-mobile-min:
-  {{- settings.custom_width_mobile }}%;
+  {% if settings.unit_mobile == 'pixel' %}
+    --size-style-width-mobile: {{ settings.custom_width_pixel_mobile }}px;
+  {% else %}
+    --size-style-width-mobile: {{ settings.custom_width_mobile }}%;
+  {% endif %}
+  --size-style-width-mobile-min: {{ settings.custom_width_mobile }}%;
 {%- elsif settings.width_mobile == 'fill' -%}
-  --size-style-width-mobile: 100%; --size-style-width-mobile-min: 5rem;
+  --size-style-width-mobile: 100%; 
+  --size-style-width-mobile-min: 5rem;
 {%- elsif settings.width_mobile == 'fit-content' -%}
-  --size-style-width-mobile: {{ settings.width_mobile }}; --size-style-width-mobile-min: {{ settings.width_mobile }};
+  --size-style-width-mobile: {{ settings.width_mobile }}; 
+  --size-style-width-mobile-min: {{ settings.width_mobile }};
 {%- endif -%}

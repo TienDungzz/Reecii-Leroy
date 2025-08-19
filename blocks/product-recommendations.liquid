@@ -24,7 +24,7 @@
   .resource-list--carousel-mobile {
     display: block;
 
-    @media screen and (width >= 750px) {
+    @media screen and (min-width: 750px) {
       display: none;
     }
   }
@@ -36,7 +36,7 @@
 
     width: 100%;
 
-    @media screen and (width >= 750px) {
+    @media screen and (min-width: 750px) {
       --resource-list-column-gap: var(--resource-list-column-gap-desktop);
       --resource-list-row-gap: var(--resource-list-row-gap-desktop);
     }
@@ -52,11 +52,11 @@
     column-gap: var(--resource-list-column-gap);
     row-gap: var(--resource-list-row-gap);
 
-    @container resource-list (width < 750px) {
+    @container resource-list (max-width: 749px) {
       grid-template-columns: var(--resource-list-columns-mobile);
     }
 
-    @container resource-list (width >= 750px) {
+    @container resource-list (min-width: 750px) {
       grid-template-columns: repeat(var(--resource-list-columns-per-row), 1fr);
 
       &:has(.resource-list__item:first-child:nth-last-child(n + 9)) {
@@ -80,7 +80,7 @@
       }
     }
 
-    @container resource-list (width >= 1200px) {
+    @container resource-list (min-width: 1200px) {
       &:has(.resource-list__item:first-child:nth-last-child(6)) {
         --resource-list-columns-per-row: 6;
       }

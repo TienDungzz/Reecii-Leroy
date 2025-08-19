@@ -1,7 +1,8 @@
 <script
   src="{{ 'marquee.js' | asset_url }}"
   type="module"
-  fetchpriority="low" defer
+  fetchpriority="low"
+  defer
 ></script>
 
 {% liquid
@@ -23,7 +24,7 @@
 
 <marquee-component
   class="
-    block w-full overflow-hidden
+    block w-full overflow-hidden relative
     spacing-style
     gap-style
     color-{{ sec_stts.color_scheme }}
@@ -36,13 +37,23 @@
   data-speed-factor="{{ sec_stts.speed }}"
   data-movement-direction="{{ movement_direction }}"
 >
-  <{{element_scroll }} class="marquee__wrapper flex w-fit whitespace-nowrap" {% if marquee_type == 'scroll' %}{{ attr_scroll }}{% endif %} >
+  <{{ element_scroll }}
+    class="marquee__wrapper flex w-fit whitespace-nowrap"
+    {% if marquee_type == 'scroll' %}
+      {{- attr_scroll -}}
+    {% endif %}
+  >
     <div class="marquee__content flex">
       <div class="marquee__repeated-items flex-center">
         {% content_for 'blocks' %}
       </div>
     </div>
-  </{{element_scroll }}>
+  </{{ element_scroll }}>
+  {% if sec_stts.center_image != blank %}
+    <div class="marquee__center-image absolute-c-c z-1 pointer-events-none w-fit h-full">
+      {%- render 'image', image: sec_stts.center_image, class: 'w-auto h-full' -%}
+    </div>
+  {% endif %}
 </marquee-component>
 
 {% stylesheet %}
@@ -80,6 +91,13 @@
     min-height: max-content;
   }
 
+  @keyframes marquee-motion {
+
+    to {
+      transform: translate3d(calc(var(--percent, -50%) - (var(--marquee-gap) / 2)), 0, 0);
+    }
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     marquee-scroll .marquee__content,
     marquee-component:not([data-disabled]) .marquee__wrapper {
@@ -99,6 +117,34 @@
       transform: translate3d(calc(var(--percent, -50%) - (var(--marquee-gap) / 2)), 0, 0);
     }
   }
+
+   .marquee__repeated-items .icon-block:hover img {
+    animation: jello-vertical 0.9s both;
+  }
+
+  @keyframes jello-vertical {
+    0% {
+      transform: scale3d(1, 1, 1);
+    }
+    30% {
+      transform: scale3d(0.75, 1.25, 1);
+    }
+    40% {
+      transform: scale3d(1.25, 0.75, 1);
+    }
+    50% {
+      transform: scale3d(0.85, 1.15, 1);
+    }
+    65% {
+      transform: scale3d(1.05, 0.95, 1);
+    }
+    75% {
+      transform: scale3d(0.95, 1.05, 1);
+    }
+    100% {
+      transform: scale3d(1, 1, 1);
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -113,9 +159,6 @@
     },
     {
       "type": "icon"
-    },
-    {
-      "type": "image"
     },
     {
       "type": "logo"
@@ -146,6 +189,15 @@
       "id": "color_scheme",
       "label": "t:settings.color_scheme",
       "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Center image"
+    },
+    {
+      "type": "image_picker",
+      "id": "center_image",
+      "label": "t:sections.all.image.name"
     },
     {
       "type": "header",

@@ -3,13 +3,13 @@
   --swatch--border-radius: var(--swatch-input--border-radius, 50%);
   --swatch--size: var(--swatch-input--size, 4.4rem);
 
-  border: 0.1rem solid rgba(var(--color-foreground), 0.15);
+  border: 0.1rem solid rgb(var(--color-foreground-rgb) / var(--opacity-15));
   border-radius: var(--swatch--border-radius);
   padding: 0.2rem;
   box-shadow: var(--variant-pills-shadow-horizontal-offset)
     var(--variant-pills-shadow-vertical-offset)
     var(--variant-pills-shadow-blur-radius)
-    rgba(var(--color-shadow), var(--variant-pills-shadow-opacity));
+    var(--color-shadow);
 }
 
 .swatch {
@@ -25,7 +25,7 @@
 
 .swatch-item:has(.swatch--unavailable) {
   border-style: dashed;
-  border-color: rgb(var(--color-foreground) / 0.5);
+  border-color: rgb(var(--color-foreground-rgb) / var(--opacity-50));
 }
 
 .swatch-item .tooltip {
@@ -56,13 +56,13 @@
 @media (min-width: 1025px) {
   .swatch-item .tooltip {
     display: block;
-    opacity: 0;
+    opacity: var(--opacity-0);
     visibility: hidden;
     pointer-events: none;
   }
 
   .swatch-item:hover .tooltip {
-    opacity: 1;
+    opacity: var(--opacity-100);
     visibility: visible;
   }
 }

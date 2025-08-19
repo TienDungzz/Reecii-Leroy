@@ -8,8 +8,8 @@
 
   --pswp-root-z-index: 100000;
 
-  --pswp-preloader-color: rgba(79, 79, 79, 0.4);
-  --pswp-preloader-color-secondary: rgba(255, 255, 255, 0.9);
+  --pswp-preloader-color: rgb(79 79 79 / var(--opacity-40));
+  --pswp-preloader-color-secondary: rgb(255 255 255 / var(--opacity-90));
 
   /* defined via js:
   --pswp-transition-duration: 333ms; */
@@ -33,9 +33,9 @@
 	display: none;
 	touch-action: none;
 	outline: 0;
-	opacity: 0.003;
+	opacity: var(--opacity-4);
 	contain: layout style size;
-	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-tap-highlight-color: rgb(0 0 0 / var(--opacity-0));
 }
 
 /* Prevents focus outline on the root element,
@@ -63,7 +63,7 @@
 }
 
 .pswp__bg {
-  opacity: 0.005;
+  opacity: var(--opacity-4);
 	background: var(--pswp-bg);
   display: block;
 }
@@ -183,7 +183,7 @@ should hide (for example fade out) when PhotoSwipe is closed
 and show (for example fade in) when PhotoSwipe is opened
  */
 .pswp .pswp__hide-on-close {
-	opacity: 0.005;
+	opacity: var(--opacity-4);
 	will-change: opacity;
 	transition: opacity var(--pswp-transition-duration) cubic-bezier(0.4, 0, 0.22, 1);
 	z-index: 10; /* always overlap slide content */
@@ -192,7 +192,7 @@ and show (for example fade in) when PhotoSwipe is opened
 
 /* class pswp--ui-visible is added when opening or closing transition starts */
 .pswp--ui-visible .pswp__hide-on-close {
-	opacity: 1;
+	opacity: var(--opacity-100);
 	pointer-events: auto;
 }
 
@@ -209,7 +209,7 @@ and show (for example fade in) when PhotoSwipe is opened
 	background: none;
 	border: 0;
 	box-shadow: none;
-	opacity: 0.85;
+	opacity: var(--opacity-85);
 	-webkit-appearance: none;
 	-webkit-touch-callout: none;
 }
@@ -222,11 +222,11 @@ and show (for example fade in) when PhotoSwipe is opened
   background: none;
   border: 0;
   box-shadow: none;
-  opacity: 1;
+  opacity: var(--opacity-100);
 }
 
 .pswp__button:disabled {
-  opacity: 0.3;
+  opacity: var(--opacity-30);
   cursor: auto;
 }
 
@@ -387,13 +387,13 @@ div.pswp__img--placeholder,
 }
 
 .pswp__preloader .pswp__icn {
-  opacity: 0;
+  opacity: var(--opacity-0);
   transition: opacity 0.2s linear;
   animation: pswp-clockwise 600ms linear infinite;
 }
 
 .pswp__preloader--active .pswp__icn {
-  opacity: 0.85;
+  opacity: var(--opacity-85);
 }
 
 @keyframes pswp-clockwise {
@@ -414,7 +414,7 @@ div.pswp__img--placeholder,
   line-height: 30px;
   color: var(--pswp-icon-color);
   text-shadow: 1px 1px 3px var(--pswp-icon-color-secondary);
-  opacity: 0.85;
+  opacity: var(--opacity-85);
 }
 
 .pswp--one-slide .pswp__counter {

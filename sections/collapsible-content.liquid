@@ -1,9 +1,9 @@
 {{ 'component-accordion.css' | asset_url | stylesheet_tag }}
 {{ 'collapsible-content.css' | asset_url | stylesheet_tag }}
 
-<div class="color-{{ section.settings.color_scheme }} gradient">
+<div class="color-{{ section.settings.color_scheme }}">
   <div class="collapsible-content collapsible-{{ section.settings.layout }}-layout relative z-0{% if section.settings.layout == 'section' %} page-width{% endif %}">
-    <div class="collapsible-content__wrapper{% if section.settings.layout == 'section' %} color-{{ section.settings.container_color_scheme }} gradient{% endif %} spacing"
+    <div class="collapsible-content__wrapper{% if section.settings.layout == 'section' %} color-{{ section.settings.container_color_scheme }}{% endif %} spacing"
       style="
         --p-spacing-t: {{ section.settings.padding_top }}px;
         --p-spacing-b: {{ section.settings.padding_bottom }}px;
@@ -31,7 +31,7 @@
           {%- if section.settings.image != blank -%}
             <div class="grid__item collapsible-content__grid-item">
               <div
-                class="collapsible-content__media collapsible-content__media--{{ section.settings.image_ratio }} media gradient"
+                class="collapsible-content__media collapsible-content__media--{{ section.settings.image_ratio }} media"
                 {% if section.settings.image_ratio == 'adapt' %}
                   style="padding-bottom: {{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%;"
                 {% endif %}
@@ -61,7 +61,7 @@
           {% endif %}
           <div class="grid__item">
             {%- for block in section.blocks -%}
-              <div class="accordion{% if section.settings.layout == 'row' %} color-{{ section.settings.container_color_scheme }} gradient{% endif %}">
+              <div class="accordion{% if section.settings.layout == 'row' %} color-{{ section.settings.container_color_scheme }}{% endif %}">
                 <details
                   id="Details-{{ block.id }}-{{ section.id }}"
                   {% if section.settings.open_first_collapsible_row and forloop.first %}

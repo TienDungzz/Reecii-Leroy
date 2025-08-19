@@ -27,8 +27,10 @@
 
   assign border = bl_stts.border
   if border == 'solid' and text_width == '100%' and class_heading == 'section-header'
-    assign has_border = true
+    assign has_heading_border = true
     assign heading_border_classes = 'heading-border--solid relative justify-center'
+  elsif bl_stts.enable_border == true
+    assign has_border = true
   elsif bl_stts.enable_border_bottom == true
     assign enable_border_bottom = true
   endif
@@ -56,12 +58,19 @@
     endfor
   endif
 
+  assign stroke_text = bl_stts.stroke_text
+  assign stroke_content = bl_stts.stroke_text_content | split: ','
+  if stroke_content != blank and stroke_text == true
+    for stroke in stroke_content
+      assign stroke_text_code = stroke | prepend: '<stroke-text class="stoke_text--content">' | append: '</stroke-text>'
+      assign text = text | replace: stroke, stroke_text_code
+    endfor
+  endif
+
   capture text_block_classes
     if text_width == '100%'
       echo 'text-block--align-' | append: bl_stts.alignment
-      if bl_stts.max_width == 'none'
-        echo ' text-block--full-width '
-      endif
+      echo ' text-block--full-width '
     endif
     if bl_stts.type_preset == 'custom'
       echo ' custom-typography '
@@ -81,16 +90,6 @@
   endcapture
 %}
 
-{%- capture text_block_classes -%}
-  {%- if text_width == '100%' -%} text-block--align-{{ bl_stts.alignment }}{% if bl_stts.max_width == 'none' %} text-block--full-width {% endif %}{% endif %}
-  {%- if bl_stts.type_preset == 'custom' -%} custom-typography
-    {%- if bl_stts.font_size != '' %} custom-font-size {% endif -%}
-    {% if bl_stts.color != '' -%} custom-color {% endif -%}
-    {% if is_rte -%} rte {% endif -%}
-  {% endif %}
-{% if bl_stts.background -%} text-block--background {% endif -%}
-{%- endcapture -%}
-
 {% if bl_stts.typing_text %}
   {% assign class = class | append: ' typing-text' %}
   {%- capture text -%}
@@ -99,23 +98,27 @@
 {% endif %}
 
 {% capture attributes %}
-  class="{{ class }}{% if has_border %} {{ heading_border_classes }}{% endif %} spacing-style text-block max-w-full flex flex-column text-block--{{ block.id }} {{ bl_stts.type_preset }}
-    {{ text_block_classes }}{% if enable_border_bottom %} border-style text-border-style-bottom{% endif %}
+  class="
+    size-style spacing-style text-block max-w-full flex flex-column text-block--{{ block.id }}
+    {{ bl_stts.type_preset }} {{ class }} {{ text_block_classes }}
+    {% if has_heading_border %} {{ heading_border_classes }}{% endif %}
+    {% if enable_border_bottom %} border-style text-border-style-bottom{% endif %}
+    {% if has_border %} border-style{% endif %}
   "
   style="
+    {% render 'size-style', settings: bl_stts %}
     {% render 'spacing-padding', settings: bl_stts %}
     {% render 'typography-style', settings: bl_stts %}
     --width: {{ text_width }};
-    --max-width: var(--max-width--{{ type }}-{{ bl_stts.max_width }});
     {% if text_width == "100%" %}
       --text-align: {{ bl_stts.alignment }};
     {% endif %}
     {% if bl_stts.background %}
-      --text-background-color: {{ bl_stts.background_color | default: 'rgb(255 255 255 / 1.0)' }};
+      --text-background-color: {{ bl_stts.background_color | default: 'rgb(255 255 255 / var(--opacity-100))' }};
       --text-corner-radius: {{ bl_stts.corner_radius }}px;
       --text-padding: max(var(--padding-2xs), calc((var(--text-corner-radius) + var(--padding-xs)) * (1 - cos(45deg))));
     {% endif %}
-    {% if has_border or enable_border_bottom %}
+    {% if has_heading_border or enable_border_bottom or has_border %}
       {%- render 'border-override', settings: bl_stts -%}
     {% endif %}
   "
@@ -133,30 +136,49 @@
     assign element = 'rte-formatter'
   endif
 
+  if bl_stts.text_effect == 'blur' or bl_stts.text_effect == 'reveal'
+    assign text_element = 'text-animation'
+  endif
+
   assign text_class = 'inline-block relative z-1 w-auto max-w-full'
 %}
-
+{% if text_element %}
+  <{{ text_element }}
+    {{ attributes }}
+    data-text-effect="{{ bl_stts.text_effect }}"
+    data-animation-repeat="{{ bl_stts.animation_repeat }}"
+  >
+{% endif %}
 {% if fallback_text != blank and plain_text == blank %}
   <div {{ attributes }}>
-    {%- if has_border or is_card_heading -%}
-    <div class="text{% if has_border %} {{ text_class }}{% endif %}">
+    {%- if has_heading_border or is_card_heading -%}
+    <div class="text{% if has_heading_border %} {{ text_class }}{% endif %}">
     {%- endif -%}
       {{ fallback_text }}
-    {%- if has_border or is_card_heading -%}
+    {%- if has_heading_border or is_card_heading -%}
     </div>
     {%- endif -%}
   </div>
 {% elsif plain_text != blank %}
   <{{ element }} {{ attributes }}>
-    {%- if has_border or is_card_heading -%}
-    <div class="text{% if has_border %} {{ text_class }}{% endif %}">
+    {%- if has_heading_border or is_card_heading or text_element -%}
+      <div class="{% if has_heading_border or is_card_heading %}text {{ text_class }}{% endif %}{% if text_element %} text-animation-line{% endif %}">
     {%- endif -%}
       {{ text }}
-    {%- if has_border or is_card_heading -%}
-    </div>
+    {%- if has_heading_border or is_card_heading or text_element -%}
+      </div>
     {%- endif -%}
   </{{ element }}>
 {% endif %}
+{% if text_element %}
+  </{{ text_element }}>
+{% endif %}
+
+<script
+  src="{{ 'text-animation.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
 
 {% stylesheet %}
   :root {
@@ -252,20 +274,17 @@
       padding-inline: var(--padding-inline);
       background: var(--color-background);
 
-      @media screen and (width >= 1024px) {
+      @media screen and (min-width: 1025px) {
         min-width: 42rem;
       }
     }
   }
 
   .text-block {
-    width: var(--width);
     align-items: var(--horizontal-alignment);
   }
 
   .text-block > * {
-    width: var(--width);
-    max-width: var(--max-width, 100%);
     text-align: var(--text-align, var(--text-align-default));
     text-wrap: var(--text-wrap);
   }
@@ -360,5 +379,60 @@
   .custom-color,
   .custom-color > :is(h1, h2, h3, h4, h5, h6, p, *) {
     color: var(--color);
+  }
+
+  .stoke_text--content {
+     --fill-color: var(--color-foreground);
+      position: relative;
+      display: inline-block;
+      text-decoration: none;
+      text-transform: uppercase;
+      -webkit-text-stroke: 1px var(--fill-color);
+      background: linear-gradient(var(--fill-color) 0 100%) left / 0 no-repeat;
+      color: transparent;
+      background-clip: text;
+      transition: background-size var(--animation-slowest-smooth);
+
+      /* &:hover {
+        background-size: 100%;
+      } */
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Blur effect */
+    [data-text-effect='blur'] {
+      filter: blur(20px);
+      opacity: 0.5;
+      scale: 1.05;
+      transition: filter 1.6s var(--animation-timing-fade-in), opacity 1.3s var(--animation-timing-fade-in),
+        scale 1.6s var(--animation-timing-fade-in);
+    }
+
+    .text-animation-visible[data-text-effect='blur'] {
+      filter: blur(0);
+      opacity: 1;
+      scale: 1;
+    }
+
+    /* Reveal effect */
+    [data-text-effect='reveal'],
+    [data-text-effect='reveal'] .text-animation-line {
+      overflow: hidden;
+    }
+
+    [data-text-effect='reveal'] .text-animation-line * {
+      transform: translateY(100%);
+    }
+
+    .text-animation-visible[data-text-effect='reveal'],
+    .text-animation-visible[data-text-effect='reveal'] .text-animation-line {
+      overflow: visible;
+      transition: overflow 0s linear 0.75s;
+    }
+
+    .text-animation-visible[data-text-effect='reveal'] .text-animation-line * {
+      transition: transform 0.5s var(--animation-timing-fade-in) 0.05s;
+      transform: translateY(0);
+    }
   }
 {% endstylesheet %}

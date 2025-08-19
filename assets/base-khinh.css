@@ -20,7 +20,7 @@
 
   .swiper-pagination {
     --swiper-pagination-bullet-inactive-color: var(--pagination-color);
-    --swiper-pagination-bullet-inactive-opacity: 1;
+    --swiper-pagination-bullet-inactive-opacity: var(--opacity-100);
     --swiper-pagination-bullet-size: 1rem;
     --swiper-pagination-color: var(--pagination-active-color);
     --swiper-pagination-bullet-horizontal-gap: 0.7rem;
@@ -60,7 +60,7 @@
   }
 
   /* &.swiper-watch-progress .swiper-slide:not(.swiper-slide-visible) {
-    opacity: 0 !important;
+    opacity: var(--opacity-0) !important;
     transition: var(--animation-speed-slow) var(--animation-timing-fade-in);
   } */
 }
@@ -86,14 +86,14 @@
     }
 
     &.swiper-button-disabled {
-      opacity: 0;
+      opacity: var(--opacity-0);
     }
 
     &:active {
       transform: scale(0.9);
     }
 
-    @media screen and (width >= 750px) {
+    @media screen and (min-width: 750px) {
       --button-width: max(4rem, calc(var(--arrow-width) * 0.75));
       --button-height: max(4rem, calc(var(--arrow-height) * 0.75));
       --button-icon-size: max(1.4rem, calc(var(--arrow-icon-size) * 0.75));
@@ -116,8 +116,8 @@
     height: var(--button-icon-size);
   }
 
-  @media screen and (width > 1024px) {
-    opacity: 0;
+  @media screen and (min-width: 1025px) {
+    opacity: var(--opacity-0);
     &.swiper-button-prev {
       transform: translateX(0.5rem);
     }
@@ -128,7 +128,7 @@
 
     .swiper:hover & {
       &:not(.swiper-button-disabled) {
-        opacity: 1;
+        opacity: var(--opacity-100);
       }
 
       &.swiper-button-prev,
@@ -201,6 +201,20 @@
 .body-m-font-size,
 .body-xs-font-size {
   line-height: var(--line-height--body-medium); /* 1.5 */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+.h0,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5 {
+  color: var(--color, var(--color-foreground-heading));
 }
 
 h1,
@@ -293,7 +307,7 @@ h6,
 .shadow-style {
   box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset)
     var(--shadow-blur) var(--shadow-spread-radius, 0px)
-    rgb(var(--shadow-color) / var(--shadow-opacity));
+    var(--shadow-color);
 }
 
 /* START: Display Srollbar */
@@ -353,7 +367,8 @@ h6,
 .group-block---content-overlay {
   position: relative;
   isolation: isolate;
-  > .group-block__media-wrapper :is(.background-image-container, .video-background) {
+  > .group-block__media-wrapper
+    :is(.background-image-container, .video-background) {
     position: relative;
     aspect-ratio: var(--ratio, 1);
     display: block;
@@ -407,25 +422,48 @@ h6,
   --hover-transition-timing: var(--ease-out-smooth);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .card-hover--scale .group-block > .group-block__media-wrapper .background-image-container:has(> img) ,
-  .card-hover--lift .group-block > .group-block__media-wrapper .background-image-container:has(> img) {
-    transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+  .card-hover--scale
+    .group-block
+    > .group-block__media-wrapper
+    .background-image-container:has(> img),
+  .card-hover--lift
+    .group-block
+    > .group-block__media-wrapper
+    .background-image-container:has(> img) {
+    transition: transform var(--hover-transition-duration)
+      var(--hover-transition-timing);
   }
 
-  .card-hover--clip-inset .group-block .group-block-content > .image-block:has(> img),
+  .card-hover--clip-inset
+    .group-block
+    .group-block-content
+    > .image-block:has(> img),
   .card-hover--clip-inset .group-block .background-image-container:has(> img) {
     clip-path: inset(0);
-    transition: clip-path var(--hover-transition-duration) var(--hover-transition-timing);
+    transition: clip-path var(--hover-transition-duration)
+      var(--hover-transition-timing);
   }
 
-  .card-hover--clip-inset .group-block > .group-block-content > .image-block > img ,
-  .card-hover--clip-inset .group-block > .group-block__media-wrapper .background-image-container > img {
-    transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+  .card-hover--clip-inset
+    .group-block
+    > .group-block-content
+    > .image-block
+    > img,
+  .card-hover--clip-inset
+    .group-block
+    > .group-block__media-wrapper
+    .background-image-container
+    > img {
+    transition: transform var(--hover-transition-duration)
+      var(--hover-transition-timing);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) and (hover: hover) {
-  .card-hover--lift .group-block:hover > .group-block__media-wrapper .background-image-container:has(> img),
+  .card-hover--lift
+    .group-block:hover
+    > .group-block__media-wrapper
+    .background-image-container:has(> img),
   .card-hover--lift .product-card:hover,
   .card-hover--lift .collection-card:hover,
   .card-hover--lift .resource-card:hover,
@@ -465,7 +503,8 @@ h6,
   .card-hover--subtle-zoom .product-card__image,
   .card-hover--subtle-zoom .resource-card__image {
     overflow: hidden;
-    transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+    transition: transform var(--hover-transition-duration)
+      var(--hover-transition-timing);
   }
 
   .predictive-search-results__card .card-gallery,
@@ -485,23 +524,49 @@ h6,
   }
 
   .card-hover--subtle-zoom .header .product-card:hover .card-gallery,
-  .card-hover--subtle-zoom .header .collection-card:hover .collection-card__image,
+  .card-hover--subtle-zoom
+    .header
+    .collection-card:hover
+    .collection-card__image,
   .card-hover--subtle-zoom .header .product-card:hover .product-card__image,
   .card-hover--subtle-zoom .header .resource-card:hover .resource-card__image,
   .card-hover--subtle-zoom .header-drawer .product-card:hover .card-gallery,
-  .card-hover--subtle-zoom .header-drawer .collection-card:hover .collection-card__image,
-  .card-hover--subtle-zoom .header-drawer .product-card:hover .product-card__image,
-  .card-hover--subtle-zoom .header-drawer .resource-card:hover .resource-card__image {
+  .card-hover--subtle-zoom
+    .header-drawer
+    .collection-card:hover
+    .collection-card__image,
+  .card-hover--subtle-zoom
+    .header-drawer
+    .product-card:hover
+    .product-card__image,
+  .card-hover--subtle-zoom
+    .header-drawer
+    .resource-card:hover
+    .resource-card__image {
     transform: none;
   }
 
-  .card-hover--clip-inset .group-block:hover > .group-block-content > .image-block:has(> img),
-  .card-hover--clip-inset .group-block:hover > .group-block__media-wrapper .background-image-container:has(> img) {
+  .card-hover--clip-inset
+    .group-block:hover
+    > .group-block-content
+    > .image-block:has(> img),
+  .card-hover--clip-inset
+    .group-block:hover
+    > .group-block__media-wrapper
+    .background-image-container:has(> img) {
     clip-path: var(--hover-clip-path);
   }
 
-  .card-hover--clip-inset .group-block:hover > .group-block-content > .image-block > img ,
-  .card-hover--clip-inset .group-block:hover > .group-block__media-wrapper .background-image-container > img {
+  .card-hover--clip-inset
+    .group-block:hover
+    > .group-block-content
+    > .image-block
+    > img,
+  .card-hover--clip-inset
+    .group-block:hover
+    > .group-block__media-wrapper
+    .background-image-container
+    > img {
     transform: scale(var(--hover-scale-amount));
   }
 }
@@ -534,8 +599,12 @@ h6,
 }
 
 /* video block */
-.deferred-media__poster-button  {
+.deferred-media__poster-button {
   width: 100%;
+}
+
+.deferred-media[loaded="true"] .deferred-media__poster-button .icon-play {
+  display: none;
 }
 
 deferred-media iframe {
@@ -545,7 +614,11 @@ deferred-media iframe {
   aspect-ratio: var(--size-style-aspect-ratio, auto);
 }
 
-deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__poster-button ~ video) {
+deferred-media[class]
+  :is(
+    .deferred-media__poster-button img,
+    .deferred-media__poster-button ~ video
+  ) {
   /* only apply this on the video block not product media */
   object-fit: cover;
   height: 100%;
@@ -606,10 +679,10 @@ Otherwise, it should be a block to rely on its own size */
   filter: drop-shadow(var(--shadow-button));
 
   &:hover {
-    color: rgba(from var(--color-white) r g b / 80%);
+    color: rgba(var(--color-white-rgb) / var(--opacity-80));
   }
 
-  @media screen and (width >= 750px) {
+  @media screen and (min-width: 750px) {
     width: 4rem;
     height: 4rem;
   }
@@ -618,4 +691,139 @@ Otherwise, it should be a block to rely on its own size */
 /* summary base */
 summary {
   padding-block: var(--padding-sm);
+}
+
+/* subheading font */
+.subheading {
+  font-family: var(--font-subheading--family);
+  font-style: var(--font-subheading--style);
+  font-weight: var(--font-subheading--weight);
+}
+
+/* scorllbar on mobile */
+@media screen and (max-width: 749px) {
+  .hide-scrollbar-mobile {
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    flex-wrap: nowrap;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .hide-scrollbar-mobile > * {
+    flex-shrink: 0;
+  }
+}
+
+/* splitting text */
+[data-splitting-target] {
+  display: inline-block;
+}
+
+[data-splitting-target].splitting .word,
+[data-splitting-target].splitting .char {
+  display: inline-flex;
+}
+
+/* checkbox input */
+.checkbox {
+  --checkbox-size: 2.2rem;
+  --checkbox-top: 50%;
+  --checkbox-left: 1.5px;
+  --checkbox-offset: 3px;
+  --checkbox-border-radius: 7px;
+  --checkbox-label-padding: 8px;
+  --checkbox-path-opacity: 0;
+  --checkbox-cursor: pointer;
+  --checkbox-border: 1px solid
+    rgb(var(--color-foreground-rgb) / var(--opacity-35-55));
+
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  @media screen and (min-width: 750px) {
+    --checkbox-size: 16px;
+    --checkbox-border-radius: 5px;
+    --checkbox-label-padding: 6px;
+  }
+
+  &:has(.checkbox__input:checked) {
+    --checkbox-path-opacity: 1;
+  }
+
+  &:has(.checkbox__input:disabled) {
+    --checkbox-cursor: not-allowed;
+  }
+}
+
+.checkbox__input {
+  position: absolute;
+  opacity: var(--opacity-0);
+  margin: 0;
+  width: var(--checkbox-size);
+  height: var(--checkbox-size);
+
+  /* Outline is on the SVG instead, to allow it to have border-radius */
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible + .checkbox__label .icon-checkmark {
+    outline: var(--focus-outline-width) solid currentcolor;
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  &:checked + .checkbox__label .icon-checkmark {
+    background-color: var(--color-foreground);
+    border-color: var(--color-foreground);
+  }
+
+  &:disabled + .checkbox__label .icon-checkmark {
+    background-color: var(--input-disabled-background-color);
+    border-color: var(--input-disabled-border-color);
+  }
+}
+
+.checkbox__label {
+  position: relative;
+  display: inline-flex;
+  cursor: var(--checkbox-cursor);
+  line-height: var(--checkbox-size);
+  min-width: var(--minimum-touch-target);
+}
+
+.checkbox .icon-checkmark {
+  height: var(--checkbox-size);
+  width: var(--checkbox-size);
+  flex-shrink: 0;
+  border: var(--checkbox-border);
+  border-radius: var(--checkbox-border-radius);
+  background-color: var(--color-background);
+}
+
+.checkbox__label-text {
+  padding-inline-start: var(--checkbox-label-padding);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.checkbox .icon-checkmark path {
+  stroke: var(--color-background);
+  opacity: var(--checkbox-path-opacity);
+  transition: opacity var(--animation-speed) var(--animation-easing);
+}
+
+.checkbox__input:disabled + .checkbox__label {
+  color: var(--input-disabled-text-color);
+}
+
+/* product grid */
+@media screen and (min-width: 750px) {
+  .product-grid {
+    grid-template-columns: var(--product-grid-columns-desktop);
+  }
 }

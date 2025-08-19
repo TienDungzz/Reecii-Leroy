@@ -1,7 +1,7 @@
 {%- stylesheet -%}
   .quick-add-modal {
     inset: 0;
-    background: rgba(var(--color-foreground), 0.2);
+    background: rgb(var(--color-foreground-rgb) / var(--opacity-20));
 
     .product-form__buttons-wrapper {
       grid-template-columns: 1fr;
@@ -14,7 +14,7 @@
 
     .scroll-trigger.scroll-trigger {
       animation: none;
-      opacity: 1;
+      opacity: var(--opacity-100);
       transform: none;
     }
 
@@ -31,7 +31,7 @@
       margin-top: 0;
     }
 
-    @media screen and (width >= 990px) {
+    @media screen and (min-width: 990px) {
       .shopify-payment-button {
         width: 100%;
       }
@@ -49,7 +49,7 @@
     width: calc(100% - 3rem);
     min-height: 35rem;
 
-    @media screen and (width >= 750px) {
+    @media screen and (min-width: 750px) {
       width: 80%;
     }
   }
@@ -125,10 +125,10 @@
   }
 
   .quick-add-modal__toggle {
-    background-color: rgb(var(--color-background));
-    border: 0.1rem solid rgba(var(--color-foreground), 0.1);
+    background: var(--color-background);
+    border: 0.1rem solid rgb(var(--color-foreground-rgb) / var(--opacity-10));
     border-radius: 50%;
-    color: rgba(var(--color-foreground), 0.55);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-55));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -142,7 +142,7 @@
   }
 
   .quick-add-modal__toggle:hover {
-    color: rgba(var(--color-foreground), 0.75);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-75));
   }
 
   .quick-add-modal__toggle .icon {
@@ -200,7 +200,7 @@
   }
 
   quick-add-modal .product__title > a:hover {
-    color: rgb(var(--color-foreground));
+    color: var(--color-foreground);
     text-decoration: underline;
     text-underline-offset: 0.2rem;
     text-decoration-thickness: 0.3rem;
@@ -294,7 +294,7 @@
       position: sticky;
       z-index: 3;
       top: 0;
-      background-color: rgb(var(--color-background));
+      background: var(--color-background);
     }
     .quick-add-modal__content-info--bulk
       :is(.quick-add__product-media, .quick-add__product-container, .quick-add__info) {
@@ -322,7 +322,7 @@
 >
   <div id="Modal-Overlay" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
   <div
-    class="popup__inner quick-add-modal__content w-auto h-fullv absolute-c-c flex flex-column gradient global-settings-popup"
+    class="popup__inner quick-add-modal__content w-auto h-fullv absolute-c-c flex flex-column global-settings-popup"
     role="dialog"
     aria-modal="true"
     aria-label="{{ 'products.product.choose_product_options' | t: product_name: product.title | escape }}"
@@ -348,7 +348,7 @@
 >
   <div id="Modal-Overlay" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
   <div
-    class="popup__inner quick-add-modal__content quick-add-modal__content--bulk w-auto h-full md:h-auto absolute-c-c flex flex-column gradient global-settings-popup"
+    class="popup__inner quick-add-modal__content quick-add-modal__content--bulk w-auto h-full md:h-auto absolute-c-c flex flex-column global-settings-popup"
     role="dialog"
     aria-modal="true"
     aria-label="{{ 'products.product.choose_product_options' | t: product_name: product.title | escape }}"

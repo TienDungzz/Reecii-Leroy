@@ -12,8 +12,8 @@
   height: calc(var(--viewport-height, 100vh) - (var(--header-bottom-position, 100%)));
   top: 100%;
   left: 0;
-  background: rgb(var(--color-foreground) / 0.5);
-  opacity: 0;
+  background: rgb(var(--color-foreground-rgb) / var(--opacity-50));
+  opacity: var(--opacity-0);
   visibility: hidden;
   z-index: 2;
   transition: opacity 0s, visibility 0s;
@@ -21,7 +21,7 @@
 
 menu-drawer > details[open] > summary::before {
   visibility: visible;
-  opacity: 0;
+  opacity: var(--opacity-0);
   transition: opacity var(--duration-default) ease, visibility var(--duration-default) ease;
 }
 
@@ -35,7 +35,7 @@ menu-drawer > details[open] > summary::before {
 .js details[open].menu-opening > .menu-drawer,
 details[open].menu-opening > .menu-drawer__submenu {
   transform: translateX(0);
-  opacity: 1;
+  opacity: var(--opacity-100);
   visibility: visible;
 }
 
@@ -81,11 +81,11 @@ details[open].menu-opening > .menu-drawer__submenu {
 .menu-drawer__menu-item:hover,
 .menu-drawer__close-button:hover {
   color: var(--color-foreground);
-  background-color: rgb(var(--color-foreground) / 0.04);
+  background-color: rgb(var(--color-foreground-rgb) / var(--opacity-4));
 }
 
 .menu-drawer__menu-item--active:hover {
-  background-color: rgb(var(--color-foreground) / 0.08);
+  background-color: rgb(var(--color-foreground-rgb) / var(--opacity-8));
 }
 
 .js .menu-drawer__menu-item .icon-caret {
@@ -106,10 +106,10 @@ details[open].menu-opening > .menu-drawer__submenu {
   width: 100%;
   bottom: 0;
   left: 0;
-  background-color: var(--color-background);
+  background: var(--color-background);
   z-index: 1;
   transform: translateX(100%);
-  opacity: 0;
+  opacity: var(--opacity-0);
   visibility: hidden;
 }
 
@@ -138,7 +138,7 @@ details[open].menu-opening > .menu-drawer__submenu {
 
 .menu-drawer__utility-links {
   padding: 2rem 3rem;
-  background-color: rgb(var(--color-foreground) / 0.03);
+  background-color: rgb(var(--color-foreground-rgb) / var(--opacity-3));
   position: relative;
 }
 

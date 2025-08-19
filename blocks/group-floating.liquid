@@ -35,7 +35,8 @@
             "type": "checkbox",
             "id": "show_on_desktop",
             "label": "Show group on desktop",
-            "default": true
+            "default": true,
+            "visible_if": "{{ block.settings.layout_type == 'position' }}"
         },
         {
             "type": "range",
@@ -46,7 +47,7 @@
             "unit": "%",
             "label": "Horizontal position",
             "default": 50,
-            "visible_if": "{{ block.settings.show_on_desktop == true }}"
+            "visible_if": "{{ block.settings.layout_type == 'position' and block.settings.show_on_desktop == true }}"
         },
         {
             "type": "range",
@@ -57,13 +58,14 @@
             "unit": "%",
             "label": "Vertical position",
             "default": 50,
-            "visible_if": "{{ block.settings.show_on_desktop == true }}"
+            "visible_if": "{{ block.settings.layout_type == 'position' and block.settings.show_on_desktop == true }}"
         },
         {
             "type": "checkbox",
             "id": "show_on_mobile",
             "label": "Show group on mobile",
-            "default": true
+            "default": true,
+            "visible_if": "{{ block.settings.layout_type == 'position' }}"
         },
         {
             "type": "range",
@@ -74,7 +76,7 @@
             "unit": "%",
             "label": "Horizontal position",
             "default": 50,
-            "visible_if": "{{ block.settings.show_on_mobile == true }}"
+            "visible_if": "{{ block.settings.layout_type == 'position' and block.settings.show_on_mobile == true }}"
         },
         {
             "type": "range",
@@ -85,7 +87,7 @@
             "unit": "%",
             "label": "Vertical position",
             "default": 50,
-            "visible_if": "{{ block.settings.show_on_mobile == true }}"
+            "visible_if": "{{ block.settings.layout_type == 'position' and block.settings.show_on_mobile == true }}"
         },
         {
             "type": "header",
@@ -93,7 +95,23 @@
         },
         {
             "type": "select",
-            "id": "direction",
+            "id": "layout_type",
+            "label": "Layout Type",
+            "options": [
+                {
+                    "value": "relative",
+                    "label": "Relative"
+                },
+                {
+                    "value": "position",
+                    "label": "Position"
+                }
+            ],
+            "default": "relative"
+        },
+        {
+            "type": "select",
+            "id": "content_direction",
             "label": "t:settings.direction",
             "options": [
                 {
@@ -256,6 +274,65 @@
             "step": 1,
             "unit": "px",
             "default": 12
+        },
+        {
+            "type": "header",
+            "content": "Position Offset",
+            "visible_if": "{{ block.settings.layout_type == 'position' }}"
+        },
+        {
+            "type": "header",
+            "content": "Desktop Position",
+            "visible_if": "{{ block.settings.layout_type == 'position' }}"
+        },
+        {
+            "type": "range",
+            "id": "offset_x_desktop",
+            "min": -100,
+            "max": 100,
+            "step": 2,
+            "unit": "%",
+            "label": "Horizontal offset (Desktop)",
+            "default": 0,
+            "visible_if": "{{ block.settings.layout_type == 'position' }}"
+        },
+        {
+            "type": "range",
+            "id": "offset_y_desktop",
+            "min": -100,
+            "max": 100,
+            "step": 2,
+            "unit": "%",
+            "label": "Vertical offset (Desktop)",
+            "default": 0,
+            "visible_if": "{{ block.settings.layout_type == 'position' }}"
+        },
+        {
+            "type": "header",
+            "content": "Mobile Position",
+            "visible_if": "{{ block.settings.layout_type == 'position' }}"
+        },
+        {
+            "type": "range",
+            "id": "offset_x_mobile",
+            "min": -100,
+            "max": 100,
+            "step": 2,
+            "unit": "%",
+            "label": "Horizontal offset (Mobile)",
+            "default": 0,
+            "visible_if": "{{ block.settings.layout_type == 'position' }}"
+        },
+        {
+            "type": "range",
+            "id": "offset_y_mobile",
+            "min": -100,
+            "max": 100,
+            "step": 2,
+            "unit": "%",
+            "label": "Vertical offset (Mobile)",
+            "default": 0,
+            "visible_if": "{{ block.settings.layout_type == 'position' }}"
         },
         {
             "type": "header",
@@ -466,17 +543,6 @@
         },
         {
             "type": "range",
-            "id": "border_opacity",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "label": "t:settings.border_opacity",
-            "default": 100,
-            "visible_if": "{{ block.settings.border != 'none' }}"
-        },
-        {
-            "type": "range",
             "id": "border_radius",
             "label": "t:settings.border_radius",
             "min": 0,
@@ -539,27 +605,18 @@
         {
             "type": "color",
             "id": "shadow_color",
-            "label": "t:settings_schema.colors.settings.color.label",
-            "default": "#000000"
-        },
-        {
-            "type": "range",
-            "id": "shadow_opacity",
-            "min": 0,
-            "max": 100,
-            "step": 5,
-            "unit": "%",
-            "label": "t:settings_schema.global.settings.opacity.label",
-            "default": 0
+            "label": "t:settings.shadow_color",
+            "default": "#00000000",
+            "alpha": true
         },
         {
             "type": "range",
             "id": "shadow_horizontal_offset",
             "min": -12,
             "max": 12,
-            "step": 2,
+            "step": 1,
             "unit": "px",
-            "label": "t:settings_schema.global.settings.horizontal_offset.label",
+            "label": "t:settings.horizontal_offset",
             "default": 0
         },
         {
@@ -567,9 +624,9 @@
             "id": "shadow_vertical_offset",
             "min": -12,
             "max": 12,
-            "step": 2,
+            "step": 1,
             "unit": "px",
-            "label": "t:settings_schema.global.settings.vertical_offset.label",
+            "label": "t:settings.vertical_offset",
             "default": 0
         },
         {
@@ -577,7 +634,7 @@
             "id": "shadow_blur",
             "min": 0,
             "max": 20,
-            "step": 5,
+            "step": 2,
             "unit": "px",
             "label": "t:settings_schema.global.settings.blur.label",
             "default": 0

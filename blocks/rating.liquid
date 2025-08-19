@@ -1,0 +1,167 @@
+{% capture attributes %}
+    class="
+        rating-block spacing-style flex
+        {% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}
+    "
+    style="
+        --width: {{ block.settings.width }}px;
+        --rated-color: {{ block.settings.rated_color }};
+        --unrated-color: {{ block.settings.unrated_color }};
+        --unrated-border-color: {{ block.settings.unrated_border_color }};
+        --gap-x: {{ block.settings.gap }}px;
+        {% render 'spacing-style', settings: block.settings %}
+    "
+{% endcapture %}
+
+<div {{ attributes }}>
+{% for star in (1..5) %}
+    <svg
+    class="rating-block__star"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="{% if star <= block.settings.rating %}currentColor{% else %}var(--unrated-color){% endif %}"
+    stroke="{% if star <= block.settings.rating %}currentColor{% else %}var(--unrated-border-color){% endif %}"
+    stroke-width="2"
+    >
+    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
+    </svg>
+{% endfor %}
+</div>
+
+{% stylesheet %}
+    .text-block {
+        width: 100%;
+        align-items: var(--horizontal-alignment);
+    }
+
+    .rating-block__star {
+        width: var(--width);
+        height: var(--width);
+        color: var(--rated-color);
+    }
+{% endstylesheet %}
+
+{% schema %}
+{
+    "name": "Rating",
+    "settings": [
+        {
+            "type": "range",
+            "id": "rating",
+            "min": 1,
+            "max": 5,
+            "step": 1,
+            "label": "Rating",
+            "default": 4
+        },
+        {
+            "type": "range",
+            "id": "width",
+            "label": "t:settings.width",
+            "min": 12,
+            "max": 70,
+            "step": 1,
+            "unit": "px",
+            "default": 16
+        },
+        {
+            "type": "range",
+            "id": "gap",
+            "label": "Gap",
+            "min": 0,
+            "max": 50,
+            "step": 1,
+            "unit": "px",
+            "default": 4
+        },
+        {
+            "type": "header",
+            "content": "t:content.appearance"
+        },
+        {
+            "type": "checkbox",
+            "id": "inherit_color_scheme",
+            "label": "t:settings.inherit_color_scheme",
+            "default": true
+        },
+        {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:settings.color_scheme",
+            "default": "scheme-1",
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+        },
+        {
+            "type": "color",
+            "id": "rated_color",
+            "label": "Color",
+            "default": "#ffc107",
+            "alpha": true
+        },
+        {
+            "type": "color",
+            "id": "unrated_color",
+            "label": "Unrated color",
+            "default": "#C2C2C2",
+            "alpha": true
+        },
+        {
+            "type": "color",
+            "id": "unrated_border_color",
+            "label": "Unrated border color",
+            "default": "#C2C2C2",
+            "alpha": true
+        },
+        {
+            "type": "header",
+            "content": "t:content.padding"
+        },
+        {
+            "type": "range",
+            "id": "padding-block-start",
+            "label": "t:settings.top",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding-block-end",
+            "label": "t:settings.bottom",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding-inline-start",
+            "label": "t:settings.left",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding-inline-end",
+            "label": "t:settings.right",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        }
+    ],
+    "presets": [
+        {
+            "name": "Rating",
+            "category": "t:categories.basic"
+        }
+    ]
+}
+{% endschema %}

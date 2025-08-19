@@ -179,6 +179,18 @@
       "visible_if": "{{ block.settings.typing_text == false and block.settings.spacing_text == true }}"
     },
     {
+      "type": "checkbox",
+      "id": "stroke_text",
+      "label": "Stroke",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "stroke_text_content",
+      "label": "Select stroke content",
+      "visible_if": "{{ block.settings.stroke_text == true }}",
+    },
+    {
       "type": "header",
       "content": "t:content.layout"
     },
@@ -194,29 +206,24 @@
         {
           "value": "100%",
           "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "fit-content"
     },
     {
-      "type": "select",
-      "id": "max_width",
-      "label": "t:settings.max_width",
-      "options": [
-        {
-          "value": "narrow",
-          "label": "t:options.narrow"
-        },
-        {
-          "value": "normal",
-          "label": "t:options.normal"
-        },
-        {
-          "value": "none",
-          "label": "t:options.none"
-        }
-      ],
-      "default": "normal"
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
     },
     {
       "type": "text_alignment",
@@ -290,10 +297,6 @@
         {
           "value": "var(--font-heading--family)",
           "label": "t:options.heading"
-        },
-        {
-          "value": "var(--font-accent--family)",
-          "label": "t:options.accent"
         }
       ],
       "default": "var(--font-body--family)",
@@ -442,6 +445,10 @@
         {
           "value": "uppercase",
           "label": "t:options.uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "t:options.capitalize"
         }
       ],
       "default": "none",
@@ -520,11 +527,36 @@
       "type": "header",
       "content": "t:settings.border"
     },
+     {
+      "type": "checkbox",
+      "id": "enable_border",
+      "label": "Enable border",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_border_bottom == false }}"
+    },
     {
       "type": "checkbox",
       "id": "enable_border_bottom",
       "label": "Enable bottom border",
-      "default": false
+      "default": false,
+      "visible_if": "{{ block.settings.enable_border == false }}"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.borders",
+      "visible_if": "{{  block.settings.enable_border_bottom == true or block.settings.enable_border == true }}",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
     },
     {
       "type": "range",
@@ -535,18 +567,7 @@
       "unit": "px",
       "label": "Thickness",
       "default": 0,
-      "visible_if": "{{ block.settings.enable_border_bottom == true }}"
-    },
-    {
-      "type": "range",
-      "id": "border_opacity",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "%",
-      "label": "Opacity",
-      "default": 100,
-      "visible_if": "{{ block.settings.enable_border_bottom == true }}"
+      "visible_if": "{{ block.settings.enable_border_bottom == true or block.settings.enable_border == true }}"
     },
     {
       "type": "select",
@@ -575,6 +596,48 @@
       "label": "Custom width",
       "default": 100,
       "visible_if": "{{ block.settings.border_width_type == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_border == true }}"
+    },
+    {
+      "type": "header",
+      "content": "t:names.animations"
+    },
+    {
+      "type": "select",
+      "id": "text_effect",
+      "label": "t:settings.effects",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "blur",
+          "label": "t:options.blur"
+        },
+        {
+          "value": "reveal",
+          "label": "t:options.reveal"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "checkbox",
+      "id": "animation_repeat",
+      "label": "t:settings.animation_repeat",
+      "default": false,
+      "visible_if": "{{ block.settings.text_effect == 'blur' or block.settings.text_effect == 'reveal' }}"
     },
     {
       "type": "header",
