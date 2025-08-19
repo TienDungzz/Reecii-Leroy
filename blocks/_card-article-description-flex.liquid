@@ -10,7 +10,6 @@
     gap: var(--gap-sm);
     font-size: var(--font-size--paragraph);
     color: rgb(from var(--color-foreground) r g b / var(--opacity-subdued-text));
-    white-space: nowrap;
   }
   .blog-post-description > span {
     text-overflow: clip;
@@ -18,22 +17,18 @@
   }
 {% endstylesheet %}
 
-{%- if block.settings.show_date or block.settings.show_author -%}
-  <div
-    class="
-      blog-post-description
-      spacing-style
-      {% if block.settings.type_preset != '' %}{{ block.settings.type_preset }}{% endif%}
-    "
-    style="{% render 'spacing-style', settings: block.settings %}"
-  >
-    {% if content %}
-        <rte-formatter>
-        {{ content | strip_html | truncatewords: truncatewords }}
-        </rte-formatter>
-    {% endif %}
-  </div>
-{% endif %}
+<div
+  class="
+    blog-post-description
+    spacing-style
+    {% if block.settings.type_preset != '' %}{{ block.settings.type_preset }}{% endif%}
+  "
+  style="{% render 'spacing-style', settings: block.settings %}"
+>
+  {% if content %}
+      {{ content | strip_html | truncatewords: truncatewords }}
+  {% endif %}
+</div>
 
 {% schema %}
 {
@@ -47,7 +42,7 @@
     {
       "type": "range",
       "id": "truncatewords",
-      "min": 30,
+      "min": 10,
       "max": 200,
       "step": 2,
       "default": 90,

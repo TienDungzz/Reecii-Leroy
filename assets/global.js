@@ -1316,6 +1316,7 @@ class SwiperComponent extends HTMLElement {
     this.swiperEl = null;
     this.initSwiper = null;
     this.options = null;
+    this.arrowOnHeader = this.closest('.arrow-on-header');
   }
 
   connectedCallback() {
@@ -1367,8 +1368,8 @@ class SwiperComponent extends HTMLElement {
       slidesPerView: getOption("slides-per-view", 1),
       autoHeight: getOption("auto-height", false),
       navigation: {
-        nextEl: this.swiperEl.querySelector(".swiper-button-next"),
-        prevEl: this.swiperEl.querySelector(".swiper-button-prev"),
+        nextEl: this.arrowOnHeader ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next") : this.swiperEl.querySelector(".swiper-button-next"),
+        prevEl: this.arrowOnHeader ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev") : this.swiperEl.querySelector(".swiper-button-prev"),
       },
       pagination: {
         el: this.swiperEl.querySelector(".swiper-pagination"),
