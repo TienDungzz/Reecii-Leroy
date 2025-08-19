@@ -33,7 +33,7 @@
 %}
 
 {% capture class %}
-  image-block image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}
+  image-block image-content-slide-in image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}
 {% endcapture %}
 
 {% capture style %}
@@ -56,16 +56,36 @@
     assign element = 'parallax-image'
   endif
 
-  assign enable_content_position = block.settings.enable_content_position
+  assign show_content_on_img = block.settings.show_content_on_img
   assign content_type = block.settings.content_type
+  assign content_alignment = block.settings.content_alignment
   assign content_position = block.settings.content_position
+  assign content_position_top = block.settings.content_position_top | append: 'px'
+  assign content_position_right = block.settings.content_position_right | append: 'px'
+  assign content_position_bottom = block.settings.content_position_bottom | append: 'px'
+  assign content_position_left = block.settings.content_position_left | append: 'px'
+
+  if block.settings.content_position_top == 0
+    assign content_position_top = 'auto'
+  endif
+  if block.settings.content_position_right == 0
+    assign content_position_right = 'auto'
+  endif
+  if block.settings.content_position_bottom == 0
+    assign content_position_bottom = 'auto'
+  endif
+  if block.settings.content_position_left == 0
+    assign content_position_left = 'auto'
+  endif
 %}
+
+
 {%- if block.settings.enable_fancybox -%}
   {%- render 'photoswipe_lib' -%}
 {%- endif -%}
 
 {% capture class_img %}
-  image-block__image{% if block.settings.enable_parallax %} image-parallax--target{% endif %}
+  image-block__image {% if block.settings.enable_parallax %} image-parallax--target{% endif %}
 {% endcapture %}
 
 {% capture attributes_fancybox %}
@@ -135,6 +155,8 @@
             {%- else -%}
                 {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
             {%- endif -%}
+
+            <span class="icon_plus"></span>
             
             {% if block.settings.enable_fancybox %}
                 {% if block.settings.icon_link != blank %}
@@ -203,7 +225,7 @@
         {% endif %}
         </{{ element }}>
     </div>
-    <div class="instagram-item__content {% if enable_content_position != blank %} {{ content_type }}{% endif %}">
+    <div class="instagram-item__content text-{{ content_alignment }} {% if content_type == 'absolute-c-x' %} top-0 {% endif %}{% if show_content_on_img != blank %} {{ content_type }}{% endif %}" style="--posTop: {{ content_position_top }}; --posRight: {{ content_position_right }}; --posBottom: {{ content_position_bottom }}; --posLeft: {{ content_position_left }};">
         {%- content_for 'blocks' -%}
     </div>
 </div>
@@ -270,8 +292,6 @@
     <script>
         (function(){
             const iconMedia = document.querySelector('.instagram-item__image .icon_media');
-
-            console.log("iconMedia", iconMedia)
 
             iconMedia.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -360,8 +380,131 @@
         border-radius: 50%;
         width: var(--icon-button-size);
         height: var(--icon-button-size);
-        
     }
+
+    .instagram-item__content.custom {
+        position: absolute;
+        top: var(--posTop, 0);
+        right: var(--posRight, 0);
+        bottom: var(--posBottom, 0);
+        left: var(--posLeft, 0);
+        transform: none;
+    }
+
+    .instagram-item__content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .instagram-item__content.text-left {
+        align-items: flex-start;
+    }
+    .instagram-item__content.text-center {
+        align-items: center;
+    }
+    .instagram-item__content.text-right {
+        align-items: flex-end;
+    }
+
+    .instagram-item__content.text-left * {
+        text-align: left;
+    }
+    .instagram-item__content.text-center * {
+        text-align: center;
+    }
+    .instagram-item__content.text-right * {
+        text-align: right;
+    }
+
+    .icon_plus {
+        font-size: 0px;
+        width: 48px;
+        height: 48px;
+        position: absolute;
+        z-index: 999;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        overflow: hidden;
+        transform: translate(-50%, -50%) scale(.8) rotate(-45deg);
+        transition: opacity .1s ease, transform .3s ease;
+    }
+
+    .icon_plus:before {
+        position: absolute;
+        content: "";
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        width: 2px;
+        height: 100%;
+    }
+
+    .icon_plus:after {
+        position: absolute;
+        content: "";
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        width: 100%;
+        height: 2px;
+    }
+
+    .instagram-item__image:hover .icon_plus {
+        opacity: 1;
+        overflow: visible;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1) rotate(0);
+    }
+
+    .image-overlay:before {
+        content: "";
+        width: 100%;
+        height: 100%;
+        top: 100%;
+        right: 0;
+        left: auto;
+        z-index: 2;
+        transform: none;
+        position: absolute;
+        transition: all .3s ease;
+        background-color: rgba(0, 0, 0, .6);
+        background: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .6) 100%);
+    }
+
+    .instagram-item__image:hover .image-overlay:before {
+        top: 0;
+    }
+
+    .image-zoomIn img {
+        transition: transform .64s ease;
+    }
+
+    .instagram-item__image:hover .image-zoomIn img {
+        transform: scale(1.05);
+        transition: transform .64s ease;
+    }
+
+    .image-content-slide-in img {
+        position: relative;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: -2rem;
+        width: calc(100% + 2rem);
+        height: 100%;
+        object-fit: cover;
+        transform: translateX(0);
+        transition: transform 0.55s ease-in-out;
+    }
+
+    .instagram-item__image:hover .image-content-slide-in img {
+        transform: translateX(-2rem) scale(1.05);
+    }
+
   {%- endstylesheet -%}
 
 {% schema %}
@@ -622,12 +765,33 @@
         },
         {
             "type": "header",
-            "content": "Content Position"
+            "content": "Content Settings"
+        },
+        {
+            "type": "select",
+            "id": "content_alignment",
+            "label": "Content alignment",
+            "options": [
+                {
+                    "value": "left",
+                    "label": "Left"
+                },
+                {
+                    "value": "center",
+                    "label": "Center"
+                },
+                
+                {
+                    "value": "right",
+                    "label": "Right"
+                }
+            ],
+            "default": "center"
         },
         {
             "type": "checkbox",
-            "label": "Enable content position",
-            "id": "enable_content_position",
+            "label": "Show content on image",
+            "id": "show_content_on_img",
             "default": true
         },
         {
@@ -653,7 +817,7 @@
                 }
             ],
             "default": "absolute-c-c",
-            "visible_if": "{{ block.settings.enable_content_position }}"
+            "visible_if": "{{ block.settings.show_content_on_img }}"
         },
         {
             "type": "range",
@@ -662,6 +826,7 @@
             "min": 0,
             "max": 100,
             "step": 1,
+            "unit": "px",
             "default": 0,
             "visible_if": "{{ block.settings.content_type == 'custom' }}"
         },
@@ -672,7 +837,8 @@
             "min": 0,
             "max": 100,
             "step": 1,
-            "default": 0,
+            "unit": "px",
+            "default": 20,
             "visible_if": "{{ block.settings.content_type == 'custom' }}"
         },
         {
@@ -682,6 +848,7 @@
             "min": 0,
             "max": 100,
             "step": 1,
+            "unit": "px",
             "default": 0,
             "visible_if": "{{ block.settings.content_type == 'custom' }}"
         },
@@ -692,7 +859,8 @@
             "min": 0,
             "max": 100,
             "step": 1,
-            "default": 0,
+            "unit": "px",
+            "default": 20,
             "visible_if": "{{ block.settings.content_type == 'custom' }}"
         },
         {
@@ -821,7 +989,7 @@
             "min": 0,
             "max": 100,
             "step": 1,
-            "default": 0,
+            "default": 20,
             "visible_if": "{{ block.settings.background_media == 'image' and block.settings.icon_button_position == 'right' }}"
         },
         {
@@ -831,7 +999,7 @@
             "min": 0,
             "max": 100,
             "step": 1,
-            "default": 0,
+            "default": 20,
             "visible_if": "{{ block.settings.background_media == 'image' and block.settings.icon_button_position == 'left' }}"
         },
         {
@@ -841,12 +1009,12 @@
             "min": 0,
             "max": 100,
             "step": 1,
-            "default": 0,
+            "default": 20,
             "visible_if": "{{ block.settings.background_media == 'image' }}"
         },
         {
             "type": "header",
-            "content": "Animation 1234"
+            "content": "Animation"
         },
         {
             "type": "checkbox",
