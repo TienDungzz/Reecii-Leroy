@@ -1,0 +1,483 @@
+{% comment %} add liquid code to change position of icon and button  {% endcomment %}
+
+{% liquid
+  assign ratio = 1
+
+  case block.settings.image_ratio
+    when 'landscape'
+      assign ratio = '16 / 9'
+    when 'portrait'
+      assign ratio = '4 / 5'
+    when 'adapt'
+      assign ratio = block.settings.background_image.aspect_ratio
+  endcase
+
+  if ratio == 0 or ratio == null
+    assign ratio = 1
+  endif
+
+  assign image = block.settings.background_image
+  assign image_height = image.height
+  assign image_height_2x = image_height | times: 2
+  assign image_width = image.width
+  assign image_width_2x = image_width | times: 2
+  assign image_aspect_ratio = background_image.aspect_ratio
+
+  assign background_media = block.settings.background_media
+  assign background_image = block.settings.background_image
+  assign background_image_position = block.settings.background_image_position
+
+%}
+
+{% capture class %}
+  image-block image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hover_overlay == true %} image-overlay{% endif %}{% if block.settings.hover_zoomIn == true %} image-zoomIn{% endif %}{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}
+{% endcapture %}
+
+{% capture style %}
+  --ratio: {{ ratio }};
+  {% render 'size-style', settings: block.settings %}
+  {% render 'spacing-style', settings: block.settings %}
+  {% render 'border-override', settings: block.settings %}
+{% endcapture %}
+
+{% liquid
+  assign media_width_desktop = '100vw'
+  assign media_width_mobile = '100vw'
+  assign sizes = 'auto, (min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
+  assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
+
+  assign element = 'div'
+  if block.settings.enable_fancybox
+    assign element = 'a'
+  elsif block.settings.enable_parallax
+    assign element = 'parallax-image'
+  endif
+
+  if block.settings.content_position_top == 0
+    assign content_position_top = 'auto'
+  endif
+  if block.settings.content_position_right == 0
+    assign content_position_right = 'auto'
+  endif
+  if block.settings.content_position_bottom == 0
+    assign content_position_bottom = 'auto'
+  endif
+  if block.settings.content_position_left == 0
+    assign content_position_left = 'auto'
+  endif
+%}
+
+
+{%- if block.settings.enable_fancybox -%}
+  {%- render 'fancybox_lib' -%}
+{%- endif -%}
+
+{% capture class_img %}
+  image-block__image {% if block.settings.enable_parallax %} image-parallax--target{% endif %}
+{% endcapture %}
+
+{% capture attributes_fancybox %}
+  href="{{ image | image_url: width: 1200 }}"
+  data-fancybox="instagram-gallery"
+  data-caption="{{ image.alt | default: 'Instagram Image' }}"
+  data-fancybox-width="{{ image_width | default: 1200 }}"
+  data-fancybox-height="{{ image_height | default: 800 }}"
+{% endcapture %}
+
+{% capture attributes_parllax %}
+  data-parallax="true"
+  data-speed="{{ block.settings.parallax_speed }}"
+{% endcapture %}
+
+{% capture attributes %}
+  {{ block.shopify_attributes }}
+  {% if block.settings.enable_fancybox %}
+    {% if block.settings.background_media == 'image' and image != blank %}
+      {{ attributes_fancybox }}
+    {% endif %}
+  {% endif %}
+  {% if block.settings.enable_parallax %}
+    {{ attributes_parllax }}
+  {% endif %}
+{% endcapture %}
+
+{% capture icon %}
+    {% render 'icon-or-image',
+        icon: block.settings.icon,
+        icon_custom: block.settings.icon_custom,
+        svg_upload: block.settings.svg_upload,
+        image_upload: block.settings.image_upload,
+        width: block.settings.icon_width,
+        attributes: block.shopify_attributes
+    %}
+{% endcapture %}
+
+<div class="instagram-item relative">
+    <div class="lookbook-item__image overflow-hidden relative">
+        <{{ element }}
+            class="{{ class }}"
+            style="{{ style }}"
+            {{ attributes }}
+        >
+        {% if block.settings.background_media == 'image' %}
+            {%- if image != blank -%}
+                {%- render 'image',
+                image: image,
+                class: class_img,
+                height: image.height,
+                sizes: sizes,
+                widths: widths
+                -%}
+                
+            {%- else -%}
+                {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
+            {%- endif -%}
+        {% endif %}
+        </{{ element }}>
+    </div>
+    <div class="instagram-item__content">
+        {%- content_for 'blocks' -%}
+    </div>
+</div>
+
+{%- stylesheet -%}
+    .image-block {
+        display: flex;
+        justify-content: var(--horizontal-alignment, 'inline-start');
+    }
+  
+    .image-block--height-fill .image-block__image{
+        height: 100%;
+    }
+
+    .image-block__image{
+        object-fit: cover;
+        aspect-ratio: var(--ratio);
+    }
+  {%- endstylesheet -%}
+{% schema %}
+{
+    "name": "Lookbook item",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Section Banner"
+        },
+        {
+            "type": "select",
+            "id": "background_media",
+            "label": "Image",
+            "options": [
+                {
+                    "value": "image",
+                    "label": "t:options.image"
+                }
+            ],
+            "default": "image"
+        },
+        {
+            "type": "image_picker",
+            "id": "background_image",
+            "label": "t:settings.image",
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
+            "type": "select",
+            "id": "background_image_position",
+            "label": "t:settings.image_position",
+            "options": [
+                {
+                "value": "cover",
+                "label": "t:options.cover"
+                },
+                {
+                "value": "fit",
+                "label": "t:options.fit"
+                }
+            ],
+            "default": "cover",
+            "visible_if": "{{ block.settings.background_media == 'image' }}"
+        },
+        {
+            "type": "url",
+            "id": "link",
+            "label": "Link",
+            "visible_if": "{{ block.settings.enable_fancybox == false }}"
+        },
+        {
+            "type": "checkbox",
+            "id": "hide_on_mobile",
+            "label": "Hide on mobile",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Size"
+        },
+        {
+            "type": "select",
+            "id": "image_ratio",
+            "options": [
+                {
+                "value": "adapt",
+                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label"
+                },
+                {
+                "value": "portrait",
+                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
+                },
+                {
+                "value": "square",
+                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label"
+                }
+            ],
+            "default": "adapt",
+            "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
+        },
+        {
+            "type": "select",
+            "id": "width",
+            "label": "Desktop width",
+            "options": [
+                {
+                "value": "fit-content",
+                "label": "Fit"
+                },
+                {
+                "value": "custom",
+                "label": "Custom"
+                }
+            ],
+            "default": "custom"
+        },
+        {
+            "type": "range",
+            "id": "custom_width",
+            "label": "Custom (%)",
+            "min": 1,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 100,
+            "visible_if": "{{ block.settings.width == 'custom' }}"
+        },
+        {
+            "type": "select",
+            "id": "width_tablet",
+            "label": "Tablet width",
+            "options": [
+                {
+                "value": "fit-content",
+                "label": "Fit"
+                },
+                {
+                "value": "custom",
+                "label": "Custom"
+                }
+            ],
+            "default": "custom"
+        },
+        {
+            "type": "range",
+            "id": "custom_width_tablet",
+            "label": "Custom (%)",
+            "min": 1,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 100,
+            "visible_if": "{{ block.settings.width_tablet == 'custom' }}"
+        },
+        {
+            "type": "select",
+            "id": "width_mobile",
+            "label": "Mobile width",
+            "options": [
+                {
+                "value": "fit-content",
+                "label": "Fit"
+                },
+                {
+                "value": "custom",
+                "label": "Custom"
+                }
+            ],
+            "default": "custom"
+        },
+        {
+            "type": "range",
+            "id": "custom_width_mobile",
+            "label": "Custom (%)",
+            "min": 1,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 100,
+            "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+        },
+        {
+            "type": "select",
+            "id": "height",
+            "label": "t:settings.height",
+            "options": [
+                {
+                "value": "fit",
+                "label": "t:options.fit_content"
+                },
+                {
+                "value": "fill",
+                "label": "t:options.fill"
+                }
+            ],
+            "default": "fit",
+            "visible_if": "{{ block.settings.image_ratio == 'adapt' }}"
+        },
+        {
+            "type": "header",
+            "content": "t:settings_schema.global.settings.header__border.content"
+            },
+            {
+            "type": "select",
+            "id": "border",
+            "label": "t:settings.style",
+            "options": [
+                {
+                "value": "none",
+                "label": "None"
+                },
+                {
+                "value": "solid",
+                "label": "Solid"
+                }
+            ],
+            "default": "none"
+        },
+        {
+            "type": "range",
+            "id": "border_width",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "label": "t:settings_schema.global.settings.thickness.label",
+            "default": 1,
+            "visible_if": "{{ block.settings.border != 'none' }}"
+        },
+        {
+            "type": "range",
+            "id": "border_opacity",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "label": "t:settings_schema.global.settings.opacity.label",
+            "default": 100,
+            "visible_if": "{{ block.settings.border != 'none' }}"
+        },
+        {
+            "type": "range",
+            "id": "border_radius",
+            "label": "t:settings_schema.global.settings.corner_radius.label",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_fancybox",
+            "label": "Enable Fancybox Lightbox",
+            "default": true,
+            "info": "Opens images and videos in a beautiful lightbox gallery",
+            "visible_if": "{{ block.settings.enable_parallax == false }}"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_parallax",
+            "label": "Enable parallax scroll",
+            "default": false,
+            "visible_if": "{{ block.settings.enable_fancybox == false }}"
+        },
+        {
+            "type": "range",
+            "id": "parallax_speed",
+            "label": "Parallax speed",
+            "min": 0,
+            "max": 4,
+            "step": 0.5,
+            "default": 0.5,
+            "visible_if": "{{ block.settings.enable_fancybox == false and block.settings.enable_parallax }}"
+        },
+        {
+            "type": "header",
+            "content": "Padding"
+        },
+        {
+            "type": "range",
+            "id": "padding_top",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
+        },
+        {
+            "type": "range",
+            "id": "padding_right",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
+        },
+        {
+            "type": "range",
+            "id": "padding_bottom",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
+        },
+        {
+            "type": "range",
+            "id": "padding_left",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 0,
+            "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "_divider"
+        },
+        {
+            "type": "group"
+        },
+        {
+            "type": "image"
+        },
+        {
+            "type": "text"
+        },
+        {
+            "type": "button"
+        },
+        {
+            "type": "heading"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Lookbook item"
+        }
+    ]
+}
+{% endschema %}
