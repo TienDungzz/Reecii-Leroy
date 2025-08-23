@@ -42,7 +42,11 @@
   "
   style="
     {% render 'size-style', settings: block.settings %}
-    {% render 'padding-style', settings: block.settings %}
+    
+    {% unless style_class == 'link' %}
+        {% render 'padding-style', settings: block.settings %}
+    {% endunless %}
+
     {% if button_type_size_link %}--button-font-size-link: {{ button_type_size_link | divided_by: 10.0 }}rem;{% endif %}
   "
   {%- if open_in_new_tab -%}

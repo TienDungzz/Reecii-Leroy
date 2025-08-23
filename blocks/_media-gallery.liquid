@@ -110,7 +110,9 @@
         >
           {{- list_items -}}
         </ul>
-        <button type="button" aria-label="Show more" class="show-icon" style="--icon-more-margin-top: {{ block.settings.icon_more_margin_top }}px; --icon-more-margin-bottom: {{ block.settings.icon_more_margin_bottom }}px; --icon-more-color: {{ block.settings.icon_more_color }}; --icon-more-background: {{ block.settings.icon_more_background }}; --icon-more-border: {{ block.settings.icon_more_border }}; --icon-more-size: {{ block.settings.icon_more_size }}px;" data-load-more-block="" data-row-desktop="{{ columns_desktop }}" data-row-tablet="{{ columns_tablet }}" data-row-mobile="{{ mobile_columns }}"></button>
+        {% if block.settings.show_view_more_icon %}
+          <button type="button" aria-label="Show more" class="show-icon" style="--icon-more-margin-top: {{ block.settings.icon_more_margin_top }}px; --icon-more-margin-bottom: {{ block.settings.icon_more_margin_bottom }}px; --icon-more-color: {{ block.settings.icon_more_color }}; --icon-more-background: {{ block.settings.icon_more_background }}; --icon-more-border: {{ block.settings.icon_more_border }}; --icon-more-size: {{ block.settings.icon_more_size }}px;" data-load-more-block="" data-row-desktop="{{ columns_desktop }}" data-row-tablet="{{ columns_tablet }}" data-row-mobile="{{ mobile_columns }}"></button>
+        {% endif %}
 
         {%- if show_mobile_slider -%}
           </div>
@@ -365,14 +367,14 @@
       "type": "color",
       "id": "icon_more_background",
       "label": "Icon background",
-      "default": "#ffffff",
+      "default": "transparent",
       "visible_if": "{{ block.settings.show_view_more_icon == true }}"
     },
     {
       "type": "color",
       "id": "icon_more_border",
       "label": "Icon border",
-      "default": "#232323",
+      "default": "transparent",
       "visible_if": "{{ block.settings.show_view_more_icon == true }}"
     },
     {
