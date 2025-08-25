@@ -69,18 +69,12 @@
 
 {% capture header %}
   <div class="section-resource-list__header">
-    {%- content_for 'block', type: '_product-list-content', id: 'static-header' -%}
-
-    {%- if enable_navigation -%}
-        <div class="swiper-btns-on-header swiper-btns-wrap small-hide">
-        {%- render 'swiper-button' -%}
-        </div>
-    {%- endif -%}
+    {%- content_for 'block', type: '_blog-post-header', id: 'static-header' -%}
   </div>
 {% endcapture %}
 
 {% capture list_items %}
-  {% for article in blog.articles limit: 12 %}
+  {% for article in blog.articles limit: section.settings.articles_to_show %}
       <li class="blog-post-item{% if show_mobile_slider or section.settings.layout_type == 'carousel' %} swiper-slide{% endif %}">
       {% content_for 'block', id: 'static-blog-post-block', type: '_blog-post-block', article: article %}
       </li>
@@ -105,7 +99,7 @@
                             settings: section.settings,
                             loop: false,
                             slides_per_view: mobile_columns,
-                            space_between: section.settings.gap
+                            space_between: section.settings.items_gap
                         -%}
                     >
                         <div class="swiper">
@@ -113,7 +107,7 @@
                 <ul
                     id="Grid-{{ section.id }}"
                     data-id="{{ section.id }}"
-                    class="grid grid-layout product-grid list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
+                    class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %}{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
                     role="list"
                     aria-label="{{ 'general.grid.name' | t }}"
                     style="--grid-desktop-horizontal-spacing: {{ section.settings.items_gap }}px; --grid-desktop-vertical-spacing: {{ section.settings.items_gap }}px;"
@@ -127,11 +121,11 @@
             </div>
         {% when 'carousel' %}
             {%- assign slides_per_view = mobile_columns -%}
+            {%- assign spaceBetween = section.settings.items_gap | times: 0.5 -%}
             {%- capture breakpoints -%}
                 {
-                    "768": { "slidesPerView": {{ columns_tablet }} },
-                    "1024": { "slidesPerView": {{ columns_tablet }} },
-                    "1400": { "slidesPerView": {{ columns_desktop }} }
+                    "750": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ section.settings.items_gap | times: 0.75 }} },
+                    "1024": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ section.settings.items_gap }} }
                 }
             {%- endcapture -%}
             <swiper-component
@@ -139,7 +133,7 @@
                 {%- render 'swiper-data',
                     settings: section.settings,
                     slides_per_view: slides_per_view,
-                    space_between: section.settings.gap,
+                    space_between: spaceBetween,
                     watch_slides_progress: true,
                     breakpoints: breakpoints
                 -%}
@@ -148,7 +142,7 @@
                     <ul
                         id="Slider-{{ section.id }}"
                         data-id="{{ section.id }}"
-                        class="swiper-wrapper grid-layout-no-js list-unstyled contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ mobile_columns }}-col-mobile"
+                        class="swiper-wrapper grid-layout-no-js list-unstyled{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ mobile_columns }}-col-mobile"
                     >
                         {{ list_items }}
                     </ul>
@@ -167,15 +161,9 @@
   </div>
 {% endcapture %}
 
-{% capture other_block %}
-  <div class="section-resource-list__content">
-    {%- content_for 'blocks' -%}
-  </div>
-{% endcapture %}
-
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
-  class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
+  class="section blog-posts-section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
 
   {% if request.visual_preview_mode %}
     data-shopify-visual-preview
@@ -225,7 +213,7 @@
         layout-panel-flex--{{ section.settings.content_direction }}
         mobile-direction--{{ section.settings.content_direction_mobile | default: 'column' }}
         section-content-wrapper
-        arrow-on-header
+        {% if section.settings.show_on_header and section.settings.navigation == 'arrows' %}arrow-on-header{% endif %}
       "
       style="
         {% render 'layout-panel-style', settings: section.settings %}
@@ -236,7 +224,6 @@
     >
       {{ header }}
       {{ main }}
-      {{ other_block }}
     </div>
   </div>
 </div>
@@ -244,14 +231,6 @@
 {% schema %}
 {
   "name": "t:names.blog_posts",
-  "blocks": [
-    {
-      "type": "@theme"
-    },
-    {
-      "type": "@app"
-    }
-  ],
   "disabled_on": {
     "groups": ["header", "custom.popup"]
   },
@@ -371,6 +350,15 @@
         "visible_if": "{{ section.settings.layout_type == 'grid' }}"
     },
     {
+      "type": "range",
+      "id": "articles_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4,
+      "label": "Articles to show"
+    },
+    {
         "type": "range",
         "id": "columns_grid",
         "min": 1,
@@ -465,6 +453,14 @@
         "default": "arrows"
     },
     {
+        "type": "checkbox",
+        "id": "show_on_header",
+        "label": "Show arrow on header",
+        "default": false,
+        "info": "This option will only work if the header has 'Arrows group' block",
+        "visible_if": "{{ section.settings.navigation == 'arrows' }}"
+    },
+    {
         "type": "select",
         "id": "pagination_type",
         "label": "Pagination type",
@@ -524,6 +520,17 @@
         }
       ],
       "default": "column"
+    },
+    {
+      "type": "range",
+      "id": "header_width",
+      "label": "Header width",
+      "min": 20,
+      "max": 80,
+      "step": 1,
+      "unit": "%",
+      "default": 40,
+      "visible_if": "{{ section.settings.content_direction == 'row' or section.settings.content_direction_mobile == 'row' }}"
     },
     {
       "type": "select",

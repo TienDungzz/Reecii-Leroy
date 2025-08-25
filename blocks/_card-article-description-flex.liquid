@@ -1,32 +1,38 @@
 {%- liquid
-  assign article = block.settings.article
+  assign card_article = block.settings.article
   assign truncatewords = block.settings.truncatewords
-  assign content = article.excerpt | default: article.content
+  assign content = card_article.excerpt | default: card_article.content
+  if card_article == blank
+    assign content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+  endif
 -%}
 
 {% stylesheet %}
-  .blog-post-description {
-    display: flex;
-    gap: var(--gap-sm);
-    font-size: var(--font-size--paragraph);
-    color: rgb(from var(--color-foreground) r g b / var(--opacity-subdued-text));
+  .blog-post-description > div:before {
+    content: '';
+    display: block;
+    width: 33.362%; /* 5% + 32.6% * 87% */
+    height: var(--font-size);
+    background-color: transparent;
+    float: left;
   }
-  .blog-post-description > span {
-    text-overflow: clip;
-    overflow: hidden;
+
+  @media (max-width: 750px) {
+    .blog-post-description > div:before {
+      content: '';
+      display: block;
+      width: calc((100vw - 30px) * 12.5 / 100); /* calc((100vw - 30px) * 12.5%)*/
+      height: var(--font-size);
+      background-color: transparent;
+      float: left;
+    }
   }
 {% endstylesheet %}
 
-<div
-  class="
-    blog-post-description
-    spacing-style
-    {% if block.settings.type_preset != '' %}{{ block.settings.type_preset }}{% endif%}
-  "
-  style="{% render 'spacing-style', settings: block.settings %}"
->
+<div class="blog-post-description {% if block.settings.type_preset != '' %}{{ block.settings.type_preset }}{% endif %}">
   {% if content %}
-      {{ content | strip_html | truncatewords: truncatewords }}
+    {%- assign placeholder = content | strip_html | truncatewords: truncatewords -%}
+    {% render 'text', fallback_text: placeholder, block: block %}
   {% endif %}
 </div>
 
@@ -47,33 +53,6 @@
       "step": 2,
       "default": 90,
       "label": "Truncatewords"
-    },
-    {
-      "type": "header",
-      "content": "Layout"
-    },
-    {
-      "type": "select",
-      "id": "width",
-      "label": "t:settings.width",
-      "options": [
-        {
-          "value": "fit-content",
-          "label": "t:options.fit"
-        },
-        {
-          "value": "100%",
-          "label": "t:options.fill"
-        }
-      ],
-      "default": "fit-content"
-    },
-    {
-      "type": "text_alignment",
-      "id": "alignment",
-      "label": "t:settings.alignment",
-      "default": "left",
-      "visible_if": "{{ block.settings.width == '100%' }}"
     },
     {
       "type": "header",
@@ -335,7 +314,10 @@
   ],
   "presets": [
     {
-      "name": "Article description"
+      "name": "Article description",
+      "settings": {
+        "article": "{{ closest.article }}"
+      }
     }
   ]
 }

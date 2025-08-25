@@ -1355,7 +1355,7 @@ class SwiperComponent extends HTMLElement {
     this.swiperEl = null;
     this.initSwiper = null;
     this.options = null;
-    this.arrowOnHeader = this.closest('.arrow-on-header');
+    this.arrowOnHeader = this.closest('.arrow-on-header:has(.swiper-btns-on-header)');
   }
 
   connectedCallback() {
