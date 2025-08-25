@@ -20,8 +20,7 @@
   assign button_style = button_style | default: block.settings.button_style
 -%}
 <a
-  {% if link == blank %}
-    role="link"
+  {% if link == blank %}role="link"
     aria-disabled="true"
   {% else %}
     href="{{ link }}"
@@ -77,9 +76,11 @@
   }
 
   .link {
-    font-size: var(--button-font-size-link);
     text-decoration: none;
     text-decoration-color: currentcolor;
+    &[style*="--button-font-size-link"] {
+      font-size: var(--button-font-size-link);
+    }
 
     &:hover {
       color: var(--color-primary-button-hover-text);

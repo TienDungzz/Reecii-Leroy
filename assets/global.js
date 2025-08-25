@@ -470,63 +470,24 @@ function debounce(fn, wait) {
 
 function throttle(fn, delay) {
   let lastCall = 0;
-
-  /** @param {...any} args */
-  function throttled(...args) {
-    const now = performance.now();
-    // If the time since the last call exceeds the delay, execute the callback
-    if (now - lastCall >= delay) {
-      lastCall = now;
-      fn.apply(this, args);
+  return function (...args) {
+    const now = new Date().getTime();
+    if (now - lastCall < delay) {
+      return;
     }
-  }
-
-  throttled.cancel = () => {
-    lastCall = performance.now();
+    lastCall = now;
+    return fn(...args);
   };
-
-  return /** @type {T & { cancel(): void }} */ (throttled);
 }
 
-const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-
-function prefersReducedMotion() {
-  return reducedMotion.matches;
-}
-
-function fetchConfig(type = 'json', config = {}) {
-  /** @type {Headers} */
-  const headers = { 'Content-Type': 'application/json', Accept: `application/${type}`, ...config.headers };
-
-  if (type === 'javascript') {
-    headers['X-Requested-With'] = 'XMLHttpRequest';
-    delete headers['Content-Type'];
-  }
-
+function fetchConfig(type = "json") {
   return {
-    method: 'POST',
-    headers: /** @type {HeadersInit} */ (headers),
-    body: config.body,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: `application/${type}`,
+    },
   };
-}
-
-class ResizeNotifier extends ResizeObserver {
-  #initialized = false;
-
-  /**
-   * @param {ResizeObserverCallback} callback
-   */
-  constructor(callback) {
-    super((entries) => {
-      if (this.#initialized) return callback(entries, this);
-      this.#initialized = true;
-    });
-  }
-
-  disconnect() {
-    this.#initialized = false;
-    super.disconnect();
-  }
 }
 
 /*
@@ -749,7 +710,7 @@ class MenuDrawer extends HTMLElement {
         ? this.closeMenuDrawer(event, summaryElement)
         : this.openMenuDrawer(summaryElement);
 
-      if (window.matchMedia("(max-width: 989px)")) {
+      if (window.matchMedia("(max-width: 990px)")) {
         document.documentElement.style.setProperty(
           "--viewport-height",
           `${window.innerHeight}px`
@@ -1355,113 +1316,260 @@ class SwiperComponent extends HTMLElement {
     this.swiperEl = null;
     this.initSwiper = null;
     this.options = null;
+    this.breakpoint = null;
+    this.breakpointChecker = null;
+
   }
 
   connectedCallback() {
-    this.swiperEl = this.querySelector(".swiper");
-    if (!this.swiperEl || this.swiperEl._swiperInitialized) return;
 
-    this.swiperEl._swiperInitialized = true;
+    // Check if Swiper library is available
+    if (typeof Swiper === 'undefined') {
+      console.error('Swiper library not loaded. Please ensure vendor.js is loaded before this component.');
+      return;
+    }
 
-    const getOption = (name, defaultValue = undefined) => {
-      const attr = this.getAttribute(`data-${name}`);
-      if (attr === null) return defaultValue;
+    // Ensure DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.initializeSwiper();
+      });
+      return;
+    }
 
-      try {
-        return JSON.parse(attr);
-      } catch {
-        if (attr === "true") return true;
-        if (attr === "false") return false;
-        if (!isNaN(attr)) return Number(attr);
-        return attr;
+    this.initializeSwiper();
+  }
+
+  initializeSwiper() {
+
+    // Small delay to ensure proper initialization
+    setTimeout(() => {
+      this.swiperEl = this.querySelector(".swiper");
+
+      if (!this.swiperEl) {
+        console.error('❌ No .swiper element found in SwiperComponent');
+        return;
       }
-    };
 
-    const baseSpaceBetween = getOption("space-between", 20);
+      if (this.swiperEl._swiperInitialized) {
+        console.log('🔍 Swiper already initialized, skipping...');
+        return;
+      }
 
-    const baseBreakpoints = getOption("breakpoints", null);
+      this.swiperEl._swiperInitialized = true;
 
-    // Calculate default space between slides if not breakpoint provided
-    const defaultSpacebetween = !baseBreakpoints
-      ? baseSpaceBetween * 0.5
-      : baseSpaceBetween; // Mobile
+      // Debug: Check if swiper elements exist
+      const nextButton = this.swiperEl.querySelector(".swiper-button-next");
+      const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
+      const pagination = this.swiperEl.querySelector(".swiper-pagination");
 
-    const defaultBreakpoints = !baseBreakpoints
-      ? {
-          750: { spaceBetween: baseSpaceBetween * 0.75 }, // Tablet
-          990: { spaceBetween: baseSpaceBetween }, // Desktop
+      console.log('🔍 Swiper elements found:', {
+        swiperEl: !!this.swiperEl,
+        nextButton: !!nextButton,
+        prevButton: !!prevButton,
+        pagination: !!pagination
+      });
+
+      const getOption = (name, defaultValue = undefined) => {
+        const attr = this.getAttribute(`data-${name}`);
+        if (attr === null) return defaultValue;
+
+        try {
+          return JSON.parse(attr);
+        } catch {
+          if (attr === "true") return true;
+          if (attr === "false") return false;
+          if (!isNaN(attr)) return Number(attr);
+          return attr;
         }
-      : baseBreakpoints;
+      };
 
-    // Options
-    this.options = {
-      watchSlidesProgress: getOption("watch-slides-progress", false),
-      loop: getOption("loop", false),
-      speed: getOption("speed", 500),
-      parallax: getOption("parallax", false),
-      spaceBetween: defaultSpacebetween,
-      autoplay: {
-        enabled: getOption("slide-autoplay", false),
-        pauseOnMouseEnter: true,
-        disableOnInteraction: false,
-      },
-      slidesPerView: getOption("slides-per-view", 1),
-      centeredSlides: getOption("centered-slides", false),
-      autoHeight: getOption("auto-height", false),
-      navigation: {
-        nextEl: this.swiperEl.querySelector(".swiper-button-next"),
-        prevEl: this.swiperEl.querySelector(".swiper-button-prev"),
-      },
-      pagination: {
-        el: this.swiperEl.querySelector(".swiper-pagination"),
-        clickable: true,
-        type: getOption("pagination-type", "bullets"),
-        dynamicBullets: getOption("dynamic-bullets", false),
-      },
-      breakpoints: defaultBreakpoints,
+      const baseSpaceBetween = getOption("space-between", 20);
+      const baseBreakpoints = getOption("breakpoints", null);
+
+      // Calculate default space between slides if not breakpoint provided
+      const defaultSpacebetween = !baseBreakpoints
+        ? baseSpaceBetween * 0.5
+        : baseSpaceBetween; // Mobile
+
+      const spaceBetweenTablet = !baseBreakpoints
+        ? baseSpaceBetween * 0.75
+        : baseSpaceBetween;
+
+      const defaultBreakpoints = !baseBreakpoints
+        ? {
+            750: { spaceBetween: spaceBetweenTablet }, // Tablet
+            990: { spaceBetween: baseSpaceBetween }, // Desktop
+          }
+        : baseBreakpoints;
+
+      // Options
+      this.options = {
+        direction: getOption("direction", "horizontal"),
+        mousewheel: getOption("mousewheel", false),
+        watchSlidesProgress: getOption("watch-slides-progress", false),
+        loop: getOption("loop", false),
+        speed: getOption("speed", 500),
+        parallax: getOption("parallax", false),
+        spaceBetween: defaultSpacebetween,
+        autoplay: {
+          enabled: getOption("slide-autoplay", false),
+          pauseOnMouseEnter: true,
+          disableOnInteraction: false,
+        },
+        slidesPerView: getOption("slides-per-view", 1),
+        autoHeight: getOption("auto-height", false),
+        navigation: {
+          nextEl: nextButton,
+          prevEl: prevButton,
+        },
+        pagination: {
+          el: pagination,
+          clickable: true,
+          type: getOption("pagination-type", "bullets"),
+          dynamicBullets: getOption("dynamic-bullets", false),
+        },
+        breakpoints: defaultBreakpoints,
+      };
+
+      this.initSwiperMobile();
+    }, 100); // Added a small delay
+  }
+
+  disconnectedCallback() {
+    // Cleanup event listeners and swiper instance
+    if (this.breakpoint && this.breakpointChecker) {
+      this.breakpoint.removeEventListener("change", this.breakpointChecker);
+    }
+    if (this.initSwiper) {
+      this.initSwiper.destroy(true, true);
+      this.initSwiper = null;
+    }
+    // Remove initialization flag
+    if (this.swiperEl) {
+      this.swiperEl._swiperInitialized = false;
+    }
+  }
+
+  // Method to check swiper status
+  getSwiperStatus() {
+    return {
+      isInitialized: !!this.initSwiper,
+      isMobileOnly: this.isMobileOnly,
+      breakpoint: this.breakpoint?.matches ? 'Desktop' : 'Mobile',
+      swiperEl: !!this.swiperEl,
+      options: !!this.options,
+      swiperInstance: this.initSwiper
     };
-
-    this.initSwiperMobile();
   }
 
   initSwiperMobile() {
-    const breakpoint = window.matchMedia("(min-width:750px)");
+    this.breakpoint = window.matchMedia("(min-width:750px)");
 
     const enableSwiper = () => {
-      if (!this.swiperEl || !this.options) return;
-      this.initSwiper = new Swiper(this.swiperEl, this.options);
+      if (!this.swiperEl || !this.options) {
+        console.error('❌ Cannot enable swiper: missing swiperEl or options');
+        return;
+      }
+
+      if (this.initSwiper) {
+        console.log('🔍 Destroying existing swiper instance');
+        this.initSwiper.destroy(true, true);
+        this.initSwiper = null;
+      }
+
+      try {
+        // Ensure proper swiper options for both desktop and mobile
+        const swiperOptions = {
+          ...this.options,
+          // Enable touch/swipe functionality
+          allowTouchMove: true,
+          // Enable navigation buttons
+          navigation: {
+            nextEl: this.swiperEl.querySelector(".swiper-button-next"),
+            prevEl: this.swiperEl.querySelector(".swiper-button-prev"),
+            disabledClass: "swiper-button-disabled",
+            hiddenClass: "swiper-button-hidden",
+          },
+          // Enable pagination
+          pagination: {
+            el: this.swiperEl.querySelector(".swiper-pagination"),
+            clickable: true,
+            type: this.options.pagination?.type || "bullets",
+            dynamicBullets: this.options.pagination?.dynamicBullets || false,
+          },
+          // Enable keyboard navigation
+          keyboard: {
+            enabled: true,
+            onlyInViewport: true,
+          },
+          // Enable mousewheel
+          mousewheel: {
+            forceToAxis: true,
+          },
+          // Enable grab cursor
+          grabCursor: true,
+          // Enable resistance
+          resistance: true,
+          resistanceRatio: 0.85,
+        };
+
+        this.initSwiper = new Swiper(this.swiperEl, swiperOptions);
+
+        // Force update to ensure proper rendering
+        setTimeout(() => {
+          if (this.initSwiper) {
+            this.initSwiper.update();
+          }
+        }, 200);
+
+      } catch (error) {
+        console.error('❌ Error initializing Swiper:', error);
+        // Try to reinitialize after a delay
+        setTimeout(() => {
+          console.log('🔄 Attempting to reinitialize Swiper...');
+          enableSwiper();
+        }, 500);
+      }
     };
 
-    const breakpointChecker = () => {
-      if (breakpoint.matches) {
-        // Desktop
-        if (this.initSwiper) {
-          this.initSwiper.destroy(true, true);
-          this.initSwiper = null;
+    this.breakpointChecker = () => {
+      if (this.isMobileOnly) {
+        // For mobile-only swipers, only enable on mobile
+        if (this.breakpoint.matches) {
+          // Desktop - destroy swiper
+          if (this.initSwiper) {
+            this.initSwiper.destroy(true, true);
+            this.initSwiper = null;
+          }
+        } else {
+          // Mobile - enable swiper
+          if (!this.initSwiper) {
+            enableSwiper();
+          }
         }
       } else {
-        // Mobile
+        // For regular swipers, always enable
         if (!this.initSwiper) {
           enableSwiper();
         }
       }
     };
 
-    breakpoint.addEventListener("change", breakpointChecker);
+    // Add event listener for breakpoint changes
+    this.breakpoint.addEventListener("change", this.breakpointChecker);
 
-    if (this.isMobileOnly) {
-      breakpointChecker();
-    } else {
-      enableSwiper();
+    // Initial check
+    this.breakpointChecker();
+  }
+
+  // Method to force reinitialize swiper (useful for debugging)
+  forceReinitialize() {
+    if (this.initSwiper) {
+      this.initSwiper.destroy(true, true);
+      this.initSwiper = null;
     }
-
-    this.addEventListener("disconnectedCallback", () => {
-      breakpoint.removeEventListener("change", breakpointChecker);
-      if (this.initSwiper) {
-        this.initSwiper.destroy(true, true);
-        this.initSwiper = null;
-      }
-    });
+    this.initSwiperMobile();
   }
 }
 
@@ -2288,32 +2396,6 @@ class ParallaxImg extends HTMLElement {
 
 customElements.define("parallax-image", ParallaxImg);
 
-/**
- * A custom element that formats rte content for easier styling
- */
-class RTEFormatter extends HTMLElement {
-  connectedCallback() {
-    this.querySelectorAll('table').forEach(this.#formatTable);
-  }
-
-  /**
-   * Formats a table for easier styling
-   * @param {HTMLTableElement} table
-   */
-  #formatTable(table) {
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('rte-table-wrapper');
-    const parent = table.parentNode;
-    if (parent) {
-      parent.insertBefore(wrapper, table);
-      wrapper.appendChild(table);
-    }
-  }
-}
-
-if (!customElements.get('rte-formatter')) {
-  customElements.define('rte-formatter', RTEFormatter);
-}
 class StrokeText extends HTMLElement {
   constructor() {
     super();
@@ -2369,3 +2451,110 @@ function initSplitting() {
 }
 
 initSplitting();
+
+// Drawer khinh
+
+document.addEventListener("DOMContentLoaded", () => {
+  const buttons = document.querySelectorAll("[data-toggle-drawer]");
+  const drawers = document.querySelectorAll("[data-drawer-target]");
+
+  // open drawer
+  const openDrawer = (drawer) => {
+    const dir = drawer.getAttribute("data-drawer-direction");
+    const overlay = drawer.querySelector("[data-drawer-overlay]");
+    const contentElement = drawer.querySelector("[data-drawer-content]");
+
+    drawer.classList.add("open");
+    document.body.classList.add('overflow-hidden', 'drawer--open');
+
+    Motion.timeline([
+      [
+        overlay,
+        { transform: dir === 'left' ? ['translateX(-100%)', 'translateX(0)'] : ['translateX(100%)', 'translateX(0)'] },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
+      ],
+      [
+        contentElement,
+        { opacity: [0, 1], transform: dir === 'left' ? ['translateX(-100%)', 'translateX(0)'] : ['translateX(100%)', 'translateX(0)'] },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: '-0.05' },
+      ],
+    ]);
+  }
+
+  // close drawer
+  const closeDrawer = (drawer) => {
+    const dir = drawer.getAttribute("data-drawer-direction");
+    const overlay = drawer.querySelector("[data-drawer-overlay]");
+    const contentElement = drawer.querySelector("[data-drawer-content]");
+
+    drawer.classList.remove("open");
+    document.body.classList.remove('overflow-hidden', 'drawer--open');
+    Motion.timeline([
+      [
+        contentElement,
+        { opacity: [1, 0], transform: dir === 'left' ? ['translateX(0)', 'translateX(-100%)'] : ['translateX(0)', 'translateX(100%)'] },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
+      ],
+      [
+        overlay,
+        { transform: dir === 'left' ? ['translateX(0)', 'translateX(-100%)'] : ['translateX(0)', 'translateX(100%)'] },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: '+0.1' },
+      ],
+    ]);
+  }
+
+  // handle overlay click
+  const handleOverlayClick = (drawer) => {
+    const overlay = drawer.querySelector("[data-drawer-overlay]");
+    overlay.addEventListener("click", () => {
+      if (overlay.closest(".drawer__container.open")) {
+        closeDrawer(drawer);
+      }
+    });
+  }
+
+  // handle close button click
+  const handleCloseButtonClick = (drawer) => {
+    const closeButton = drawer.querySelector("[data-close-sidebar]");
+    console.log("closeButton", closeButton);
+
+    closeButton.addEventListener("click", () => {
+      if (closeButton.closest(".drawer__container.open")) {
+        closeDrawer(drawer);
+      }
+    });
+  }
+
+  // reset animation if window width is greater than 1024
+  const resetAnimation = () => {
+    const drawers = document.querySelectorAll("[data-drawer-target]");
+    drawers.forEach((drawer) => {
+      const contentElement = drawer.querySelector("[data-drawer-content]");
+      const overlay = drawer.querySelector("[data-drawer-overlay]");
+
+      Motion.animate(contentElement, { opacity: 1, transform: "translateX(0)" }, { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] });
+    });
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const drawer = document.querySelector(button.getAttribute("data-toggle-drawer"));
+      if (drawer) {
+        openDrawer(drawer);
+      }
+    });
+  });
+
+  drawers.forEach((drawer) => {
+    handleOverlayClick(drawer);
+    handleCloseButtonClick(drawer);
+  });
+
+  const handleResize = () => {
+    if (window.innerWidth > 1024) {
+      resetAnimation();
+    }
+  }
+
+  window.addEventListener("resize", handleResize);
+});

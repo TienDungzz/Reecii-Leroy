@@ -30,13 +30,30 @@
       {% else %}
         --color-background: rgb({{ scheme.settings.background.rgba }});
       {% endif %}
-      
+
+      --color-background-rgb: {{ scheme.settings.background.rgb }};
+
+      /* Body */
       --color-foreground: rgb({{ scheme.settings.foreground.rgba }});
       --color-foreground-rgb: {{ scheme.settings.foreground.rgb }};
-      --color-shadow: rgb({{ scheme.settings.shadow.rgba }});
+
+      /* Heading */
+      --color-foreground-heading: rgb({{ scheme.settings.foreground_heading.rgba }});
+      --color-foreground-heading-rgb: {{ scheme.settings.foreground_heading.rgb }};
+
+      /* Link */
+      --color-primary: rgb({{ scheme.settings.primary.rgba }});
+      --color-primary-rgb: {{ scheme.settings.primary.rgb }};
+      --color-primary-hover: rgb({{ scheme.settings.primary_hover.rgba }});
+      --color-primary-hover-rgb: {{ scheme.settings.primary_hover.rgb }};
+
+      /* Border */
       --color-border: rgb({{ scheme.settings.border.rgba }});
-      --color-link: rgb({{ scheme.settings.secondary_button_text.rgba }});
-      --color-link-rgb: {{ scheme.settings.secondary_button_text.rgb }};
+      --color-border-rgb: {{ scheme.settings.border.rgb }};
+
+      /* Shadow */
+      --color-shadow: rgb({{ scheme.settings.shadow.rgba }});
+      --color-shadow-rgb: {{ scheme.settings.shadow.rgb }};
 
       /* Button primary */
       --color-primary-button-text: rgb({{ scheme.settings.primary_button_text.rgba }});
@@ -107,7 +124,7 @@
         {% else %}
           --color-background: rgb({{ scheme.settings.background.rgba }});
         {% endif %}
-        
+
         --color-foreground: rgb({{ scheme.settings.foreground.rgba }});
         --color-foreground-rgb: {{ scheme.settings.foreground.rgb }};
         --color-shadow: rgb({{ scheme.settings.shadow.rgba }});
@@ -471,6 +488,11 @@
 
     /* Borders */
     --style-border-width: 1px;
+    --style-border-radius-xs: 0.2rem;
+    --style-border-radius-sm: 0.6rem;
+    --style-border-radius-md: 0.8rem;
+    --style-border-radius-50: 50%;
+    --style-border-radius-lg: 1rem;
     --style-border-radius-buttons-primary: {{ settings.button_border_radius_primary }}px;
     --style-border-radius-buttons-secondary: {{ settings.button_border_radius_secondary }}px;
     --style-border-width-primary: {{ settings.primary_button_border_width }}px;
@@ -485,7 +507,7 @@
     --button-font-weight-secondary: {{ settings.button_font_weight_secondary }};
     --button-text-case-primary: {{ settings.button_text_case_primary }};
     --button-text-case-secondary: {{ settings.button_text_case_secondary }};
-    
+
     --buttons-shadow-horizontal-offset: {{ settings.buttons_shadow_horizontal_offset }}px;
     --buttons-shadow-vertical-offset: {{ settings.buttons_shadow_vertical_offset }}px;
     --buttons-shadow-blur-radius: {{ settings.buttons_shadow_blur }}px;
@@ -592,8 +614,8 @@
     --padding-3xs: 0.2rem;   /* 2px */
     --padding-2xs: 0.4rem;   /* 4px */
     --padding-xs: 0.8rem;    /* 8px */
-    --padding-sm: 1.12rem;   /* 11.2px */ 
-    --padding-md: 1.28rem;   /* 12.8px */
+    --padding-sm: 1rem;       /* 10px */
+    --padding-md: 1.2rem;     /* 12px */
     --padding-lg: 1.6rem;    /* 16px */
     --padding-xl: 2rem;      /* 20px */
     --padding-2xl: 2.4rem;   /* 24px */
@@ -603,10 +625,10 @@
     --padding-6xl: 6.4rem;   /* 64px */
 
     --margin-3xs: 0.2rem;   /* 2px */
-    --margin-2xs: 0.48rem;  /* 4.8px */
+    --margin-2xs: 0.4rem;   /* 4px */
     --margin-xs: 0.8rem;    /* 8px */
-    --margin-sm: 1.12rem;   /* 11.2px */
-    --margin-md: 1.28rem;   /* 12.8px */
+    --margin-sm: 1rem;      /* 10px */
+    --margin-md: 1.2rem;    /* 12px */
     --margin-lg: 1.6rem;    /* 16px */
     --margin-xl: 2rem;      /* 20px */
     --margin-2xl: 2.4rem;   /* 24px */
@@ -624,6 +646,16 @@
     /** Z-Index / Layering */
     --layer-section-background: -2;
     --layer-raised: 2;
+    --layer-base: 0;
+    --layer-flat: 1;
+    --layer-heightened: 4;
+    --layer-sticky: 8;
+    --layer-window-overlay: 10;
+    --layer-header-menu: 12;
+    --layer-overlay: 16;
+    --layer-menu-drawer: 18;
+    --layer-sidebar: 19;
+    --layer-temporary: 20;
 
     /* Animation */
     --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
@@ -679,6 +711,7 @@
     --opacity-90: 0.9;
     --opacity-95: 0.95;
     --opacity-100: 1;
+    --opacity-subdued-text: var(--opacity-70);
 
     /* Colors */
     --color-white: #FFFFFF;

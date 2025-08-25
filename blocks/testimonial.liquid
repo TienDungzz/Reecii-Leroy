@@ -62,7 +62,8 @@
 					slides_per_view: mobile_columns,
 					space_between: block.settings.gap,
 					watch_slides_progress: true,
-					breakpoints: breakpoints
+					breakpoints: breakpoints,
+					direction: 'vertical'
 				-%}
 			>
 				<div class="swiper w-full" style="--swiper-navigation-top-offset: 50%;">
@@ -96,7 +97,7 @@
 			{%- endcapture -%}
 			<marquee-component
 				class="
-					block w-full overflow-hidden
+					testimonial-block-marquee block w-full overflow-hidden
 					gap-style
 					{% if block.settings.inherit_color_scheme == false %}color-{{ block.settings.color_scheme }}{% endif %}
 				"
@@ -134,7 +135,7 @@
 {% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
 
 {% stylesheet %}
-	marquee-component {
+	.testimonial-block-marquee {
 		& .marquee__content {
 			--extra-desktop: calc((4 - var(--width-grid-desktop-per-row)) * var(--full-page-grid-central-column-width, 100%) / var(--width-grid-desktop-per-row));
 			--extra-tablet: calc((4 - var(--width-grid-tablet-per-row)) * var(--full-page-grid-central-column-width, 100%) / var(--width-grid-tablet-per-row));
@@ -814,7 +815,7 @@
 			"id": "shadow_color",
 			"label": "t:settings.shadow_color",
 			"default": "#00000000",
-			"alpha": true	
+			"alpha": true
 		},
 		{
 			"type": "range",

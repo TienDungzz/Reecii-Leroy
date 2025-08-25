@@ -16,6 +16,7 @@ class MarqueeComponent extends HTMLElement {
     super();
     this.wrapper = this.querySelector(".marquee__wrapper");
     this.content = this.querySelector(".marquee__content");
+    this.isDesktop = window.matchMedia('(min-width: 1025px)').matches;
   }
 
   connectedCallback() {
@@ -26,14 +27,18 @@ class MarqueeComponent extends HTMLElement {
     this.#setSpeed();
 
     window.addEventListener("resize", this.#handleResize);
-    this.addEventListener("pointerenter", this.#slowDown);
-    this.addEventListener("pointerleave", this.#speedUp);
+    if (this.isDesktop) {
+      this.addEventListener("pointerenter", this.#slowDown);
+      this.addEventListener("pointerleave", this.#speedUp);
+    }
   }
 
   disconnectedCallback() {
     window.removeEventListener("resize", this.#handleResize);
-    this.removeEventListener("pointerenter", this.#slowDown);
-    this.removeEventListener("pointerleave", this.#speedUp);
+    if (this.isDesktop) {
+      this.removeEventListener("pointerenter", this.#slowDown);
+      this.removeEventListener("pointerleave", this.#speedUp);
+    }
   }
 
   /**
@@ -138,7 +143,7 @@ class MarqueeComponent extends HTMLElement {
   #addRepeatedItems(numberOfCopies = this.#calculateNumberOfCopies()) {
     if (!this.wrapper) return;
 
-    for (let i = 0; i < numberOfCopies; i++) {
+    for (let i = 0; i < numberOfCopies - 1; i++) {
       const clone = this.wrapper.querySelector('.marquee__repeated-items').cloneNode(true);
 
       this.content.appendChild(clone);
@@ -147,7 +152,7 @@ class MarqueeComponent extends HTMLElement {
 
   #removeRepeatedItems(numberOfCopies = this.#calculateNumberOfCopies()) {
 
-    for (let i = 0; i < numberOfCopies; i++) {
+    for (let i = 0; i < numberOfCopies - 1; i++) {
       this.content.lastElementChild?.remove();
     }
   }
@@ -165,61 +170,6 @@ class MarqueeComponent extends HTMLElement {
   }
 }
 
-// Define the animateValue function
-/**
- * Animate a numeric property smoothly.
- * @param {Object} params - The parameters for the animation.
- * @param {number} params.from - The starting value.
- * @param {number} params.to - The ending value.
- * @param {number} params.duration - The duration of the animation in milliseconds.
- * @param {function(number): void} params.onUpdate - The function to call on each update.
- * @param {function(number): number} [params.easing] - The easing function.
- * @param {function(): void} [params.onComplete] - The function to call when the animation completes.
- */
-function animateValue({
-  from,
-  to,
-  duration,
-  onUpdate,
-  easing = (t) => t * t * (3 - 2 * t),
-  onComplete,
-}) {
-  const startTime = performance.now();
-  let cancelled = false;
-  let currentValue = from;
-
-  /**
-   * @param {number} currentTime - The current time in milliseconds.
-   */
-  function animate(currentTime) {
-    if (cancelled) return;
-
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const easedProgress = easing(progress);
-    currentValue = from + (to - from) * easedProgress;
-
-    onUpdate(currentValue);
-
-    if (progress < 1) {
-      requestAnimationFrame(animate);
-    } else if (typeof onComplete === "function") {
-      onComplete();
-    }
-  }
-
-  requestAnimationFrame(animate);
-
-  return {
-    get current() {
-      return currentValue;
-    },
-    cancel() {
-      cancelled = true;
-    },
-  };
-}
-
 customElements.define("marquee-component", MarqueeComponent);
 
 class MarqueeScroll extends HTMLElement {
@@ -229,7 +179,24 @@ class MarqueeScroll extends HTMLElement {
     this.speed = parseFloat(this.dataset.speed || 1.6), // 100px going to move for
     this.space = 100, // 100px
 
-    Motion.inView(this, this.init.bind(this), { margin: '200px 0px 200px 0px' });
+    this.isDesktop = window.matchMedia('(min-width: 1025px)').matches;
+    if (this.isDesktop) {
+      Motion.inView(this, this.init.bind(this), { margin: '200px 0px 200px 0px' });
+    }
+  }
+
+  connectedCallback() {
+    if (this.isDesktop) {
+      this.addEventListener("pointerenter", this.#slowDown);
+      this.addEventListener("pointerleave", this.#speedUp);
+    }
+  }
+
+  disconnectedCallback() {
+    if (this.isDesktop) {
+      this.removeEventListener("pointerenter", this.#slowDown);
+      this.removeEventListener("pointerleave", this.#speedUp);
+    }
   }
 
   get childElement() {
@@ -292,5 +259,102 @@ class MarqueeScroll extends HTMLElement {
       observer.observe(this);
     }
   }
+
+  #animation = null;
+
+  #slowDown = debounce(() => {
+    if (this.#animation) return;
+
+    const animation = this.querySelector('.marquee__content').getAnimations()[0];
+
+    if (!animation) return;
+
+    this.#animation = animateValue({
+      ...ANIMATION_OPTIONS,
+      from: 1,
+      to: 0,
+      onUpdate: (value) => animation.updatePlaybackRate(value),
+      onComplete: () => {
+        this.#animation = null;
+      },
+    });
+  }, ANIMATION_OPTIONS.duration);
+
+  #speedUp() {
+    this.#slowDown.cancel();
+
+    const animation = this.querySelector('.marquee__content').getAnimations()[0];
+
+    if (!animation || animation.playbackRate === 1) return;
+
+    const from = this.#animation?.current ?? 0;
+    this.#animation?.cancel();
+
+    this.#animation = animateValue({
+      ...ANIMATION_OPTIONS,
+      from,
+      to: 1,
+      onUpdate: (value) => animation.updatePlaybackRate(value),
+      onComplete: () => {
+        this.#animation = null;
+      },
+    });
+  }
+
 }
 customElements.define('marquee-scroll', MarqueeScroll);
+
+// Define the animateValue function
+/**
+ * Animate a numeric property smoothly.
+ * @param {Object} params - The parameters for the animation.
+ * @param {number} params.from - The starting value.
+ * @param {number} params.to - The ending value.
+ * @param {number} params.duration - The duration of the animation in milliseconds.
+ * @param {function(number): void} params.onUpdate - The function to call on each update.
+ * @param {function(number): number} [params.easing] - The easing function.
+ * @param {function(): void} [params.onComplete] - The function to call when the animation completes.
+ */
+function animateValue({
+  from,
+  to,
+  duration,
+  onUpdate,
+  easing = (t) => t * t * (3 - 2 * t),
+  onComplete,
+}) {
+  const startTime = performance.now();
+  let cancelled = false;
+  let currentValue = from;
+
+  /**
+   * @param {number} currentTime - The current time in milliseconds.
+   */
+  function animate(currentTime) {
+    if (cancelled) return;
+
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easedProgress = easing(progress);
+    currentValue = from + (to - from) * easedProgress;
+
+    onUpdate(currentValue);
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else if (typeof onComplete === "function") {
+      onComplete();
+    }
+  }
+
+  requestAnimationFrame(animate);
+
+  return {
+    get current() {
+      return currentValue;
+    },
+    cancel() {
+      cancelled = true;
+    },
+  };
+}

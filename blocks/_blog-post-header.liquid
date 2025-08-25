@@ -1,27 +1,17 @@
 {% capture children %}
-  {% content_for 'blocks' %}
+  {% content_for 'block', type: '_heading', id: 'blog_title', text: blog.title %}
+  {% content_for 'block', type: '_breadcrumb', id: 'breadcrumb' %}
 {% endcapture %}
 
-{% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+<div class="blog-posts__header-block">
+  <div class="blog-posts__header">
+    {% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+  </div>
+</div>
 
 {% schema %}
 {
-  "name": "t:names.group",
-  "tag": null,
-  "blocks": [
-    {
-      "type": "@theme"
-    },
-    {
-      "type": "@app"
-    },
-    {
-      "type": "_divider"
-    },
-    {
-      "type": "_group-hover"
-    }
-  ],
+  "name": "Blog post header",
   "settings": [
     {
       "type": "url",
@@ -125,10 +115,6 @@
       "id": "vertical_alignment",
       "label": "t:settings.position",
       "options": [
-        {
-          "value": "stretch",
-          "label": "t:options.stretch"
-        },
         {
           "value": "flex-start",
           "label": "t:options.top"
@@ -280,10 +266,6 @@
       "label": "t:settings.height",
       "options": [
         {
-          "value": "auto",
-          "label": "t:options.auto"
-        },
-        {
           "value": "fit",
           "label": "t:options.fit_content"
         },
@@ -399,7 +381,7 @@
       "default": false,
       "visible_if": "{{ block.settings.background_media == 'image' or block.settings.background_media == 'video' }}"
     },
-   {
+    {
       "type": "select",
       "id": "image_ratio",
       "options": [
@@ -610,7 +592,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label":"t:sections.all.margin.margin_left",
+      "label": "t:sections.all.margin.margin_left",
       "default": 0
     },
     {
@@ -620,7 +602,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label":"Left margin mobile",
+      "label": "Left margin mobile",
       "default": 0
     },
     {
@@ -690,8 +672,7 @@
   ],
   "presets": [
     {
-      "name": "t:names.group",
-      "category": "t:categories.layout"
+      "name": "Blog post header"
     }
   ]
 }

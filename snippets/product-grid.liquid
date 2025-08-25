@@ -71,24 +71,7 @@
   }
 {% endstyle %}
 
-<div
-  id="ResultsList"
-  class="
-    grid main-collection-grid
-    {%- if section.settings.inherit_color_scheme == false %} color-{{ section.settings.color_scheme }}{% endif %}
-    {%- if section.settings.product_grid_width == 'full-width' %} collection-wrapper--full-width{% endif %}
-    {%- if section.settings.full_width_on_mobile == true %} collection-wrapper--full-width-on-mobile{% endif %}
-    spacing-style
-  "
-
-  style="
-    --grid--margin--mobile: 0{% if section.settings.product_grid_width == 'centered' and section.settings.full_width_on_mobile == false %} var(--margin-lg){% else %} 0{% endif %};
-    --grid-column--desktop: var(--{% if section.settings.product_grid_width == 'centered' %}centered{% else %}full-width{% endif %});
-    --grid-column--mobile: var(--{% if section.settings.full_width_on_mobile %}full-width{% else %}{% if section.settings.product_grid_width == 'centered' %}centered{% else %}full-width{% endif %}{% endif %});
-    --padding-inline-start: {{ section.settings.padding-inline-start }}px;
-    --padding-inline-end: {{ section.settings.padding-inline-end }}px;
-  "
->
+<div id="ResultsList">
   <div
     style="
       grid-column: var(--full-width);
@@ -120,6 +103,8 @@
         role="list"
         data-last-page="{{ paginate.pages }}"
         data-product-card-size="{{ section.settings.product_card_size }}"
+        id="product-grid"
+        data-id="{{ section.id }}"
       >
         {{ children }}
       </ul>
