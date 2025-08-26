@@ -1,9 +1,7 @@
 {% capture children %}
-    <div class="section-resource-list__header">
-        {%- content_for 'block', type: '_product-list-content', id: 'static-header' -%}
-    </div>
+    {%- content_for 'block', type: '_product-list-content', id: 'static-header' -%}
 
-    {% content_for 'block', type: '_media-gallery', id: 'static-media-gallery' %}
+    {% content_for 'block', type: '_lookbook', id: 'static-lookbook' %}
 
     <div
         class="section-resource-list__content"
@@ -17,13 +15,18 @@
     .text-block {
         width: var(--width, 100%) !important;
     }
+
+    .section-resource-list__header.w-fit {
+        width: fit-content !important;
+    }
+
 {% endstylesheet %}
 
 {% render 'section', section: section, children: children %}
 
 {% schema %}
 {
-    "name": "Media gallery",
+    "name": "Lookbook",
     "class": "section-wrapper",
     "blocks": [
         {
@@ -34,9 +37,6 @@
         },
         {
             "type": "_divider"
-        },
-        {
-            "type": "_instagram-item"
         }
     ],
     "disabled_on": {
@@ -453,7 +453,7 @@
     ],
     "presets": [
         {
-            "name": "Media gallery"
+            "name": "Lookbook"
         }
     ]
 }
