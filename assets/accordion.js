@@ -1,81 +1,49 @@
 class AccordionCustom extends HTMLElement {
-  constructor() {
-    super();
-    this.details = this.querySelector("details");
-    this._open = this.details.hasAttribute("open");
+  /** @type {HTMLDetailsElement} */
+  get details() {
+    const details = this.querySelector('details');
 
-    this.summaryElement = this.querySelector("summary");
-    this.contentElement = this.querySelector("summary + *");
-    this.details.setAttribute("aria-expanded", this._open ? "true" : "false");
+    if (!(details instanceof HTMLDetailsElement)) throw new Error('Details element not found');
 
-    this.summaryElement.addEventListener(
-      "click",
-      this.onSummaryClick.bind(this)
-    );
-
-    if (Shopify.designMode) {
-      this.addEventListener("shopify:block:select", () => {
-        if (this.designModeActive) this.open = true;
-      });
-      this.addEventListener("shopify:block:deselect", () => {
-        if (this.designModeActive) this.open = false;
-      });
-    }
+    return details;
   }
 
-  get designModeActive() {
-    return true;
+  /** @type {HTMLElement} */
+  get summary() {
+    const summary = this.details.querySelector('summary');
+
+    if (!(summary instanceof HTMLElement)) throw new Error('Summary element not found');
+
+    return summary;
   }
 
-  get controlledElement() {
-    return this.closest("accordions-details");
+  /** @type {HTMLElement} */
+  get contentElement() {
+    const content = this.details.querySelector('.details-content');
+
+    if (!(content instanceof HTMLElement)) throw new Error('Content element not found');
+
+    return content;
   }
 
-  static get observedAttributes() {
-    return ["open"];
+  /** @type {HTMLElement} */
+  get summaryElement() {
+    return this.summary;
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === "open") {
-      this.setAttribute("aria-expanded", newValue === "" ? "true" : "false");
-    }
+  get #disableOnMobile() {
+    return this.dataset.disableOnMobile === 'true';
   }
 
-  get open() {
-    return this._open;
+  get #disableOnDesktop() {
+    return this.dataset.disableOnDesktop === 'true';
   }
 
-  set open(value) {
-    if (value !== this._open) {
-      this._open = value;
-
-      if (this.isConnected) {
-        this.transition(value);
-      } else {
-        value
-          ? this.details.setAttribute("open", "")
-          : this.details.removeAttribute("open");
-      }
-    }
-
-    this.details.setAttribute("aria-expanded", value ? "true" : "false");
-    this.dispatchEventHandler();
-  }
-
-  onSummaryClick(event) {
-    event.preventDefault();
-
-    this.open = !this.open;
-  }
-
-  close() {
-    this._open = false;
-    this.transition(false);
+  get #closeWithEscape() {
+    return this.dataset.closeWithEscape === 'true';
   }
 
   async transition(value) {
-    // this.details.style.overflow = "hidden";
-
     if (value) {
       this.details.setAttribute("open", "");
 
@@ -121,15 +89,81 @@ class AccordionCustom extends HTMLElement {
 
       this.details.removeAttribute("open");
     }
-
-    // this.details.style.height = "auto";
-    // this.details.style.overflow = "visible";
   }
 
-  dispatchEventHandler() {
-    (this.controlledElement ?? this).dispatchEvent(
-      new CustomEvent("toggle", { bubbles: true, detail: { current: this } })
-    );
+  #controller = new AbortController();
+
+  connectedCallback() {
+    const { signal } = this.#controller;
+
+    this.#setDefaultOpenState();
+
+    this.addEventListener('keydown', this.#handleKeyDown, { signal });
+    this.summary.addEventListener('click', this.handleClick, { signal });
+    window.matchMedia('(min-width: 750px)').addEventListener('change', this.#handleMediaQueryChange, { signal });
+  }
+
+  /**
+   * Handles the disconnect event.
+   */
+  disconnectedCallback() {
+    // Disconnect all the event listeners
+    this.#controller.abort();
+  }
+
+  /**
+   * Handles the click event.
+   * @param {Event} event - The event.
+   */
+  handleClick = async (event) => {
+    const isMobile = window.matchMedia('(max-width: 749px)').matches;
+    const isDesktop = !isMobile;
+
+    // Stop default behaviour from the browser
+    if ((isMobile && this.#disableOnMobile) || (isDesktop && this.#disableOnDesktop)) {
+      event.preventDefault();
+      return;
+    }
+
+    // Prevent default behavior to handle transition manually
+    event.preventDefault();
+
+    // Toggle the accordion with transition
+    const isOpen = this.details.hasAttribute('open');
+    await this.transition(!isOpen);
+  };
+
+  /**
+   * Handles the media query change event.
+   */
+  #handleMediaQueryChange = () => {
+    this.#setDefaultOpenState();
+  };
+
+  /**
+   * Sets the default open state of the accordion based on the `open-by-default-on-mobile` and `open-by-default-on-desktop` attributes.
+   */
+  #setDefaultOpenState() {
+    const isMobile = window.matchMedia('(max-width: 749px)').matches;
+
+    this.details.open =
+      (isMobile && this.hasAttribute('open-by-default-on-mobile')) ||
+      (!isMobile && this.hasAttribute('open-by-default-on-desktop'));
+  }
+
+  /**
+   * Handles keydown events for the accordion
+   *
+   * @param {KeyboardEvent} event - The keyboard event.
+   */
+  #handleKeyDown = async (event) => {
+    // Close the accordion when used as a menu
+    if (event.key === 'Escape' && this.#closeWithEscape) {
+      event.preventDefault();
+
+      await this.transition(false);
+      this.summary.focus();
+    }
   }
 }
-customElements.define("accordion-custom", AccordionCustom);
+if (!customElements.get('accordion-custom')) customElements.define('accordion-custom', AccordionCustom);

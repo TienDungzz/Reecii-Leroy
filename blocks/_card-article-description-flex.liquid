@@ -1,39 +1,40 @@
 {%- liquid
-  assign article = block.settings.article
+  assign card_article = block.settings.article
   assign truncatewords = block.settings.truncatewords
-  assign content = article.excerpt | default: article.content
+  assign content = card_article.excerpt | default: card_article.content
+  if card_article == blank
+    assign content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+  endif
 -%}
 
 {% stylesheet %}
-  .blog-post-description {
-    display: flex;
-    gap: var(--gap-sm);
-    font-size: var(--font-size--paragraph);
-    color: rgb(from var(--color-foreground) r g b / var(--opacity-subdued-text));
-    white-space: nowrap;
+  .blog-post-description > div:before {
+    content: '';
+    display: block;
+    width: 33.362%; /* 5% + 32.6% * 87% */
+    height: var(--font-size);
+    background-color: transparent;
+    float: left;
   }
-  .blog-post-description > span {
-    text-overflow: clip;
-    overflow: hidden;
+
+  @media (max-width: 750px) {
+    .blog-post-description > div:before {
+      content: '';
+      display: block;
+      width: calc((100vw - 30px) * 12.5 / 100); /* calc((100vw - 30px) * 12.5%)*/
+      height: var(--font-size);
+      background-color: transparent;
+      float: left;
+    }
   }
 {% endstylesheet %}
 
-{%- if block.settings.show_date or block.settings.show_author -%}
-  <div
-    class="
-      blog-post-description
-      spacing-style
-      {% if block.settings.type_preset != '' %}{{ block.settings.type_preset }}{% endif%}
-    "
-    style="{% render 'spacing-style', settings: block.settings %}"
-  >
-    {% if content %}
-        <rte-formatter>
-        {{ content | strip_html | truncatewords: truncatewords }}
-        </rte-formatter>
-    {% endif %}
-  </div>
-{% endif %}
+<div class="blog-post-description {% if block.settings.type_preset != '' %}{{ block.settings.type_preset }}{% endif %}">
+  {% if content %}
+    {%- assign placeholder = content | strip_html | truncatewords: truncatewords -%}
+    {% render 'text', fallback_text: placeholder, block: block %}
+  {% endif %}
+</div>
 
 {% schema %}
 {
@@ -47,38 +48,11 @@
     {
       "type": "range",
       "id": "truncatewords",
-      "min": 30,
+      "min": 10,
       "max": 200,
       "step": 2,
       "default": 90,
       "label": "Truncatewords"
-    },
-    {
-      "type": "header",
-      "content": "Layout"
-    },
-    {
-      "type": "select",
-      "id": "width",
-      "label": "t:settings.width",
-      "options": [
-        {
-          "value": "fit-content",
-          "label": "t:options.fit"
-        },
-        {
-          "value": "100%",
-          "label": "t:options.fill"
-        }
-      ],
-      "default": "fit-content"
-    },
-    {
-      "type": "text_alignment",
-      "id": "alignment",
-      "label": "t:settings.alignment",
-      "default": "left",
-      "visible_if": "{{ block.settings.width == '100%' }}"
     },
     {
       "type": "header",
@@ -156,84 +130,96 @@
       "label": "t:settings.size",
       "options": [
         {
-          "value": "18.4rem",
-          "label": "184px"
+          "value": "",
+          "label": "t:options.default"
         },
         {
-          "value": "15.2rem",
-          "label": "152px"
-        },
-        {
-          "value": "12rem",
-          "label": "120px"
-        },
-        {
-          "value": "8.8rem",
-          "label": "88px"
-        },
-        {
-          "value": "8rem",
-          "label": "80px"
-        },
-        {
-          "value": "7.2rem",
-          "label": "72px"
-        },
-        {
-          "value": "6.4rem",
-          "label": "64px"
-        },
-        {
-          "value": "5.6rem",
-          "label": "56px"
-        },
-        {
-          "value": "5rem",
-          "label": "50px"
-        },
-        {
-          "value": "4.8rem",
-          "label": "48px"
-        },
-        {
-          "value": "4rem",
-          "label": "40px"
-        },
-        {
-          "value": "3.2rem",
-          "label": "32px"
-        },
-        {
-          "value": "2.4rem",
-          "label": "24px"
-        },
-        {
-          "value": "2.0rem",
-          "label": "20px"
-        },
-        {
-          "value": "1.8rem",
-          "label": "18px"
-        },
-        {
-          "value": "1.6rem",
-          "label": "16px"
-        },
-        {
-          "value": "1.4rem",
-          "label": "14px"
+          "value": "1.0rem",
+          "label": "10px"
         },
         {
           "value": "1.2rem",
           "label": "12px"
         },
         {
-          "value": "1rem",
-          "label": "10px"
+          "value": "1.4rem",
+          "label": "14px"
         },
         {
-          "value": "",
-          "label": "t:options.default"
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        },
+        {
+          "value": "3.0rem",
+          "label": "30px"
+        },
+        {
+          "value": "3.2rem",
+          "label": "32px"
+        },
+        {
+          "value": "3.4rem",
+          "label": "34px"
+        },
+        {
+          "value": "3.6rem",
+          "label": "36px"
+        },
+        {
+          "value": "4.0rem",
+          "label": "40px"
+        },
+        {
+          "value": "5.0rem",
+          "label": "50px"
+        },
+        {
+          "value": "6.0rem",
+          "label": "60px"
+        },
+        {
+          "value": "7.0rem",
+          "label": "70px"
+        },
+        {
+          "value": "8.0rem",
+          "label": "80px"
+        },
+        {
+          "value": "9.0rem",
+          "label": "90px"
+        },
+        {
+          "value": "10.0rem",
+          "label": "100px"
+        },
+        {
+          "value": "12.0rem",
+          "label": "120px"
         }
       ],
       "default": "1.6rem",
@@ -340,7 +326,10 @@
   ],
   "presets": [
     {
-      "name": "Article description"
+      "name": "Article description",
+      "settings": {
+        "article": "{{ closest.article }}"
+      }
     }
   ]
 }

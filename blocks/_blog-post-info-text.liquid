@@ -1,11 +1,9 @@
-
-
 {% assign alignment = alignment | default: block.settings.alignment %}
 
 {% stylesheet %}
   .blog-post-details {
     display: flex;
-    gap: var(--gap-sm);
+    gap: var(--margin-sm);
     font-size: var(--font-size--paragraph);
     color: var(--color-foreground-rgb);
     white-space: nowrap;
@@ -27,15 +25,22 @@
     style="{% render 'spacing-style', settings: block.settings %}"
   >
     {%- if block.settings.show_date -%}
-      <span>{{- article.published_at | time_tag: format: 'date' -}}</span>
-    {%- endif -%}
-
-    {%- if block.settings.show_date and block.settings.show_author -%}
-      <span>{{ 'blogs.article.blog_details_separator' | t }}</span>
+      <span class="blog-date">
+        {{- 'blogs.article.on' | t }}
+        {{- article.published_at | time_tag: '%b %d, %Y' -}}
+      </span>
     {%- endif -%}
 
     {%- if block.settings.show_author -%}
-      <span>{{ article.author }}</span>
+      <span class="blog-author">
+        {{- 'blogs.article.by' | t }}
+        <em class="font-bold">{{ article.author }}</em>
+      </span>
+    {%- endif -%}
+
+    {% if block.settings.show_comments %}
+      <span>{{ 'blogs.article.blog_details_separator' | t }}</span>
+      <span class="blog-comment">{{ 'blogs.article.comments' | t: count: article.comments_count }}</span>
     {%- endif -%}
   </div>
 {% endif %}
@@ -54,6 +59,12 @@
       "type": "checkbox",
       "id": "show_author",
       "label": "t:settings.show_author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_comments",
+      "label": "t:settings.show_comments",
       "default": true
     },
     {

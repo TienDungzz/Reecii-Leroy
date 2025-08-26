@@ -47,18 +47,209 @@
       "type": "select",
       "id": "button_style",
       "label": "t:settings.type",
-      "visible_if": "{{ block.settings.style_class == 'button' }}",
+      "visible_if": "{{ block.settings.style_class == 'button' or block.settings.style_class == 'button-secondary' }}",
       "options": [
         {
           "value": "default",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "outline",
-          "label": "Outline"
+          "label": "t:options.outline"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_width",
+      "default": 1,
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_radius",
+      "default": 100,
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "button_type_font",
+      "label": "t:settings.font",
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "var(--font-body--family)",
+          "label": "t:options.body"
+        },
+        {
+          "value": "var(--font-subheading--family)",
+          "label": "t:options.subheading"
+        },
+        {
+          "value": "var(--font-heading--family)",
+          "label": "t:options.heading"
+        }
+      ],
+      "default": "var(--font-body--family)"
+    },
+    {
+      "type": "select",
+      "id": "button_type_size",
+      "label": "t:settings.size",
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        }
+      ],
+      "default": "1.2rem"
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "t:settings.button_text_weight",
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "100",
+          "label": "t:options.thin"
+        },
+        {
+          "value": "300",
+          "label": "t:options.light"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "500",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        },
+        {
+          "value": "900",
+          "label": "t:options.black"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "button_text_case",
+      "label": "t:settings.button_text_case",
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "buttons_shadow_horizontal_offset",
+      "min": -12,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.shadow_horizontal_offset",
+      "default": 0,
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "buttons_shadow_vertical_offset",
+      "min": -12,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.shadow_vertical_offset",
+      "default": 0,
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "buttons_shadow_blur",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "t:settings.blur",
+      "default": 0,
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
     },
     {
       "type": "header",
@@ -72,39 +263,92 @@
       "visible_if": "{{ block.settings.style_class == 'link' }}",
       "options": [
         {
-          "value": "28",
-          "label": "28px"
+          "value": "",
+          "label": "t:options.default"
         },
         {
-          "value": "24",
-          "label": "24px"
+          "value": "1.0rem",
+          "label": "10px"
         },
         {
-          "value": "20",
-          "label": "20px"
-        },
-        {
-          "value": "18",
-          "label": "18px"
-        },
-        {
-          "value": "16",
-          "label": "16px"
-        },
-        {
-          "value": "14",
-          "label": "14px"
-        },
-        {
-          "value": "12",
+          "value": "1.2rem",
           "label": "12px"
         },
         {
-          "value": "10",
-          "label": "10px"
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
         }
       ],
-      "default": "12"
+      "default": "1.2rem"
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight_link",
+      "label": "t:settings.button_text_weight",
+      "visible_if": "{{ block.settings.style_class == 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "100",
+          "label": "t:options.thin"
+        },
+        {
+          "value": "300",
+          "label": "t:options.light"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "500",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        },
+        {
+          "value": "900",
+          "label": "t:options.black"
+        }
+      ],
+      "default": "default"
     },
     {
       "type": "checkbox",
@@ -182,7 +426,7 @@
     },
     {
       "type": "range",
-      "id": "custom_padding_vertical",
+      "id": "buttons_padding_vertical",
       "label": "t:settings.vertical_padding",
       "min": 0,
       "max": 100,
@@ -193,7 +437,7 @@
     },
     {
       "type": "range",
-      "id": "custom_padding_horizontal",
+      "id": "buttons_padding_horizontal",
       "label": "t:settings.horizontal_padding",
       "min": 0,
       "max": 100,
@@ -259,7 +503,7 @@
     },
     {
       "type": "range",
-      "id": "custom_padding_vertical_mobile",
+      "id": "buttons_padding_vertical_mobile",
       "label": "t:settings.vertical_padding",
       "min": 0,
       "max": 100,
@@ -270,13 +514,13 @@
     },
     {
       "type": "range",
-      "id": "custom_padding_horizontal_mobile",
+      "id": "buttons_padding_horizontal_mobile",
       "label": "t:settings.horizontal_padding",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 20,
+      "default": 10,
       "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
     }
   ],
