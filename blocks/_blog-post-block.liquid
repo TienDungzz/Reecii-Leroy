@@ -17,11 +17,17 @@
 
 <div class="
     blog-post-block
+    border-style
+    spacing-style
     layout-panel-flex
     layout-panel-flex--{{ block.settings.content_direction | default: 'column' }}
     mobile-{{ block.settings.content_direction_mobile | default: 'column' }}
     "
-    style="{% render 'layout-panel-style', settings: block.settings %}"
+    style="
+        {% render 'layout-panel-style', settings: block.settings %}
+        {% render 'spacing-style', settings: block.settings %}
+        {% render 'border-override', settings: block.settings %}
+    "
 >
     {%- if article.image -%}
         {% content_for 'block', id: 'group-media', type: '_card-article-group-media', closest.article: article %}

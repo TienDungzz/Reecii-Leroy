@@ -1335,7 +1335,7 @@ class SwiperComponent extends HTMLElement {
     this.options = null;
     this.breakpoint = null;
     this.breakpointChecker = null;
-
+    this.arrowOnHeader = this.closest('.arrow-on-header:has(.swiper-btns-on-header)');
   }
 
   connectedCallback() {
@@ -1379,13 +1379,8 @@ class SwiperComponent extends HTMLElement {
       const nextButton = this.swiperEl.querySelector(".swiper-button-next");
       const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
       const pagination = this.swiperEl.querySelector(".swiper-pagination");
-
-      console.log('🔍 Swiper elements found:', {
-        swiperEl: !!this.swiperEl,
-        nextButton: !!nextButton,
-        prevButton: !!prevButton,
-        pagination: !!pagination
-      });
+      const arrowOnHeaderNextButton = this.arrowOnHeader ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next") : nextButton;
+      const arrowOnHeaderPrevButton = this.arrowOnHeader ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev") : prevButton;
 
       const getOption = (name, defaultValue = undefined) => {
         const attr = this.getAttribute(`data-${name}`);
@@ -1435,10 +1430,11 @@ class SwiperComponent extends HTMLElement {
           disableOnInteraction: false,
         },
         slidesPerView: getOption("slides-per-view", 1),
+        centeredSlides: getOption("centered-slides", false),
         autoHeight: getOption("auto-height", false),
         navigation: {
-          nextEl: nextButton,
-          prevEl: prevButton,
+          nextEl: arrowOnHeaderNextButton,
+          prevEl: arrowOnHeaderPrevButton,
         },
         pagination: {
           el: pagination,

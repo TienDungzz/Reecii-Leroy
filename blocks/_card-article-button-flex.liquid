@@ -1,6 +1,14 @@
 {%- liquid
   assign card_article = block.settings.article
 -%}
+
+{% stylesheet %}
+  .card--block-button {
+    display: flex;
+    justify-content: var(--horizontal-alignment);
+  }
+{% endstylesheet %}
+
 <div class="card--block-button">
   {%- if card_article and card_article != empty -%}
     {%- render 'card-article-button', card_article: card_article, block: block -%}
@@ -24,33 +32,6 @@
       "id": "text",
       "label": "t:settings.text",
       "default": "<p>Read more...</p>"
-    },
-    {
-      "type": "header",
-      "content": "Layout"
-    },
-    {
-      "type": "select",
-      "id": "width",
-      "label": "t:settings.width",
-      "options": [
-        {
-          "value": "fit-content",
-          "label": "t:options.fit"
-        },
-        {
-          "value": "100%",
-          "label": "t:options.fill"
-        }
-      ],
-      "default": "fit-content"
-    },
-    {
-      "type": "text_alignment",
-      "id": "alignment",
-      "label": "t:settings.alignment",
-      "default": "left",
-      "visible_if": "{{ block.settings.width == '100%' }}"
     },
     {
       "type": "header",
