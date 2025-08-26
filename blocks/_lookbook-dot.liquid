@@ -34,7 +34,20 @@
         const content = this.querySelector('.lookbook-dot__content');
 
         if (content) {
-          content.classList.toggle('is-open');
+          if (window.innerWidth > 1024) {
+            content.classList.toggle('is-open');
+          } else {
+            // open popup
+            content.closest('.lookbook-item').querySelector('.lookBook__btnShowProducts .show_products').click();
+
+            // scroll to product the same as index of dot
+            const index = Array.from(lookbookDots).indexOf(this);
+            const swiperEl = document.querySelector('.lookbook-popup .swiper');
+
+            if (swiperEl) {
+              swiperEl.swiper.slideTo(index, 600); 
+            }
+          }
         }
       });
     });

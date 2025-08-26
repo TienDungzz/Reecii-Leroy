@@ -171,71 +171,6 @@
     .group-block--width-fit {
         width: fit-content;
     }
-
-    .lookbook-popup {
-        position: fixed;
-        width: auto;
-        max-width: 100%;
-        right: 0;
-        bottom: 0;
-        background-color: #fff;
-        z-index: 103;
-        opacity: 0;
-        visibility: hidden;
-        transform: translate3d(0, 100%, 0);
-        transition: opacity .3s ease, visibility .3s ease, transform .3s ease;
-        min-width: 350px;
-        height: 0;
-        overflow: hidden;
-    }
-
-    .openLookbookPopup .lookbook-popup {
-        opacity: 1;
-        visibility: visible;
-        transform: translate3d(0, 0, 0);
-        height: auto;
-        overflow: visible;
-    }
-
-    .hide_products {
-        display: none;
-    }
-
-    .lookBook__btnShowProducts.is-open .show_products {
-        display: none;
-    }
-
-    .lookBook__btnShowProducts.is-open .hide_products {
-        display: block;
-    }
-
-    .lookbook-section-list.style-popup .lookbook-dot__content {
-        position: relative;
-        left: 35px;
-        max-width: 450px;
-        transform-origin: left center;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity .3s ease,visibility .3s ease;
-    }
-
-    .lookbook-section-list.style-popup .lookbook-dot__content.is-open {
-        opacity: 1;
-        visibility: visible;
-        animation: 0.3s ease 0s 1 normal none running scaleLeftToRight;
-    }
-
-    @keyframes scaleLeftToRight {
-        0% {
-            opacity: 0;
-            transform: translateX(-3rem) scale(0);
-        }
-
-        100% {
-            opacity: 1;
-            transform: translateX(0px) scale(1);
-        }
-    }
 {% endstylesheet %}
 
 {% if view_product == 'popup' %}
@@ -279,7 +214,7 @@
         const swiperEl = container.querySelector('.swiper');
         if (!swiperEl) return;
         popupSwiper = new window.Swiper(swiperEl, {
-          slidesPerView: 3,
+          slidesPerView: 4,
           spaceBetween: 12,
           pagination: { el: container.querySelector('.swiper-pagination'), clickable: true },
           navigation: {
@@ -287,9 +222,9 @@
             prevEl: container.querySelector('.swiper-button-prev')
           },
           breakpoints: {
-            0: { slidesPerView: 1.1 },
-            640: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 }
+            0: { slidesPerView: 2 },
+            640: { slidesPerView: 3 },
+            1024: { slidesPerView: 4 }
           }
         });
       }
@@ -303,7 +238,6 @@
             <div class="swiper-wrapper"></div>
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
-            <div class="swiper-pagination"></div>
           </div>
         `;
         const swiperWrapper = wrapper.querySelector('.swiper-wrapper');

@@ -97,7 +97,7 @@
 {% endcapture %}
 
 <div class="lookbook-item relative">
-    <div class="lookbook-item__image overflow-hidden relative">
+    <div class="lookbook-item__image relative">
         <{{ element }}
             class="{{ class }}"
             style="{{ style }}"
@@ -143,7 +143,7 @@
         aspect-ratio: var(--ratio);
     }
 
-    .lookbook__btnShowProducts {
+    .lookBook__btnShowProducts {
         display: flex;
         align-items: center;
         position: absolute;
@@ -161,7 +161,17 @@
         transition: opacity 0.3s ease-in-out;
     }
 
-    .lookbook__btnShowProducts .icon_plus_2 {
+    .lookBook__btnShowProducts a {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .lookbook-item:hover .lookBook__btnShowProducts {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .lookBook__btnShowProducts .icon_plus_2 {
         position: relative;
         font-size: 0px;
         width: 11px;
@@ -170,7 +180,29 @@
         transition: transform 0.3s, -webkit-transform 0.3s;
     }
 
-    .lookbook__btnShowProducts.is-open .icon_plus_2 {
+    .lookBook__btnShowProducts .icon_plus_2::before {
+        position: absolute;
+        content: "";
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 2px;
+        height: 12px;
+        background: #ffffff;
+    }
+
+    .lookBook__btnShowProducts .icon_plus_2::after {
+        position: absolute;
+        content: "";
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 12px;
+        height: 2px;
+        background: #ffffff;
+    }
+
+    .lookBook__btnShowProducts.is-open .icon_plus_2 {
         transform: rotate(45deg);
     }
 

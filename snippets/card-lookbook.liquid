@@ -40,19 +40,19 @@
 <div class="option-{{ option }}" data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{card_product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'>
     <div class="card--block product-card-lookbook card-wrapper product-card-wrapper underline-links-hover color-{{ block.settings.color_scheme }}">
         {% if show_product_image %}
-          <div class="product-image">
+          <a href="{{ card_product.url }}" class="product-image">
             <img
               src="{{ card_product.featured_image | image_url: width: 350 }}"
               alt="{{ card_product.featured_image.alt }}"
               width="350"
               height="350">
-          </div>
+          </a>
         {% endif %}
     
         {% if show_product_title %}
-          <div class="product-title">
+          <a href="{{ card_product.url }}" class="product-title">
             {{ card_product.title }}
-          </div>
+          </a>
         {% endif %}
     
         {% if show_product_price %}
