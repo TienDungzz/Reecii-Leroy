@@ -1,15 +1,13 @@
 {% capture children %}
-  <div class="section-resource-list__header">
-    {%- content_for 'block', type: '_product-list-content', id: 'static-header' -%}
-  </div>
+  {%- content_for 'block', type: '_product-list-content', id: 'static-header' -%}
 
-  {% content_for 'block', type: '_media-gallery', id: 'static-media-gallery' %}
+  {% content_for 'block', type: '_lookbook', id: 'static-lookbook' %}
 
   <div
-    class="section-resource-list__content"
-    style="--horizontal-alignment: {{ section.settings.horizontal_alignment }};"
+      class="section-resource-list__content"
+      style="--horizontal-alignment: {{ section.settings.horizontal_alignment }};"
   >
-    {%- content_for 'blocks' -%}
+      {%- content_for 'blocks' -%}
   </div>
 {% endcapture %}
 
@@ -17,24 +15,21 @@
 
 {% schema %}
 {
-  "name": "Media gallery",
+  "name": "Lookbook",
   "class": "section-wrapper",
   "blocks": [
-    {
-      "type": "@theme"
-    },
-    {
-      "type": "@app"
-    },
-    {
-      "type": "_divider"
-    },
-    {
-      "type": "_instagram-item"
-    }
+      {
+          "type": "@theme"
+      },
+      {
+          "type": "@app"
+      },
+      {
+          "type": "_divider"
+      }
   ],
   "disabled_on": {
-    "groups": ["header", "custom.popup"]
+      "groups": ["header", "custom.popup"]
   },
   "settings": [
     {
@@ -447,7 +442,7 @@
   ],
   "presets": [
     {
-      "name": "Media gallery"
+      "name": "Lookbook"
     }
   ]
 }
