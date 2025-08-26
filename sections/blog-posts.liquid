@@ -65,6 +65,26 @@
   .custom-section-content {
     z-index: var(--layer-flat);
   }
+
+  @media (min-width: 750px) {
+    .blog-posts-section.layout-panel-flex--row .section-resource-list__header {
+      width: calc(var(--header-width) - var(--gap) / 2);
+    }
+
+    .blog-posts-section.layout-panel-flex--row .blog-posts-block {
+      width: calc(100% - var(--header-width) - var(--gap) / 2);
+    }
+  }
+
+  @media (max-width: 749px) {
+    .blog-posts-section.mobile-direction--row .section-resource-list__header {
+      width: calc(var(--header-width) - var(--gap) / 2);
+    }
+
+    .blog-posts-section.mobile-direction--row .blog-posts-block {
+      width: calc(100% - var(--header-width) - var(--gap) / 2);
+    }
+  }
 {% endstylesheet %}
 
 {% capture header %}
@@ -86,7 +106,6 @@
     {%- if request.visual_preview_mode -%}
         data-shopify-visual-preview
     {%- endif -%}
-    style="--gap: calc(var(--gap-scale, 1.0) * {{ section.settings.items_gap }}px);"
   >
     {% case section.settings.layout_type %}
         {% when 'grid' %}
@@ -163,7 +182,7 @@
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
-  class="section blog-posts-section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
+  class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
 
   {% if request.visual_preview_mode %}
     data-shopify-visual-preview
@@ -184,6 +203,10 @@
 
     {% if section.settings.section_height != '' %}
       --section-preview-height: 600px;
+    {% endif %}
+
+    {% if section.settings.content_direction == 'row' or section.settings.content_direction_mobile == 'row' %}
+      --header-width: {{ section.settings.header_width }}%;
     {% endif %}
   "
 >
@@ -208,6 +231,7 @@
 
     <div
       class="
+        blog-posts-section
         spacing-style
         layout-panel-flex
         layout-panel-flex--{{ section.settings.content_direction }}
