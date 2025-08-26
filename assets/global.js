@@ -447,9 +447,14 @@ class QuantityInput extends HTMLElement {
     }
   }
 }
+if (!customElements.get('quantity-input')) customElements.define('quantity-input', QuantityInput);
 
-customElements.define("quantity-input", QuantityInput);
-
+/**
+ * Debounce a function.
+ * @param {Function} fn The function to debounce.
+ * @param {number} wait The time to wait in milliseconds.
+ * @returns {Function} The debounced function.
+ */
 function debounce(fn, wait) {
   /** @type {number | undefined} */
   let timeout;
@@ -468,6 +473,12 @@ function debounce(fn, wait) {
   return /** @type {T & { cancel(): void }} */ (debounced);
 }
 
+/**
+ * Throttle a function.
+ * @param {Function} fn The function to throttle.
+ * @param {number} delay The time to wait in milliseconds.
+ * @returns {Function} The throttled function.
+ */
 function throttle(fn, delay) {
   let lastCall = 0;
 
@@ -489,7 +500,6 @@ function throttle(fn, delay) {
 }
 
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-
 function prefersReducedMotion() {
   return reducedMotion.matches;
 }
@@ -662,8 +672,7 @@ class PreloadScreen extends HTMLElement {
     });
   }
 }
-
-customElements.define("preload-screen", PreloadScreen);
+if (!customElements.get('preload-screen')) customElements.define('preload-screen', PreloadScreen);
 
 class HeaderMenu extends HTMLElement {
   constructor() {
@@ -686,8 +695,7 @@ class HeaderMenu extends HTMLElement {
     );
   }
 }
-
-customElements.define("header-menu", HeaderMenu);
+if (!customElements.get('header-menu')) customElements.define('header-menu', HeaderMenu);
 
 class MenuDrawer extends HTMLElement {
   constructor() {
@@ -854,8 +862,7 @@ class MenuDrawer extends HTMLElement {
     window.requestAnimationFrame(handleAnimation);
   }
 }
-
-customElements.define("menu-drawer", MenuDrawer);
+if (!customElements.get('menu-drawer')) customElements.define('menu-drawer', MenuDrawer);
 
 class HeaderDrawer extends MenuDrawer {
   constructor() {
@@ -910,8 +917,7 @@ class HeaderDrawer extends MenuDrawer {
     );
   };
 }
-
-customElements.define("header-drawer", HeaderDrawer);
+if (!customElements.get('header-drawer')) customElements.define('header-drawer', HeaderDrawer);
 
 function buildStyleSheet(name, $this) {
   if (name == "") return;
@@ -953,8 +959,7 @@ class DeferredMedia extends HTMLElement {
     }
   }
 }
-
-customElements.define("deferred-media", DeferredMedia);
+if (!customElements.get('deferred-media')) customElements.define('deferred-media', DeferredMedia);
 
 class SliderComponent extends HTMLElement {
   constructor() {
@@ -1071,8 +1076,7 @@ class SliderComponent extends HTMLElement {
     });
   }
 }
-
-customElements.define("slider-component", SliderComponent);
+if (!customElements.get('slider-component')) customElements.define('slider-component', SliderComponent);
 
 class SlideshowComponent extends SliderComponent {
   constructor() {
@@ -1344,8 +1348,7 @@ class SlideshowComponent extends SliderComponent {
     });
   }
 }
-
-customElements.define("slideshow-component", SlideshowComponent);
+if (!customElements.get('slideshow-component')) customElements.define('slideshow-component', SlideshowComponent);
 
 // SWIPER COMPONENT KHINH
 class SwiperComponent extends HTMLElement {
@@ -1464,8 +1467,7 @@ class SwiperComponent extends HTMLElement {
     });
   }
 }
-
-customElements.define("swiper-component", SwiperComponent);
+if (!customElements.get('swiper-component')) customElements.define('swiper-component', SwiperComponent);
 // END SWIPER COMPONENT KHINH
 
 class VariantSelects extends HTMLElement {
@@ -1538,8 +1540,7 @@ class VariantSelects extends HTMLElement {
     ).map(({ dataset }) => dataset.optionValueId);
   }
 }
-
-customElements.define("variant-selects", VariantSelects);
+if (!customElements.get('variant-selects')) customElements.define('variant-selects', VariantSelects);
 
 class ProductRecommendations extends HTMLElement {
   observer = undefined;
@@ -1595,8 +1596,7 @@ class ProductRecommendations extends HTMLElement {
       });
   }
 }
-
-customElements.define("product-recommendations", ProductRecommendations);
+if (!customElements.get('product-recommendations')) customElements.define('product-recommendations', ProductRecommendations);
 
 window.theme = window.theme || {};
 // Init section function when it's visible, then disable observer
@@ -1640,8 +1640,7 @@ class AccountIcon extends HTMLElement {
     }
   }
 }
-
-customElements.define("account-icon", AccountIcon);
+if (!customElements.get('account-icon')) customElements.define('account-icon', AccountIcon);
 
 class BulkAdd extends HTMLElement {
   constructor() {
@@ -1743,10 +1742,7 @@ class BulkAdd extends HTMLElement {
       .querySelector(selector).innerHTML;
   }
 }
-
-if (!customElements.get("bulk-add")) {
-  customElements.define("bulk-add", BulkAdd);
-}
+if (!customElements.get('bulk-add')) customElements.define('bulk-add', BulkAdd);
 
 // *** Function
 class GridView extends HTMLElement {
@@ -1772,7 +1768,7 @@ class GridView extends HTMLElement {
     this.productGrid.setAttribute("data-view", gridView);
   }
 }
-customElements.define("grid-view", GridView);
+if (!customElements.get('grid-view')) customElements.define('grid-view', GridView);
 
 class RecentlyViewedProducts extends HTMLElement {
   constructor() {
@@ -1823,12 +1819,9 @@ class RecentlyViewedProducts extends HTMLElement {
     );
   }
 }
+if (!customElements.get('recently-viewed-products')) customElements.define('recently-viewed-products', RecentlyViewedProducts);
 
-customElements.define("recently-viewed-products", RecentlyViewedProducts);
-
-const moreButton = document.querySelectorAll(
-  ".card__swatch .item-swatch-more .number-showmore"
-);
+const moreButton = document.querySelectorAll(".card__swatch .item-swatch-more .number-showmore");
 moreButton.forEach((button) => {
   button.addEventListener("click", function (event) {
     const swatch = event.target.closest(".swatch-list");
@@ -1983,8 +1976,7 @@ class Wishlist extends HTMLElement {
     // }
   }
 }
-
-customElements.define("wisht-list", Wishlist);
+if (!customElements.get('wisht-list')) customElements.define('wisht-list', Wishlist);
 
 class CountDown extends HTMLElement {
   constructor() {
@@ -2063,9 +2055,7 @@ class CountDown extends HTMLElement {
     observer.observe(this);
   }
 }
-customElements.define("count-down", CountDown);
-
-// Color Swatch
+if (!customElements.get('count-down')) customElements.define('count-down', CountDown);
 
 class ColorSwatch extends HTMLElement {
   constructor() {
@@ -2192,9 +2182,7 @@ class ColorSwatch extends HTMLElement {
     }
   }
 }
-customElements.define("color-swatch", ColorSwatch);
-
-// Product Grid Show More
+if (!customElements.get('color-swatch')) customElements.define('color-swatch', ColorSwatch);
 
 class ShowMoreProductGrid extends HTMLElement {
   constructor() {
@@ -2230,7 +2218,7 @@ class ShowMoreProductGrid extends HTMLElement {
     this.remove();
   }
 }
-customElements.define("show-more-product-grid", ShowMoreProductGrid);
+if (!customElements.get('show-more-product-grid')) customElements.define('show-more-product-grid', ShowMoreProductGrid);
 
 class ParallaxImg extends HTMLElement {
   constructor() {
@@ -2285,8 +2273,7 @@ class ParallaxImg extends HTMLElement {
     );
   }
 }
-
-customElements.define("parallax-image", ParallaxImg);
+if (!customElements.get('parallax-image')) customElements.define("parallax-image", ParallaxImg);
 
 /**
  * A custom element that formats rte content for easier styling
@@ -2311,9 +2298,8 @@ class RTEFormatter extends HTMLElement {
   }
 }
 
-if (!customElements.get('rte-formatter')) {
-  customElements.define('rte-formatter', RTEFormatter);
-}
+if (!customElements.get('rte-formatter')) customElements.define('rte-formatter', RTEFormatter);
+
 class StrokeText extends HTMLElement {
   constructor() {
     super();
@@ -2358,8 +2344,7 @@ class StrokeText extends HTMLElement {
     this.style.backgroundPosition = `${xPercent}% 50%`;
   }
 }
-
-customElements.define("stroke-text", StrokeText);
+if (!customElements.get('stroke-text')) customElements.define('stroke-text', StrokeText);
 
 function initSplitting() {
   const buttons = document.querySelectorAll("[data-splitting-target]");
@@ -2367,5 +2352,4 @@ function initSplitting() {
     Splitting({ target: button, by: button.dataset.splittingTextBy });
   });
 }
-
 initSplitting();

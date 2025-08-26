@@ -17,8 +17,7 @@ class SideDrawerOpener extends HTMLElement {
     });
   }
 }
-
-customElements.define('side-drawer-opener', SideDrawerOpener);
+if (!customElements.get('side-drawer-opener')) customElements.define('side-drawer-opener', SideDrawerOpener);
 
 class SideDrawer extends HTMLElement {
   constructor() {
@@ -77,8 +76,7 @@ class SideDrawer extends HTMLElement {
     }, { once: true });
   }
 }
-
-customElements.define('side-drawer', SideDrawer);
+if (!customElements.get('side-drawer')) customElements.define('side-drawer', SideDrawer);
 
 class ModalDialog extends HTMLElement {
   constructor() {
@@ -132,8 +130,7 @@ class ModalDialog extends HTMLElement {
     }, { once: true });
   }
 }
-
-customElements.define('modal-dialog', ModalDialog);
+if (!customElements.get('modal-dialog')) customElements.define('modal-dialog', ModalDialog);
 
 class ModalOpener extends HTMLElement {
   constructor() {
@@ -147,8 +144,7 @@ class ModalOpener extends HTMLElement {
     });
   }
 }
-
-customElements.define('modal-opener', ModalOpener);
+if (!customElements.get('modal-opener')) customElements.define('modal-opener', ModalOpener);
 
 class DetailsDisclosure extends HTMLElement {
   constructor() {
@@ -181,8 +177,7 @@ class DetailsDisclosure extends HTMLElement {
     this.mainDetailsToggle.querySelector('summary').setAttribute('aria-expanded', false);
   }
 }
-
-customElements.define('details-disclosure', DetailsDisclosure);
+if (!customElements.get('details-disclosure')) customElements.define('details-disclosure', DetailsDisclosure);
 
 class CollapsibleDetails extends HTMLDetailsElement {
   constructor() {
@@ -283,8 +278,7 @@ class CollapsibleDetails extends HTMLDetailsElement {
     this.style.overflow = 'visible';
   }
 }
-
-customElements.define('collapsible-details', CollapsibleDetails, { extends: 'details' });
+if (!customElements.get('collapsible-details')) customElements.define('collapsible-details', CollapsibleDetails, { extends: 'details' });
 
 class DropdownDetails extends HTMLDetailsElement {
   constructor() {
@@ -386,5 +380,4 @@ class DropdownDetails extends HTMLDetailsElement {
     }
   }
 }
-
-customElements.define('dropdown-details', DropdownDetails, { extends: 'details' });
+if (!customElements.get('dropdown-details')) customElements.define('dropdown-details', DropdownDetails, { extends: 'details' });

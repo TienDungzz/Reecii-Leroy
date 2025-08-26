@@ -82,8 +82,6 @@
 .size-style {
   width: var(--size-style-width-mobile, var(--size-style-width));
   height: var(--size-style-height-mobile, var(--size-style-height));
-  padding-block: var(--size-style-padding-vertical-mobile, var(--size-style-padding-vertical));
-  padding-inline: var(--size-style-padding-horizontal-mobile, var(--size-style-padding-horizontal));
 
   @media screen and (min-width: 750px) and (max-width: 1024px) {
     width: var(--size-style-width-tablet, var(--size-style-width));
@@ -93,17 +91,6 @@
   @media screen and (min-width: 1025px) {
     width: var(--size-style-width);
     height: var(--size-style-height);
-  }
-}
-
-/* Padding style */
-.padding-style {
-  padding-block: var(--padding-style-vertical-mobile, var(--padding-style-vertical));
-  padding-inline: var(--padding-style-horizontal-mobile, var(--padding-style-horizontal));
-
-  @media screen and (min-width: 1025px) {
-    padding-block: var(--padding-style-vertical);
-    padding-inline: var(--padding-style-horizontal);
   }
 }
 
@@ -231,4 +218,86 @@
 /* This is to deal with the margin applied to the p when custom styles are enabled. The p isn't the first child anymore due to the style tag */
 .text-block > style + * {
   margin-block-start: 0;
+}
+
+/* Accordion custom */
+accordion-custom {
+  details {
+    &::details-content,
+    .details-content {
+      block-size: 0;
+      overflow-y: clip;
+      opacity: 0;
+      interpolate-size: allow-keywords;
+      transition: content-visibility var(--animation-speed-slow) allow-discrete,
+        padding-block var(--animation-speed-slow) var(--animation-easing),
+        opacity var(--animation-speed-slow) var(--animation-easing),
+        block-size var(--animation-speed-slow) var(--animation-easing);
+    }
+
+    &:not([open]) {
+      &::details-content,
+      .details-content {
+        padding-block: 0;
+      }
+    }
+
+    &[open] {
+      &::details-content,
+      .details-content {
+        opacity: 1;
+        block-size: auto;
+
+        @starting-style {
+          block-size: 0;
+          opacity: 0;
+          overflow-y: clip;
+        }
+
+        &:focus-within {
+          overflow-y: visible;
+        }
+      }
+    }
+  }
+}
+
+accordion-custom[data-disable-on-mobile='true'] summary {
+  @media screen and (max-width: 749px) {
+    cursor: auto;
+  }
+}
+
+accordion-custom[data-disable-on-desktop='true'] summary {
+  @media screen and (min-width: 750px) {
+    cursor: auto;
+  }
+}
+
+/* Links */
+a {
+  --button-color: var(--color, var(--color-primary));
+  color: var(--button-color);
+  text-decoration-color: transparent;
+  text-decoration-thickness: 0.075em;
+  text-underline-offset: 0.125em;
+  transition: text-decoration-color var(--animation-speed) var(--animation-easing),
+    color var(--animation-speed) var(--animation-easing);
+}
+
+:is(h1, h2, h3, h4, h5, h6, p) > a:hover {
+  --button-color: var(--color, var(--color-primary-hover));
+}
+
+/* Add underline to text using our paragraph styles only. */
+p:not(.h1, .h2, .h3, .h4, .h5, .h6) a:where(:not(.button, .button-primary, .button-secondary)),
+.rte
+  :is(p, ul, ol, table):not(.h1, .h2, .h3, .h4, .h5, .h6)
+  a:where(:not(.button, .button-primary, .button-secondary)) {
+  text-decoration-color: currentcolor;
+
+  &:hover {
+    text-decoration-color: transparent;
+    color: var(--color-primary-hover);
+  }
 }

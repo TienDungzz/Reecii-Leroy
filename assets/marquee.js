@@ -219,8 +219,7 @@ function animateValue({
     },
   };
 }
-
-customElements.define("marquee-component", MarqueeComponent);
+if (!customElements.get('marquee-component')) customElements.define("marquee-component", MarqueeComponent);
 
 class MarqueeScroll extends HTMLElement {
   constructor() {
@@ -293,4 +292,4 @@ class MarqueeScroll extends HTMLElement {
     }
   }
 }
-customElements.define('marquee-scroll', MarqueeScroll);
+if (!customElements.get('marquee-scroll')) customElements.define('marquee-scroll', MarqueeScroll);

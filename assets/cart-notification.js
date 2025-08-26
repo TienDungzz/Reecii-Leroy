@@ -79,5 +79,4 @@ class CartNotification extends HTMLElement {
     this.activeElement = element;
   }
 }
-
-customElements.define('cart-notification', CartNotification);
+if (!customElements.get('cart-notification')) customElements.define('cart-notification', CartNotification);

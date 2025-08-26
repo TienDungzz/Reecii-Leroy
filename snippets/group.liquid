@@ -14,16 +14,16 @@
 {%- liquid
   assign ratio = 1
 
-  case block.settings.image_ratio
+  case settings.image_ratio
     when 'landscape'
       assign ratio = '16 / 9'
     when 'portrait'
       assign ratio = '4 / 5'
     when 'adapt'
-      if  block.setting.background_image != blank
-        assign ratio = block.settings.background_image.aspect_ratio
+      if  settings.background_image != blank
+        assign ratio = settings.background_image.aspect_ratio
         else
-        assign ratio = block.settings.video.aspect_ratio
+        assign ratio = settings.video.aspect_ratio
       endif
   endcase
 
@@ -41,7 +41,7 @@
     spacing-style
     size-style
     shadow-style
-    {% if block.settings.content_overlay %} group-block---content-overlay{% endif %}
+    {% if settings.content_overlay %} group-block--content-overlay{% endif %}
     {% if settings.inherit_color_scheme == false %} color-{{ settings.color_scheme }}{% endif %}
     {{ class }}
   "
@@ -86,7 +86,7 @@
       {% if request.design_mode %}group-block-content--design-mode{% endif %}
       layout-panel-flex
       layout-panel-flex--{{ settings.content_direction | default: 'column' }}
-      mobile-direction--{{ settings.content_direction_mobile | default: 'column' }}
+      mobile-{{ settings.content_direction_mobile | default: 'column' }}
     "
     style="{% render 'layout-panel-style', settings: settings, scale_min: 8 %}"
   >

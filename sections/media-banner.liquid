@@ -174,23 +174,51 @@
   }
   .media-banner.media-banner--media-stack {
     position: relative;
-    .media-block {
-      @media screen and (min-width: 750px) {
-        align-self: stretch;
-        object-fit: cover;
+    display: flex;
+    flex-direction: column;
+    &.media-banner--height-auto {
+      .media-block {
+        aspect-ratio: var(--aspect-ratio);
       }
     }
-    .media-banner__content {
+    .media-block {
       position: absolute;
-      inset: var(--content-inset);
-      transform: var(--content-transform);
-      z-index: 3;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      align-self: stretch;
+      object-fit: cover;
+    }
+    .media-banner__content {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 2;
+      min-height: var(--media-height);
+      >.group-block-content {
+        width: var(--size-style-width);
+        height: var(--size-style-height);
+        position: absolute;
+        inset: 50% auto auto 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+      }
+    }
+    @media screen and (min-width: 750px) {
+      .media-banner__content {
+        >.group-block-content {
+          inset: var(--content-inset);
+          transform: var(--content-transform);
+        }
+      }
     }
   }
   .media-banner {
     --media-banner-grid-columns: var(--full-page-grid-with-margins);
     grid-template-columns: var(--media-banner-grid-columns);
     grid-template-areas: 'media media media' 'content content content';
+    min-height: var(--media-height, auto);
     @media screen and (min-width: 750px) {
       grid-template-areas: 'media content';
       --media-banner-grid-columns: 3.5fr 2.5fr;
@@ -200,23 +228,6 @@
     }
     .media-banner__content {
       grid-area: content;
-    }
-    .media-banner__content > .group-block-content {
-      padding-inline: var(--page-margin);
-      padding-block: calc(2 * var(--page-margin));
-      @media screen and (min-width: 750px) {
-        padding-block: var(--page-margin);
-      }
-    }
-    &.section--page-width .media-banner__content > .group-block-content {
-      padding-inline: 0;
-      @media screen and (min-width: 750px) {
-        padding-inline-start: var(--page-margin);
-      }
-    }
-    &.section--page-width.media-banner--media-right .media-banner__content > .group-block-content {
-      padding-inline-end: var(--page-margin);
-      padding-inline-start: 0;
     }
     &.media-banner--height-auto {
       .media-block {
@@ -340,6 +351,7 @@
       "type": "select",
       "id": "media_width",
       "label": "t:settings.media_width",
+      "visible_if": "{{ section.settings.media_position != 'stack' }}",
       "options": [
         {
           "value": "narrow",

@@ -1,34 +1,29 @@
 {% doc %}
   Intended for use in a block similar to the button block.
 
-  @param {string} link - link to render
   @param {object} [block] - The block
 
   @example
-  {% render 'button', link: '/collections/all' %}
+  {% render 'collapsible-button'%}
 {% enddoc %}
 
 {%- liquid
-  assign link = link | default: block.settings.link
   assign style_class = style_class | default: block.settings.style_class
   assign link_underline = link_underline | default: block.settings.link_underline
   assign link_reveal = link_reveal | default: block.settings.link_reveal
   assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab
   assign shopify_attributes = shopify_attributes | default: block.shopify_attributes
-  assign label = label | default: block.settings.label
+  assign label_collapse = label_collapse | default: block.settings.label
+  assign label_expanded = label_expanded | default: block.settings.label_expanded
   assign button_style = button_style | default: block.settings.button_style
+  assign button_collapse = 'general.collapsible_text.button_collapse' | t
+  assign button_expanded = 'general.collapsible_text.button_expanded' | t
+  assign margin_block_start = margin_block_start | default: block.settings.margin_block_start
+  assign margin_block_end = margin_block_end | default: block.settings.margin_block_end
+  assign margin_block_start_mobile = margin_block_start_mobile | default: block.settings.margin_block_start_mobile
+  assign margin_block_end_mobile = margin_block_end_mobile | default: block.settings.margin_block_end_mobile
 -%}
-<a
-  {% if link == blank %}
-    role="link"
-    aria-disabled="true"
-  {% else %}
-    href="{{ link }}"
-  {% endif %}
-  {%- if splitting_text -%}
-    data-splitting-target
-    data-splitting-text-by="{{ splitting_text_by }}"
-  {%- endif -%}
+<button
   class="
     {{ class }}
     size-style
@@ -41,6 +36,11 @@
   style="
     {% render 'size-style', settings: block.settings %}
     {% render 'button-style', settings: block.settings %}
+    --margin-block-start: {{ margin_block_start | divided_by: 10.0 }}rem;
+    --margin-block-end: {{ margin_block_end | divided_by: 10.0 }}rem;
+    --margin-block-start-mobile: {{ margin_block_start_mobile | divided_by: 10.0 }}rem;
+    --margin-block-end-mobile: {{ margin_block_end_mobile | divided_by: 10.0 }}rem;
+
   "
   {%- if open_in_new_tab -%}
     target="_blank"
@@ -48,17 +48,25 @@
   {%- endif -%}
   {{ shopify_attributes }}
   {% if link_reveal and style_class == 'link' %}
-    data-text="{{ label }}"
+    data-text="{{ label_collapse | default: button_collapse }}"
   {% endif %}
+  data-show-text="{{ label_collapse | default: button_collapse }}" data-hide-text="{{ label_expanded | default: button_expanded }}"
   {{ shopify_attributes }}
 >
-  {{ label }}
+  {{ label_collapse | default: button_collapse }}
   {% if link_reveal and style_class == 'link' %}
-    <span class="text-mask none" data-text="{{ label }}">{{ label }}</span>
+    <span class="text-mask none" data-text="{{ label_collapse | default: button_collapse }}">{{ label_collapse | default: button_collapse }}</span>
   {% endif %}
-</a>
+</button>
 
 {% stylesheet %}
+  .collapsible-text-button-wrapper button {
+    margin-block: var(--margin-block-start-mobile, var(--margin-block-start)) var(--margin-block-end-mobile, var(--margin-block-end));
+
+    @media (min-width: 750px) {
+      margin-block: var(--margin-block-start) var(--margin-block-end);
+    }
+  }
   .button.button--outline,
   .button-secondary.button--outline {
     --button-color: var(--button-background-color);
@@ -76,7 +84,6 @@
 
   .link {
     font-size: var(--button-font-size-link);
-    font-weight: var(--button-font-weight-link);
     text-decoration: none;
     text-decoration-color: currentcolor;
 

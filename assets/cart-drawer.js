@@ -121,5 +121,4 @@ class CartDrawer extends HTMLElement {
     this.activeElement = element;
   }
 }
-
-customElements.define('cart-drawer', CartDrawer);
+if (!customElements.get('cart-drawer')) customElements.define('cart-drawer', CartDrawer);
