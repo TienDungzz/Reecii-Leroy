@@ -1,0 +1,37 @@
+{% capture list_items %}
+    {% for product in block.settings.product_list  %}
+      <li id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}" class="grid__item">
+        {% render 'card-lookbook', card_product: product, show_product_image: true, show_product_title: true, show_product_price: true, show_product_variant: true, show_product_button: true, option: 'default' %}
+      </li>
+
+      {% unless forloop.last %}
+        <!--@list/split-->
+      {% endunless %}
+
+    {% endfor %}
+  {% endcapture %}
+
+<div class="lookbook-item-all">
+    <ul class="lookbook-item-all__list">
+        {{list_items}}
+    </ul>
+</div>
+
+{% schema %}
+{
+    "name": "Lookbook item all",
+    "settings": [
+        {
+            "type": "product_list",
+            "id": "product_list",
+            "label": "Product list",
+            "limit": 10
+        }
+        ],
+    "presets": [
+        {
+            "name": "Lookbook item all"
+        }
+    ]
+}
+{% endschema %}

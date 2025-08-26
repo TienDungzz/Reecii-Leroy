@@ -16,6 +16,8 @@
   assign columns_tablet = 2
   if columns_desktop == 1
     assign columns_tablet = 1
+  elsif columns_desktop <= 2
+    assign columns_tablet = mobile_columns
   elsif columns_desktop >= 4
     assign columns_tablet = 3
   endif
@@ -29,6 +31,7 @@
   if block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination'
     assign enable_pagination = true
   endif
+  assign view_product = block.settings.view_product
 -%}
 
 {% capture list_items %}
@@ -47,9 +50,10 @@
 
 <div
   class="
-    media-gallery-list group-block relative
+    lookbook-section-list group-block relative
+    style-{{ view_product }}
     group-block--height-{{ block.settings.height }}
-    group-block--width-fill
+    group-block--width-{{ block.settings.width }}
     spacing-style
     size-style
     {% if block.settings.inherit_color_scheme == false %}color-{{ block.settings.color_scheme }}{% endif %}
@@ -65,7 +69,10 @@
     {% render 'layout-panel-style', settings: block.settings %}
     {% render 'spacing-style', settings: block.settings %}
     {% render 'size-style', settings: block.settings %}
-    --size-style-width: 100%;
+    {% if block.settings.width == 'custom' %}
+      --size-style-width: {{ block.settings.custom_width }}%;
+      --size-style-width-mobile: 100%;
+    {% endif %}
   "
   data-testid="media-gallery-content"
   {{ block.shopify_attributes }}
@@ -155,6 +162,209 @@
       </swiper-component>
   {% endcase %}
 </div>
+
+{% stylesheet %}
+    .group-block--width-full {
+        width: 100%;
+    }
+
+    .group-block--width-fit {
+        width: fit-content;
+    }
+
+    .lookbook-popup {
+        position: fixed;
+        width: auto;
+        max-width: 100%;
+        right: 0;
+        bottom: 0;
+        background-color: #fff;
+        z-index: 103;
+        opacity: 0;
+        visibility: hidden;
+        transform: translate3d(0, 100%, 0);
+        transition: opacity .3s ease, visibility .3s ease, transform .3s ease;
+        min-width: 350px;
+        height: 0;
+        overflow: hidden;
+    }
+
+    .openLookbookPopup .lookbook-popup {
+        opacity: 1;
+        visibility: visible;
+        transform: translate3d(0, 0, 0);
+        height: auto;
+        overflow: visible;
+    }
+
+    .hide_products {
+        display: none;
+    }
+
+    .lookBook__btnShowProducts.is-open .show_products {
+        display: none;
+    }
+
+    .lookBook__btnShowProducts.is-open .hide_products {
+        display: block;
+    }
+
+    .lookbook-section-list.style-popup .lookbook-dot__content {
+        position: relative;
+        left: 35px;
+        max-width: 450px;
+        transform-origin: left center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .3s ease,visibility .3s ease;
+    }
+
+    .lookbook-section-list.style-popup .lookbook-dot__content.is-open {
+        opacity: 1;
+        visibility: visible;
+        animation: 0.3s ease 0s 1 normal none running scaleLeftToRight;
+    }
+
+    @keyframes scaleLeftToRight {
+        0% {
+            opacity: 0;
+            transform: translateX(-3rem) scale(0);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateX(0px) scale(1);
+        }
+    }
+{% endstylesheet %}
+
+{% if view_product == 'popup' %}
+{% endif %}
+  {% javascript %}
+    document.addEventListener('DOMContentLoaded', function() {
+      const lookbookPopup = `
+        <div class="lookbook-popup">
+          <div class="lookbook-popup-wrapper">
+          <div class="lookbook-popup-title">
+            <h5 class="title">Room Ideas</h5>
+            <a href="#" class="close">
+                X
+            </a>
+          </div>
+          <div class="lookbook-popup-content"></div>
+          </div>
+          </div>
+        </div>
+      `;
+
+      if (!document.querySelector('.lookbook-popup')) {
+        document.body.insertAdjacentHTML('beforeend', lookbookPopup);
+      }
+
+      const bodyEl = document.body;
+      const popupEl = document.querySelector('.lookbook-popup');
+      const popupContentEl = popupEl.querySelector('.lookbook-popup-content');
+      const popupCloseEl = popupEl.querySelector('.close');
+      let popupSwiper = null;
+
+      function destroyPopupSwiper() {
+        if (popupSwiper && typeof popupSwiper.destroy === 'function') {
+          try { popupSwiper.destroy(true, true); } catch (_) {}
+        }
+        popupSwiper = null;
+      }
+
+      function initPopupSwiper(container) {
+        if (typeof window.Swiper === 'undefined') return;
+        const swiperEl = container.querySelector('.swiper');
+        if (!swiperEl) return;
+        popupSwiper = new window.Swiper(swiperEl, {
+          slidesPerView: 3,
+          spaceBetween: 12,
+          pagination: { el: container.querySelector('.swiper-pagination'), clickable: true },
+          navigation: {
+            nextEl: container.querySelector('.swiper-button-next'),
+            prevEl: container.querySelector('.swiper-button-prev')
+          },
+          breakpoints: {
+            0: { slidesPerView: 1.1 },
+            640: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 }
+          }
+        });
+      }
+
+      function buildSlidesFromItem(itemEl) {
+        const cards = itemEl ? itemEl.querySelectorAll('.product-card-lookbook') : [];
+        const wrapper = document.createElement('div');
+        wrapper.className = 'swiper-container-for-popup';
+        wrapper.innerHTML = `
+          <div class="swiper">
+            <div class="swiper-wrapper"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-pagination"></div>
+          </div>
+        `;
+        const swiperWrapper = wrapper.querySelector('.swiper-wrapper');
+        cards.forEach(card => {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide';
+          slide.appendChild(card.cloneNode(true));
+          swiperWrapper.appendChild(slide);
+        });
+        return wrapper;
+      }
+
+      function openPopupFromButton(btn) {
+        const gridItem = btn.closest('li.grid__item');
+        if (!gridItem) return;
+        bodyEl.classList.add('openLookbookPopup');
+        btn.closest('.lookBook__btnShowProducts').classList.add('is-open');
+        destroyPopupSwiper();
+        popupContentEl.innerHTML = '';
+        const slidesContainer = buildSlidesFromItem(gridItem);
+        popupContentEl.appendChild(slidesContainer);
+        initPopupSwiper(slidesContainer);
+      }
+
+      // Delegate click from dynamically rendered buttons inside lookbook dots
+      document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.lookBook__btnShowProducts a');
+        const hideProducts = e.target.closest('.lookBook__btnShowProducts .hide_products');
+
+        if (btn) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          openPopupFromButton(btn);
+        }
+
+        if (hideProducts) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          closePopupFromButton();
+        }
+      });
+
+      // Close popup
+      popupCloseEl.addEventListener('click', function(e) {
+        e.preventDefault();
+        bodyEl.classList.remove('openLookbookPopup');
+        closePopupFromButton();
+      });
+
+      function closePopupFromButton() {
+        bodyEl.classList.remove('openLookbookPopup');
+        document.querySelectorAll('.lookBook__btnShowProducts').forEach(btnWrapper => {
+          btnWrapper.classList.remove('is-open');
+        });
+        destroyPopupSwiper();
+        popupContentEl.innerHTML = '';
+      }
+    });
+  {% endjavascript %}
 
 {% schema %}
 {
@@ -345,8 +555,59 @@
       "default": "bullets"
     },
     {
+        "type": "header",
+        "content": "Lookbook view product"
+    },
+    {
+        "type": "select",
+        "id": "view_product",
+        "label": "View product",
+        "options": [
+            {
+                "value": "popup",
+                "label": "Popup"
+            },
+            {
+                "value": "on-image",
+                "label": "On image"
+            }
+        ],
+        "default": "popup"
+    },
+    {
       "type": "header",
       "content": "t:content.size"
+    },
+    {
+        "type": "select",
+        "id": "width",
+        "label": "Width",
+        "options": [
+            {
+                "value": "fit",
+                "label": "Fit"
+            },
+            {
+                "value": "full",
+                "label": "Full width"
+            },
+            {
+                "value": "custom",
+                "label": "Custom"
+            }
+        ],
+        "default": "fit"
+    },
+    {
+        "type": "range",
+        "id": "custom_width",
+        "label": "Custom (%)",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "default": 100,
+        "visible_if": "{{ block.settings.width == 'custom' }}"
     },
     {
       "type": "select",

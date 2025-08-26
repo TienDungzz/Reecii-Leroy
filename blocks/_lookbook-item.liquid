@@ -23,7 +23,6 @@
   assign image_width_2x = image_width | times: 2
   assign image_aspect_ratio = background_image.aspect_ratio
 
-  assign background_media = block.settings.background_media
   assign background_image = block.settings.background_image
   assign background_image_position = block.settings.background_image_position
 
@@ -52,19 +51,6 @@
   elsif block.settings.enable_parallax
     assign element = 'parallax-image'
   endif
-
-  if block.settings.content_position_top == 0
-    assign content_position_top = 'auto'
-  endif
-  if block.settings.content_position_right == 0
-    assign content_position_right = 'auto'
-  endif
-  if block.settings.content_position_bottom == 0
-    assign content_position_bottom = 'auto'
-  endif
-  if block.settings.content_position_left == 0
-    assign content_position_left = 'auto'
-  endif
 %}
 
 
@@ -92,9 +78,7 @@
 {% capture attributes %}
   {{ block.shopify_attributes }}
   {% if block.settings.enable_fancybox %}
-    {% if block.settings.background_media == 'image' and image != blank %}
       {{ attributes_fancybox }}
-    {% endif %}
   {% endif %}
   {% if block.settings.enable_parallax %}
     {{ attributes_parllax }}
@@ -112,31 +96,35 @@
     %}
 {% endcapture %}
 
-<div class="instagram-item relative">
+<div class="lookbook-item relative">
     <div class="lookbook-item__image overflow-hidden relative">
         <{{ element }}
             class="{{ class }}"
             style="{{ style }}"
             {{ attributes }}
         >
-        {% if block.settings.background_media == 'image' %}
-            {%- if image != blank -%}
-                {%- render 'image',
-                image: image,
-                class: class_img,
-                height: image.height,
-                sizes: sizes,
-                widths: widths
-                -%}
-                
-            {%- else -%}
-                {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
-            {%- endif -%}
-        {% endif %}
+        {%- if image != blank -%}
+            {%- render 'image',
+            image: image,
+            class: class_img,
+            height: image.height,
+            sizes: sizes,
+            widths: widths
+            -%}
+            
+        {%- else -%}
+            {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
+        {%- endif -%}
         </{{ element }}>
     </div>
-    <div class="instagram-item__content">
+    <div class="lookbook-item__content">
         {%- content_for 'blocks' -%}
+    </div>
+
+    <div class="lookBook__btnShowProducts">
+        <span class="icon_plus">+</span>
+        <a class="show_products" href="#" aria-label="Show Products" tabindex="0">Show Products</a>
+        <a class="hide_products" href="#" aria-label="Hide Products" tabindex="0">Hide Products</a>
     </div>
 </div>
 
@@ -157,29 +145,16 @@
   {%- endstylesheet -%}
 {% schema %}
 {
-    "name": "Lookbook item",
+    "name": "Lookbook banner",
     "settings": [
         {
             "type": "header",
             "content": "Section Banner"
         },
         {
-            "type": "select",
-            "id": "background_media",
-            "label": "Image",
-            "options": [
-                {
-                    "value": "image",
-                    "label": "t:options.image"
-                }
-            ],
-            "default": "image"
-        },
-        {
             "type": "image_picker",
             "id": "background_image",
-            "label": "t:settings.image",
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
+            "label": "t:settings.image"
         },
         {
             "type": "select",
@@ -195,8 +170,7 @@
                 "label": "t:options.fit"
                 }
             ],
-            "default": "cover",
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
+            "default": "cover"
         },
         {
             "type": "url",
@@ -456,27 +430,12 @@
     ],
     "blocks": [
         {
-            "type": "_divider"
-        },
-        {
-            "type": "group"
-        },
-        {
-            "type": "image"
-        },
-        {
-            "type": "text"
-        },
-        {
-            "type": "button"
-        },
-        {
-            "type": "heading"
+            "type": "_lookbook-dot"
         }
     ],
     "presets": [
         {
-            "name": "Lookbook item"
+            "name": "Lookbook banner"
         }
     ]
 }
