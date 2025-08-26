@@ -1,0 +1,298 @@
+{%- liquid
+    assign block_settings = block.settings
+    assign width = block_settings.width
+    assign mobile_width = block_settings.mobile_width
+-%}
+
+<div
+    class="
+        marquee-circle
+        relative block w-full overflow-hidden
+        spacing-style
+        gap-style
+        {% if block_settings.inherit_color_scheme == false %}color-{{ block_settings.color_scheme }}{% endif %}
+        {% if block_settings.positions_type == 'floating' %}position-style{% endif %}
+        {% if block_settings.pause_on_hover %}pause-on-hover{% endif %}
+    "
+    style="
+        --width: {{ width }}vw;
+        --mobile-width: {{ mobile_width }}vw;
+        --marquee-speed: {{ block_settings.speed }}s;
+        --marquee-direction: {{ block_settings.movement_direction }};
+        {%- render 'spacing-style', settings: block_settings %};
+        {% render 'gap-style', value: block_settings.gap_between_elements, name: 'marquee-gap' %}
+        {%- if block_settings.positions_type == 'floating' -%}{%- render 'position-style', settings: block_settings -%}{%- endif -%}
+        {%- if block_settings.transparent_background == true -%}background-color: transparent;{%- endif -%}
+    "
+    {{ block.shopify_attributes }}
+>
+    <svg class="circle-path" viewBox="0 0 200 200">
+        <defs>
+            <path id="circlePath" d=" M 100, 100 m -75, 0 a 75,75 0 0,1 150,0 a 75,75 0 0,1 -150,0"/>
+        </defs>
+        <g class="circle-animation">
+            <use xlink:href="#circlePath" fill="none"/>
+            <text class="circle-text" fill="currentColor">
+                <textPath xlink:href="#circlePath">
+                    {{ block_settings.text }}
+                </textPath>
+            </text>
+        </g>
+    </svg>
+</div>
+
+{% stylesheet %}
+    .marquee-circle {
+        width: var(--width);
+        height: var(--width);
+
+        @media screen and (max-width: 749px) {
+            width: var(--mobile-width);
+            height: var(--mobile-width);
+        }
+
+        &.position-style {
+            position: absolute;
+            top: var(--position-vertical);
+            left: var(--position-horizontal);
+            transform: translate(-50%, -50%);
+            z-index: 1;
+
+            @media screen and (max-width: 749px) {
+                top: var(--position-vertical-mobile);
+                left: var(--position-horizontal-mobile);
+            }
+        }
+    }
+
+    .circle-path {
+        position: absolute;
+        inset: 0;
+    }
+
+    .circle-animation {
+        width: 110%;
+        height: 110%;
+        animation: rotate-circle var(--marquee-speed) linear infinite var(--marquee-direction);
+        transform-origin: center;
+        will-change: transform, letter-spacing;
+        letter-spacing: 0;
+    }
+
+    .pause-on-hover:hover .circle-animation {
+        animation-play-state: paused;
+    }
+
+    @keyframes rotate-circle {
+        0% {
+            letter-spacing: -2px;
+        }
+        50% {
+            letter-spacing: 0;
+        }
+        100% {
+            letter-spacing: -2px;
+            transform: rotate(-1turn);
+        }
+    }
+{% endstylesheet %}
+
+{% schema %}
+{
+    "name": "Marquee circle",
+    "settings": [
+        {
+            "type": "select",
+            "id": "movement_direction",
+            "label": "t:settings.motion_direction",
+            "options": [
+                {
+                    "value": "reverse",
+                    "label": "t:options.forward"
+                },
+                {
+                    "value": "normal",
+                    "label": "t:options.reverse"
+                }
+            ],
+            "default": "normal"
+        },
+        {
+            "type": "range",
+            "id": "gap_between_elements",
+            "label": "t:settings.gap",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 10
+        },
+        {
+            "type": "checkbox",
+            "id": "pause_on_hover",
+            "label": "Pause on hover",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "t:names.content"
+        },
+        {
+            "type": "text",
+            "id": "text",
+            "label": "t:settings.text",
+            "default": "Circular marquee text • Goes around and around • "
+        },
+        {
+            "type": "header",
+            "content": "t:content.size"
+        },
+        {
+            "type": "range",
+            "id": "width",
+            "label": "t:settings.width",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+        },
+        {
+            "type": "range",
+            "id": "mobile_width",
+            "label": "Mobile width",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50
+        },
+        {
+            "type": "header",
+            "content": "t:content.appearance"
+        },
+        {
+            "type": "checkbox",
+            "id": "inherit_color_scheme",
+            "label": "t:settings.inherit_color_scheme",
+            "default": true
+        },
+        {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:settings.color_scheme",
+            "default": "scheme-1",
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+        },
+        {
+            "type": "checkbox",
+            "id": "transparent_background",
+            "label": "t:settings.transparent_background",
+            "default": true
+        },
+        {
+            "type": "select",
+            "id": "positions_type",
+            "label": "Positions type",
+            "options": [
+                {
+                    "value": "default",
+                    "label": "Default"
+                },
+                {
+                    "value": "floating",
+                    "label": "Floating"
+                }
+            ],
+            "default": "default"
+        },
+        {
+            "type": "range",
+            "id": "position-horizontal",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "label": "Horizontal position",
+            "default": 50,
+            "visible_if": "{{ block.settings.positions_type == 'floating' }}"
+        },
+        {
+            "type": "range",
+            "id": "position-vertical",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "label": "Vertical position",
+            "default": 0,
+            "visible_if": "{{ block.settings.positions_type == 'floating' }}"
+        },
+        {
+            "type": "range",
+            "id": "position-horizontal-mobile",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "label": "Mobile horizontal position",
+            "default": 50,
+            "visible_if": "{{ block.settings.positions_type == 'floating' }}"
+        },
+        {
+            "type": "range",
+            "id": "position-vertical-mobile",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "label": "Mobile vertical position",
+            "default": 0,
+            "visible_if": "{{ block.settings.positions_type == 'floating' }}"
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "range",
+            "id": "speed",
+            "min": 5,
+            "max": 50,
+            "step": 1,
+            "label": "Speed",
+            "default": 20
+        },
+        {
+            "type": "header",
+            "content": "t:content.padding"
+        },
+        {
+            "type": "range",
+            "id": "padding-block-start",
+            "label": "t:settings.top",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding-block-end",
+            "label": "t:settings.bottom",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        }
+    ],
+    "presets": [
+        {
+            "name": "Marquee circle",
+            "category": "t:categories.decorative"
+        }
+    ]
+}
+{% endschema %}

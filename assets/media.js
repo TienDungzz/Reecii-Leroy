@@ -21,7 +21,4 @@ class VideoBackgroundComponent extends HTMLElement {
     videoElement.load();
   }
 }
-
-if (!customElements.get("video-background-component")) {
-  customElements.define("video-background-component", VideoBackgroundComponent);
-}
+if (!customElements.get('video-background-component')) customElements.define('video-background-component', VideoBackgroundComponent);

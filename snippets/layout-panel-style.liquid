@@ -7,6 +7,7 @@
   endcomment
 
   assign content_direction = custom_content_direction | default: settings.content_direction
+  assign content_direction_mobile = custom_content_direction_mobile | default: settings.content_direction_mobile
   assign horizontal_alignment = settings.horizontal_alignment
 
   assign vertical_alignment = settings.vertical_alignment
@@ -19,16 +20,13 @@
     assign vertical_alignment = settings.vertical_alignment_flex_direction_column
   endunless
 
-  if content_direction == 'row'
-    assign horizontal_alignment_mobile = settings.horizontal_alignment_mobile
-  endif
+  assign horizontal_alignment_mobile = settings.horizontal_alignment_mobile
+  assign vertical_alignment_mobile = settings.vertical_alignment_mobile
 
-  assign horizontal_alignment_mobile = horizontal_alignment_mobile | default: horizontal_alignment
-  assign vertical_alignment_mobile = vertical_alignment
-
-  if settings.content_direction_mobile == 'column' and vertical_alignment == 'last baseline'
-    assign vertical_alignment_mobile = 'flex-end'
-  endif
+  unless content_direction_mobile == 'row'
+    assign horizontal_alignment_mobile = settings.horizontal_alignment_flex_direction_column_mobile
+    assign vertical_alignment_mobile = settings.vertical_alignment_flex_direction_column_mobile
+  endunless
 -%}
 
 --flex-direction: {{ content_direction | default: 'column' }}; --flex-wrap: {{ settings.wrap | default: 'nowrap' }};
@@ -41,4 +39,3 @@
 --horizontal-alignment-mobile: {{ horizontal_alignment_mobile }};
 --vertical-alignment: {{ vertical_alignment }};
 --vertical-alignment-mobile: {{ vertical_alignment_mobile }};
- 

@@ -103,4 +103,4 @@ class TabsComponent extends HTMLElement {
     }
   }
 }
-customElements.define("tabs-component", TabsComponent);
+if (!customElements.get('tabs-component')) customElements.define("tabs-component", TabsComponent);

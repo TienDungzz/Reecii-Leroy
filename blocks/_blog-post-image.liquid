@@ -27,8 +27,8 @@
     top: 0;
   }
 {% endstylesheet %}
-
-<div class="ratio hiepne-{{ media_aspect_ratio }}" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
+{% if image != blank %}
+<div class="ratio" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
   <img
     srcset="
       {% if image.width >= 350 %}{{ image | image_url: width: 350 }} 350w,{% endif %}
@@ -51,6 +51,11 @@
     style="{% render 'border-override', settings: block.settings %}"
   >
 </div>
+{% else %}
+<div class="placeholder" style="height: clamp(500px, 100vw, 1100px);">
+  {{ 'hero-apparel-2' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
+</div>
+{% endif %}
 
 {% schema %}
 {

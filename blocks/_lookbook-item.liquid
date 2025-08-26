@@ -18,14 +18,7 @@
 
   assign image = block.settings.background_image
   assign image_height = image.height
-  assign image_height_2x = image_height | times: 2
   assign image_width = image.width
-  assign image_width_2x = image_width | times: 2
-  assign image_aspect_ratio = background_image.aspect_ratio
-
-  assign background_image = block.settings.background_image
-  assign background_image_position = block.settings.background_image_position
-
 %}
 
 {% capture class %}
@@ -178,298 +171,298 @@
   {%- endstylesheet -%}
 {% schema %}
 {
-    "name": "Lookbook banner",
-    "settings": [
+  "name": "Lookbook banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Banner"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:settings.image"
+    },
+    {
+      "type": "select",
+      "id": "background_image_position",
+      "label": "t:settings.image_position",
+      "options": [
         {
-            "type": "header",
-            "content": "Section Banner"
+          "value": "cover",
+          "label": "t:options.cover"
         },
         {
-            "type": "image_picker",
-            "id": "background_image",
-            "label": "t:settings.image"
-        },
-        {
-            "type": "select",
-            "id": "background_image_position",
-            "label": "t:settings.image_position",
-            "options": [
-                {
-                "value": "cover",
-                "label": "t:options.cover"
-                },
-                {
-                "value": "fit",
-                "label": "t:options.fit"
-                }
-            ],
-            "default": "cover"
-        },
-        {
-            "type": "url",
-            "id": "link",
-            "label": "Link",
-            "visible_if": "{{ block.settings.enable_fancybox == false }}"
-        },
-        {
-            "type": "checkbox",
-            "id": "hide_on_mobile",
-            "label": "Hide on mobile",
-            "default": false
-        },
-        {
-            "type": "header",
-            "content": "Size"
-        },
-        {
-            "type": "select",
-            "id": "image_ratio",
-            "options": [
-                {
-                "value": "adapt",
-                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label"
-                },
-                {
-                "value": "portrait",
-                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
-                },
-                {
-                "value": "square",
-                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label"
-                }
-            ],
-            "default": "adapt",
-            "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
-        },
-        {
-            "type": "select",
-            "id": "width",
-            "label": "Desktop width",
-            "options": [
-                {
-                "value": "fit-content",
-                "label": "Fit"
-                },
-                {
-                "value": "custom",
-                "label": "Custom"
-                }
-            ],
-            "default": "custom"
-        },
-        {
-            "type": "range",
-            "id": "custom_width",
-            "label": "Custom (%)",
-            "min": 1,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "default": 100,
-            "visible_if": "{{ block.settings.width == 'custom' }}"
-        },
-        {
-            "type": "select",
-            "id": "width_tablet",
-            "label": "Tablet width",
-            "options": [
-                {
-                "value": "fit-content",
-                "label": "Fit"
-                },
-                {
-                "value": "custom",
-                "label": "Custom"
-                }
-            ],
-            "default": "custom"
-        },
-        {
-            "type": "range",
-            "id": "custom_width_tablet",
-            "label": "Custom (%)",
-            "min": 1,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "default": 100,
-            "visible_if": "{{ block.settings.width_tablet == 'custom' }}"
-        },
-        {
-            "type": "select",
-            "id": "width_mobile",
-            "label": "Mobile width",
-            "options": [
-                {
-                "value": "fit-content",
-                "label": "Fit"
-                },
-                {
-                "value": "custom",
-                "label": "Custom"
-                }
-            ],
-            "default": "custom"
-        },
-        {
-            "type": "range",
-            "id": "custom_width_mobile",
-            "label": "Custom (%)",
-            "min": 1,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "default": 100,
-            "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
-        },
-        {
-            "type": "select",
-            "id": "height",
-            "label": "t:settings.height",
-            "options": [
-                {
-                "value": "fit",
-                "label": "t:options.fit_content"
-                },
-                {
-                "value": "fill",
-                "label": "t:options.fill"
-                }
-            ],
-            "default": "fit",
-            "visible_if": "{{ block.settings.image_ratio == 'adapt' }}"
-        },
-        {
-            "type": "header",
-            "content": "t:settings_schema.global.settings.header__border.content"
-            },
-            {
-            "type": "select",
-            "id": "border",
-            "label": "t:settings.style",
-            "options": [
-                {
-                "value": "none",
-                "label": "None"
-                },
-                {
-                "value": "solid",
-                "label": "Solid"
-                }
-            ],
-            "default": "none"
-        },
-        {
-            "type": "range",
-            "id": "border_width",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "label": "t:settings_schema.global.settings.thickness.label",
-            "default": 1,
-            "visible_if": "{{ block.settings.border != 'none' }}"
-        },
-        {
-            "type": "range",
-            "id": "border_opacity",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "label": "t:settings_schema.global.settings.opacity.label",
-            "default": 100,
-            "visible_if": "{{ block.settings.border != 'none' }}"
-        },
-        {
-            "type": "range",
-            "id": "border_radius",
-            "label": "t:settings_schema.global.settings.corner_radius.label",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "default": 0
-        },
-        {
-            "type": "header",
-            "content": "Animation"
-        },
-        {
-            "type": "checkbox",
-            "id": "enable_fancybox",
-            "label": "Enable Fancybox Lightbox",
-            "default": true,
-            "info": "Opens images and videos in a beautiful lightbox gallery",
-            "visible_if": "{{ block.settings.enable_parallax == false }}"
-        },
-        {
-            "type": "checkbox",
-            "id": "enable_parallax",
-            "label": "Enable parallax scroll",
-            "default": false,
-            "visible_if": "{{ block.settings.enable_fancybox == false }}"
-        },
-        {
-            "type": "range",
-            "id": "parallax_speed",
-            "label": "Parallax speed",
-            "min": 0,
-            "max": 4,
-            "step": 0.5,
-            "default": 0.5,
-            "visible_if": "{{ block.settings.enable_fancybox == false and block.settings.enable_parallax }}"
-        },
-        {
-            "type": "header",
-            "content": "Padding"
-        },
-        {
-            "type": "range",
-            "id": "padding_top",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "default": 0,
-            "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
-        },
-        {
-            "type": "range",
-            "id": "padding_right",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "default": 0,
-            "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
-        },
-        {
-            "type": "range",
-            "id": "padding_bottom",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "default": 0,
-            "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
-        },
-        {
-            "type": "range",
-            "id": "padding_left",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "default": 0,
-            "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+          "value": "fit",
+          "label": "t:options.fit"
         }
-    ],
-    "blocks": [
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "visible_if": "{{ block.settings.enable_fancybox == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_on_mobile",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
         {
-            "type": "_lookbook-dot"
-        }
-    ],
-    "presets": [
+          "value": "adapt",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label"
+        },
         {
-            "name": "Lookbook banner"
+          "value": "portrait",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label"
         }
-    ]
+      ],
+      "default": "adapt",
+      "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Desktop width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "Fit"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "custom"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "Custom (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_tablet",
+      "label": "Tablet width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "Fit"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "custom"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_tablet",
+      "label": "Custom (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_tablet == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "Mobile width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "Fit"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "custom"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "Custom (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "fit",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        }
+      ],
+      "default": "fit",
+      "visible_if": "{{ block.settings.image_ratio == 'adapt' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:settings_schema.global.settings.header__border.content"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings_schema.global.settings.thickness.label",
+      "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings_schema.global.settings.opacity.label",
+      "default": 100,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings_schema.global.settings.corner_radius.label",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_fancybox",
+      "label": "Enable Fancybox Lightbox",
+      "default": true,
+      "info": "Opens images and videos in a beautiful lightbox gallery",
+      "visible_if": "{{ block.settings.enable_parallax == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable parallax scroll",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_fancybox == false }}"
+    },
+    {
+      "type": "range",
+      "id": "parallax_speed",
+      "label": "Parallax speed",
+      "min": 0,
+      "max": 4,
+      "step": 0.5,
+      "default": 0.5,
+      "visible_if": "{{ block.settings.enable_fancybox == false and block.settings.enable_parallax }}"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "_lookbook-dot"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lookbook banner"
+    }
+  ]
 }
 {% endschema %}
