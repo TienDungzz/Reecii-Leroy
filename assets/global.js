@@ -2377,7 +2377,6 @@ class ParallaxImg extends HTMLElement {
       imgHeight = this.img.getBoundingClientRect().height + minExtra;
     }
 
-    // const maxMove = imgHeight - blockHeight;
     const maxMove = (imgHeight - blockHeight) * (viewportHeight / blockHeight);
     const startY = -maxMove * screenSpeed;
     const endY = maxMove * screenSpeed;
@@ -2396,6 +2395,119 @@ class ParallaxImg extends HTMLElement {
   }
 }
 if (!customElements.get('parallax-image')) customElements.define("parallax-image", ParallaxImg);
+
+class ParallaxElement extends HTMLElement {
+  constructor() {
+    super();
+    this.target = null;
+    this.type = this.getAttribute("is") || "content";
+  }
+
+  connectedCallback() {
+    if (this.getAttribute("data-parallax") !== "true") return;
+
+    this.target = this.querySelector(".parallax--target") || this.firstElementChild;
+    if (!this.target) return;
+
+    if (this.type === "image") {
+      if (this.target.complete) {
+        this.setupImage();
+      } else {
+        this.target.addEventListener("load", () => this.setupImage(), { once: true });
+      }
+    } else {
+      this.section = this.closest(".shopify-section") || this;
+      this.setupContent();
+    }
+  }
+
+  setupImage() {
+    const speed = parseFloat(this.dataset.speed) || 0.5;
+    const screenSpeed = window.innerWidth < 768 ? speed * 0.5 : speed;
+    const minExtra = parseInt(this.dataset.minExtra) || 100;
+
+    const viewportHeight = window.innerHeight;
+    const blockHeight = this.offsetHeight;
+
+    let imgHeight = this.target.getBoundingClientRect().height;
+    if (imgHeight - blockHeight < minExtra) {
+      imgHeight += minExtra;
+    }
+
+    const maxMove = (imgHeight - blockHeight) * (viewportHeight / blockHeight);
+    const startY = -maxMove * screenSpeed;
+    const endY = maxMove * screenSpeed;
+
+    Motion.scroll(
+      Motion.animate(
+        this.target,
+          { y: [startY, endY] },
+          {
+          ease: [0.25, 0.1, 0.25, 1],
+          duration: 0.3,
+        }
+      ),
+      { target: this, offset: ["start end", "end start"] }
+    );
+  }
+
+  setupContent() {
+    const speed = parseFloat(this.dataset.speed) || 0.5;
+    const screenSpeed = window.innerWidth < 768 ? speed * 0.5 : speed;
+
+    const horizontalRange = (this.dataset.horizontalPosition || "0% 0%").split(" ");
+    const verticalRange   = (this.dataset.verticalPosition   || "0% 0%").split(" ");
+
+    const startX = horizontalRange[0] || "0%";
+    const startY = verticalRange[0]   || "0%";
+
+    const parseVal = (val) => {
+      if (typeof val === "string" && val.includes("%")) return parseFloat(val);
+      return parseFloat(val) || 0;
+    };
+
+    const midX = parseVal(startX);
+    const midY = parseVal(startY);
+
+    const reverseX = midX * -1 / 3;
+    const reverseY = midY * -1 / 3;
+
+    if (midX === 0 && midY === 0) {
+      const startY = -30 * screenSpeed;
+      const endY   = 30 * screenSpeed;
+
+      Motion.scroll(
+        Motion.animate(
+          this.target,
+          { y: [`${startY}%`, `${endY}%`] },
+          {
+            ease: [0.25, 0.1, 0.25, 1],
+            duration: 0.3,
+          }
+        ),
+        { target: this.section, offset: ["start end", "end start"] }
+      );
+      return;
+    }
+
+    Motion.scroll(
+      Motion.animate(
+        this.target,
+        {
+          x: ["0%", `${midX}%`, `${reverseX}%`],
+          y: ["0%", `${midY}%`, `${reverseY}%`],
+        },
+        {
+          ease: [0.25, 0.1, 0.25, 1],
+          duration: 0.3,
+        }
+      ),
+      { target: this.section, offset: ["start end", "center center", "end start"] }
+    );
+  }
+}
+
+customElements.define("parallax-element", ParallaxElement);
 
 /**
  * A custom element that formats rte content for easier styling

@@ -270,7 +270,8 @@
           "label": "Washing"
         }
       ],
-      "default": "apple"
+      "default": "apple",
+      "visible_if": "{{ block.settings.icon_custom == 'none' }}"
     },
     {
       "type": "select",
@@ -306,17 +307,6 @@
       "visible_if": "{{ block.settings.icon_custom == 'image' }}"
     },
     {
-      "type": "range",
-      "id": "width",
-      "label": "t:settings.width",
-      "min": 12,
-      "max": 200,
-      "step": 2,
-      "unit": "px",
-      "default": 40,
-      "visible_if": "{{ block.settings.icon_custom != 'svg' and block.settings.icon != 'none' }}"
-    },
-    {
       "type": "url",
       "id": "link",
       "label": "t:settings.link"
@@ -326,6 +316,22 @@
       "id": "open_in_new_tab",
       "label": "t:settings.open_new_tab",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.size",
+      "visible_if": "{{ block.settings.icon_custom != 'svg' and block.settings.icon != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "t:settings.width",
+      "min": 12,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ block.settings.icon_custom != 'svg' and block.settings.icon != 'none' }}"
     }
   ],
   "presets": [

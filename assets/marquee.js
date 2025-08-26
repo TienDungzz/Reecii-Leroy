@@ -2,15 +2,6 @@ const ANIMATION_OPTIONS = {
   duration: 500,
 };
 
-/**
- * A custom element that displays a marquee.
- *
- * @typedef {object} Refs
- * @property {HTMLElement} wrapper - The wrapper element.
- * @property {HTMLElement} content - The content element.
- *
- * @extends Component<Refs>
- */
 class MarqueeComponent extends HTMLElement {
   constructor() {
     super();
@@ -169,7 +160,7 @@ class MarqueeComponent extends HTMLElement {
       : Math.ceil(marqueeWidth / marqueeRepeatedItemWidth);
   }
 }
-if (!customElements.get('marquee-component')) customElements.define("marquee-component", MarqueeComponent);
+if (!customElements.get('marquee-component')) customElements.define('marquee-component', MarqueeComponent);
 
 class MarqueeScroll extends HTMLElement {
   constructor() {
@@ -177,8 +168,8 @@ class MarqueeScroll extends HTMLElement {
 
     this.speed = parseFloat(this.dataset.speed || 1.6), // 100px going to move for
     this.space = 100, // 100px
-
     this.isDesktop = window.matchMedia('(min-width: 1025px)').matches;
+    
     if (this.isDesktop) {
       Motion.inView(this, this.init.bind(this), { margin: '200px 0px 200px 0px' });
     }
@@ -186,15 +177,13 @@ class MarqueeScroll extends HTMLElement {
 
   connectedCallback() {
     if (this.isDesktop) {
-      this.addEventListener("pointerenter", this.#slowDown);
-      this.addEventListener("pointerleave", this.#speedUp);
+      this.#toggleHoverEvents(true);
     }
   }
 
   disconnectedCallback() {
     if (this.isDesktop) {
-      this.removeEventListener("pointerenter", this.#slowDown);
-      this.removeEventListener("pointerleave", this.#speedUp);
+      this.#toggleHoverEvents(false);
     }
   }
 
@@ -215,55 +204,46 @@ class MarqueeScroll extends HTMLElement {
   }
 
   init() {
-    // if (this.childElementCount === 1) {
-    //   this.childElement.classList.add('animate');
-
-    //   for (let index = 0; index < this.maximum; index++) {
-    //     this.clone = this.childElement.cloneNode(true);
-    //     this.clone.setAttribute('aria-hidden', true);
-    //     this.appendChild(this.clone);
-    //     this.clone.querySelectorAll('.media').forEach((media) => media.classList.remove('loading'));
-    //   }
-
-    //   const animationTimeFrame = (this.childElement.clientWidth / this.config.space) * this.config.moveTime;
-    //   this.style.setProperty('--duration', `${animationTimeFrame}s`);
-    // }
-
-    if (this.parallax) {
+    if (this.parallax && this.isDesktop) {
       let translate = this.parallax * 100 / (1 + this.parallax);
       if (this.direction === 'right') {
         translate = translate * -1;
       }
-      // if (theme.config.rtl) {
-      //   translate = translate * -1;
-      // }
 
       Motion.scroll(
-        Motion.animate(this, { transform: [`translateX(${translate}%)`, `translateX(0)`] }, { ease: 'linear' }),
+        Motion.animate(this, { transform: [`translateX(${translate}%)`, `translateX(0px)`] }, { ease: 'linear' }),
         { target: this, offset: ['start end', 'end start'] }
       );
+      return;
     }
-    else {
-      // pause when out of view
-      const observer = new IntersectionObserver((entries, _observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            this.classList.remove('paused');
-          }
-          else {
-            this.classList.add('paused');
-          }
-        });
-      }, { rootMargin: '0px 0px 50px 0px' });
-      observer.observe(this);
-    }
+
+    // pause when out of view
+    const observer = new IntersectionObserver((entries, _observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          this.classList.remove('paused');
+        }
+        else {
+          this.classList.add('paused');
+        }
+      });
+    }, { rootMargin: '0px 0px 50px 0px' });
+    observer.observe(this);
   }
 
+  #toggleHoverEvents(enable) {
+    const action = enable ? 'addEventListener' : 'removeEventListener';
+    this[action]("pointerenter", this.#slowDown);
+    this[action]("pointerleave", this.#speedUp);
+  }
+
+  // --- Hover slowdown effect ---
   #animation = null;
 
   #slowDown = debounce(() => {
     if (this.#animation) return;
 
+    // get the active marquee/parallax animation
     const animation = this.querySelector('.marquee__content').getAnimations()[0];
 
     if (!animation) return;
@@ -301,7 +281,7 @@ class MarqueeScroll extends HTMLElement {
   }
 
 }
-customElements.define('marquee-scroll', MarqueeScroll);
+if (!customElements.get('marquee-scroll')) customElements.define('marquee-scroll', MarqueeScroll);
 
 // Define the animateValue function
 /**

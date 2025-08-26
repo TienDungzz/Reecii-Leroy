@@ -93,7 +93,7 @@
 
   @media (prefers-reduced-motion: no-preference) {
     marquee-scroll .marquee__content,
-    marquee-component:not([data-disabled]) .marquee__content {
+    marquee-component:not([data-disabled]):has(:not(marquee-scroll)) .marquee__wrapper {
       animation: marquee-motion var(--marquee-speed) linear infinite var(--marquee-direction);
       will-change: transform;
     }
@@ -178,6 +178,16 @@
       "default": "normal"
     },
     {
+      "type": "range",
+      "id": "gap_between_elements",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
       "label": "t:settings.color_scheme",
@@ -239,16 +249,6 @@
       "type": "range",
       "id": "padding-block-end",
       "label": "t:settings.bottom",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 24
-    },
-    {
-      "type": "range",
-      "id": "gap_between_elements",
-      "label": "t:settings.gap",
       "min": 0,
       "max": 100,
       "step": 1,
