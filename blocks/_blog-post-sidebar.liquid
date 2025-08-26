@@ -1,0 +1,188 @@
+{%- capture children -%}
+  {% content_for 'blocks' %}
+{%- endcapture -%}
+
+<sidebar-drawer class="blog-posts__sidebar-drawer drawer__container" id="Drawer-Blog-Sidebar" data-drawer-target data-drawer-direction="left">
+  <div id="Sidebar-Overlay" data-drawer-overlay class="drawer__overlay fixed inset-0 cursor-pointer lg:none"></div>
+  <div class="blog-posts__sidebar-container" data-drawer-content>
+    <a href="#" class="sidebar-close svg-wrapper cursor-pointer absolute" data-close-sidebar role="button">
+      <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+      {{- 'icon-close.svg' | inline_asset_content -}}
+    </a>
+    <div class="blog-posts__sidebar flex flex-column hide-scrollbar">
+      <div class="blog-posts__sidebar-header lg:none">
+        <span class="title h5">
+          {{ 'sections.sidebar.title' | t }}
+        </span>
+      </div>
+      {{ children }}
+    </div>
+  </div>
+</sidebar-drawer>
+
+{%- stylesheet -%}
+  .blog-posts__sidebar {
+    row-gap: 4rem;
+  }
+
+  .blog-posts__sidebar-heading {
+    font-size: var(--body-s-font-size);
+    margin-block-end: var(--margin-md);
+    padding-block: calc(var(--padding-xs) - var(--padding-3xs));
+  }
+
+  @media (max-width: 1024px) {
+    .blog-posts__sidebar-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: var(--layer-sidebar);
+      transition: opacity var(--animation-slowest-smooth);
+      opacity: 0;
+      pointer-events: none;
+
+      &[data-drawer-direction="right"] .blog-posts__sidebar-container {
+        margin-left: auto;
+      }
+
+      &[data-drawer-direction="left"] .sidebar-close {
+        right: calc(var(--size-40) * -1);
+      }
+
+      &[data-drawer-direction="right"] .sidebar-close {
+        left: calc(var(--size-40) * -1);
+      }
+
+      &.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
+    .blog-posts__sidebar-container {
+      width: min(90%, 35rem);
+      height: 100%;
+      background-color: var(--color-background);
+      z-index: 2;
+      position: relative;
+    }
+
+    .blog-posts__sidebar {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: var(--padding-xl);
+    }
+
+    .sidebar-close {
+      top: 0;
+      z-index: 2;
+      width: var(--size-40);
+      height: var(--size-40);
+      color: var(--color-background);
+      background-color: var(--color-foreground);
+      padding: var(--padding-md);
+    }
+  }
+
+  @media screen and (min-width: 1025px) {
+    .sidebar-close {
+      display: none;
+    }
+  }
+
+  /* sidebar collapse */
+  .blog-posts__sidebar-collapse-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--animation-slowest-smooth);
+
+    > * {
+      overflow: hidden;
+    }
+
+    &[aria-expanded="true"] {
+      grid-template-rows: 1fr;
+    }
+  }
+
+{%- endstylesheet -%}
+
+{% javascript %}
+  class SidebarCollapse extends HTMLElement {
+    constructor() {
+      super();
+      this.button = this.querySelector(".blog-posts__sidebar-collapse-button");
+      this.content = this.querySelector(".blog-posts__sidebar-collapse-content");
+    }
+
+    connectedCallback() {
+      this.button.addEventListener("click", () => {
+        this.content.setAttribute("aria-expanded", this.content.getAttribute("aria-expanded") === "true" ? "false" : "true");
+      });
+    }
+  }
+
+  customElements.define("sidebar-collapse", SidebarCollapse);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Sidebar",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "_blog-post-sidebar-category"
+    },
+    {
+      "type": "_blog-post-sidebar-recent-posts"
+    },
+    {
+      "type": "_blog-post-sidebar-products"
+    },
+    {
+      "type": "_blog-post-sidebar-image"
+    },
+    {
+      "type": "_blog-post-sidebar-text"
+    },
+    {
+      "type": "_blog-post-sidebar-tags"
+    }
+  ],
+  "settings": [],
+  "presets": [
+    {
+      "name": "Sidebar",
+      "blocks": {
+        "category": {
+          "type": "_blog-post-sidebar-category",
+          "name": "Category"
+        },
+        "recent_posts": {
+          "type": "_blog-post-sidebar-recent-posts",
+          "name": "Recent posts"
+        },
+        "products": {
+          "type": "_blog-post-sidebar-products",
+          "name": "Products"
+        },
+        "image": {
+          "type": "_blog-post-sidebar-image",
+          "name": "Image"
+        },
+        "text": {
+          "type": "_blog-post-sidebar-text",
+          "name": "Custom text"
+        },
+        "tags": {
+          "type": "_blog-post-sidebar-tags",
+          "name": "Tags"
+        }
+      },
+    }
+  ]
+}
+{% endschema %}

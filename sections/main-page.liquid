@@ -8,6 +8,10 @@
   }
 {%- endstyle -%}
 
+{% capture children %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+
 {%- capture banner_media -%}
   {%- if section.settings.image != blank -%}
     <div class="banner banner--content-align-mobile-bottom-center banner--medium color-{{ section.settings.color_scheme }}">
@@ -36,19 +40,20 @@
       </div>
       <div class="page__text-wrapper banner__content banner__content--bottom-center">
         <div class="page__text banner__box{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-          <h1 class="main-page-title page-title h0 m-0">
+          {% comment %} <h1 class="main-page-title page-title h0 m-0">
             {{ page.title | escape }}
           </h1>
           {%- if section.settings.subheading != blank -%}
             <div class="banner__text rte">
               <p>{{ section.settings.subheading }}</p>
             </div>
-          {%- endif -%}
+          {%- endif -%} {% endcomment %}
+          {{ children }}
         </div>
       </div>
     </div>
   {%- else -%}
-    <h1 class="main-page-title page-title h0{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
+    {% comment %} <h1 class="main-page-title page-title h0{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
       style="--mb: 3rem; --md-mb: 4rem;"
     >
       {{ page.title | escape }}
@@ -57,7 +62,9 @@
       <div class="banner__text rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
         <p>{{ section.settings.subheading }}</p>
       </div>
-    {%- endif -%}
+    {%- endif -%} {% endcomment %}
+      {{ children }}
+
   {%- endif -%}
 {%- endcapture -%}
 
@@ -71,9 +78,9 @@
     "
   >
     {{ banner_media }}
-    <div class="rte{% if section.settings.image != blank %} page-width spacing{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+    {% comment %} <div class="rte{% if section.settings.image != blank %} page-width spacing{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
       {{ page.content }}
-    </div>
+    </div> {% endcomment %}
   </div>
 {% unless section.settings.image != blank %}
 </div>
@@ -84,6 +91,18 @@
   "name": "t:sections.main-page.name",
   "tag": "section",
   "class": "section",
+  "blocks": [
+    {
+      "type": "text"
+    },
+    {
+      "type": "group"
+    },
+    {
+      "type": "_breadcrumb"
+    }
+
+  ],
   "settings": [
     {
       "type": "inline_richtext",

@@ -216,16 +216,18 @@
     {%- endif -%}
   {% endstyle %}
 
-  <div class="slide__image-container flex size-full overflow-hidden absolute">
-    <div
-      class="slide__img-wrapper grid w-full"
-      {%- if block_stts.image_1 != blank -%}
-        style="--slide-media-count: {{ media_count }};"
-      {%- endif -%}
-    >
-      {{ media }}
-    </div>
-  </div>
+    {%- if block.settings.slide_background  %}
+      <div class="slide__image-container flex size-full overflow-hidden absolute">
+        <div
+          class="slide__img-wrapper grid w-full"
+          {%- if block_stts.image_1 != blank -%}
+            style="--slide-media-count: {{ media_count }};"
+          {%- endif -%}
+        >
+          {{ media }}
+        </div>
+      </div>
+    {% endif -%}
 
   <div class="{{ block_stts.container }} h-{{ block_stts.height }}">
     <div class="{{ block.settings | class_list }} slide__content relative size-full">
@@ -256,6 +258,12 @@
     {
       "type": "header",
       "content": "t:sections.slideshow.settings.layout.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "slide_background",
+      "label": "t:settings.background",
+      "default": true
     },
     {
       "type": "select",
@@ -312,12 +320,14 @@
     {
       "type": "image_picker",
       "id": "image_1",
-      "label": "Default image"
+      "label": "Default image",
+      "visible_if": "{{ block.settings.slide_background }}"
     },
     {
       "type": "image_picker",
       "id": "image_mb_1",
-      "label": "Mobile image"
+      "label": "Mobile image",
+      "visible_if": "{{ block.settings.slide_background }}"
     },
     {
       "type": "header",
@@ -342,12 +352,14 @@
     {
       "type": "image_picker",
       "id": "image_2",
-      "label": "Default image"
+      "label": "Default image",
+      "visible_if": "{{ block.settings.slide_background }}"
     },
     {
       "type": "image_picker",
       "id": "image_mb_2",
-      "label": "Mobile image"
+      "label": "Mobile image",
+      "visible_if": "{{ block.settings.slide_background }}"
     },
     {
       "type": "header",

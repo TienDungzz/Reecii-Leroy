@@ -20,6 +20,11 @@
   if sec_stts.navigation == 'pagination' or sec_stts.navigation == 'arrows-pagination'
     assign enable_pagination = true
   endif
+  assign only_pagination = false
+  if sec_stts.navigation == 'pagination'
+    assign only_pagination = true
+    assign pagination_position = sec_stts.pagination_position
+  endif
 
   if sec_stts.show_left_categories
     assign show_left_categories = true
@@ -71,6 +76,8 @@
      --hero-min-height: 100svh;
   {% elsif slide_height != 'adapt_image' %}
     --hero-min-height: var(--section-height-{{ slide_height }});
+  {% elsif slide_height != 'height_first_slide' %}
+    --hero-min-height: auto;
   {% endif %}
   {%- if is_layout_masonry -%}
     {{ masonry_style }}
@@ -157,7 +164,13 @@
     -%}
     <swiper-component
       class="slideshow__container"
-      {%- render 'swiper-data', settings: section.settings, space_between: 0, parallax: true, speed: 800 -%}
+      {%- render 'swiper-data',
+        settings: section.settings,
+        space_between: 0,
+        parallax: true,
+        speed: 800,
+        direction: sec_stts.slide_direction
+      -%}
     >
       <div class="swiper">
         <div class="swiper-wrapper slideshow__slides w-full">
@@ -166,7 +179,10 @@
 
         <div class="swiper-actions{% if enable_navigation %} swiper-actions--{{ arrows_position }}{% endif %} w-full">
           {%- capture pagi_class -%}
-            swiper-pagination swiper-pagination--{{ dot_style }}{% if pagination_type == 'fraction' %} body-2xl-font-size{% endif %}
+            swiper-pagination
+            swiper-pagination--{{ dot_style }}
+            {% if only_pagination %} swiper-pagination-pos--{{ pagination_position }}{% endif %}
+            {% if pagination_type == 'fraction' %} body-2xl-font-size{% endif %}
           {%- endcapture -%}
 
           {% if dot_appearance %}
@@ -243,6 +259,12 @@
     left: 50%;
     transform: translateX(-50%);
     width: auto;
+
+    &.swiper-pagination-pos--outside {
+      position: static;
+      transform: none;
+      margin-top: var(--margin-3xl);
+    }
   }
 
   .slideshow .swiper-slide {
@@ -250,7 +272,7 @@
   }
 
   .slideshow .slideshow__slides {
-    min-height: var(--hero-min-height, auto);
+    height: var(--hero-min-height, auto);
   }
 
   .slideshow :is(.swiper-actions--bottom_center, .swiper-actions--bottom_right) {
@@ -770,6 +792,10 @@
       "id": "slide_height",
       "options": [
         {
+          "value": "height_first_slide",
+          "label": "Adapt to first slide height"
+        },
+        {
           "value": "adapt_image",
           "label": "Adapt to first image"
         },
@@ -797,6 +823,23 @@
     {
       "type": "header",
       "content": "Slideshow style"
+    },
+    {
+      "type": "select",
+      "id": "slide_direction",
+      "label": "Slide direction",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "vertical",
+          "label": "Vertical"
+        }
+      ],
+      "default": "horizontal",
+      "visible_if": "{{ section.settings.slideshow_type != 'masonry' }}"
     },
     {
       "type": "checkbox",
@@ -900,6 +943,23 @@
         }
       ],
       "default": "bullets"
+    },
+    {
+      "type": "select",
+      "id": "pagination_position",
+      "label": "Pagination position",
+      "default": "inside",
+      "options": [
+        {
+          "value": "inside",
+          "label": "Inside slide"
+        },
+        {
+          "value": "outside",
+          "label": "Outside slide"
+        }
+      ],
+      "visible_if": "{{ section.settings.navigation == 'pagination' }}"
     },
     {
       "type": "paragraph",
