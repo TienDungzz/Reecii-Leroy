@@ -103,13 +103,17 @@
         <ul
           id="Grid-{{ block.id }}"
           data-id="{{ block.id }}"
-          class="grid grid-layout product-grid list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
+          class="grid grid-layout instagram-grid list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
           role="list"
           aria-label="{{ 'general.grid.name' | t }}"
           style="--grid-desktop-horizontal-spacing: {{ block.settings.gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.gap }}px;"
         >
           {{- list_items -}}
         </ul>
+        {% if block.settings.show_view_more_icon %}
+          <button type="button" aria-label="Show more" class="show-icon" style="--icon-more-margin-top: {{ block.settings.icon_more_margin_top }}px; --icon-more-margin-bottom: {{ block.settings.icon_more_margin_bottom }}px; --icon-more-color: {{ block.settings.icon_more_color }}; --icon-more-background: {{ block.settings.icon_more_background }}; --icon-more-border: {{ block.settings.icon_more_border }}; --icon-more-size: {{ block.settings.icon_more_size }}px;" data-load-more-block="" data-row-desktop="{{ columns_desktop }}" data-row-tablet="{{ columns_tablet }}" data-row-mobile="{{ mobile_columns }}"></button>
+        {% endif %}
+
         {%- if show_mobile_slider -%}
           </div>
           </swiper-component>
@@ -156,6 +160,126 @@
   {% endcase %}
 </div>
 
+{% stylesheet %}
+  .show-icon {
+    position: relative;
+    display: block;
+    margin: var(--icon-more-margin-top) auto var(--icon-more-margin-bottom);
+    text-align: center;
+    cursor: pointer;
+    width: var(--icon-more-size);
+    height: var(--icon-more-size);
+    max-width: var(--icon-more-size);
+    border: 1px solid var(--icon-more-border);
+    background: var(--icon-more-background);
+  }
+
+  .show-icon::before {
+    content: "";
+    position: absolute;
+    width: var(--icon-more-size);
+    height: 2px;
+    transform: translate(-50%,-50%) rotate(90deg);
+    background: var(--icon-more-color);
+    border: 0;
+    border-radius: 0;
+    top: 50%;
+    left: 50%;
+    pointer-events: none;
+  }
+
+  .show-icon::after {
+    content: "";
+    position: absolute;
+    width: var(--icon-more-size);
+    height: 2px;
+    transform: translate(-50%, -50%);
+    background: var(--icon-more-color);
+    border: 0;
+    border-radius: 0;
+    top: 50%;
+    left: 50%;
+    pointer-events: none;
+  }
+{% endstylesheet %}
+
+{% if block.settings.show_view_more_icon and block.settings.layout_type == 'grid' %}
+  <script>
+    (function() {
+      'use strict';
+
+      // Cache DOM elements and use more descriptive names
+      const showIcon = document.querySelector('.show-icon');
+      const instagramGrid = document.querySelector('.instagram-grid');
+      
+      // Early return if required elements don't exist
+      if (!showIcon || !instagramGrid) return;
+      
+      const instagramGridItems = instagramGrid.querySelectorAll('.grid__item');
+      const totalItems = instagramGridItems.length;
+      
+      // Use object for responsive breakpoints
+      const breakpoints = {
+        desktop: 1024,
+        tablet: 768
+      };
+      
+      // Get max items based on screen size
+      const getMaxItems = () => {
+        if (window.innerWidth > breakpoints.desktop) {
+          return parseInt(showIcon.dataset.rowDesktop) || 5;
+        } else if (window.innerWidth > breakpoints.tablet) {
+          return parseInt(showIcon.dataset.rowTablet) || 3;
+        } else {
+          return parseInt(showIcon.dataset.rowMobile) || 2;
+        }
+      };
+      
+      // Show/hide items based on max count
+      const toggleItemsVisibility = (maxItems) => {
+        instagramGridItems.forEach((item, index) => {
+          item.style.display = index < maxItems ? 'block' : 'none';
+        });
+        
+        // Show/hide the show icon based on whether there are hidden items
+        showIcon.style.display = totalItems > maxItems ? 'block' : 'none';
+      };
+      
+      // Initialize visibility
+      const maxItems = getMaxItems();
+      toggleItemsVisibility(maxItems);
+      
+      // Add click event listener with proper cleanup
+      const handleShowIconClick = (e) => {
+        e.preventDefault();
+        
+        // Show all items
+        instagramGridItems.forEach(item => {
+          item.style.display = 'block';
+        });
+        
+        // Hide the show icon
+        showIcon.style.display = 'none';
+      };
+      
+      showIcon.addEventListener('click', handleShowIconClick);
+      
+      // Optional: Add resize listener for responsive behavior
+      let resizeTimeout;
+      const handleResize = () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          const newMaxItems = getMaxItems();
+          toggleItemsVisibility(newMaxItems);
+        }, 250); // Debounce resize events
+      };
+      
+      window.addEventListener('resize', handleResize);
+    })();
+  </script>
+{% endif %}
+
+
 {% schema %}
 {
   "name": "Media gallery list",
@@ -173,7 +297,7 @@
       "type": "_divider"
     },
     {
-        "type": "_instagram-item"
+      "type": "_instagram-item"
     }
   ],
   "tag": null,
@@ -200,6 +324,72 @@
     },
     {
       "type": "checkbox",
+      "label": "Show view more icon",
+      "id": "show_view_more_icon",
+      "default": false,
+      "visible_if": "{{ block.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "header",
+      "content": "More icon settings",
+      "visible_if": "{{ block.settings.show_view_more_icon == true }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_more_margin_top",
+      "label": "Icon margin top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "unit": "px",
+      "visible_if": "{{ block.settings.show_view_more_icon == true }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_more_margin_bottom",
+      "label": "Icon margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "unit": "px",
+      "visible_if": "{{ block.settings.show_view_more_icon == true }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_more_color",
+      "label": "Icon color",
+      "default": "#232323",
+      "visible_if": "{{ block.settings.show_view_more_icon == true }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_more_background",
+      "label": "Icon background",
+      "default": "transparent",
+      "visible_if": "{{ block.settings.show_view_more_icon == true }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_more_border",
+      "label": "Icon border",
+      "default": "transparent",
+      "visible_if": "{{ block.settings.show_view_more_icon == true }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_more_size",
+      "label": "Icon size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 40,
+      "unit": "px",
+      "visible_if": "{{ block.settings.show_view_more_icon == true }}"
+    },
+    {
+      "type": "checkbox",
       "id": "carousel_on_mobile",
       "label": "Carousel on mobile",
       "default": false,
@@ -210,7 +400,7 @@
       "id": "columns_grid",
       "min": 1,
       "max": 6,
-      "step": 0.1,
+      "step": 1,
       "default": 5,
       "label": "Columns",
       "visible_if": "{{ block.settings.layout_type == 'grid' }}"

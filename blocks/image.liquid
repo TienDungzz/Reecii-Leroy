@@ -60,7 +60,7 @@
   data-pswp-src="{{ image | image_url : width: image_width_2x , height: image_height_2x  }}"
   data-pswp-width="{{ image_width_2x  }}"
   data-pswp-height="{{ image_height_2x }}"
-  data-pswp-type="video"
+  data-pswp-video-src="my-video.mp4"
   target="_blank"
 {% endcapture %}
 
@@ -92,7 +92,6 @@
       sizes: sizes,
       widths: widths
     -%}
-    
   {%- else -%}
     {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
   {%- endif -%}
@@ -103,6 +102,7 @@
     import PhotoSwipeLightbox from 'https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
     import PhotoSwipeVideoPlugin from 'https://raw.githubusercontent.com/dimsemenov/photoswipe-video-plugin/refs/heads/main/dist/photoswipe-video-plugin.esm.js';
     if (!window._myScriptLoaded) {
+
       window._myScriptLoaded = true;
 
       const sections = document.querySelectorAll('.section');
@@ -118,6 +118,10 @@
           gallery: section,
           children: 'a[data-pswp-gallery="' + uniqueGalleryID + '"]',
           pswpModule: () => import('https://unpkg.com/photoswipe@5/dist/photoswipe.esm.js'),
+        });
+
+        const videoPlugin = new PhotoSwipeVideoPlugin(lightbox, {
+          // options
         });
 
         lightbox.init();
@@ -327,6 +331,17 @@
     },
     {
       "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings_schema.global.settings.opacity.label",
+      "default": 100,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
       "id": "border_radius",
       "label": "t:settings_schema.global.settings.corner_radius.label",
       "min": 0,
@@ -365,47 +380,43 @@
     },
     {
       "type": "header",
-      "content": "t:content.padding"
+      "content": "Padding"
     },
     {
       "type": "range",
       "id": "padding-block-start",
-      "label": "t:settings.top",
       "min": 0,
       "max": 100,
       "step": 1,
-      "unit": "px",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "padding-block-end",
-      "label": "t:settings.bottom",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "padding-inline-start",
-      "label": "t:settings.left",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
     },
     {
       "type": "range",
       "id": "padding-inline-end",
-      "label": "t:settings.right",
       "min": 0,
       "max": 100,
       "step": 1,
-      "unit": "px",
-      "default": 0
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
     }
   ],
   "presets": [

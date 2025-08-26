@@ -197,8 +197,7 @@ class ProductCompare extends HTMLElement {
 
   }
 }
-
-customElements.define("compare-product-popup", ProductCompare);
+if (!customElements.get('compare-product-popup')) customElements.define('compare-product-popup', ProductCompare);
 
 if (!customElements.get("compare-product-modal")) {
   customElements.define(

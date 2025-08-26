@@ -273,5 +273,4 @@ class PredictiveSearch extends SearchForm {
     this.predictiveSearchResults.removeAttribute('style');
   }
 }
-
-customElements.define('predictive-search', PredictiveSearch);
+if (!customElements.get('predictive-search')) customElements.define('predictive-search', PredictiveSearch);

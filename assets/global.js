@@ -447,9 +447,14 @@ class QuantityInput extends HTMLElement {
     }
   }
 }
+if (!customElements.get('quantity-input')) customElements.define('quantity-input', QuantityInput);
 
-customElements.define("quantity-input", QuantityInput);
-
+/**
+ * Debounce a function.
+ * @param {Function} fn The function to debounce.
+ * @param {number} wait The time to wait in milliseconds.
+ * @returns {Function} The debounced function.
+ */
 function debounce(fn, wait) {
   /** @type {number | undefined} */
   let timeout;
@@ -468,28 +473,25 @@ function debounce(fn, wait) {
   return /** @type {T & { cancel(): void }} */ (debounced);
 }
 
+/**
+ * Throttle a function.
+ * @param {Function} fn The function to throttle.
+ * @param {number} delay The time to wait in milliseconds.
+ * @returns {Function} The throttled function.
+ */
 function throttle(fn, delay) {
   let lastCall = 0;
-
-  /** @param {...any} args */
-  function throttled(...args) {
-    const now = performance.now();
-    // If the time since the last call exceeds the delay, execute the callback
-    if (now - lastCall >= delay) {
-      lastCall = now;
-      fn.apply(this, args);
+  return function (...args) {
+    const now = new Date().getTime();
+    if (now - lastCall < delay) {
+      return;
     }
-  }
-
-  throttled.cancel = () => {
-    lastCall = performance.now();
+    lastCall = now;
+    return fn(...args);
   };
-
-  return /** @type {T & { cancel(): void }} */ (throttled);
 }
 
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-
 function prefersReducedMotion() {
   return reducedMotion.matches;
 }
@@ -504,29 +506,12 @@ function fetchConfig(type = 'json', config = {}) {
   }
 
   return {
-    method: 'POST',
-    headers: /** @type {HeadersInit} */ (headers),
-    body: config.body,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: `application/${type}`,
+    },
   };
-}
-
-class ResizeNotifier extends ResizeObserver {
-  #initialized = false;
-
-  /**
-   * @param {ResizeObserverCallback} callback
-   */
-  constructor(callback) {
-    super((entries) => {
-      if (this.#initialized) return callback(entries, this);
-      this.#initialized = true;
-    });
-  }
-
-  disconnect() {
-    this.#initialized = false;
-    super.disconnect();
-  }
 }
 
 /*
@@ -662,8 +647,7 @@ class PreloadScreen extends HTMLElement {
     });
   }
 }
-
-customElements.define("preload-screen", PreloadScreen);
+if (!customElements.get('preload-screen')) customElements.define('preload-screen', PreloadScreen);
 
 class HeaderMenu extends HTMLElement {
   constructor() {
@@ -686,8 +670,7 @@ class HeaderMenu extends HTMLElement {
     );
   }
 }
-
-customElements.define("header-menu", HeaderMenu);
+if (!customElements.get('header-menu')) customElements.define('header-menu', HeaderMenu);
 
 class MenuDrawer extends HTMLElement {
   constructor() {
@@ -749,7 +732,7 @@ class MenuDrawer extends HTMLElement {
         ? this.closeMenuDrawer(event, summaryElement)
         : this.openMenuDrawer(summaryElement);
 
-      if (window.matchMedia("(max-width: 989px)")) {
+      if (window.matchMedia("(max-width: 990px)")) {
         document.documentElement.style.setProperty(
           "--viewport-height",
           `${window.innerHeight}px`
@@ -854,8 +837,7 @@ class MenuDrawer extends HTMLElement {
     window.requestAnimationFrame(handleAnimation);
   }
 }
-
-customElements.define("menu-drawer", MenuDrawer);
+if (!customElements.get('menu-drawer')) customElements.define('menu-drawer', MenuDrawer);
 
 class HeaderDrawer extends MenuDrawer {
   constructor() {
@@ -910,8 +892,7 @@ class HeaderDrawer extends MenuDrawer {
     );
   };
 }
-
-customElements.define("header-drawer", HeaderDrawer);
+if (!customElements.get('header-drawer')) customElements.define('header-drawer', HeaderDrawer);
 
 function buildStyleSheet(name, $this) {
   if (name == "") return;
@@ -953,8 +934,7 @@ class DeferredMedia extends HTMLElement {
     }
   }
 }
-
-customElements.define("deferred-media", DeferredMedia);
+if (!customElements.get('deferred-media')) customElements.define('deferred-media', DeferredMedia);
 
 class SliderComponent extends HTMLElement {
   constructor() {
@@ -1071,8 +1051,7 @@ class SliderComponent extends HTMLElement {
     });
   }
 }
-
-customElements.define("slider-component", SliderComponent);
+if (!customElements.get('slider-component')) customElements.define('slider-component', SliderComponent);
 
 class SlideshowComponent extends SliderComponent {
   constructor() {
@@ -1344,8 +1323,7 @@ class SlideshowComponent extends SliderComponent {
     });
   }
 }
-
-customElements.define("slideshow-component", SlideshowComponent);
+if (!customElements.get('slideshow-component')) customElements.define('slideshow-component', SlideshowComponent);
 
 // SWIPER COMPONENT KHINH
 class SwiperComponent extends HTMLElement {
@@ -1355,118 +1333,259 @@ class SwiperComponent extends HTMLElement {
     this.swiperEl = null;
     this.initSwiper = null;
     this.options = null;
+    this.breakpoint = null;
+    this.breakpointChecker = null;
     this.arrowOnHeader = this.closest('.arrow-on-header:has(.swiper-btns-on-header)');
   }
 
   connectedCallback() {
-    this.swiperEl = this.querySelector(".swiper");
-    if (!this.swiperEl || this.swiperEl._swiperInitialized) return;
 
-    this.swiperEl._swiperInitialized = true;
+    // Check if Swiper library is available
+    if (typeof Swiper === 'undefined') {
+      console.error('Swiper library not loaded. Please ensure vendor.js is loaded before this component.');
+      return;
+    }
 
-    const getOption = (name, defaultValue = undefined) => {
-      const attr = this.getAttribute(`data-${name}`);
-      if (attr === null) return defaultValue;
+    // Ensure DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.initializeSwiper();
+      });
+      return;
+    }
 
-      try {
-        return JSON.parse(attr);
-      } catch {
-        if (attr === "true") return true;
-        if (attr === "false") return false;
-        if (!isNaN(attr)) return Number(attr);
-        return attr;
+    this.initializeSwiper();
+  }
+
+  initializeSwiper() {
+
+    // Small delay to ensure proper initialization
+    setTimeout(() => {
+      this.swiperEl = this.querySelector(".swiper");
+
+      if (!this.swiperEl) {
+        console.error('❌ No .swiper element found in SwiperComponent');
+        return;
       }
-    };
 
-    const baseSpaceBetween = getOption("space-between", 20);
+      if (this.swiperEl._swiperInitialized) {
+        console.log('🔍 Swiper already initialized, skipping...');
+        return;
+      }
 
-    const baseBreakpoints = getOption("breakpoints", null);
+      this.swiperEl._swiperInitialized = true;
 
-    // Calculate default space between slides if not breakpoint provided
-    const defaultSpacebetween = !baseBreakpoints
-      ? baseSpaceBetween * 0.5
-      : baseSpaceBetween; // Mobile
+      // Debug: Check if swiper elements exist
+      const nextButton = this.swiperEl.querySelector(".swiper-button-next");
+      const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
+      const pagination = this.swiperEl.querySelector(".swiper-pagination");
+      const arrowOnHeaderNextButton = this.arrowOnHeader ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next") : nextButton;
+      const arrowOnHeaderPrevButton = this.arrowOnHeader ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev") : prevButton;
 
-    const defaultBreakpoints = !baseBreakpoints
-      ? {
-          750: { spaceBetween: baseSpaceBetween * 0.75 }, // Tablet
-          990: { spaceBetween: baseSpaceBetween }, // Desktop
+      const getOption = (name, defaultValue = undefined) => {
+        const attr = this.getAttribute(`data-${name}`);
+        if (attr === null) return defaultValue;
+
+        try {
+          return JSON.parse(attr);
+        } catch {
+          if (attr === "true") return true;
+          if (attr === "false") return false;
+          if (!isNaN(attr)) return Number(attr);
+          return attr;
         }
-      : baseBreakpoints;
+      };
 
-    // Options
-    this.options = {
-      watchSlidesProgress: getOption("watch-slides-progress", false),
-      loop: getOption("loop", false),
-      speed: getOption("speed", 500),
-      parallax: getOption("parallax", false),
-      spaceBetween: defaultSpacebetween,
-      autoplay: {
-        enabled: getOption("slide-autoplay", false),
-        pauseOnMouseEnter: true,
-        disableOnInteraction: false,
-      },
-      slidesPerView: getOption("slides-per-view", 1),
-      centeredSlides: getOption("centered-slides", false),
-      autoHeight: getOption("auto-height", false),
-      navigation: {
-        nextEl: this.arrowOnHeader ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next") : this.swiperEl.querySelector(".swiper-button-next"),
-        prevEl: this.arrowOnHeader ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev") : this.swiperEl.querySelector(".swiper-button-prev"),
-      },
-      pagination: {
-        el: this.swiperEl.querySelector(".swiper-pagination"),
-        clickable: true,
-        type: getOption("pagination-type", "bullets"),
-        dynamicBullets: getOption("dynamic-bullets", false),
-      },
-      breakpoints: defaultBreakpoints,
+      const baseSpaceBetween = getOption("space-between", 20);
+      const baseBreakpoints = getOption("breakpoints", null);
+
+      // Calculate default space between slides if not breakpoint provided
+      const defaultSpacebetween = !baseBreakpoints
+        ? baseSpaceBetween * 0.5
+        : baseSpaceBetween; // Mobile
+
+      const spaceBetweenTablet = !baseBreakpoints
+        ? baseSpaceBetween * 0.75
+        : baseSpaceBetween;
+
+      const defaultBreakpoints = !baseBreakpoints
+        ? {
+            750: { spaceBetween: spaceBetweenTablet }, // Tablet
+            990: { spaceBetween: baseSpaceBetween }, // Desktop
+          }
+        : baseBreakpoints;
+
+      // Options
+      this.options = {
+        direction: getOption("direction", "horizontal"),
+        mousewheel: getOption("mousewheel", false),
+        watchSlidesProgress: getOption("watch-slides-progress", false),
+        loop: getOption("loop", false),
+        speed: getOption("speed", 500),
+        parallax: getOption("parallax", false),
+        spaceBetween: defaultSpacebetween,
+        autoplay: {
+          enabled: getOption("slide-autoplay", false),
+          pauseOnMouseEnter: true,
+          disableOnInteraction: false,
+        },
+        slidesPerView: getOption("slides-per-view", 1),
+        centeredSlides: getOption("centered-slides", false),
+        autoHeight: getOption("auto-height", false),
+        navigation: {
+          nextEl: arrowOnHeaderNextButton,
+          prevEl: arrowOnHeaderPrevButton,
+        },
+        pagination: {
+          el: pagination,
+          clickable: true,
+          type: getOption("pagination-type", "bullets"),
+          dynamicBullets: getOption("dynamic-bullets", false),
+        },
+        breakpoints: defaultBreakpoints,
+      };
+
+      this.initSwiperMobile();
+    }, 100); // Added a small delay
+  }
+
+  disconnectedCallback() {
+    // Cleanup event listeners and swiper instance
+    if (this.breakpoint && this.breakpointChecker) {
+      this.breakpoint.removeEventListener("change", this.breakpointChecker);
+    }
+    if (this.initSwiper) {
+      this.initSwiper.destroy(true, true);
+      this.initSwiper = null;
+    }
+    // Remove initialization flag
+    if (this.swiperEl) {
+      this.swiperEl._swiperInitialized = false;
+    }
+  }
+
+  // Method to check swiper status
+  getSwiperStatus() {
+    return {
+      isInitialized: !!this.initSwiper,
+      isMobileOnly: this.isMobileOnly,
+      breakpoint: this.breakpoint?.matches ? 'Desktop' : 'Mobile',
+      swiperEl: !!this.swiperEl,
+      options: !!this.options,
+      swiperInstance: this.initSwiper
     };
-
-    this.initSwiperMobile();
   }
 
   initSwiperMobile() {
-    const breakpoint = window.matchMedia("(min-width:750px)");
+    this.breakpoint = window.matchMedia("(min-width:750px)");
 
     const enableSwiper = () => {
-      if (!this.swiperEl || !this.options) return;
-      this.initSwiper = new Swiper(this.swiperEl, this.options);
+      if (!this.swiperEl || !this.options) {
+        console.error('❌ Cannot enable swiper: missing swiperEl or options');
+        return;
+      }
+
+      if (this.initSwiper) {
+        console.log('🔍 Destroying existing swiper instance');
+        this.initSwiper.destroy(true, true);
+        this.initSwiper = null;
+      }
+
+      try {
+        // Ensure proper swiper options for both desktop and mobile
+        const swiperOptions = {
+          ...this.options,
+          // Enable touch/swipe functionality
+          allowTouchMove: true,
+          // Enable navigation buttons
+          navigation: {
+            nextEl: this.swiperEl.querySelector(".swiper-button-next"),
+            prevEl: this.swiperEl.querySelector(".swiper-button-prev"),
+            disabledClass: "swiper-button-disabled",
+            hiddenClass: "swiper-button-hidden",
+          },
+          // Enable pagination
+          pagination: {
+            el: this.swiperEl.querySelector(".swiper-pagination"),
+            clickable: true,
+            type: this.options.pagination?.type || "bullets",
+            dynamicBullets: this.options.pagination?.dynamicBullets || false,
+          },
+          // Enable keyboard navigation
+          keyboard: {
+            enabled: true,
+            onlyInViewport: true,
+          },
+          // Enable mousewheel
+          mousewheel: {
+            forceToAxis: true,
+          },
+          // Enable grab cursor
+          grabCursor: true,
+          // Enable resistance
+          resistance: true,
+          resistanceRatio: 0.85,
+        };
+
+        this.initSwiper = new Swiper(this.swiperEl, swiperOptions);
+
+        // Force update to ensure proper rendering
+        setTimeout(() => {
+          if (this.initSwiper) {
+            this.initSwiper.update();
+          }
+        }, 200);
+
+      } catch (error) {
+        console.error('❌ Error initializing Swiper:', error);
+        // Try to reinitialize after a delay
+        setTimeout(() => {
+          console.log('🔄 Attempting to reinitialize Swiper...');
+          enableSwiper();
+        }, 500);
+      }
     };
 
-    const breakpointChecker = () => {
-      if (breakpoint.matches) {
-        // Desktop
-        if (this.initSwiper) {
-          this.initSwiper.destroy(true, true);
-          this.initSwiper = null;
+    this.breakpointChecker = () => {
+      if (this.isMobileOnly) {
+        // For mobile-only swipers, only enable on mobile
+        if (this.breakpoint.matches) {
+          // Desktop - destroy swiper
+          if (this.initSwiper) {
+            this.initSwiper.destroy(true, true);
+            this.initSwiper = null;
+          }
+        } else {
+          // Mobile - enable swiper
+          if (!this.initSwiper) {
+            enableSwiper();
+          }
         }
       } else {
-        // Mobile
+        // For regular swipers, always enable
         if (!this.initSwiper) {
           enableSwiper();
         }
       }
     };
 
-    breakpoint.addEventListener("change", breakpointChecker);
+    // Add event listener for breakpoint changes
+    this.breakpoint.addEventListener("change", this.breakpointChecker);
 
-    if (this.isMobileOnly) {
-      breakpointChecker();
-    } else {
-      enableSwiper();
+    // Initial check
+    this.breakpointChecker();
+  }
+
+  // Method to force reinitialize swiper (useful for debugging)
+  forceReinitialize() {
+    if (this.initSwiper) {
+      this.initSwiper.destroy(true, true);
+      this.initSwiper = null;
     }
-
-    this.addEventListener("disconnectedCallback", () => {
-      breakpoint.removeEventListener("change", breakpointChecker);
-      if (this.initSwiper) {
-        this.initSwiper.destroy(true, true);
-        this.initSwiper = null;
-      }
-    });
+    this.initSwiperMobile();
   }
 }
-
-customElements.define("swiper-component", SwiperComponent);
+if (!customElements.get('swiper-component')) customElements.define('swiper-component', SwiperComponent);
 // END SWIPER COMPONENT KHINH
 
 class VariantSelects extends HTMLElement {
@@ -1539,8 +1658,7 @@ class VariantSelects extends HTMLElement {
     ).map(({ dataset }) => dataset.optionValueId);
   }
 }
-
-customElements.define("variant-selects", VariantSelects);
+if (!customElements.get('variant-selects')) customElements.define('variant-selects', VariantSelects);
 
 class ProductRecommendations extends HTMLElement {
   observer = undefined;
@@ -1596,8 +1714,7 @@ class ProductRecommendations extends HTMLElement {
       });
   }
 }
-
-customElements.define("product-recommendations", ProductRecommendations);
+if (!customElements.get('product-recommendations')) customElements.define('product-recommendations', ProductRecommendations);
 
 window.theme = window.theme || {};
 // Init section function when it's visible, then disable observer
@@ -1641,8 +1758,7 @@ class AccountIcon extends HTMLElement {
     }
   }
 }
-
-customElements.define("account-icon", AccountIcon);
+if (!customElements.get('account-icon')) customElements.define('account-icon', AccountIcon);
 
 class BulkAdd extends HTMLElement {
   constructor() {
@@ -1744,10 +1860,7 @@ class BulkAdd extends HTMLElement {
       .querySelector(selector).innerHTML;
   }
 }
-
-if (!customElements.get("bulk-add")) {
-  customElements.define("bulk-add", BulkAdd);
-}
+if (!customElements.get('bulk-add')) customElements.define('bulk-add', BulkAdd);
 
 // *** Function
 class GridView extends HTMLElement {
@@ -1773,7 +1886,7 @@ class GridView extends HTMLElement {
     this.productGrid.setAttribute("data-view", gridView);
   }
 }
-customElements.define("grid-view", GridView);
+if (!customElements.get('grid-view')) customElements.define('grid-view', GridView);
 
 class RecentlyViewedProducts extends HTMLElement {
   constructor() {
@@ -1824,12 +1937,9 @@ class RecentlyViewedProducts extends HTMLElement {
     );
   }
 }
+if (!customElements.get('recently-viewed-products')) customElements.define('recently-viewed-products', RecentlyViewedProducts);
 
-customElements.define("recently-viewed-products", RecentlyViewedProducts);
-
-const moreButton = document.querySelectorAll(
-  ".card__swatch .item-swatch-more .number-showmore"
-);
+const moreButton = document.querySelectorAll(".card__swatch .item-swatch-more .number-showmore");
 moreButton.forEach((button) => {
   button.addEventListener("click", function (event) {
     const swatch = event.target.closest(".swatch-list");
@@ -1984,8 +2094,7 @@ class Wishlist extends HTMLElement {
     // }
   }
 }
-
-customElements.define("wisht-list", Wishlist);
+if (!customElements.get('wisht-list')) customElements.define('wisht-list', Wishlist);
 
 class CountDown extends HTMLElement {
   constructor() {
@@ -2064,9 +2173,7 @@ class CountDown extends HTMLElement {
     observer.observe(this);
   }
 }
-customElements.define("count-down", CountDown);
-
-// Color Swatch
+if (!customElements.get('count-down')) customElements.define('count-down', CountDown);
 
 class ColorSwatch extends HTMLElement {
   constructor() {
@@ -2193,9 +2300,7 @@ class ColorSwatch extends HTMLElement {
     }
   }
 }
-customElements.define("color-swatch", ColorSwatch);
-
-// Product Grid Show More
+if (!customElements.get('color-swatch')) customElements.define('color-swatch', ColorSwatch);
 
 class ShowMoreProductGrid extends HTMLElement {
   constructor() {
@@ -2231,7 +2336,7 @@ class ShowMoreProductGrid extends HTMLElement {
     this.remove();
   }
 }
-customElements.define("show-more-product-grid", ShowMoreProductGrid);
+if (!customElements.get('show-more-product-grid')) customElements.define('show-more-product-grid', ShowMoreProductGrid);
 
 class ParallaxImg extends HTMLElement {
   constructor() {
@@ -2268,7 +2373,6 @@ class ParallaxImg extends HTMLElement {
       imgHeight = this.img.getBoundingClientRect().height + minExtra;
     }
 
-    // const maxMove = imgHeight - blockHeight;
     const maxMove = (imgHeight - blockHeight) * (viewportHeight / blockHeight);
     const startY = -maxMove * screenSpeed;
     const endY = maxMove * screenSpeed;
@@ -2286,8 +2390,120 @@ class ParallaxImg extends HTMLElement {
     );
   }
 }
+if (!customElements.get('parallax-image')) customElements.define("parallax-image", ParallaxImg);
 
-customElements.define("parallax-image", ParallaxImg);
+class ParallaxElement extends HTMLElement {
+  constructor() {
+    super();
+    this.target = null;
+    this.type = this.getAttribute("is") || "content";
+  }
+
+  connectedCallback() {
+    if (this.getAttribute("data-parallax") !== "true") return;
+
+    this.target = this.querySelector(".parallax--target") || this.firstElementChild;
+    if (!this.target) return;
+
+    if (this.type === "image") {
+      if (this.target.complete) {
+        this.setupImage();
+      } else {
+        this.target.addEventListener("load", () => this.setupImage(), { once: true });
+      }
+    } else {
+      this.section = this.closest(".shopify-section") || this;
+      this.setupContent();
+    }
+  }
+
+  setupImage() {
+    const speed = parseFloat(this.dataset.speed) || 0.5;
+    const screenSpeed = window.innerWidth < 768 ? speed * 0.5 : speed;
+    const minExtra = parseInt(this.dataset.minExtra) || 100;
+
+    const viewportHeight = window.innerHeight;
+    const blockHeight = this.offsetHeight;
+
+    let imgHeight = this.target.getBoundingClientRect().height;
+    if (imgHeight - blockHeight < minExtra) {
+      imgHeight += minExtra;
+    }
+
+    const maxMove = (imgHeight - blockHeight) * (viewportHeight / blockHeight);
+    const startY = -maxMove * screenSpeed;
+    const endY = maxMove * screenSpeed;
+
+    Motion.scroll(
+      Motion.animate(
+        this.target,
+          { y: [startY, endY] },
+          {
+          ease: [0.25, 0.1, 0.25, 1],
+          duration: 0.3,
+        }
+      ),
+      { target: this, offset: ["start end", "end start"] }
+    );
+  }
+
+  setupContent() {
+    const speed = parseFloat(this.dataset.speed) || 0.5;
+    const screenSpeed = window.innerWidth < 768 ? speed * 0.5 : speed;
+
+    const horizontalRange = (this.dataset.horizontalPosition || "0% 0%").split(" ");
+    const verticalRange   = (this.dataset.verticalPosition   || "0% 0%").split(" ");
+
+    const startX = horizontalRange[0] || "0%";
+    const startY = verticalRange[0]   || "0%";
+
+    const parseVal = (val) => {
+      if (typeof val === "string" && val.includes("%")) return parseFloat(val);
+      return parseFloat(val) || 0;
+    };
+
+    const midX = parseVal(startX);
+    const midY = parseVal(startY);
+
+    const reverseX = midX * -1 / 3;
+    const reverseY = midY * -1 / 3;
+
+    if (midX === 0 && midY === 0) {
+      const startY = -30 * screenSpeed;
+      const endY   = 30 * screenSpeed;
+
+      Motion.scroll(
+        Motion.animate(
+          this.target,
+          { y: [`${startY}%`, `${endY}%`] },
+          {
+            ease: [0.25, 0.1, 0.25, 1],
+            duration: 0.3,
+          }
+        ),
+        { target: this.section, offset: ["start end", "end start"] }
+      );
+      return;
+    }
+
+    Motion.scroll(
+      Motion.animate(
+        this.target,
+        {
+          x: ["0%", `${midX}%`, `${reverseX}%`],
+          y: ["0%", `${midY}%`, `${reverseY}%`],
+        },
+        {
+          ease: [0.25, 0.1, 0.25, 1],
+          duration: 0.3,
+        }
+      ),
+      { target: this.section, offset: ["start end", "center center", "end start"] }
+    );
+  }
+}
+
+customElements.define("parallax-element", ParallaxElement);
 
 /**
  * A custom element that formats rte content for easier styling
@@ -2312,9 +2528,8 @@ class RTEFormatter extends HTMLElement {
   }
 }
 
-if (!customElements.get('rte-formatter')) {
-  customElements.define('rte-formatter', RTEFormatter);
-}
+if (!customElements.get('rte-formatter')) customElements.define('rte-formatter', RTEFormatter);
+
 class StrokeText extends HTMLElement {
   constructor() {
     super();
@@ -2359,8 +2574,7 @@ class StrokeText extends HTMLElement {
     this.style.backgroundPosition = `${xPercent}% 50%`;
   }
 }
-
-customElements.define("stroke-text", StrokeText);
+if (!customElements.get('stroke-text')) customElements.define('stroke-text', StrokeText);
 
 function initSplitting() {
   const buttons = document.querySelectorAll("[data-splitting-target]");
@@ -2368,5 +2582,111 @@ function initSplitting() {
     Splitting({ target: button, by: button.dataset.splittingTextBy });
   });
 }
-
 initSplitting();
+
+// Drawer khinh
+
+document.addEventListener("DOMContentLoaded", () => {
+  const buttons = document.querySelectorAll("[data-toggle-drawer]");
+  const drawers = document.querySelectorAll("[data-drawer-target]");
+
+  // open drawer
+  const openDrawer = (drawer) => {
+    const dir = drawer.getAttribute("data-drawer-direction");
+    const overlay = drawer.querySelector("[data-drawer-overlay]");
+    const contentElement = drawer.querySelector("[data-drawer-content]");
+
+    drawer.classList.add("open");
+    document.body.classList.add('overflow-hidden', 'drawer--open');
+
+    Motion.timeline([
+      [
+        overlay,
+        { transform: dir === 'left' ? ['translateX(-100%)', 'translateX(0)'] : ['translateX(100%)', 'translateX(0)'] },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
+      ],
+      [
+        contentElement,
+        { opacity: [0, 1], transform: dir === 'left' ? ['translateX(-100%)', 'translateX(0)'] : ['translateX(100%)', 'translateX(0)'] },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: '-0.05' },
+      ],
+    ]);
+  }
+
+  // close drawer
+  const closeDrawer = (drawer) => {
+    const dir = drawer.getAttribute("data-drawer-direction");
+    const overlay = drawer.querySelector("[data-drawer-overlay]");
+    const contentElement = drawer.querySelector("[data-drawer-content]");
+
+    drawer.classList.remove("open");
+    document.body.classList.remove('overflow-hidden', 'drawer--open');
+    Motion.timeline([
+      [
+        contentElement,
+        { opacity: [1, 0], transform: dir === 'left' ? ['translateX(0)', 'translateX(-100%)'] : ['translateX(0)', 'translateX(100%)'] },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
+      ],
+      [
+        overlay,
+        { transform: dir === 'left' ? ['translateX(0)', 'translateX(-100%)'] : ['translateX(0)', 'translateX(100%)'] },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: '+0.1' },
+      ],
+    ]);
+  }
+
+  // handle overlay click
+  const handleOverlayClick = (drawer) => {
+    const overlay = drawer.querySelector("[data-drawer-overlay]");
+    overlay.addEventListener("click", () => {
+      if (overlay.closest(".drawer__container.open")) {
+        closeDrawer(drawer);
+      }
+    });
+  }
+
+  // handle close button click
+  const handleCloseButtonClick = (drawer) => {
+    const closeButton = drawer.querySelector("[data-close-sidebar]");
+    console.log("closeButton", closeButton);
+
+    closeButton.addEventListener("click", () => {
+      if (closeButton.closest(".drawer__container.open")) {
+        closeDrawer(drawer);
+      }
+    });
+  }
+
+  // reset animation if window width is greater than 1024
+  const resetAnimation = () => {
+    const drawers = document.querySelectorAll("[data-drawer-target]");
+    drawers.forEach((drawer) => {
+      const contentElement = drawer.querySelector("[data-drawer-content]");
+      const overlay = drawer.querySelector("[data-drawer-overlay]");
+
+      Motion.animate(contentElement, { opacity: 1, transform: "translateX(0)" }, { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] });
+    });
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const drawer = document.querySelector(button.getAttribute("data-toggle-drawer"));
+      if (drawer) {
+        openDrawer(drawer);
+      }
+    });
+  });
+
+  drawers.forEach((drawer) => {
+    handleOverlayClick(drawer);
+    handleCloseButtonClick(drawer);
+  });
+
+  const handleResize = () => {
+    if (window.innerWidth > 1024) {
+      resetAnimation();
+    }
+  }
+
+  window.addEventListener("resize", handleResize);
+});

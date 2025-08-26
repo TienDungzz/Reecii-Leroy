@@ -43,5 +43,4 @@ class SearchForm extends HTMLElement {
     }
   }
 }
-
-customElements.define('search-form', SearchForm);
+if (!customElements.get('search-form')) customElements.define('search-form', SearchForm);

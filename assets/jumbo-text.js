@@ -142,8 +142,4 @@ function findOptimalFontSize(element, containerWidth) {
   // Add a small safety margin
   return minSize * 0.99;
 }
-
-// Register once
-if (!customElements.get('jumbo-text')) {
-  customElements.define('jumbo-text', JumboText);
-}
+if (!customElements.get('jumbo-text')) customElements.define('jumbo-text', JumboText);

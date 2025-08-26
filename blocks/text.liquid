@@ -1,85 +1,5 @@
 {% render 'text', block: block %}
 
-{% javascript %}
-  class TypingText {
-    constructor(el) {
-      this.el = el;
-      this.texts = (JSON.parse(el.dataset.texts || '[]')).filter(t => t.trim() !== '');
-      this.contentEl = el.querySelector('.typing-text__content');
-      this.index = 0;
-      this.charIndex = 0;
-      this.isDeleting = false;
-      this.typeSpeed = 90;     // typing speed
-      this.deleteSpeed = 50;   // deleting speed
-      this.pauseDelay = 1000;  // typing completion delay
-      this.baseHeight = this.el.offsetHeight - this.contentEl.offsetHeight;
-      this.prevContentHeight = this.contentEl.offsetHeight;
-      this.el.style.height = `${this.el.offsetHeight}px`;
-
-      this.type();
-    }
-
-    animateHeight() {
-      let newContentHeight = this.contentEl.offsetHeight;
-      if (newContentHeight === this.prevContentHeight) return;
-      if (newContentHeight === 0 && this.prevContentHeight) {
-        newContentHeight = this.prevContentHeight;
-      }
-      const targetHeight = newContentHeight + this.baseHeight;
-      Motion.timeline([
-        [this.el, {
-          height: [`${targetHeight}px`],
-          duration: 0.01,
-          easing: 'cubic-bezier(0.7, 0, 0.3, 1)'
-        }]
-      ]).finished;
-      this.prevContentHeight = newContentHeight;
-    }
-
-    type() {
-      const currentText = this.texts[this.index];
-      !this.isDeleting ? this.enterText(currentText) : this.updateText(currentText);
-
-      this.animateHeight();
-
-      const delay = this.isDeleting ? this.deleteSpeed : this.typeSpeed;
-      setTimeout(() => this.type(), delay);
-    }
-
-    enterText(currentText) {
-      this.contentEl.textContent = currentText.substring(0, this.charIndex + 1);
-      this.charIndex++;
-
-      if (this.charIndex === currentText.length) {
-        setTimeout(() => this.isDeleting = true, this.pauseDelay);
-      }
-    }
-
-    updateText(currentText) {
-      this.contentEl.textContent = currentText.substring(0, this.charIndex - 1);
-      this.charIndex--;
-
-      if (this.charIndex === 0) {
-        this.isDeleting = false;
-        this.index = (this.index + 1) % this.texts.length;
-      }
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          new TypingText(entry.target);
-          obs.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.2 });
-
-    document.querySelectorAll('.typing-text').forEach(el => observer.observe(el));
-  });
-{% endjavascript %}
-
 {% schema %}
 {
   "name": "t:names.text",
@@ -226,11 +146,17 @@
       "visible_if": "{{ block.settings.width == 'custom' }}"
     },
     {
+      "type": "checkbox",
+      "id": "inherit_text_alignment",
+      "label": "t:settings.inherit_text_alignment",
+      "default": true
+    },
+    {
       "type": "text_alignment",
       "id": "alignment",
       "label": "t:settings.alignment",
       "default": "left",
-      "visible_if": "{{ block.settings.width == '100%' }}"
+      "visible_if": "{{ block.settings.inherit_text_alignment == false }}"
     },
     {
       "type": "header",
@@ -308,84 +234,96 @@
       "label": "t:settings.size",
       "options": [
         {
-          "value": "18.4rem",
-          "label": "184px"
+          "value": "",
+          "label": "t:options.default"
         },
         {
-          "value": "15.2rem",
-          "label": "152px"
-        },
-        {
-          "value": "12rem",
-          "label": "120px"
-        },
-        {
-          "value": "8.8rem",
-          "label": "88px"
-        },
-        {
-          "value": "8rem",
-          "label": "80px"
-        },
-        {
-          "value": "7.2rem",
-          "label": "72px"
-        },
-        {
-          "value": "6.4rem",
-          "label": "64px"
-        },
-        {
-          "value": "5.6rem",
-          "label": "56px"
-        },
-        {
-          "value": "5rem",
-          "label": "50px"
-        },
-        {
-          "value": "4.8rem",
-          "label": "48px"
-        },
-        {
-          "value": "4rem",
-          "label": "40px"
-        },
-        {
-          "value": "3.2rem",
-          "label": "32px"
-        },
-        {
-          "value": "2.4rem",
-          "label": "24px"
-        },
-        {
-          "value": "2.0rem",
-          "label": "20px"
-        },
-        {
-          "value": "1.8rem",
-          "label": "18px"
-        },
-        {
-          "value": "1.6rem",
-          "label": "16px"
-        },
-        {
-          "value": "1.4rem",
-          "label": "14px"
+          "value": "1.0rem",
+          "label": "10px"
         },
         {
           "value": "1.2rem",
           "label": "12px"
         },
         {
-          "value": "1rem",
-          "label": "10px"
+          "value": "1.4rem",
+          "label": "14px"
         },
         {
-          "value": "",
-          "label": "t:options.default"
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        },
+        {
+          "value": "3.0rem",
+          "label": "30px"
+        },
+        {
+          "value": "3.2rem",
+          "label": "32px"
+        },
+        {
+          "value": "3.4rem",
+          "label": "34px"
+        },
+        {
+          "value": "3.6rem",
+          "label": "36px"
+        },
+        {
+          "value": "4.0rem",
+          "label": "40px"
+        },
+        {
+          "value": "5.0rem",
+          "label": "50px"
+        },
+        {
+          "value": "6.0rem",
+          "label": "60px"
+        },
+        {
+          "value": "7.0rem",
+          "label": "70px"
+        },
+        {
+          "value": "8.0rem",
+          "label": "80px"
+        },
+        {
+          "value": "9.0rem",
+          "label": "90px"
+        },
+        {
+          "value": "10.0rem",
+          "label": "100px"
+        },
+        {
+          "value": "12.0rem",
+          "label": "120px"
         }
       ],
       "default": "1.6rem",

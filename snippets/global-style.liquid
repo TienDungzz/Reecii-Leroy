@@ -1,42 +1,91 @@
-{%- liquid
-  assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
-  assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
-  assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
-
-  assign secondary_font_bold = settings.type_subheading_font | font_modify: 'weight', 'bold'
-  assign secondary_font_italic = settings.type_subheading_font | font_modify: 'style', 'italic'
-  assign secondary_font_bold_italic = secondary_font_bold | font_modify: 'style', 'italic'
--%}
 {% style %}
+  {%- liquid
+    assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
+    assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
+    assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
+  %}
+
   {{ settings.type_body_font | font_face: font_display: 'swap' }}
   {{ body_font_bold | font_face: font_display: 'swap' }}
   {{ body_font_italic | font_face: font_display: 'swap' }}
   {{ body_font_bold_italic | font_face: font_display: 'swap' }}
-  {{ settings.type_header_font | font_face: font_display: 'swap' }}
 
-  {{ settings.type_subheading_font | font_face: font_display: 'swap' }}
-  {{ secondary_font_bold | font_face: font_display: 'swap' }}
-  {{ secondary_font_italic | font_face: font_display: 'swap' }}
-  {{ secondary_font_bold_italic | font_face: font_display: 'swap' }}
+  {% if settings.type_subheading_font != settings.type_body_font %}
+    {%- liquid
+      assign secondary_font_bold = settings.type_subheading_font | font_modify: 'weight', 'bold'
+      assign secondary_font_italic = settings.type_subheading_font | font_modify: 'style', 'italic'
+      assign secondary_font_bold_italic = secondary_font_bold | font_modify: 'style', 'italic'
+    %}
+
+    {{ settings.type_subheading_font | font_face: font_display: 'swap' }}
+    {{ secondary_font_bold | font_face: font_display: 'swap' }}
+    {{ secondary_font_italic | font_face: font_display: 'swap' }}
+    {{ secondary_font_bold_italic | font_face: font_display: 'swap' }}
+  {% endif %}
+
+  {% if settings.type_header_font != settings.type_body_font and settings.type_header_font != settings.type_subheading_font %}
+    {%- liquid
+      assign tertiary_font_bold = settings.type_header_font | font_modify: 'weight', 'bold'
+      assign tertiary_font_italic = settings.type_header_font | font_modify: 'style', 'italic'
+      assign tertiary_font_bold_italic = tertiary_font_bold | font_modify: 'style', 'italic'
+    %}
+
+    {{ settings.type_header_font | font_face: font_display: 'swap' }}
+    {{ tertiary_font_bold | font_face: font_display: 'swap' }}
+    {{ tertiary_font_italic | font_face: font_display: 'swap' }}
+    {{ tertiary_font_bold_italic | font_face: font_display: 'swap' }}
+  {% endif %}
 
   {% for scheme in settings.color_schemes -%}
+    {% assign background_brightness = scheme.settings.background | color_brightness %}
+    {% if background_brightness < 64 %}
+      {% assign opacity_5_15 = 0.15 %}
+      {% assign opacity_10_25 = 0.25 %}
+      {% assign opacity_35_55 = 0.55 %}
+      {% assign opacity_40_60 = 0.60 %}
+      {% assign opacity_30_60 = 0.60 %}
+    {% else %}
+      {% assign opacity_5_15 = 0.05 %}
+      {% assign opacity_10_25 = 0.1 %}
+      {% assign opacity_35_55 = 0.35 %}
+      {% assign opacity_40_60 = 0.40 %}
+      {% assign opacity_30_60 = 0.30 %}
+    {% endif %}
     {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
     {% if forloop.index == 1 -%}
       :root,
     {%- endif %}
     .color-{{ scheme.id }} {
+      /* Background */
       {% if scheme.settings.background_gradient != empty %}
         --color-background: {{ scheme.settings.background_gradient }};
       {% else %}
         --color-background: rgb({{ scheme.settings.background.rgba }});
       {% endif %}
+
+      --color-background-rgb: {{ scheme.settings.background.rgb }};
       
+      /* Body */
       --color-foreground: rgb({{ scheme.settings.foreground.rgba }});
       --color-foreground-rgb: {{ scheme.settings.foreground.rgb }};
-      --color-shadow: rgb({{ scheme.settings.shadow.rgba }});
+
+      /* Heading */
+      --color-foreground-heading: rgb({{ scheme.settings.foreground_heading.rgba }});
+      --color-foreground-heading-rgb: {{ scheme.settings.foreground_heading.rgb }};
+
+      /* Link */
+      --color-primary: rgb({{ scheme.settings.primary.rgba }});
+      --color-primary-rgb: {{ scheme.settings.primary.rgb }};
+      --color-primary-hover: rgb({{ scheme.settings.primary_hover.rgba }});
+      --color-primary-hover-rgb: {{ scheme.settings.primary_hover.rgb }};
+
+      /* Border */
       --color-border: rgb({{ scheme.settings.border.rgba }});
-      --color-link: rgb({{ scheme.settings.secondary_button_text.rgba }});
-      --color-link-rgb: {{ scheme.settings.secondary_button_text.rgb }};
+      --color-border-rgb: {{ scheme.settings.border.rgb }};
+
+      /* Shadow */
+      --color-shadow: rgb({{ scheme.settings.shadow.rgba }});
+      --color-shadow-rgb: {{ scheme.settings.shadow.rgb }};
 
       /* Button primary */
       --color-primary-button-text: rgb({{ scheme.settings.primary_button_text.rgba }});
@@ -94,26 +143,71 @@
       /* Pagination */
       --pagination-color: rgb({{ scheme.settings.pagination_color.rgba }});
       --pagination-active-color: rgb({{ scheme.settings.pagination_active_color.rgba }});
+
+      /* Opacity */
+      --opacity-5-15: {{ opacity_5_15 }};
+      --opacity-10-25: {{ opacity_10_25 }};
+      --opacity-35-55: {{ opacity_35_55 }};
+      --opacity-40-60: {{ opacity_40_60 }};
+      --opacity-30-60: {{ opacity_30_60 }};
+
+      /* Disabled */
+      --input-disabled-background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+      --input-disabled-border-color: rgb(var(--color-foreground-rgb) / var(--opacity-5-15));
+      --input-disabled-text-color: rgb(var(--color-foreground-rgb) / var(--opacity-50));
+      --color-foreground-muted: rgb(var(--color-foreground-rgb) / var(--opacity-60));
     }
   {% endfor %}
   {% for scheme in settings.color_schemes -%}
+    {% assign background_brightness = scheme.settings.background | color_brightness %}
+    {% if background_brightness < 64 %}
+      {% assign opacity_5_15 = 0.15 %}
+      {% assign opacity_10_25 = 0.25 %}
+      {% assign opacity_35_55 = 0.55 %}
+      {% assign opacity_40_60 = 0.60 %}
+      {% assign opacity_30_60 = 0.60 %}
+    {% else %}
+      {% assign opacity_5_15 = 0.05 %}
+      {% assign opacity_10_25 = 0.1 %}
+      {% assign opacity_35_55 = 0.35 %}
+      {% assign opacity_40_60 = 0.40 %}
+      {% assign opacity_30_60 = 0.30 %}
+    {% endif %}
     @media screen and (max-width: 749px){
       {% if forloop.index == 1 -%}
         :root,
       {%- endif %}
       .color-mobile-{{ scheme.id }}  {
+        /* Background */
         {% if scheme.settings.background_gradient != empty %}
           --color-background: {{ scheme.settings.background_gradient }};
         {% else %}
           --color-background: rgb({{ scheme.settings.background.rgba }});
         {% endif %}
-        
+
+        --color-background-rgb: {{ scheme.settings.background.rgb }};
+
+        /* Body */
         --color-foreground: rgb({{ scheme.settings.foreground.rgba }});
         --color-foreground-rgb: {{ scheme.settings.foreground.rgb }};
-        --color-shadow: rgb({{ scheme.settings.shadow.rgba }});
+
+        /* Heading */
+        --color-foreground-heading: rgb({{ scheme.settings.foreground_heading.rgba }});
+        --color-foreground-heading-rgb: {{ scheme.settings.foreground_heading.rgb }};
+
+        /* Link */
+        --color-primary: rgb({{ scheme.settings.primary.rgba }});
+        --color-primary-rgb: {{ scheme.settings.primary.rgb }};
+        --color-primary-hover: rgb({{ scheme.settings.primary_hover.rgba }});
+        --color-primary-hover-rgb: {{ scheme.settings.primary_hover.rgb }};
+
+        /* Border */
         --color-border: rgb({{ scheme.settings.border.rgba }});
-        --color-link: rgb({{ scheme.settings.secondary_button_text.rgba }});
-        --color-link-rgb: {{ scheme.settings.secondary_button_text.rgb }};
+        --color-border-rgb: {{ scheme.settings.border.rgb }};
+
+        /* Shadow */
+        --color-shadow: rgb({{ scheme.settings.shadow.rgba }});
+        --color-shadow-rgb: {{ scheme.settings.shadow.rgb }};
 
         /* Button primary */
         --color-primary-button-text: rgb({{ scheme.settings.primary_button_text.rgba }});
@@ -171,13 +265,26 @@
         /* Pagination */
         --pagination-color: rgb({{ scheme.settings.pagination_color.rgba }});
         --pagination-active-color: rgb({{ scheme.settings.pagination_active_color.rgba }});
+
+        /* Opacity */
+        --opacity-5-15: {{ opacity_5_15 }};
+        --opacity-10-25: {{ opacity_10_25 }};
+        --opacity-35-55: {{ opacity_35_55 }};
+        --opacity-40-60: {{ opacity_40_60 }};
+        --opacity-30-60: {{ opacity_30_60 }};
+
+        /* Disabled */
+        --input-disabled-background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+        --input-disabled-border-color: rgb(var(--color-foreground-rgb) / var(--opacity-5-15));
+        --input-disabled-text-color: rgb(var(--color-foreground-rgb) / var(--opacity-50));
+        --color-foreground-muted: rgb(var(--color-foreground-rgb) / var(--opacity-60));
       }
     }
   {% endfor %}
 
   {{ scheme_classes | prepend: 'body' }} {
     color: var(--color-foreground);
-    background-color: var(--color-background);
+    background: var(--color-background);
   }
 
   :root {
@@ -231,12 +338,11 @@
     --compare-button-background: {{ settings.compare_background }};
 
     /* Arrows */
-    --arrow-width: {{ settings.arrows_width }}px;
-    --arrow-height: {{ settings.arrows_height }}px;
-    --arrow-icon-size: {{ settings.arrows_icon_size }}px;
-    --arrow-radius: {{ settings.arrows_radius }}px;
-    --arrow-border-thickness: {{ settings.arrows_border_thickness }}px;
-    --arrow-border-color: var(--arrow-color);
+    --arrow-width: {{ settings.arrows_width | divided_by: 10.0 }}rem;
+    --arrow-height: {{ settings.arrows_height | divided_by: 10.0 }}rem;
+    --arrow-icon-size: {{ settings.arrows_icon_size | divided_by: 10.0 }}rem;
+    --arrow-radius: {{ settings.arrows_radius | divided_by: 10.0 }}rem;
+    --arrow-border-thickness: {{ settings.arrows_border_thickness | divided_by: 10.0 }}rem;
 
    /* Section Heights */
     --section-height-small: 15rem;
@@ -334,13 +440,13 @@
             endif
           endif
 
-          assign fluid_size_min_rem = fluid_font_size_min | divided_by: 10.0
+          assign fluid_size_min_rem = fluid_font_size_min
           assign fluid_size = font_size_value | times: 0.1
-          assign fluid_size_max_rem = font_size_value | divided_by: 10.0
+          assign fluid_size_max_rem = font_size_value
 
           echo '--font-size--[font_size]: clamp([fluid_size_min_rem]rem, [fluid_size]vw, [fluid_size_max_rem]rem);' | replace: '[font_size]', font_size | replace: '[fluid_size_min_rem]', fluid_size_min_rem | replace: '[fluid_size]', fluid_size | replace: '[fluid_size_max_rem]', fluid_size_max_rem
         else
-          assign fluid_size_rem = font_size_value | divided_by: 10.0
+          assign fluid_size_rem = font_size_value
           echo '--font-size--[font_size]: [fluid_size_rem]rem;' | replace: '[font_size]', font_size | replace: '[fluid_size_rem]', fluid_size_rem
           if font_size == 'paragraph'
             echo '--font-size--[font_size]-md: calc([fluid_size_rem]rem + 0.2rem);' | replace: '[font_size]', font_size | replace: '[fluid_size_rem]', fluid_size_rem
@@ -406,7 +512,7 @@
     --font-body--family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
     --font-body--style: {{ settings.type_body_font.style }};
     --font-body--weight: {{ settings.type_body_font.weight }};
-    --font-body--size: {{ settings.type_size_paragraph | divided_by: 10.0 }}rem;
+    --font-body--size: {{ settings.type_size_paragraph }};
     --font-body--line-height: var(--line-height--{{ settings.type_line_height_paragraph }});
 
     /* Font subheading */
@@ -429,9 +535,16 @@
     --font-paragraph--spacing: 0.5em; /* 5px */
 
     /* Page layout */
-    --page-margin: 1.6rem;
+    --page-margin: 1.6rem; /* 16px */
     --page-content-width: {{ settings.page_width | divided_by: 10 }}rem;
     --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    --sidebar-width: 25rem; /* 250px */
+    --narrow-content-width: 36rem; /* 360px */
+    --normal-content-width: 42rem; /* 420px */
+    --wide-content-width: 46rem; /* 460px */
+    --narrow-page-width: 90rem; /* 900px */
+    --normal-page-width: 120rem; /* 1200px */
+    --wide-page-width: 150rem; /* 1500px */
 
     /* Product card */
     --product-card-image-padding: {{ settings.card_image_padding | divided_by: 10.0 }}rem;
@@ -464,33 +577,40 @@
     --badge-corner-radius: {{ settings.badge_corner_radius | divided_by: 10.0 }}rem;
 
     /* Grid */
-    --grid-desktop-vertical-spacing: {{ settings.spacing_grid_vertical }}px;
-    --grid-desktop-horizontal-spacing: {{ settings.spacing_grid_horizontal }}px;
-    --grid-mobile-vertical-spacing: {{ settings.spacing_grid_vertical | divided_by: 2 }}px;
-    --grid-mobile-horizontal-spacing: {{ settings.spacing_grid_horizontal | divided_by: 2 }}px;
+    --grid-desktop-vertical-spacing: {{ settings.spacing_grid_vertical | divided_by: 10.0 }}rem;
+    --grid-desktop-horizontal-spacing: {{ settings.spacing_grid_horizontal | divided_by: 10.0 }}rem;
+    --grid-mobile-vertical-spacing: {{ settings.spacing_grid_vertical | divided_by: 20.0 }}rem;
+    --grid-mobile-horizontal-spacing: {{ settings.spacing_grid_horizontal | divided_by: 20.0 }}rem;
 
     /* Borders */
     --style-border-width: 1px;
-    --style-border-radius-buttons-primary: {{ settings.button_border_radius_primary }}px;
-    --style-border-radius-buttons-secondary: {{ settings.button_border_radius_secondary }}px;
-    --style-border-width-primary: {{ settings.primary_button_border_width }}px;
-    --style-border-width-secondary: {{ settings.secondary_button_border_width }}px;
+    --style-border-radius-xs: 0.2rem;
+    --style-border-radius-sm: 0.6rem;
+    --style-border-radius-md: 0.8rem;
+    --style-border-radius-50: 50%;
+    --style-border-radius-lg: 1rem;
+    --style-border-radius-buttons-primary: {{ settings.button_border_radius_primary | divided_by: 10.0 }}rem;
+    --style-border-radius-buttons-secondary: {{ settings.button_border_radius_secondary | divided_by: 10.0 }}rem;
+    --style-border-width-primary: {{ settings.primary_button_border_width | divided_by: 10.0 }}rem;
+    --style-border-width-secondary: {{ settings.secondary_button_border_width | divided_by: 10.0 }}rem;
 
     /* Buttons */
     --button-font-family-primary: var(--font-{{ settings.button_type_font_primary }}--family);
     --button-font-family-secondary: var(--font-{{ settings.button_type_font_secondary }}--family);
-    --button-font-size-primary: {{ settings.button_type_size_primary | divided_by: 10.0 }}rem;
-    --button-font-size-secondary: {{ settings.button_type_size_secondary | divided_by: 10.0 }}rem;
+    --button-font-size-primary: {{ settings.button_type_size_primary }};
+    --button-font-size-secondary: {{ settings.button_type_size_secondary }};
     --button-font-weight-primary: {{ settings.button_font_weight_primary }};
     --button-font-weight-secondary: {{ settings.button_font_weight_secondary }};
     --button-text-case-primary: {{ settings.button_text_case_primary }};
     --button-text-case-secondary: {{ settings.button_text_case_secondary }};
     
-    --buttons-shadow-horizontal-offset: {{ settings.buttons_shadow_horizontal_offset }}px;
-    --buttons-shadow-vertical-offset: {{ settings.buttons_shadow_vertical_offset }}px;
-    --buttons-shadow-blur-radius: {{ settings.buttons_shadow_blur }}px;
-    --button-padding-vertical: {{ settings.buttons_padding_vertical }}px;
-    --button-padding-horizontal: {{ settings.buttons_padding_horizontal }}px;
+    --buttons-shadow-horizontal-offset: {{ settings.buttons_shadow_horizontal_offset | divided_by: 10.0 }}rem;
+    --buttons-shadow-vertical-offset: {{ settings.buttons_shadow_vertical_offset | divided_by: 10.0 }}rem;
+    --buttons-shadow-blur-radius: {{ settings.buttons_shadow_blur | divided_by: 10.0 }}rem;
+    --button-padding-vertical: {{ settings.buttons_padding_vertical | divided_by: 10.0 }}rem;
+    --button-padding-vertical-mobile: {{ settings.buttons_padding_vertical_mobile | divided_by: 10.0 }}rem;
+    --button-padding-horizontal: {{ settings.buttons_padding_horizontal | divided_by: 10.0 }}rem;
+    --button-padding-horizontal-mobile: {{ settings.buttons_padding_horizontal_mobile | divided_by: 10.0 }}rem;
     --minimum-touch-target: 4.4rem;  /* 44px */
     --button-size: var(--minimum-touch-target);
 
@@ -504,37 +624,41 @@
     --icon-stroke-width: {% if settings.icon_stroke == 'thin' %}1px{% elsif settings.icon_stroke == 'heavy' %}2px{% else %}1.5px{% endif %};
 
     /* Inputs */
-    --inputs-radius: {{ settings.inputs_radius }}px;
-    --inputs-border-width: {{ settings.inputs_border_thickness }}px;
-    --inputs-shadow-horizontal-offset: {{ settings.inputs_shadow_horizontal_offset }}px;
-    --inputs-shadow-vertical-offset: {{ settings.inputs_shadow_vertical_offset }}px;
-    --inputs-shadow-blur-radius: {{ settings.inputs_shadow_blur }}px;
+    --inputs-radius: {{ settings.inputs_radius | divided_by: 10.0 }}rem;
+    --inputs-border-width: {{ settings.inputs_border_thickness | divided_by: 10.0 }}rem;
+    --inputs-shadow-horizontal-offset: {{ settings.inputs_shadow_horizontal_offset | divided_by: 10.0 }}rem;
+    --inputs-shadow-vertical-offset: {{ settings.inputs_shadow_vertical_offset | divided_by: 10.0 }}rem;
+    --inputs-shadow-blur-radius: {{ settings.inputs_shadow_blur | divided_by: 10.0 }}rem;
     --inputs-radius-outset: {% if settings.inputs_radius > 0 %}{{ settings.inputs_radius | plus: settings.inputs_border_thickness }}{% else %}0{% endif %}px;
 
     /* Variant pills */
-    --variant-pills-radius: {{ settings.variant_pills_radius }}px;
-    --variant-pills-border-width: {{ settings.variant_pills_border_thickness }}px;
-    --variant-pills-shadow-horizontal-offset: {{ settings.variant_pills_shadow_horizontal_offset }}px;
-    --variant-pills-shadow-vertical-offset: {{ settings.variant_pills_shadow_vertical_offset }}px;
-    --variant-pills-shadow-blur-radius: {{ settings.variant_pills_shadow_blur }}px;
+    --variant-pills-radius: {{ settings.variant_pills_radius | divided_by: 10.0 }}rem;
+    --variant-pills-border-width: {{ settings.variant_pills_border_thickness | divided_by: 10.0 }}rem;
+    --variant-pills-shadow-horizontal-offset: {{ settings.variant_pills_shadow_horizontal_offset | divided_by: 10.0 }}rem;
+    --variant-pills-shadow-vertical-offset: {{ settings.variant_pills_shadow_vertical_offset | divided_by: 10.0 }}rem;
+    --variant-pills-shadow-blur-radius: {{ settings.variant_pills_shadow_blur | divided_by: 10.0 }}rem;
 
     /* Swatch input */
     --swatch-input--size: {{ settings.variant_swatch_size | times: 0.1 }}rem;
 
     /* Localization */
-    --localization-radius: {{ settings.inputs_radius }}px;
+    --localization-radius: {{ settings.inputs_radius | divided_by: 10.0 }}rem;
     --localization-border-width: 0.1rem; /* 1px */
     --localization-corner-radius: 1rem;  /* 10px */
     --localization-shadow: 0 1rem 2rem rgb(40 40 40 / var(--opacity-8));
 
-    /* Popup */
-    --popup-border-width: 0.1rem; /* 1px */
-    --popup-corner-radius: 1rem;  /* 10px */
-    --popup-shadow: 0 1rem 2rem rgb(40 40 40 / var(--opacity-8));
+    /* Popover */
+    --modal-max-height: 65dvh;
+    --style-border-width-popover: {{ settings.popover_border_width | divided_by: 10.0 }}rem;
+    --style-border-radius-popover: {{ settings.popover_border_radius | divided_by: 10.0 }}rem;
+    --style-border-popover: var(--style-border-width-popover) {{ settings.popover_border }} rgb(var(--color-border-rgb) / {{ settings.popover_border_opacity }}%);
+    {% if settings.popover_drop_shadow %}
+      --style-shadow-popover: 0 0.4rem 2rem rgb(var(--color-shadow-rgb) / var(--opacity-15));
+    {% endif %}
 
     /* Quantity */
     --quantity-color-background: var(--color-foreground-rgb);
-    --quantity-radius: {{ settings.inputs_radius }}px;
+    --quantity-radius: {{ settings.inputs_radius | divided_by: 10.0 }}rem;
     --quantity-border-width: 0.1rem; /* 1px */
     --quantity-shadow: none;
 
@@ -592,8 +716,8 @@
     --padding-3xs: 0.2rem;   /* 2px */
     --padding-2xs: 0.4rem;   /* 4px */
     --padding-xs: 0.8rem;    /* 8px */
-    --padding-sm: 1.12rem;   /* 11.2px */ 
-    --padding-md: 1.28rem;   /* 12.8px */
+    --padding-sm: 1rem;       /* 10px */
+    --padding-md: 1.2rem;     /* 12px */
     --padding-lg: 1.6rem;    /* 16px */
     --padding-xl: 2rem;      /* 20px */
     --padding-2xl: 2.4rem;   /* 24px */
@@ -603,10 +727,10 @@
     --padding-6xl: 6.4rem;   /* 64px */
 
     --margin-3xs: 0.2rem;   /* 2px */
-    --margin-2xs: 0.48rem;  /* 4.8px */
+    --margin-2xs: 0.4rem;   /* 4px */
     --margin-xs: 0.8rem;    /* 8px */
-    --margin-sm: 1.12rem;   /* 11.2px */
-    --margin-md: 1.28rem;   /* 12.8px */
+    --margin-sm: 1rem;      /* 10px */
+    --margin-md: 1.2rem;    /* 12px */
     --margin-lg: 1.6rem;    /* 16px */
     --margin-xl: 2rem;      /* 20px */
     --margin-2xl: 2.4rem;   /* 24px */
@@ -615,7 +739,7 @@
     --margin-5xl: 4.8rem;   /* 48px */
     --margin-6xl: 8rem;     /* 80px */
 
-    --spacing-sections-desktop: {{ settings.spacing_sections }}px;
+    --spacing-sections-desktop: {{ settings.spacing_sections | divided_by: 10.0 }}rem;
     --spacing-sections-mobile: {% if settings.spacing_sections < 24 %}{{ settings.spacing_sections }}{% else %}{{ settings.spacing_sections | times: 0.7 | round | at_least: 20 }}{% endif %}px;
     --spacing-scale-sm: 0.5;
     --spacing-scale-md: 0.7;
@@ -624,6 +748,16 @@
     /** Z-Index / Layering */
     --layer-section-background: -2;
     --layer-raised: 2;
+    --layer-base: 0;
+    --layer-flat: 1;
+    --layer-heightened: 4;
+    --layer-sticky: 8;
+    --layer-window-overlay: 10;
+    --layer-header-menu: 12;
+    --layer-overlay: 16;
+    --layer-menu-drawer: 18;
+    --layer-sidebar: 19;
+    --layer-temporary: 20;
 
     /* Animation */
     --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
@@ -679,6 +813,7 @@
     --opacity-90: 0.9;
     --opacity-95: 0.95;
     --opacity-100: 1;
+    --opacity-subdued-text: var(--opacity-70);
 
     /* Colors */
     --color-white: #FFFFFF;

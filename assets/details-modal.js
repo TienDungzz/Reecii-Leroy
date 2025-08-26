@@ -43,5 +43,4 @@ class DetailsModal extends HTMLElement {
     document.body.classList.remove('overflow-hidden');
   }
 }
-
-customElements.define('details-modal', DetailsModal);
+if (!customElements.get('details-modal')) customElements.define('details-modal', DetailsModal);

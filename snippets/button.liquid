@@ -11,7 +11,6 @@
 {%- liquid
   assign link = link | default: block.settings.link
   assign style_class = style_class | default: block.settings.style_class
-  assign button_type_size_link = button_type_size_link | default: block.settings.button_type_size_link
   assign link_underline = link_underline | default: block.settings.link_underline
   assign link_reveal = link_reveal | default: block.settings.link_reveal
   assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab
@@ -20,20 +19,14 @@
   assign button_style = button_style | default: block.settings.button_style
 -%}
 <a
-  {% if link == blank %}
-    role="link"
+  {% if link == blank %}role="link"
     aria-disabled="true"
   {% else %}
     href="{{ link }}"
   {% endif %}
-  {%- if splitting_text -%}
-    data-splitting-target
-    data-splitting-text-by="{{ splitting_text_by }}"
-  {%- endif -%}
   class="
     {{ class }}
     size-style
-    padding-style
     {{ style_class }}
     {% if link_reveal and style_class == 'link' %}link--reveal{% endif %}
     {% if link_underline %}link--underline{% endif %}
@@ -42,8 +35,7 @@
   "
   style="
     {% render 'size-style', settings: block.settings %}
-    {% if style_class != 'link' %}{% render 'padding-style', settings: block.settings %}{% endif %}
-    {% if button_type_size_link %}--button-font-size-link: {{ button_type_size_link | divided_by: 10.0 }}rem;{% endif %}
+    {% render 'button-style', settings: block.settings %}
   "
   {%- if open_in_new_tab -%}
     target="_blank"
@@ -62,7 +54,8 @@
 </a>
 
 {% stylesheet %}
-  .button.button--outline {
+  .button.button--outline,
+  .button-secondary.button--outline {
     --button-color: var(--button-background-color);
     --border-outline-color: var(--button-background-color);
     background-color: transparent;
@@ -78,16 +71,19 @@
 
   .link {
     font-size: var(--button-font-size-link);
+    font-weight: var(--button-font-weight-link);
     text-decoration: none;
     text-decoration-color: currentcolor;
+    &[style*="--button-font-size-link"] {
+      font-size: var(--button-font-size-link);
+    }
 
     &:hover {
-      color: var(--color-primary-button-hover-text);
       text-decoration-color: transparent;
     }
 
     &.link--underline {
-      --offset-underline: 1rem;
+      --offset-underline: 0.5rem;
       text-decoration: underline;
       text-underline-offset: var(--offset-underline);
     }
