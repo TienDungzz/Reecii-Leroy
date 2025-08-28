@@ -19,6 +19,12 @@
   assign image = block.settings.background_image
   assign image_height = image.height
   assign image_width = image.width
+
+  assign dots_style = block.settings.dots_style
+  assign banner_title = block.settings.banner_title
+  assign banner_link = block.settings.banner_link
+  assign banner_link_new_tab = block.settings.banner_link_new_tab
+  assign text_align = block.settings.text_align
 %}
 
 {% capture class %}
@@ -89,7 +95,7 @@
     %}
 {% endcapture %}
 
-<div class="lookbook-item relative">
+<div class="lookbook-item relative{% if dots_style %} dots-style-number{% endif %}">
     <div class="lookbook-item__image relative">
         <{{ element }}
             class="{{ class }}"
@@ -119,6 +125,13 @@
         <a class="show_products" href="#" aria-label="Show Products" tabindex="0">Show Products</a>
         <a class="hide_products" href="#" aria-label="Hide Products" tabindex="0">Hide Products</a>
     </div>
+</div>
+<div class="lookbook-item__content flex justify-{{ text_align }}">
+    {% if banner_link != blank %}
+        <a href="{{ banner_link }}" class="lookbook-item__link" {% if banner_link_new_tab %}target="_blank"{% endif %}>{{ banner_title }}</a>
+    {% else %}
+        <p class="lookbook-item__title">{{ banner_title }}</p>
+    {% endif %}
 </div>
 
 {%- stylesheet -%}
@@ -241,6 +254,56 @@
       "id": "hide_on_mobile",
       "label": "Hide on mobile",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "label": "Show dots as numbers",
+      "id": "dots_style",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Banner Content"
+    },
+    {
+      "type": "text",
+      "id": "banner_title",
+      "label": "Banner Title"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Align",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "visible_if": "{{ block.settings.banner_title != blank }}",
+      "default": "left"
+    },
+    {
+      "type": "url",
+      "id": "banner_link",
+      "label": "Banner Link",
+      "info": "Leave blank to disable link",
+      "visible_if": "{{ block.settings.banner_title != blank }}"
+    },
+    {
+      "type": "checkbox",
+      "label": "Open in new tab",
+      "id": "banner_link_new_tab",
+      "default": false,
+      "visible_if": "{{ block.settings.banner_link != blank and block.settings.banner_title != blank }}"
     },
     {
       "type": "header",

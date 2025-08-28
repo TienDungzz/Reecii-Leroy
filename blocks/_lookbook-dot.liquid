@@ -8,6 +8,7 @@
   assign dot_position_left = block_stts.dot_position_left | append: '%'
 
   assign card_product = block_stts.product
+  assign card_product_option = block_stts.card_product_option
   assign show_product_image = block_stts.show_product_image
   assign show_product_title = block_stts.show_product_title
   assign show_product_price = block_stts.show_product_price
@@ -16,9 +17,10 @@
 %}
 
 <lookbook-dot class="lookbook-dot" style="--dot-inner-color: {{ dot_inner_color }}; --dot-outer-color: {{ dot_outer_color }}; --dot-size-desktop: {{ dot_size_desktop }}; --dot-size-mobile: {{ dot_size_mobile }}; --dot-position-top: {{ dot_position_top }}; --dot-position-left: {{ dot_position_left }};">
-  <div class="lookbook-dot__icon" data-product-lookbook></div>
+  <div class="lookbook-dot__icon" data-product-lookbook>
+  </div>
   <div class="lookbook-dot__content">
-    {% render 'card-lookbook', card_product: card_product, show_product_image: show_product_image, show_product_title: show_product_title, show_product_price: show_product_price, show_product_variant: show_product_variant, show_product_button: show_product_button, option: 'vertical' %}
+    {% render 'card-lookbook', card_product: card_product, show_product_image: show_product_image, show_product_title: show_product_title, show_product_price: show_product_price, show_product_variant: show_product_variant, show_product_button: show_product_button, option: card_product_option %}
     </div>
 </lookbook-dot>
 
@@ -66,65 +68,6 @@
   });
 {% endjavascript %}
 
-{% stylesheet %}
-  .lookbook-dot {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    z-index: 5;
-    pointer-events: auto;
-    left: var(--dot-position-left);
-    top: var(--dot-position-top);
-    cursor: pointer;
-  }
-  .lookbook-dot__icon {
-    position: relative;
-    width: var(--dot-size-desktop);
-    height: var(--dot-size-desktop);
-    background-color: var(--dot-inner-color);
-    color: var(--dot-inner-color);
-    border-radius: 50%;
-  }
-
-  .lookbook-dot__icon::before {
-    content: "";
-    position: absolute;
-    top: -7px;
-    left: -7px;
-    width: 26px;
-    height: 26px;
-    z-index: -1;
-    border-radius: 50%;
-    opacity: .5;
-    background-color: var(--dot-outer-color);
-  }
-
-  .lookbook-dot__icon::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    border-radius: 50%;
-    opacity: .3;
-    background-color: var(--dot-outer-color);
-    animation: dot-zoom-animation 1.8s ease-in-out infinite
-  }
-
-  @keyframes dot-zoom-animation {
-    0% {
-      transform: scale3d(2, 2, 1);
-    }
-    50% {
-      transform: scale3d(3, 3, 1);
-    }
-    100% {
-      transform: scale3d(2, 2, 1);
-    }
-  }
-{% endstylesheet %}
 {% schema %}
   {
     "name": "Lookbook dot",
@@ -196,6 +139,16 @@
         "label": "t:sections.all.colors.label",
         "info": "t:sections.all.colors.has_cards_info",
         "default": "scheme-1"
+      },
+      {
+        "type": "select",
+        "id": "card_product_option",
+        "label": "Card product option",
+        "options": [
+          { "value": "vertical", "label": "Vertical" },
+          { "value": "horizontal", "label": "Horizontal" }
+        ],
+        "default": "horizontal"
       },
       {
         "type": "checkbox",
