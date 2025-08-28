@@ -416,7 +416,7 @@
 
       for font_size in font_sizes
         assign size_setting = 'type_size_[font_size]' | replace: '[font_size]', font_size
-        assign font_size_value = settings[size_setting] | times: 1
+        assign font_size_value = settings[size_setting] | replace: 'rem', '' | times: 1
         assign font_size_string = '[font_size_value]' | replace: '[font_size_value]', font_size_value
         assign index = font_size_values | find_index: font_size_string
 
