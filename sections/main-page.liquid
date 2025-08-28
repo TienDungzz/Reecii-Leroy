@@ -1,96 +1,132 @@
 {{ 'section-media-banner.css' | asset_url | stylesheet_tag }}
 {{ 'section-main-page.css' | asset_url | stylesheet_tag }}
 
+{%- liquid
+  assign sec_stts = section.settings
+
+  assign section_width = sec_stts.section_width
+
+  assign color_scheme = sec_stts.color_scheme
+
+  assign scroll_reveal = settings.animations_reveal_on_scroll
+
+  assign banner_image = sec_stts.image
+
+  assign page_height = sec_stts.page_height
+
+  assign ratio = page_height
+
+  assign horizontal_alignment = sec_stts.horizontal_alignment
+  assign vertical_alignment = sec_stts.vertical_alignment
+%}
+
 {%- style -%}
   .main-page-media.banner__media:after {
     opacity: {{ section.settings.image_overlay_opacity | divided_by: 100.0 }};
     background: var(--color-background);
   }
+  {% if page_height == 'adapt' and banner_image != blank and banner_image.aspect_ratio < 10 %}
+    @media screen and (max-width: 1439px) {
+      .main-page .media--adapt {
+        aspect-ratio: unset !important;
+        padding: 5rem;
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      .main-page .media--adapt {
+        padding: 3rem;
+      }
+    }
+  {% endif %}
 {%- endstyle -%}
+
+{% stylesheet %}
+
+{% endstylesheet %}
 
 {% capture children %}
   {% content_for 'blocks' %}
 {% endcapture %}
 
+{%- capture style_height_section -%}
+  {% if page_height == 'custom' %}
+    --section-min-height: {{ sec_stts.page_height_custom }}svh;
+  {% elsif page_height == "full-screen" %}
+     --section-min-height: 100svh;
+  {% elsif page_height != 'adapt' %}
+    --section-min-height: var(--section-height-{{ page_height }});
+  {% endif %}
+{%- endcapture -%}
+
+{%- capture page_text_wrapper_attr -%}
+  class="page__text-wrapper flex items-{{ vertical_alignment }} justify-{{ horizontal_alignment }} z-2 size-full relative"
+  style="--p: 3rem;--md-p: 5rem;"
+{%- endcapture -%}
+
 {%- capture banner_media -%}
-  {%- if section.settings.image != blank -%}
-    <div class="banner banner--content-align-mobile-bottom-center banner--medium color-{{ section.settings.color_scheme }}">
+  {%- if banner_image != blank -%}
+    <div class="banner size-full color-{{ sec_stts.color_scheme }} media--{{ page_height }}"
+        style="
+        {%- if ratio == 'adapt' -%}
+          --media-adapt-ratio: {% if banner_image == blank %}16/9{% else %}{{ banner_image.aspect_ratio }}{% endif %};
+        {%- endif -%}
+        ">
       {%- liquid
+        assign sizes = '100vw'
         assign loading = 'lazy'
         assign fetch_priority = 'auto'
         if section.index == 1
           assign loading = 'eager'
           assign fetch_priority = 'high'
         endif
-        assign image_height = section.settings.image.width | divided_by: section.settings.image.aspect_ratio
+        assign image_height = banner_image.width | divided_by: banner_image.aspect_ratio
       -%}
 
       <div class="main-page-media banner__media media">
-        {{
-          section.settings.image
-          | image_url: width: 3840
-          | image_tag:
-            width: section.settings.image.width,
-            height: image_height,
-            sizes: '100vw',
-            widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840',
-            loading: loading,
-            fetchpriority: fetch_priority
-        }}
+        {%- render 'image',
+          image: banner_image,
+          height: image_height,
+          fetch_priority: fetch_priority,
+          loading: loading,
+          sizes: sizes,
+          class: 'banner__media-image'
+        -%}
       </div>
-      <div class="page__text-wrapper banner__content banner__content--bottom-center">
-        <div class="page__text banner__box{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-          {% comment %} <h1 class="main-page-title page-title h0 m-0">
-            {{ page.title | escape }}
-          </h1>
-          {%- if section.settings.subheading != blank -%}
-            <div class="banner__text rte">
-              <p>{{ section.settings.subheading }}</p>
-            </div>
-          {%- endif -%} {% endcomment %}
+      <div {{ page_text_wrapper_attr }}>
+        <div class="page__text{% if scroll_reveal %} scroll-trigger animate--fade-in{% endif %}">
           {{ children }}
         </div>
       </div>
     </div>
   {%- else -%}
-    {% comment %} <h1 class="main-page-title page-title h0{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
-      style="--mb: 3rem; --md-mb: 4rem;"
-    >
-      {{ page.title | escape }}
-    </h1>
-    {%- if section.settings.subheading != blank -%}
-      <div class="banner__text rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-        <p>{{ section.settings.subheading }}</p>
+    <div {{ page_text_wrapper_attr }}>
+      <div class="page__content{% if scroll_reveal %} scroll-trigger animate--fade-in{% endif %}">
+        {{ children }}
       </div>
-    {%- endif -%} {% endcomment %}
-      {{ children }}
-
+    </div>
   {%- endif -%}
 {%- endcapture -%}
-
-{% unless section.settings.image != blank %}
-<div class="color-{{ section.settings.color_scheme }}">
-{% endunless %}
-  <div class="main-page{% unless section.settings.image != blank %} page-width spacing{% endunless %}"
-    style="
-      --p-spacing-t: {{ section.settings.padding_top }}px;
-      --p-spacing-b: {{ section.settings.padding_bottom }}px;
-    "
-  >
+<div
+  class="section section--{{ section_width }} color-{{ color_scheme }} spacing-style"
+  style="{%  render 'spacing-padding', settings: sec_stts %}; {{ style_height_section }}"
+>
+  {% unless sec_stts.image != blank %}
+    <div class="color-{{ sec_stts.color_scheme }}">
+  {% endunless %}
+  <div class="main-page size-full">
     {{ banner_media }}
-    {% comment %} <div class="rte{% if section.settings.image != blank %} page-width spacing{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-      {{ page.content }}
-    </div> {% endcomment %}
   </div>
-{% unless section.settings.image != blank %}
+  {% unless sec_stts.image != blank %}
+    </div>
+  {% endunless %}
 </div>
-{% endunless %}
 
 {% schema %}
 {
   "name": "t:sections.main-page.name",
   "tag": "section",
-  "class": "section",
+  "class": "section-page",
   "blocks": [
     {
       "type": "text"
@@ -101,13 +137,122 @@
     {
       "type": "_breadcrumb"
     }
-
   ],
   "settings": [
     {
-      "type": "inline_richtext",
-      "id": "subheading",
-      "label": "t:sections.main-page.settings.subheading.label"
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "Page height"
+    },
+    {
+      "type": "select",
+      "id": "page_height",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "full-screen",
+          "label": "Full screen"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "medium",
+      "label": "Page height"
+    },
+    {
+      "type": "range",
+      "id": "page_height_custom",
+      "label": "t:settings.custom_height",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "unit": "%",
+      "visible_if": "{{ section.settings.page_height == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "end",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Image"
     },
     {
       "type": "image_picker",
@@ -140,7 +285,7 @@
     },
     {
       "type": "range",
-      "id": "padding_top",
+      "id": "padding-block-start",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -150,7 +295,7 @@
     },
     {
       "type": "range",
-      "id": "padding_bottom",
+      "id": "padding-block-end",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -158,6 +303,7 @@
       "label": "t:sections.all.padding.padding_bottom",
       "default": 36
     }
+
   ]
 }
 {% endschema %}

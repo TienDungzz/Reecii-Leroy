@@ -55,7 +55,7 @@
 
       <div class="details-content">
         {% if menu %}
-          <ul 
+          <ul
             class="
               list-unstyled
               direction--{{ block.settings.content_direction | default: 'column' }}
@@ -212,6 +212,10 @@
       .menu__item {
         margin: 0;
       }
+
+      .menu__item + .menu__item {
+        margin-block-start: 0;
+      }
     }
 
     .menu--item-dividers .direction--column > .menu__item,
@@ -249,8 +253,8 @@
       display: none;
     }
 
-    .menu--accordion .details-content {
-      margin-block-start: var(--spacing--size);
+    .menu--accordion .details-content  > ul {
+      padding-block-start: var(--spacing--size);
     }
 
     .menu--accordion .menu__details {
@@ -331,7 +335,7 @@
     {
       "type": "range",
       "id": "menu_spacing",
-      "label": "t:settings.vertical_gap",
+      "label": "t:settings.gap",
       "min": 0,
       "max": 50,
       "step": 1,
