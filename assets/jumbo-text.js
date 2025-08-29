@@ -89,6 +89,29 @@ class JumboText extends HTMLElement {
 }
 
 /**
+ * A custom ResizeObserver that only calls the callback when the element is resized.
+ * By default the ResizeObserver callback is called when the element is first observed.
+ */
+class ResizeNotifier extends ResizeObserver {
+  #initialized = false;
+
+  /**
+   * @param {ResizeObserverCallback} callback
+   */
+  constructor(callback) {
+    super((entries) => {
+      if (this.#initialized) return callback(entries, this);
+      this.#initialized = true;
+    });
+  }
+
+  disconnect() {
+    this.#initialized = false;
+    super.disconnect();
+  }
+}
+
+/**
  * Checks if text with the given font size overflows the container
  * @param {HTMLElement} element - The element to check
  * @param {number} containerWidth - The width of the container

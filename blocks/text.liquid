@@ -135,6 +135,23 @@
       "default": "fit-content"
     },
     {
+      "type": "select",
+      "id": "unit",
+      "label": "t:settings.unit",
+      "visible_if": "{{ block.settings.width == 'custom' }}",
+      "options": [
+        {
+          "value": "pixel",
+          "label": "t:options.pixel"
+        },
+        {
+          "value": "percent",
+          "label": "t:options.percent"
+        }
+      ],
+      "default": "percent"
+    },
+    {
       "type": "range",
       "id": "custom_width",
       "label": "t:settings.custom_width",
@@ -143,20 +160,178 @@
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width == 'custom' }}"
+      "visible_if": "{{ block.settings.width == 'custom' and block.settings.unit == 'percent' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_pixel",
+      "label": "t:settings.custom_width",
+      "min": 500,
+      "max": 2000,
+      "step": 20,
+      "unit": "px",
+      "default": 500,
+      "visible_if": "{{ block.settings.width == 'custom' and block.settings.unit == 'pixel' }}"
     },
     {
       "type": "checkbox",
       "id": "inherit_text_alignment",
       "label": "t:settings.inherit_text_alignment",
-      "default": true
+      "default": true,
+      "visible_if": "{{ block.settings.width == 'custom' or block.settings.width == '100%' }}"
     },
     {
       "type": "text_alignment",
       "id": "alignment",
       "label": "t:settings.alignment",
       "default": "left",
-      "visible_if": "{{ block.settings.inherit_text_alignment == false }}"
+      "visible_if": "{{ block.settings.inherit_text_alignment == false and block.settings.width == 'custom' or block.settings.width == '100%' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_tablet",
+      "label": "Tablet width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "Fit"
+        },
+        {
+          "value": "100%",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "select",
+      "id": "unit_tablet",
+      "label": "t:settings.unit",
+      "visible_if": "{{ block.settings.width_tablet == 'custom' }}",
+      "options": [
+        {
+          "value": "pixel",
+          "label": "t:options.pixel"
+        },
+        {
+          "value": "percent",
+          "label": "t:options.percent"
+        }
+      ],
+      "default": "percent"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_tablet",
+      "label": "t:settings.custom_width",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_tablet == 'custom' and block.settings.unit_tablet == 'percent' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_tablet_pixel",
+      "label": "t:settings.custom_width",
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_tablet == 'custom' and block.settings.unit_tablet == 'pixel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_text_alignment_tablet",
+      "label": "t:settings.inherit_text_alignment",
+      "default": true,
+      "visible_if": "{{ block.settings.width_tablet == 'custom' or block.settings.width_tablet == '100%' }}"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment_tablet",
+      "label": "t:settings.alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.inherit_text_alignment_tablet == false and block.settings.width_tablet == 'custom' or block.settings.width_tablet == '100%' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "Mobile width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "Fit"
+        },
+        {
+          "value": "100%",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "select",
+      "id": "unit_mobile",
+      "label": "t:settings.unit",
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}",
+      "options": [
+        {
+          "value": "pixel",
+          "label": "t:options.pixel"
+        },
+        {
+          "value": "percent",
+          "label": "t:options.percent"
+        }
+      ],
+      "default": "percent"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "t:settings.custom_width",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' and block.settings.unit_mobile == 'percent' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile_pixel",
+      "label": "t:settings.custom_width",
+      "min": 100,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' and block.settings.unit_mobile == 'pixel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_text_alignment_mobile",
+      "label": "t:settings.inherit_text_alignment",
+      "default": true,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' or block.settings.width_mobile == '100%' }}"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment_mobile",
+      "label": "t:settings.alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.inherit_text_alignment_mobile == false and block.settings.width_mobile == 'custom' or block.settings.width_mobile == '100%' }}"
     },
     {
       "type": "header",

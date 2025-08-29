@@ -217,15 +217,43 @@
       "default": "fit-content"
     },
     {
+      "type": "select",
+      "id": "unit",
+      "label": "t:settings.unit",
+      "visible_if": "{{ block.settings.width == 'custom' }}",
+      "options": [
+        {
+          "value": "pixel",
+          "label": "t:options.pixel"
+        },
+        {
+          "value": "percent",
+          "label": "t:options.percent"
+        }
+      ],
+      "default": "percent"
+    },
+    {
       "type": "range",
       "id": "custom_width",
-      "label": "Custom (%)",
+      "label": "t:settings.custom_width",
       "min": 1,
       "max": 100,
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width == 'custom' }}"
+      "visible_if": "{{ block.settings.width == 'custom' and block.settings.unit == 'percent' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_pixel",
+      "label": "t:settings.custom_width",
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' and block.settings.unit == 'pixel' }}"
     },
     {
       "type": "select",
@@ -244,15 +272,43 @@
       "default": "fit-content"
     },
     {
+      "type": "select",
+      "id": "unit_tablet",
+      "label": "t:settings.unit",
+      "visible_if": "{{ block.settings.width_tablet == 'custom' }}",
+      "options": [
+        {
+          "value": "pixel",
+          "label": "t:options.pixel"
+        },
+        {
+          "value": "percent",
+          "label": "t:options.percent"
+        }
+      ],
+      "default": "percent"
+    },
+    {
       "type": "range",
       "id": "custom_width_tablet",
-      "label": "Custom (%)",
+      "label": "t:settings.custom_width",
       "min": 1,
       "max": 100,
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width_tablet == 'custom' }}"
+      "visible_if": "{{ block.settings.width_tablet == 'custom' and block.settings.unit_tablet == 'percent' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_tablet_pixel",
+      "label": "t:settings.custom_width",
+      "min": 100,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_tablet == 'custom' and block.settings.unit_tablet == 'pixel' }}"
     },
     {
       "type": "select",
@@ -271,15 +327,43 @@
       "default": "fit-content"
     },
     {
+      "type": "select",
+      "id": "unit_mobile",
+      "label": "t:settings.unit",
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}",
+      "options": [
+        {
+          "value": "pixel",
+          "label": "t:options.pixel"
+        },
+        {
+          "value": "percent",
+          "label": "t:options.percent"
+        }
+      ],
+      "default": "percent"
+    },
+    {
       "type": "range",
       "id": "custom_width_mobile",
-      "label": "Custom (%)",
+      "label": "t:settings.custom_width",
       "min": 1,
       "max": 100,
       "step": 1,
       "unit": "%",
       "default": 100,
-      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+      "visible_if": "{{ block.settings.width_mobile == 'custom' and block.settings.unit_mobile == 'percent' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile_pixel",
+      "label": "t:settings.custom_width",
+      "min": 100,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' and block.settings.unit_mobile == 'pixel' }}"
     },
     {
       "type": "select",

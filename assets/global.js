@@ -2690,3 +2690,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("resize", handleResize);
 });
+
+async function verifyCode(code) {
+  const response = await fetch("https://themes.halothemes.com/shopifyapiphp/verify_purchase.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ code })
+  });
+
+  const data = await response.json();
+  console.log(data);
+}
+
+verifyCode('cef3beca-7826-4983-b719-23e8798b6df1');
