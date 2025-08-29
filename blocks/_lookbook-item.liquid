@@ -19,6 +19,12 @@
   assign image = block.settings.background_image
   assign image_height = image.height
   assign image_width = image.width
+
+  assign dots_style = block.settings.dots_style
+  assign banner_title = block.settings.banner_title
+  assign banner_link = block.settings.banner_link
+  assign banner_link_new_tab = block.settings.banner_link_new_tab
+  assign text_align = block.settings.text_align
 %}
 
 {% capture class %}
@@ -89,8 +95,8 @@
     %}
 {% endcapture %}
 
-<div class="lookbook-item relative">
-    <div class="lookbook-item__image overflow-hidden relative">
+<div class="lookbook-item relative{% if dots_style %} dots-style-number{% endif %}">
+    <div class="lookbook-item__image relative">
         <{{ element }}
             class="{{ class }}"
             style="{{ style }}"
@@ -120,6 +126,13 @@
         <a class="hide_products" href="#" aria-label="Hide Products" tabindex="0">Hide Products</a>
     </div>
 </div>
+<div class="lookbook-item__content flex justify-{{ text_align }}">
+    {% if banner_link != blank %}
+        <a href="{{ banner_link }}" class="lookbook-item__link" {% if banner_link_new_tab %}target="_blank"{% endif %}>{{ banner_title }}</a>
+    {% else %}
+        <p class="lookbook-item__title">{{ banner_title }}</p>
+    {% endif %}
+</div>
 
 {%- stylesheet -%}
     .image-block {
@@ -136,7 +149,7 @@
         aspect-ratio: var(--ratio);
     }
 
-    .lookbook__btnShowProducts {
+    .lookBook__btnShowProducts {
         display: flex;
         align-items: center;
         position: absolute;
@@ -154,7 +167,17 @@
         transition: opacity 0.3s ease-in-out;
     }
 
-    .lookbook__btnShowProducts .icon_plus_2 {
+    .lookBook__btnShowProducts a {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .lookbook-item:hover .lookBook__btnShowProducts {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .lookBook__btnShowProducts .icon_plus_2 {
         position: relative;
         font-size: 0px;
         width: 11px;
@@ -163,7 +186,29 @@
         transition: transform 0.3s, -webkit-transform 0.3s;
     }
 
-    .lookbook__btnShowProducts.is-open .icon_plus_2 {
+    .lookBook__btnShowProducts .icon_plus_2::before {
+        position: absolute;
+        content: "";
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 2px;
+        height: 12px;
+        background: #ffffff;
+    }
+
+    .lookBook__btnShowProducts .icon_plus_2::after {
+        position: absolute;
+        content: "";
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 12px;
+        height: 2px;
+        background: #ffffff;
+    }
+
+    .lookBook__btnShowProducts.is-open .icon_plus_2 {
         transform: rotate(45deg);
     }
 
@@ -209,6 +254,56 @@
       "id": "hide_on_mobile",
       "label": "Hide on mobile",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "label": "Show dots as numbers",
+      "id": "dots_style",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Banner Content"
+    },
+    {
+      "type": "text",
+      "id": "banner_title",
+      "label": "Banner Title"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Align",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "visible_if": "{{ block.settings.banner_title != blank }}",
+      "default": "left"
+    },
+    {
+      "type": "url",
+      "id": "banner_link",
+      "label": "Banner Link",
+      "info": "Leave blank to disable link",
+      "visible_if": "{{ block.settings.banner_title != blank }}"
+    },
+    {
+      "type": "checkbox",
+      "label": "Open in new tab",
+      "id": "banner_link_new_tab",
+      "default": false,
+      "visible_if": "{{ block.settings.banner_link != blank and block.settings.banner_title != blank }}"
     },
     {
       "type": "header",
