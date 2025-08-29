@@ -1,14 +1,34 @@
+{% capture separator %}
+  {%- case block.settings.separator %}
+    {% when 'slash' %}
+      {{ 'blocks.breadcrumb.separator' | t }}
+    {% when 'caret' %}
+    <span class="svg-wrapper">
+      {{- 'icon-caret.svg' | inline_asset_content -}}
+    </span>
+  {% endcase -%}
+{% endcapture %}
+
 <div class="breadcrumb-block">
   {%- capture attr_item -%}
-    class="breadcrumbs__item dis-i-block text-body-large" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"
+    class="breadcrumbs__item inline-flex items-center gap-style"
+    itemprop="itemListElement"
+    itemscope
+    itemtype="https://schema.org/ListItem"
+    style="{% render 'gap-style', value: block.settings.gap %}"
   {%- endcapture -%}
 
   {%- capture class_link -%}
-    class="link link--effect-unnderline link--text  text-body-large"
+    class="link link--effect-unnderline link--text"
   {%- endcapture -%}
 
   <nav class="breadcrumbs element-margin-bottom" role="navigation" aria-label="{{ 'blocks.breadcrumb.title' | t }}">
-    <ol class="breadcrumbs__list list-unstyled flex justify-{{ block.settings.horizontal_alignment }} items-center gap-xs" itemscope itemtype="https://schema.org/BreadcrumbList">
+    <ol
+      class="breadcrumbs__list list-unstyled flex justify-{{ block.settings.horizontal_alignment }} items-center gap-style"
+      itemscope
+      itemtype="https://schema.org/BreadcrumbList"
+      style="{% render 'gap-style', value: block.settings.gap %}"
+    >
       <li {{ attr_item }}>
         <a
           href="{{ routes.root_url }}"
@@ -21,7 +41,7 @@
         <meta itemprop="position" content="1">
 
         <span class="breadcrumbs__separator">
-          {{ 'blocks.breadcrumb.separator' | t }}
+          {{ separator }}
         </span>
       </li>
       {% assign position = 2 %}
@@ -38,8 +58,8 @@
           </a>
           <meta itemprop="position" content="{{ position }}">
           <span class="breadcrumbs__separator">
-          {{ 'blocks.breadcrumb.separator' | t }}
-        </span>
+            {{ separator }}
+          </span>
         </li>
         {% assign position = position | plus: 1 %}
         {% if collection.handle %}
@@ -66,7 +86,7 @@
             </a>
             <meta itemprop="position" content="{{ position }}">
             <span class="breadcrumbs__separator">
-              {{ 'blocks.breadcrumb.separator' | t }}
+              {{ separator }}
             </span>
           </li>
           {% assign position = position | plus: 1 %}
@@ -81,8 +101,8 @@
             </a>
             <meta itemprop="position" content="{{ position }}">
             <span class="breadcrumbs__separator">
-          {{ 'blocks.breadcrumb.separator' | t }}
-        </span>
+              {{ separator }}
+            </span>
           </li>
           {% assign position = position | plus: 1 %}
         {% endif %}
@@ -102,7 +122,7 @@
           </a>
           <meta itemprop="position" content="{{ position }}">
           <span class="breadcrumbs__separator">
-            {{ 'blocks.breadcrumb.separator' | t }}
+            {{ separator }}
           </span>
         </li>
         {% assign position = position | plus: 1 %}
@@ -113,7 +133,7 @@
           <meta itemprop="position" content="{{ position }}">
           {% if article %}
             <span class="breadcrumbs__separator">
-              {{ 'blocks.breadcrumb.separator' | t }}
+              {{ separator }}
             </span>
           {% endif %}
         </li>
@@ -139,11 +159,39 @@
   </nav>
 </div>
 
+{% stylesheet %}
+  .breadcrumbs__separator .svg-wrapper {
+    width: 16px;
+    height: 16px;
+  }
+  .breadcrumbs__separator .icon-caret {
+    transform: rotate(-90deg);
+    position: relative;
+    top: 2px;
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "Breadcrumb",
   "tag": null,
   "settings": [
+    {
+      "type": "select",
+      "id": "separator",
+      "label": "Separator icon",
+      "options": [
+        {
+          "value": "slash",
+          "label": "Slash"
+        },
+        {
+          "value": "caret",
+          "label": "Caret"
+        }
+      ],
+      "default": "slash"
+    },
     {
       "type": "select",
       "id": "horizontal_alignment",
@@ -168,6 +216,16 @@
       ],
       "default": "start"
     },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    }
   ],
   "presets": [
     {

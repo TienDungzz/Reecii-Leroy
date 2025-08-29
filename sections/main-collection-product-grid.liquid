@@ -9,7 +9,14 @@
 {%- endif -%}
 
 {%- liquid
-  assign limit = cart.attributes.pagination | default: section.settings.products_per_page
+  if cart.attributes.pagination != blank and cart.attributes.pagination
+    assign paginate_by = cart.attributes.pagination
+  else
+    assign paginate_by = section.settings.products_per_page
+  endif
+
+  assign collection_products_per_page = paginate_by
+
   if section.settings.enable_sorting or section.settings.enable_grid_view or section.settings.enable_products_per_page
     assign show_sort = true
   endif
@@ -38,10 +45,10 @@
     results_size: collection.products_count
   %}
 
-  {%- paginate collection.products by limit -%}
+  {%- paginate collection.products by collection_products_per_page -%}
     <div
       class="
-        {% if section.settings.filter_type == 'vertical' %}facets-vertical page-width{% elsif section.settings.filter_type == 'horizontal' %}facets-horizontal{% endif %} main-collection-grid
+        main-collection-grid
         {%- if section.settings.inherit_color_scheme == false %} color-{{ section.settings.color_scheme }}{% endif %}
         {%- if section.settings.product_grid_width == 'full-width' %} collection-wrapper--full-width{% endif %}
         {%- if section.settings.full_width_on_mobile == true %} collection-wrapper--full-width-on-mobile{% endif %}
@@ -88,7 +95,9 @@
       >
         {%- if collection.products.size == 0 -%}
           <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
-            <div class="loading-overlay gradient"></div>
+            <div class="loading-overlay gradient">
+              {% render 'loading-spinner' %}
+            </div>
             <div class="title-wrapper center">
               <h2 class="title title--primary">
                 {{ 'sections.collection_template.empty' | t -}}
@@ -101,128 +110,14 @@
             </div>
           </div>
         {%- else -%}
-          {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
-          {%- if show_sort and section.settings.filter_type == 'vertical' -%}
-            <facet-filters-form class="facets facets-vertical-sort small-hide medium-hide">
-              <form class="facets-vertical-form" id="FacetSortForm">
-                {%- if section.settings.enable_grid_view -%}
-                  {% render 'switcher-grid',
-                    columns_desktop: section.settings.columns_desktop,
-                    filter_type: section.settings.filter_type
-                  %}
-                {%- endif -%}
-
-                {%- if section.settings.enable_products_per_page -%}
-                  <div class="facet-per-page products-per-page caption">
-                    {% render 'products-per-page', limit: limit %}
-                  </div>
-                {%- endif -%}
-
-                <div class="facet-filters sorting caption">
-                  <div class="facet-filters__field">
-                    {%- assign results = collection -%}
-                    {%- assign sort_by = results.sort_by | default: results.default_sort_by -%}
-                    {%- assign selected_sort_by = results.sort_options | where: 'value', sort_by | first -%}
-                    <details
-                      id="Details-SortBy"
-                      class="details--dropdown facet-filters__sort pos-relative caption-large"
-                      is="dropdown-details"
-                      activate-event="hover"
-                      data-index="0"
-                    >
-                      <summary class="details__summary facets__summary focus-inset">
-                        <span class="flex items-center gap-xl">
-                          {{ selected_sort_by.name }}
-                          {{- 'icon-caret.svg' | inline_asset_content -}}
-                        </span>
-                      </summary>
-                      <div
-                        id="SortByDropdown"
-                        class="details__list pos-absolute top-100 right-0 z-index-1 gradient global-settings-popup"
-                        style="--min-w-a: 20rem;"
-                        tabindex="-1"
-                      >
-                        <ul class="list-unstyled" role="list" style="--pad-a-a: 1.3rem 2rem;">
-                          {%- for option in results.sort_options -%}
-                            <li
-                              class="facet-filters__sort_item pos-relative{% if option.value == sort_by %} selected pointer-e-none{% endif %}"
-                              style="--pad-a-a: 0;"
-                              tabindex="-1"
-                            >
-                              <label
-                                for="Filter-{{ option.value | escape }}-{{ forloop.index }}"
-                                class="facet-checkbox c-pointer"
-                              >
-                                <input
-                                  type="checkbox"
-                                  name="sort_by"
-                                  value="{{ option.value | escape }}"
-                                  id="Filter-{{ option.value | escape }}-{{ forloop.index }}"
-                                  class="visually-hidden"
-                                >
-                                <span class="label full-unstyled-link">{{ option.name | escape }}</span>
-                              </label>
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                      </div>
-                    </details>
-                  </div>
-                </div>
-              </form>
-            </facet-filters-form>
-          {%- endif -%}
 
           <div
             class="collection"
             data-id="{{ section.id }}"
           >
-            <div class="loading-overlay gradient"></div>
-            {% comment %}
-              <ul
-                id="product-grid"
-                data-id="{{ section.id }}"
-                class="
-                  grid product-grid grid--{{ columns_tablet }}-col-tablet-down grid--{{ columns_mobile }}-col-mobile
-                  grid--{{ section.settings.columns_desktop }}-col-desktop
-                  {% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %}
-                "
-                {% if section.settings.enable_grid_view %}
-                  data-view="{{ section.settings.columns_desktop }}"
-                {% endif %}
-              >
-                {%- for product in collection.products -%}
-                  {%- liquid
-                    assign lazy_load = false
-                    if forloop.index > 2
-                      assign lazy_load = true
-                    endif
-                  -%}
-                  <li
-                    class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-                    {% if settings.animations_reveal_on_scroll %}
-                      data-cascade
-                      style="--animation-order: {{ forloop.index }};"
-                    {% endif %}
-                  >
-                    {% render 'card-product',
-                      card_product: product,
-                      media_aspect_ratio: section.settings.image_ratio,
-                      image_shape: section.settings.image_shape,
-                      show_secondary_image: section.settings.show_secondary_image,
-                      show_vendor: section.settings.show_vendor,
-                      show_rating: section.settings.show_rating,
-                      lazy_load: lazy_load,
-                      skip_styles: skip_card_product_styles,
-                      section_id: section.id,
-                      quick_add: section.settings.quick_add,
-                      horizontal_class: horizontal_class
-                    %}
-                  </li>
-                  {%- assign skip_card_product_styles = true -%}
-                {%- endfor -%}
-              </ul>
-            {% endcomment %}
+            <div class="loading-overlay gradient">
+              {% render 'loading-spinner' %}
+            </div>
 
             {% capture children %}
               {% for product in collection.products %}
@@ -246,7 +141,7 @@
               paginate: paginate
             %}
 
-            <div class="product-count pos-relative light left" role="status">
+            <div class="product-count pos-relative light left hidden" role="status">
               <h2 class="product-count__text text-body mar-0">
                 <span id="ProductCount">
                   {%- if collection.results_count -%}
@@ -320,14 +215,17 @@
     @media screen and (min-width: 750px) {
       grid-column: 1 / -1;
       grid-template-columns:
-        minmax(var(--page-margin), 1fr) repeat(
-          var(--centered-column-number),
-          minmax(0, calc((var(--page-width) - var(--page-margin) * 2) / var(--centered-column-number)))
+        minmax(var(--page-margin), 1fr)
+        24rem
+        repeat(
+          calc(var(--centered-column-number) - 1),
+          minmax(0, calc((var(--page-width) - var(--page-margin) * 2 - 24rem) / (var(--centered-column-number) - 1)))
         )
         minmax(var(--page-margin), 1fr);
     }
   }
 
+  .collection-wrapper:has(.facets--vertical) .facets-block-wrapper--vertical:not(.hidden) ~ .facets-vertical-sort ,
   .collection-wrapper:has(.facets--vertical) .facets-block-wrapper--vertical:not(.hidden) ~ .main-collection-grid {
     @media screen and (min-width: 750px) {
       grid-column: var(--facets-vertical-col-width) / var(--full-width-column-number);
@@ -368,6 +266,66 @@
     }
   }
 {%- endstylesheet -%}
+
+{%- style -%}
+  /* product grid */
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] {
+    --product-grid-columns-desktop: repeat(1, 1fr);
+
+    .card {
+      flex-direction: row;
+    }
+
+    .card--block-media {
+      width: 30%;
+
+      @media screen and (min-width: 1600px) {
+        width: 20%;
+      }
+    }
+
+  }
+
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='2'] {
+    --product-grid-columns-desktop: repeat(2, 1fr);
+  }
+
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='3'] {
+    --product-grid-columns-desktop: repeat(3, 1fr);
+
+    @media screen and (max-width: 749px) {
+      --product-grid-columns-desktop: repeat(2, 1fr);
+    }
+  }
+
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='4'] {
+    --product-grid-columns-desktop: repeat(4, 1fr);
+
+    @media screen and (max-width: 989px) {
+      --product-grid-columns-desktop: repeat(3, 1fr);
+    }
+
+    @media screen and (max-width: 749px) {
+      --product-grid-columns-desktop: repeat(2, 1fr);
+    }
+  }
+
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='5'] {
+    --product-grid-columns-desktop: repeat(5, 1fr);
+
+    @media screen and (max-width: 1599px) {
+      --product-grid-columns-desktop: repeat(4, 1fr);
+    }
+
+    @media screen and (max-width: 989px) {
+      --product-grid-columns-desktop: repeat(3, 1fr);
+    }
+
+    @media screen and (max-width: 749px) {
+      --product-grid-columns-desktop: repeat(2, 1fr);
+    }
+  }
+{%- endstyle -%}
 
 {% schema %}
 {

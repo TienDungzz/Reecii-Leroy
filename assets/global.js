@@ -447,7 +447,8 @@ class QuantityInput extends HTMLElement {
     }
   }
 }
-if (!customElements.get('quantity-input')) customElements.define('quantity-input', QuantityInput);
+if (!customElements.get("quantity-input"))
+  customElements.define("quantity-input", QuantityInput);
 
 /**
  * Debounce a function.
@@ -496,13 +497,17 @@ function prefersReducedMotion() {
   return reducedMotion.matches;
 }
 
-function fetchConfig(type = 'json', config = {}) {
+function fetchConfig(type = "json", config = {}) {
   /** @type {Headers} */
-  const headers = { 'Content-Type': 'application/json', Accept: `application/${type}`, ...config.headers };
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: `application/${type}`,
+    ...config.headers,
+  };
 
-  if (type === 'javascript') {
-    headers['X-Requested-With'] = 'XMLHttpRequest';
-    delete headers['Content-Type'];
+  if (type === "javascript") {
+    headers["X-Requested-With"] = "XMLHttpRequest";
+    delete headers["Content-Type"];
   }
 
   return {
@@ -647,7 +652,8 @@ class PreloadScreen extends HTMLElement {
     });
   }
 }
-if (!customElements.get('preload-screen')) customElements.define('preload-screen', PreloadScreen);
+if (!customElements.get("preload-screen"))
+  customElements.define("preload-screen", PreloadScreen);
 
 class HeaderMenu extends HTMLElement {
   constructor() {
@@ -670,7 +676,8 @@ class HeaderMenu extends HTMLElement {
     );
   }
 }
-if (!customElements.get('header-menu')) customElements.define('header-menu', HeaderMenu);
+if (!customElements.get("header-menu"))
+  customElements.define("header-menu", HeaderMenu);
 
 class MenuDrawer extends HTMLElement {
   constructor() {
@@ -837,7 +844,8 @@ class MenuDrawer extends HTMLElement {
     window.requestAnimationFrame(handleAnimation);
   }
 }
-if (!customElements.get('menu-drawer')) customElements.define('menu-drawer', MenuDrawer);
+if (!customElements.get("menu-drawer"))
+  customElements.define("menu-drawer", MenuDrawer);
 
 class HeaderDrawer extends MenuDrawer {
   constructor() {
@@ -892,7 +900,8 @@ class HeaderDrawer extends MenuDrawer {
     );
   };
 }
-if (!customElements.get('header-drawer')) customElements.define('header-drawer', HeaderDrawer);
+if (!customElements.get("header-drawer"))
+  customElements.define("header-drawer", HeaderDrawer);
 
 function buildStyleSheet(name, $this) {
   if (name == "") return;
@@ -934,7 +943,8 @@ class DeferredMedia extends HTMLElement {
     }
   }
 }
-if (!customElements.get('deferred-media')) customElements.define('deferred-media', DeferredMedia);
+if (!customElements.get("deferred-media"))
+  customElements.define("deferred-media", DeferredMedia);
 
 class SliderComponent extends HTMLElement {
   constructor() {
@@ -1051,7 +1061,8 @@ class SliderComponent extends HTMLElement {
     });
   }
 }
-if (!customElements.get('slider-component')) customElements.define('slider-component', SliderComponent);
+if (!customElements.get("slider-component"))
+  customElements.define("slider-component", SliderComponent);
 
 class SlideshowComponent extends SliderComponent {
   constructor() {
@@ -1323,7 +1334,8 @@ class SlideshowComponent extends SliderComponent {
     });
   }
 }
-if (!customElements.get('slideshow-component')) customElements.define('slideshow-component', SlideshowComponent);
+if (!customElements.get("slideshow-component"))
+  customElements.define("slideshow-component", SlideshowComponent);
 
 // SWIPER COMPONENT KHINH
 class SwiperComponent extends HTMLElement {
@@ -1335,20 +1347,23 @@ class SwiperComponent extends HTMLElement {
     this.options = null;
     this.breakpoint = null;
     this.breakpointChecker = null;
-    this.arrowOnHeader = this.closest('.arrow-on-header:has(.swiper-btns-on-header)');
+    this.arrowOnHeader = this.closest(
+      ".arrow-on-header:has(.swiper-btns-on-header)"
+    );
   }
 
   connectedCallback() {
-
     // Check if Swiper library is available
-    if (typeof Swiper === 'undefined') {
-      console.error('Swiper library not loaded. Please ensure vendor.js is loaded before this component.');
+    if (typeof Swiper === "undefined") {
+      console.error(
+        "Swiper library not loaded. Please ensure vendor.js is loaded before this component."
+      );
       return;
     }
 
     // Ensure DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => {
         this.initializeSwiper();
       });
       return;
@@ -1358,18 +1373,17 @@ class SwiperComponent extends HTMLElement {
   }
 
   initializeSwiper() {
-
     // Small delay to ensure proper initialization
     setTimeout(() => {
       this.swiperEl = this.querySelector(".swiper");
 
       if (!this.swiperEl) {
-        console.error('❌ No .swiper element found in SwiperComponent');
+        console.error("❌ No .swiper element found in SwiperComponent");
         return;
       }
 
       if (this.swiperEl._swiperInitialized) {
-        console.log('🔍 Swiper already initialized, skipping...');
+        console.log("🔍 Swiper already initialized, skipping...");
         return;
       }
 
@@ -1379,8 +1393,16 @@ class SwiperComponent extends HTMLElement {
       const nextButton = this.swiperEl.querySelector(".swiper-button-next");
       const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
       const pagination = this.swiperEl.querySelector(".swiper-pagination");
-      const arrowOnHeaderNextButton = this.arrowOnHeader ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next") : nextButton;
-      const arrowOnHeaderPrevButton = this.arrowOnHeader ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev") : prevButton;
+      const arrowOnHeaderNextButton = this.arrowOnHeader
+        ? this.arrowOnHeader.querySelector(
+            ".swiper-btns-on-header .swiper-button-next"
+          )
+        : nextButton;
+      const arrowOnHeaderPrevButton = this.arrowOnHeader
+        ? this.arrowOnHeader.querySelector(
+            ".swiper-btns-on-header .swiper-button-prev"
+          )
+        : prevButton;
 
       const getOption = (name, defaultValue = undefined) => {
         const attr = this.getAttribute(`data-${name}`);
@@ -1469,10 +1491,10 @@ class SwiperComponent extends HTMLElement {
     return {
       isInitialized: !!this.initSwiper,
       isMobileOnly: this.isMobileOnly,
-      breakpoint: this.breakpoint?.matches ? 'Desktop' : 'Mobile',
+      breakpoint: this.breakpoint?.matches ? "Desktop" : "Mobile",
       swiperEl: !!this.swiperEl,
       options: !!this.options,
-      swiperInstance: this.initSwiper
+      swiperInstance: this.initSwiper,
     };
   }
 
@@ -1481,12 +1503,12 @@ class SwiperComponent extends HTMLElement {
 
     const enableSwiper = () => {
       if (!this.swiperEl || !this.options) {
-        console.error('❌ Cannot enable swiper: missing swiperEl or options');
+        console.error("❌ Cannot enable swiper: missing swiperEl or options");
         return;
       }
 
       if (this.initSwiper) {
-        console.log('🔍 Destroying existing swiper instance');
+        console.log("🔍 Destroying existing swiper instance");
         this.initSwiper.destroy(true, true);
         this.initSwiper = null;
       }
@@ -1535,12 +1557,11 @@ class SwiperComponent extends HTMLElement {
             this.initSwiper.update();
           }
         }, 200);
-
       } catch (error) {
-        console.error('❌ Error initializing Swiper:', error);
+        console.error("❌ Error initializing Swiper:", error);
         // Try to reinitialize after a delay
         setTimeout(() => {
-          console.log('🔄 Attempting to reinitialize Swiper...');
+          console.log("🔄 Attempting to reinitialize Swiper...");
           enableSwiper();
         }, 500);
       }
@@ -1585,7 +1606,8 @@ class SwiperComponent extends HTMLElement {
     this.initSwiperMobile();
   }
 }
-if (!customElements.get('swiper-component')) customElements.define('swiper-component', SwiperComponent);
+if (!customElements.get("swiper-component"))
+  customElements.define("swiper-component", SwiperComponent);
 // END SWIPER COMPONENT KHINH
 
 class VariantSelects extends HTMLElement {
@@ -1658,7 +1680,8 @@ class VariantSelects extends HTMLElement {
     ).map(({ dataset }) => dataset.optionValueId);
   }
 }
-if (!customElements.get('variant-selects')) customElements.define('variant-selects', VariantSelects);
+if (!customElements.get("variant-selects"))
+  customElements.define("variant-selects", VariantSelects);
 
 class ProductRecommendations extends HTMLElement {
   observer = undefined;
@@ -1714,7 +1737,8 @@ class ProductRecommendations extends HTMLElement {
       });
   }
 }
-if (!customElements.get('product-recommendations')) customElements.define('product-recommendations', ProductRecommendations);
+if (!customElements.get("product-recommendations"))
+  customElements.define("product-recommendations", ProductRecommendations);
 
 window.theme = window.theme || {};
 // Init section function when it's visible, then disable observer
@@ -1758,7 +1782,8 @@ class AccountIcon extends HTMLElement {
     }
   }
 }
-if (!customElements.get('account-icon')) customElements.define('account-icon', AccountIcon);
+if (!customElements.get("account-icon"))
+  customElements.define("account-icon", AccountIcon);
 
 class BulkAdd extends HTMLElement {
   constructor() {
@@ -1860,7 +1885,7 @@ class BulkAdd extends HTMLElement {
       .querySelector(selector).innerHTML;
   }
 }
-if (!customElements.get('bulk-add')) customElements.define('bulk-add', BulkAdd);
+if (!customElements.get("bulk-add")) customElements.define("bulk-add", BulkAdd);
 
 // *** Function
 class GridView extends HTMLElement {
@@ -1869,24 +1894,177 @@ class GridView extends HTMLElement {
     this.productGrid = document.querySelector(
       ".product-grid-container .product-grid"
     );
-    this.querySelectorAll(".button--grid-view").forEach((button) => {
-      button.addEventListener("click", this.changeLayoutGrid.bind(this));
+    this.mediaView = this.querySelector(".desktop-grid-view");
+    this.onClickModeButton();
+  }
+
+  connectedCallback() {
+    this.init();
+    this.autoChangeLayout();
+  }
+
+  init() {
+    this.mediaView?.querySelectorAll(".button--grid-view").forEach((button) => {
+      if (button.classList.contains("active")) {
+        const gridView = button.dataset.grid;
+        const cards = this.productGrid.querySelectorAll(
+          ".product-grid__item"
+        );
+        this.transitionGrid(gridView, cards);
+      }
     });
+  }
+
+  onClickModeButton(event) {
+    this.mediaView?.querySelectorAll(".button--grid-view").forEach((modeButton) => {
+      modeButton.addEventListener("click",
+        this.onClickModeButtonHandler.bind(this)
+      );
+    });
+  }
+
+  onClickModeButtonHandler(event) {
+    event.preventDefault();
+
+    var buttonElement = event.currentTarget,
+      viewMode = this.mediaView.querySelector(".button--grid-view.active"),
+      column = parseInt(buttonElement.dataset.grid);
+
+    if (!buttonElement.classList.contains("active")) {
+      viewMode?.classList.remove("active");
+      buttonElement.classList.add("active");
+
+      this.mediaViewMobile?.querySelectorAll(".button--grid-view").forEach((element) => {
+        var currentColumn = parseInt(element.dataset.grid);
+
+        if (currentColumn == column) {
+          element.classList.add("active");
+        } else {
+          element.classList.remove("active");
+        }
+      });
+
+      this.initViewModeLayout(column);
+    }
+  }
+
+  autoChangeLayout() {
+    const getColByWidth = (col, width, isVertical) => {
+      if (isVertical) {
+        if (width < 750 && [3, 4, 5].includes(col)) return 2;
+        if (width <= 1100 && width >= 750 && [3, 4, 5].includes(col)) return 2;
+        if (width < 1300 && width > 1100 && [4, 5].includes(col)) return 3;
+        if (width < 1700 && width >= 1300 && col == 5) return 4;
+      } else {
+        if (width < 750 && [3, 4, 5].includes(col)) return 2;
+        if (width < 990 && width >= 750 && [3, 4, 5].includes(col)) return 3;
+        if (width < 1600 && width >= 990 && col == 5) return 4;
+      }
+      return col;
+    };
+
+    const updateViewMode = () => {
+      let viewMode = this.mediaView?.querySelector(".button--grid-view.active");
+      let col = parseInt(viewMode?.dataset.grid);
+
+      const width = window.innerWidth;
+      const isVertical = document.querySelector(".facets-vertical");
+      const newCol = getColByWidth(col, width, isVertical);
+
+      if (col !== newCol) {
+        viewMode?.classList.remove("active");
+
+        this.mediaView?.querySelector(`.grid-view--item.grid-view-${newCol} .button--grid-view`)?.classList.add("active");
+
+        col = newCol;
+      }
+      this.initViewModeLayout(col);
+    };
+
+    window.addEventListener("resize", updateViewMode);
+
+    if (!this.mediaView) return;
+    updateViewMode();
+  }
+
+  transitionGrid(gridView, cards) {
+    if (document.startViewTransition) {
+      cards.forEach((card) => {
+        card.style.setProperty(
+          "view-transition-name",
+          `product-card-${card.dataset.productId}`
+        );
+      });
+
+      document
+        .startViewTransition(() => {
+          this.productGrid.setAttribute("data-view", gridView);
+        })
+        .finished.finally(() => {
+          cards.forEach((card) => {
+            card.style.removeProperty("view-transition-name");
+          });
+        });
+    } else {
+      this.productGrid.setAttribute("data-view", gridView);
+    }
   }
 
   changeLayoutGrid(event) {
     const gridView = event.currentTarget.dataset.grid;
-    this.querySelectorAll(".button--grid-view").forEach((button) => {
+    const parent = event.currentTarget.closest(".grid-view--list");
+
+    const cards = this.productGrid.querySelectorAll(".product-grid__item");
+
+    parent.querySelectorAll(".button--grid-view").forEach((button) => {
       button.classList.add("cursor-pointer");
       button.classList.remove("active");
     });
 
     event.currentTarget.classList.remove("cursor-pointer");
     event.currentTarget.classList.add("active");
-    this.productGrid.setAttribute("data-view", gridView);
+
+    this.transitionGrid(gridView, cards);
+  }
+
+  initViewModeLayout(column) {
+    const cards = this.productGrid.querySelectorAll(".product-grid__item");
+
+    if (!this.productGrid) return;
+    this.transitionGrid(column, cards);
+
+    // switch (column) {
+    //   case 1:
+    //     break;
+
+    //   default:
+    //     switch (column) {
+    //       case 2:
+    //         // productListing.setAttribute('data-view', 2);
+    //         this.transitionGrid(column, cards);
+
+    //         break;
+    //       case 3:
+    //         // productListing.setAttribute('data-view', 3);
+    //         this.transitionGrid(column, cards);
+
+    //         break;
+    //       case 4:
+    //         // productListing.setAttribute('data-view', 4);
+    //         this.transitionGrid(column, cards);
+
+    //         break;
+    //       case 5:
+    //         // productListing.setAttribute('data-view', 5);
+    //         this.transitionGrid(column, cards);
+
+    //         break;
+    //     }
+    // }
   }
 }
-if (!customElements.get('grid-view')) customElements.define('grid-view', GridView);
+if (!customElements.get("grid-view"))
+  customElements.define("grid-view", GridView);
 
 class RecentlyViewedProducts extends HTMLElement {
   constructor() {
@@ -1937,9 +2115,12 @@ class RecentlyViewedProducts extends HTMLElement {
     );
   }
 }
-if (!customElements.get('recently-viewed-products')) customElements.define('recently-viewed-products', RecentlyViewedProducts);
+if (!customElements.get("recently-viewed-products"))
+  customElements.define("recently-viewed-products", RecentlyViewedProducts);
 
-const moreButton = document.querySelectorAll(".card__swatch .item-swatch-more .number-showmore");
+const moreButton = document.querySelectorAll(
+  ".card__swatch .item-swatch-more .number-showmore"
+);
 moreButton.forEach((button) => {
   button.addEventListener("click", function (event) {
     const swatch = event.target.closest(".swatch-list");
@@ -2094,7 +2275,8 @@ class Wishlist extends HTMLElement {
     // }
   }
 }
-if (!customElements.get('wisht-list')) customElements.define('wisht-list', Wishlist);
+if (!customElements.get("wisht-list"))
+  customElements.define("wisht-list", Wishlist);
 
 class CountDown extends HTMLElement {
   constructor() {
@@ -2173,7 +2355,8 @@ class CountDown extends HTMLElement {
     observer.observe(this);
   }
 }
-if (!customElements.get('count-down')) customElements.define('count-down', CountDown);
+if (!customElements.get("count-down"))
+  customElements.define("count-down", CountDown);
 
 class ColorSwatch extends HTMLElement {
   constructor() {
@@ -2300,7 +2483,8 @@ class ColorSwatch extends HTMLElement {
     }
   }
 }
-if (!customElements.get('color-swatch')) customElements.define('color-swatch', ColorSwatch);
+if (!customElements.get("color-swatch"))
+  customElements.define("color-swatch", ColorSwatch);
 
 class ShowMoreProductGrid extends HTMLElement {
   constructor() {
@@ -2336,12 +2520,16 @@ class ShowMoreProductGrid extends HTMLElement {
     this.remove();
   }
 }
-if (!customElements.get('show-more-product-grid')) customElements.define('show-more-product-grid', ShowMoreProductGrid);
+if (!customElements.get("show-more-product-grid"))
+  customElements.define("show-more-product-grid", ShowMoreProductGrid);
 
 class ParallaxImg extends HTMLElement {
   constructor() {
     super();
     this.img = null;
+    this.disableParallaxMobile =
+      this.getAttribute("data-disable-parallax-mobile") === "true";
+    this.isMobile = window.innerWidth < 750;
   }
 
   connectedCallback() {
@@ -2349,6 +2537,8 @@ class ParallaxImg extends HTMLElement {
 
     this.img = this.querySelector(".image-parallax--target");
     if (!this.img) return;
+
+    if (this.disableParallaxMobile && this.isMobile) return;
 
     if (this.img.complete) {
       this.setupParallax();
@@ -2361,7 +2551,7 @@ class ParallaxImg extends HTMLElement {
 
   setupParallax() {
     const speed = parseFloat(this.dataset.speed) || 0.5;
-    const screenSpeed = window.innerWidth < 768 ? speed * 0.5 : speed;
+    const screenSpeed = window.innerWidth < 750 ? speed * 0.5 : speed;
     const minExtra = parseInt(this.dataset.minExtra) || 100;
 
     const viewportHeight = window.innerHeight;
@@ -2390,26 +2580,35 @@ class ParallaxImg extends HTMLElement {
     );
   }
 }
-if (!customElements.get('parallax-image')) customElements.define("parallax-image", ParallaxImg);
+if (!customElements.get("parallax-image"))
+  customElements.define("parallax-image", ParallaxImg);
 
 class ParallaxElement extends HTMLElement {
   constructor() {
     super();
     this.target = null;
     this.type = this.getAttribute("is") || "content";
+    this.disableParallaxMobile =
+      this.getAttribute("data-disable-parallax-mobile") === "true";
+    this.isMobile = window.innerWidth < 750;
   }
 
   connectedCallback() {
     if (this.getAttribute("data-parallax") !== "true") return;
 
-    this.target = this.querySelector(".parallax--target") || this.firstElementChild;
+    this.target =
+      this.querySelector(".parallax--target") || this.firstElementChild;
     if (!this.target) return;
+
+    if (this.disableParallaxMobile && this.isMobile) return;
 
     if (this.type === "image") {
       if (this.target.complete) {
         this.setupImage();
       } else {
-        this.target.addEventListener("load", () => this.setupImage(), { once: true });
+        this.target.addEventListener("load", () => this.setupImage(), {
+          once: true,
+        });
       }
     } else {
       this.section = this.closest(".shopify-section") || this;
@@ -2419,7 +2618,7 @@ class ParallaxElement extends HTMLElement {
 
   setupImage() {
     const speed = parseFloat(this.dataset.speed) || 0.5;
-    const screenSpeed = window.innerWidth < 768 ? speed * 0.5 : speed;
+    const screenSpeed = window.innerWidth < 750 ? speed * 0.5 : speed;
     const minExtra = parseInt(this.dataset.minExtra) || 100;
 
     const viewportHeight = window.innerHeight;
@@ -2437,8 +2636,8 @@ class ParallaxElement extends HTMLElement {
     Motion.scroll(
       Motion.animate(
         this.target,
-          { y: [startY, endY] },
-          {
+        { y: [startY, endY] },
+        {
           ease: [0.25, 0.1, 0.25, 1],
           duration: 0.3,
         }
@@ -2449,13 +2648,15 @@ class ParallaxElement extends HTMLElement {
 
   setupContent() {
     const speed = parseFloat(this.dataset.speed) || 0.5;
-    const screenSpeed = window.innerWidth < 768 ? speed * 0.5 : speed;
+    const screenSpeed = window.innerWidth < 750 ? speed * 0.5 : speed;
 
-    const horizontalRange = (this.dataset.horizontalPosition || "0% 0%").split(" ");
-    const verticalRange   = (this.dataset.verticalPosition   || "0% 0%").split(" ");
+    const horizontalRange = (this.dataset.horizontalPosition || "0% 0%").split(
+      " "
+    );
+    const verticalRange = (this.dataset.verticalPosition || "0% 0%").split(" ");
 
     const startX = horizontalRange[0] || "0%";
-    const startY = verticalRange[0]   || "0%";
+    const startY = verticalRange[0] || "0%";
 
     const parseVal = (val) => {
       if (typeof val === "string" && val.includes("%")) return parseFloat(val);
@@ -2465,12 +2666,12 @@ class ParallaxElement extends HTMLElement {
     const midX = parseVal(startX);
     const midY = parseVal(startY);
 
-    const reverseX = midX * -1 / 3;
-    const reverseY = midY * -1 / 3;
+    const reverseX = (midX * -1) / 3;
+    const reverseY = (midY * -1) / 3;
 
     if (midX === 0 && midY === 0) {
       const startY = -30 * screenSpeed;
-      const endY   = 30 * screenSpeed;
+      const endY = 30 * screenSpeed;
 
       Motion.scroll(
         Motion.animate(
@@ -2498,7 +2699,10 @@ class ParallaxElement extends HTMLElement {
           duration: 0.3,
         }
       ),
-      { target: this.section, offset: ["start end", "center center", "end start"] }
+      {
+        target: this.section,
+        offset: ["start end", "center center", "end start"],
+      }
     );
   }
 }
@@ -2510,7 +2714,7 @@ customElements.define("parallax-element", ParallaxElement);
  */
 class RTEFormatter extends HTMLElement {
   connectedCallback() {
-    this.querySelectorAll('table').forEach(this.#formatTable);
+    this.querySelectorAll("table").forEach(this.#formatTable);
   }
 
   /**
@@ -2518,8 +2722,8 @@ class RTEFormatter extends HTMLElement {
    * @param {HTMLTableElement} table
    */
   #formatTable(table) {
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('rte-table-wrapper');
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("rte-table-wrapper");
     const parent = table.parentNode;
     if (parent) {
       parent.insertBefore(wrapper, table);
@@ -2528,7 +2732,8 @@ class RTEFormatter extends HTMLElement {
   }
 }
 
-if (!customElements.get('rte-formatter')) customElements.define('rte-formatter', RTEFormatter);
+if (!customElements.get("rte-formatter"))
+  customElements.define("rte-formatter", RTEFormatter);
 
 class StrokeText extends HTMLElement {
   constructor() {
@@ -2574,7 +2779,8 @@ class StrokeText extends HTMLElement {
     this.style.backgroundPosition = `${xPercent}% 50%`;
   }
 }
-if (!customElements.get('stroke-text')) customElements.define('stroke-text', StrokeText);
+if (!customElements.get("stroke-text"))
+  customElements.define("stroke-text", StrokeText);
 
 function initSplitting() {
   const buttons = document.querySelectorAll("[data-splitting-target]");
@@ -2597,21 +2803,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const contentElement = drawer.querySelector("[data-drawer-content]");
 
     drawer.classList.add("open");
-    document.body.classList.add('overflow-hidden', 'drawer--open');
+    document.body.classList.add("overflow-hidden", "drawer--open");
 
     Motion.timeline([
       [
         overlay,
-        { transform: dir === 'left' ? ['translateX(-100%)', 'translateX(0)'] : ['translateX(100%)', 'translateX(0)'] },
+        {
+          transform:
+            dir === "left"
+              ? ["translateX(-100%)", "translateX(0)"]
+              : ["translateX(100%)", "translateX(0)"],
+        },
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
       ],
       [
         contentElement,
-        { opacity: [0, 1], transform: dir === 'left' ? ['translateX(-100%)', 'translateX(0)'] : ['translateX(100%)', 'translateX(0)'] },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: '-0.05' },
+        {
+          opacity: [0, 1],
+          transform:
+            dir === "left"
+              ? ["translateX(-100%)", "translateX(0)"]
+              : ["translateX(100%)", "translateX(0)"],
+        },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.05" },
       ],
     ]);
-  }
+  };
 
   // close drawer
   const closeDrawer = (drawer) => {
@@ -2620,20 +2837,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const contentElement = drawer.querySelector("[data-drawer-content]");
 
     drawer.classList.remove("open");
-    document.body.classList.remove('overflow-hidden', 'drawer--open');
+    document.body.classList.remove("overflow-hidden", "drawer--open");
     Motion.timeline([
       [
         contentElement,
-        { opacity: [1, 0], transform: dir === 'left' ? ['translateX(0)', 'translateX(-100%)'] : ['translateX(0)', 'translateX(100%)'] },
+        {
+          opacity: [1, 0],
+          transform:
+            dir === "left"
+              ? ["translateX(0)", "translateX(-100%)"]
+              : ["translateX(0)", "translateX(100%)"],
+        },
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
       ],
       [
         overlay,
-        { transform: dir === 'left' ? ['translateX(0)', 'translateX(-100%)'] : ['translateX(0)', 'translateX(100%)'] },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: '+0.1' },
+        {
+          transform:
+            dir === "left"
+              ? ["translateX(0)", "translateX(-100%)"]
+              : ["translateX(0)", "translateX(100%)"],
+        },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" },
       ],
     ]);
-  }
+  };
 
   // handle overlay click
   const handleOverlayClick = (drawer) => {
@@ -2643,7 +2871,7 @@ document.addEventListener("DOMContentLoaded", () => {
         closeDrawer(drawer);
       }
     });
-  }
+  };
 
   // handle close button click
   const handleCloseButtonClick = (drawer) => {
@@ -2655,7 +2883,7 @@ document.addEventListener("DOMContentLoaded", () => {
         closeDrawer(drawer);
       }
     });
-  }
+  };
 
   // reset animation if window width is greater than 1024
   const resetAnimation = () => {
@@ -2664,13 +2892,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const contentElement = drawer.querySelector("[data-drawer-content]");
       const overlay = drawer.querySelector("[data-drawer-overlay]");
 
-      Motion.animate(contentElement, { opacity: 1, transform: "translateX(0)" }, { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] });
+      Motion.animate(
+        contentElement,
+        { opacity: 1, transform: "translateX(0)" },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] }
+      );
     });
-  }
+  };
 
   buttons.forEach((button) => {
     button.addEventListener("click", () => {
-      const drawer = document.querySelector(button.getAttribute("data-toggle-drawer"));
+      const drawer = document.querySelector(
+        button.getAttribute("data-toggle-drawer")
+      );
       if (drawer) {
         openDrawer(drawer);
       }
@@ -2686,20 +2920,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.innerWidth > 1024) {
       resetAnimation();
     }
-  }
+  };
 
   window.addEventListener("resize", handleResize);
 });
-
-async function verifyCode(code) {
-  const response = await fetch("https://themes.halothemes.com/shopifyapiphp/verify_purchase.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ code })
-  });
-
-  const data = await response.json();
-  console.log(data);
-}
-
-verifyCode('cef3beca-7826-4983-b719-23e8798b6df1');

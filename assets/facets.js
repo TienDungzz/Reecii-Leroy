@@ -34,13 +34,17 @@ class FacetFiltersForm extends HTMLElement {
     FacetFiltersForm.searchParamsPrev = searchParams;
     const sections = FacetFiltersForm.getSections();
     const countContainer = document.getElementById('ProductCount');
+    const countContainerMobile = document.getElementById('ProductCountMobile');
     const loadingSpinners = document.querySelectorAll(
-      '.product-count .loading__spinner'
+      '.product-count .loading__spinner, .product-grid-container .loading__spinner'
     );
     loadingSpinners.forEach((spinner) => spinner.classList.remove('hidden'));
     document.getElementById('ProductGridContainer').querySelector('.collection').classList.add('loading');
     if (countContainer) {
       countContainer.classList.add('loading');
+    }
+    if (countContainerMobile) {
+      countContainerMobile.classList.add('loading');
     }
 
     sections.forEach((section) => {
@@ -112,8 +116,13 @@ class FacetFiltersForm extends HTMLElement {
   }
 
   static renderProductPerPage() {
+    const productGrid = document.querySelector('.product-grid-container .product-grid');
+
     document.querySelectorAll('input[name="per_page"]').forEach(function(input) {
       input.addEventListener('change', function() {
+        input.closest('.details__list').querySelector('.selected').classList.remove('selected', 'pointer-events-none');
+        input.closest('.facet-filters__sort_item').classList.add('selected', 'pointer-events-none');
+        input.closest('details').querySelector('.label-text').innerHTML = this.value;
         var data = new URLSearchParams();
         data.append('attributes[pagination]', this.value);
 
@@ -127,13 +136,28 @@ class FacetFiltersForm extends HTMLElement {
         .then((response) => response.text());
       });
     });
+
+    if (productGrid) {
+      const gridViewButton = document.querySelector('.button--grid-view.active');
+
+      if (gridViewButton) {
+        productGrid.setAttribute('data-view', gridViewButton.dataset.grid);
+      }
+    }
   }
 
   static renderProductCount(html) {
     const count = new DOMParser().parseFromString(html, 'text/html').getElementById('ProductCount').innerHTML;
     const container = document.getElementById('ProductCount');
+    const containerMobile = document.getElementById('ProductCountMobile');
     container.innerHTML = count;
     container.classList.remove('loading');
+
+    if(containerMobile) {
+      containerMobile.innerHTML = count;
+      containerMobile.classList.remove('loading');
+    }
+
     const loadingSpinners = document.querySelectorAll(
       '.product-count .loading__spinner'
     );

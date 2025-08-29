@@ -57,7 +57,7 @@ class AccordionCustom extends HTMLElement {
               ? `${this.summaryElement.clientHeight}px`
               : [
               `${this.summaryElement.clientHeight}px`,
-              `${this.details.scrollHeight}px`,
+              `${this.summaryElement.clientHeight + this.contentElement.scrollHeight}px`,
             ],
           },
           { duration: 0.25, easing: "ease" },

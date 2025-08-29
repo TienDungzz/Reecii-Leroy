@@ -77,6 +77,10 @@
   {% if block.settings.enable_parallax %}
     {{ attributes_parllax }}
   {% endif %}
+
+  {% if block.settings.enable_parallax and block.settings.disable_parallax_mobile %}
+    data-disable-parallax-mobile="true"
+  {% endif %}
 {% endcapture %}
 
 <{{ element }}
@@ -451,6 +455,13 @@
       "label": "Enable parallax scroll",
       "default": false,
       "visible_if": "{{ block.settings.enable_fancybox == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_parallax_mobile",
+      "label": "Disable parallax scroll on mobile",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_parallax }}"
     },
     {
       "type": "range",
