@@ -1,58 +1,63 @@
-{%- liquid
-  assign card_article = block.settings.article
-  assign truncatewords = block.settings.truncatewords
-  assign content = card_article.excerpt | default: card_article.content
-  if card_article == blank
-    assign content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-  endif
--%}
-
-{% stylesheet %}
-  .featured-article-block .blog-post-description > div:before {
-    content: '';
-    display: block;
-    width: 33.362%; /* 5% + 32.6% * 87% */
-    height: var(--font-size);
-    background-color: transparent;
-    float: left;
-  }
-
-  @media (max-width: 750px) {
-    .featured-article-block .blog-post-description > div:before {
-      content: '';
-      display: block;
-      width: calc((100vw - 30px) * 12.5 / 100); /* calc((100vw - 30px) * 12.5%)*/
-      height: var(--font-size);
-      background-color: transparent;
-      float: left;
-    }
-  }
-{% endstylesheet %}
-
-<div class="blog-post-description {% if block.settings.type_preset != '' %}{{ block.settings.type_preset }}{% endif %}">
-  {% if content %}
-    {%- assign placeholder = content | strip_html | truncatewords: truncatewords -%}
-    {% render 'text', fallback_text: placeholder, block: block %}
-  {% endif %}
-</div>
+{% if closest.collection == blank %}
+  {% assign text = 'placeholders.collection_title' | t %}
+  {% assign collection_title = '<p>' | append: text | append: '</p>' %}
+  {% render 'text', fallback_text: collection_title, block: block %}
+{% elsif closest.collection != blank %}
+  {% assign collection_title = '<p>' | append: closest.collection.title | append: '</p>' %}
+  {% render 'text', fallback_text: collection_title, block: block %}
+{% endif %}
 
 {% schema %}
 {
-  "name": "Article description",
+  "name": "t:names.collection_title",
+  "tag": null,
   "settings": [
     {
-      "type": "article",
-      "id": "article",
-      "label": "Article"
+      "type": "header",
+      "content": "t:content.layout"
     },
     {
-      "type": "range",
-      "id": "truncatewords",
-      "min": 10,
-      "max": 200,
-      "step": 2,
-      "default": 30,
-      "label": "Truncatewords"
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit"
+        },
+        {
+          "value": "100%",
+          "label": "t:options.fill"
+        }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "select",
+      "id": "max_width",
+      "label": "t:settings.max_width",
+      "options": [
+        {
+          "value": "narrow",
+          "label": "t:options.narrow"
+        },
+        {
+          "value": "normal",
+          "label": "t:options.normal"
+        },
+        {
+          "value": "none",
+          "label": "t:options.none"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.width == '100%' }}"
     },
     {
       "type": "header",
@@ -119,6 +124,10 @@
         {
           "value": "var(--font-heading--family)",
           "label": "t:options.heading"
+        },
+        {
+          "value": "var(--font-accent--family)",
+          "label": "t:options.accent"
         }
       ],
       "default": "var(--font-body--family)",
@@ -227,6 +236,27 @@
     },
     {
       "type": "select",
+      "id": "line_height",
+      "label": "t:settings.line_height",
+      "options": [
+        {
+          "value": "tight",
+          "label": "t:options.tight"
+        },
+        {
+          "value": "normal",
+          "label": "t:options.normal"
+        },
+        {
+          "value": "loose",
+          "label": "t:options.loose"
+        }
+      ],
+      "default": "normal",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+    },
+    {
+      "type": "select",
       "id": "letter_spacing",
       "label": "t:settings.letter_spacing",
       "options": [
@@ -284,52 +314,103 @@
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {
+      "type": "select",
+      "id": "color",
+      "label": "t:settings.color",
+      "options": [
+        {
+          "value": "var(--color-foreground)",
+          "label": "t:options.text"
+        },
+        {
+          "value": "var(--color-foreground-heading)",
+          "label": "t:options.heading"
+        },
+        {
+          "value": "var(--color-primary)",
+          "label": "t:options.link"
+        }
+      ],
+      "default": "var(--color-foreground)",
+      "visible_if": "{{ block.settings.type_preset != 'rte' }}"
+    },
+    {
       "type": "header",
-      "content": "Padding"
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "background",
+      "label": "t:settings.background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "alpha": true,
+      "default": "#00000026",
+      "visible_if": "{{ block.settings.background }}"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "t:settings.corner_radius",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "visible_if": "{{ block.settings.background }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
     },
     {
       "type": "range",
       "id": "padding-block-start",
+      "label": "t:settings.top",
       "min": 0,
       "max": 100,
       "step": 1,
-      "default": 0,
-      "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
-    },
-    {
-      "type": "range",
-      "id": "padding-inline-end",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "default": 0,
-      "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "range",
       "id": "padding-block-end",
+      "label": "t:settings.bottom",
       "min": 0,
       "max": 100,
       "step": 1,
-      "default": 0,
-      "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "range",
       "id": "padding-inline-start",
+      "label": "t:settings.left",
       "min": 0,
       "max": 100,
       "step": 1,
-      "default": 0,
-      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     }
   ],
   "presets": [
     {
-      "name": "Article description",
-      "settings": {
-        "article": "{{ closest.article }}"
-      }
+      "name": "t:names.collection_title",
+      "category": "t:categories.collection"
     }
   ]
 }
