@@ -1,0 +1,84 @@
+{%- doc -%}
+  This snippet is used to render the quantity selector for a product.
+  It is used in the product page and the cart page.
+
+  @param {object} product - the product to render the quantity selector for
+  @param {number} [in_cart_quantity] - the quantity in the cart to set the input value
+  @param {number} [line_index] - the index of the forloop representing the line on which the quantity selector is rendered
+  @param {number} [min] - the minimum quantity the input supports
+  @param {string} [class] - custom class for the quantity selector, optional
+  @param {boolean} [can_update_quantity] - whether the quantity can be updated, defaults to true
+  @param {string} [product_form_id] - the id of the product form to render the quantity selector for
+{%- enddoc -%}
+
+{% liquid
+  assign variant = product.selected_or_first_available_variant
+  assign cart_qty = cart | item_count_for_variant: product.selected_or_first_available_variant.id
+  assign product_form_id = 'product-form-' | append: block.id
+%}
+
+<quantity-input
+  class="quantity quantity-selector{% if class %} {{ class }}{% endif %}"
+  {% if line_index == null %}
+    {{- block.shopify_attributes -}}
+  {% endif %}
+  ref="quantitySelectors[]"
+>
+  <button
+    class="button quantity__button quantity-minus button-unstyled"
+    type="button"
+    name="minus"
+    {% if can_update_quantity == false %}
+      disabled
+    {% endif %}
+  >
+    <span class="visually-hidden">
+      {{- 'accessibility.decrease_quantity' | t -}}
+    </span>
+    <span class="svg-wrapper icon-minus">
+      {{- 'icon-minus.svg' | inline_asset_content -}}
+    </span>
+  </button>
+  <input
+    id="Quantity-{{ variant.id }}"
+    class="quantity__input"
+    type="number"
+    name="{% if line_index %}updates[]{% else %}quantity{% endif %}"
+    inputmode="numeric"
+    data-cart-quantity="{{ cart_qty }}"
+    value="{{ in_cart_quantity | default: 1}}"
+    min="{{ min | default: 1 }}"
+    data-min="{{ variant.quantity_rule.min }}"
+    step="{{ variant.quantity_rule.increment | default: 1 }}"
+    aria-label="{{ 'accessibility.quantity' | t }}"
+    form="{{ product_form_id }}"
+    {% if variant.quantity_rule.max != null %}
+      data-max="{{ variant.quantity_rule.max }}"
+      max="{{ variant.quantity_rule.max }}"
+    {% endif %}
+    {% if line_index %}
+      data-cart-line="{{ line_index | plus: 1 }}"
+    {% endif %}
+    {% if variant.quantity_rule.max %}
+      max="{{ variant.quantity_rule.max }}"
+    {% endif %}
+    {% if can_update_quantity == false or variant.available == false %}
+      disabled
+    {% endif %}
+  >
+  <button
+    class="button quantity__button quantity-plus button-unstyled"
+    type="button"
+    name="plus"
+    {% if can_update_quantity == false %}
+      disabled
+    {% endif %}
+  >
+    <span class="visually-hidden">
+      {{- 'accessibility.increase_quantity' | t -}}
+    </span>
+    <span class="svg-wrapper icon-plus">
+      {{- 'icon-plus.svg' | inline_asset_content -}}
+    </span>
+  </button>
+</quantity-input>

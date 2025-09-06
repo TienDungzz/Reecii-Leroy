@@ -303,3 +303,605 @@ p:not(.h1, .h2, .h3, .h4, .h5, .h6) a:where(:not(.button, .button-primary, .butt
     color: var(--color-primary-hover);
   }
 }
+
+/* Product Media */
+media-gallery {
+  display: block;
+  width: 100%;
+}
+
+:where(media-gallery, .product-grid__item) {
+  .media-gallery__grid {
+    grid-template-columns: 1fr;
+    gap: var(--image-gap);
+  }
+}
+
+.product-media-gallery__slideshow--single-media slideshow-container {
+  @media screen and (max-width: 749px) {
+    grid-area: unset;
+  }
+}
+
+:not(.dialog-zoomed-gallery) > .product-media-container {
+  /* width and overflow forces children to shrink to parent width */
+  --slide-width: round(up, 100%, 1px);
+
+  display: flex;
+  aspect-ratio: var(--gallery-aspect-ratio, var(--media-preview-ratio));
+  max-height: var(--constrained-height);
+  width: 100%;
+
+  /* Relative position needed for video and 3d models */
+  position: relative;
+  overflow: hidden;
+
+  &:where(.constrain-height) {
+    /* arbitrary offset value based on average theme spacing and header height */
+    --viewport-offset: 400px;
+    --constrained-min-height: 300px;
+    --constrained-height: max(var(--constrained-min-height), calc(100vh - var(--viewport-offset)));
+
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+media-gallery:where(.media-gallery--grid) .media-gallery__grid {
+  display: none;
+}
+
+media-gallery.media-gallery--grid .media-gallery__grid .product-media-container {
+  /* Needed for safari to stretch to full grid height */
+  height: 100%;
+}
+
+.product-media :is(deferred-media, product-model) {
+  position: absolute;
+}
+
+@media screen and (max-width: 749px) {
+  .product-media-container.constrain-height {
+    max-height: none;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .product-media-container.constrain-height {
+    --viewport-offset: var(--header-height, 100px);
+    --constrained-min-height: 500px;
+  }
+
+  .media-gallery--two-column .media-gallery__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .media-gallery--large-first-image .product-media-container:first-child,
+  .media-gallery--two-column .product-media-container:only-child {
+    /* First child spans 2 columns */
+    grid-column: span 2;
+  }
+
+  /* Display grid view as a carousel on mobile, grid on desktop */
+  media-gallery:is(.media-gallery--grid) slideshow-component {
+    display: none;
+  }
+
+  media-gallery:where(.media-gallery--grid) .media-gallery__grid {
+    display: grid;
+  }
+}
+
+.product-media-container--model {
+  /* Usefull when view in your space is shown */
+  flex-direction: column;
+}
+
+.shopify-model-viewer-ui__controls-area {
+  bottom: calc(var(--minimum-touch-target) + var(--padding-sm));
+}
+
+.product-media-container img {
+  aspect-ratio: inherit;
+  object-fit: contain;
+  object-position: center center;
+}
+
+.product-media-container.media-fit {
+  --product-media-fit: cover;
+
+  img {
+    object-fit: var(--product-media-fit);
+  }
+}
+
+/* Media gallery zoom dialog */
+.product-media-container__zoom-button {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: var(--layer-flat);
+  cursor: zoom-in;
+  background-color: transparent;
+
+  &:hover {
+    background-color: transparent;
+  }
+}
+
+zoom-dialog dialog {
+  width: 100vw;
+  height: 100vh;
+  border: none;
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  max-height: 100%;
+  background: white;
+  opacity: 0;
+  transition: opacity var(--animation-speed) var(--animation-easing);
+  scrollbar-width: none;
+
+  &[open] {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    scroll-behavior: smooth;
+  }
+
+  &::backdrop {
+    background: transparent;
+  }
+}
+
+/* Animate the UI elements in only after the view transition is complete */
+.close-button {
+  position: fixed;
+  top: var(--margin-lg);
+  right: var(--margin-lg);
+  width: var(--minimum-touch-target);
+  height: var(--minimum-touch-target);
+  z-index: var(--layer-flat);
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* For the outline radius */
+  border-radius: 50%;
+}
+
+/* This triggers iOS < 16.4. The outline bug is not recognized as a lack of @supports */
+
+@supports not (background-color: rgb(from red 150 g b / alpha)) {
+  /**
+    There is a bug in safari < 16.4 that causes the outline to not follow the elements border radius. This is a workaround.
+    Using element selector to increase specificity.
+  **/
+
+  .close-button:focus-visible {
+    outline: none;
+    overflow: visible;
+  }
+
+  .close-button:focus-visible::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--focus-outline-offset));
+    border: var(--focus-outline-width) solid currentColor;
+    border-radius: 50%;
+    display: inherit;
+  }
+}
+
+.dialog--closed .close-button {
+  animation: elementSlideOutBottom calc(var(--animation-speed) * 0.5) var(--animation-easing) forwards;
+}
+
+.dialog-thumbnails-list-container {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+  z-index: var(--layer-raised);
+}
+
+.dialog-thumbnails-list {
+  position: relative;
+  display: inline-flex;
+  flex-direction: row;
+  gap: 8px;
+  bottom: 0;
+  overflow-x: auto;
+  opacity: 0;
+  padding: var(--padding-lg);
+  margin-inline: auto;
+  scrollbar-width: none;
+  animation: thumbnailsSlideInBottom calc(var(--animation-speed) * 0.75) var(--animation-easing) forwards;
+  animation-delay: calc(var(--animation-speed) * 1.5);
+}
+
+.dialog--closed .dialog-thumbnails-list {
+  animation: thumbnailsSlideOutBottom var(--animation-speed) var(--animation-easing) forwards;
+}
+
+@media screen and (min-width: 750px) {
+  .dialog-thumbnails-list {
+    position: fixed;
+    flex-direction: column;
+    inset: 50% var(--margin-lg) auto auto;
+    right: 0;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    animation: thumbnailsSlideInTop calc(var(--animation-speed) * 0.5) var(--animation-easing) forwards;
+    animation-delay: calc(var(--animation-speed) * 2);
+  }
+
+  .dialog--closed .dialog-thumbnails-list {
+    animation: thumbnailsSlideOutTop var(--animation-speed) var(--animation-easing) forwards;
+  }
+}
+
+.dialog-thumbnails-list__thumbnail {
+  width: var(--thumbnail-width);
+  height: auto;
+  transition: transform var(--animation-speed) var(--animation-easing);
+  flex-shrink: 0;
+  border-radius: var(--media-radius);
+
+  img {
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--media-radius);
+    aspect-ratio: var(--aspect-ratio);
+  }
+
+  &:is([aria-selected='true']) {
+    outline: var(--focus-outline-width) solid currentcolor;
+    outline-offset: calc(var(--focus-outline-offset) / 2);
+    border: var(--style-border-width) solid rgb(var(--color-border-rgb) / var(--media-border-opacity));
+  }
+}
+
+.close-button:hover {
+  background-color: transparent;
+  opacity: 0.8;
+}
+
+.close-button svg {
+  width: var(--icon-size-xs);
+  height: var(--icon-size-xs);
+}
+
+/* Product media */
+.product-media {
+  display: flex;
+  flex: 1;
+}
+
+/* If the product media is already providing an image cover, hide images provided by sibling deferred-media */
+.product-media__image ~ * .deferred-media__poster-image {
+  display: none;
+}
+
+/* If the product media is playing, hide the preview image */
+.product-media-container:has(.deferred-media__playing) .product-media__image {
+  opacity: 0;
+  transition: opacity var(--animation-speed) var(--animation-easing);
+}
+
+/* Deferred media & Product model  */
+:is(product-model, deferred-media) {
+  /* Height needed to make sure when it's set to be stretched, it takes the full height */
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+product-model model-viewer,
+/* Media that have a poster button sibling providing the size should be absolute-positioned.
+Otherwise, it should be a block to rely on its own size */
+:is(deferred-media, product-model) > .deferred-media__poster-button ~ *:not(template) {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  /* Required to make sure the absolute position respects the padding of the wrapper: */
+  padding: inherit;
+}
+
+slideshow-slide .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui__controls-area {
+  bottom: var(--padding-sm);
+  right: var(--padding-sm);
+}
+
+.dialog-zoomed-gallery .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui__controls-area {
+  /* Move the controls above the thumbnails. Need to calculate the height of the thumbnails list */
+  bottom: calc(var(--thumbnail-width) / calc(var(--media-preview-ratio)) + var(--padding-lg) * 2);
+  right: var(--padding-lg);
+}
+
+@media screen and (max-width: 749px) {
+  slideshow-component:has(:not(.mobile\:hidden) :is(.slideshow-controls__dots, .slideshow-controls__counter))
+    .shopify-model-viewer-ui__controls-area {
+    /* Position the controls just above the counter */
+    bottom: calc(var(--minimum-touch-target) + var(--padding-sm));
+  }
+}
+
+@media screen and (min-width: 750px) {
+  slideshow-component:has(:not(.desktop\:hidden) :is(.slideshow-controls__dots, .slideshow-controls__counter))
+    .shopify-model-viewer-ui__controls-area {
+    /* Position the controls just above the counter */
+    bottom: calc(var(--minimum-touch-target) + var(--padding-sm));
+  }
+
+  .dialog-zoomed-gallery .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui__controls-area {
+    /* Move the controls up to match the padding on the thumbnails */
+    bottom: var(--padding-lg);
+
+    /* Move the controls to the left of the thumbnails list on the right */
+    right: calc(var(--thumbnail-width) + var(--padding-lg) * 2);
+  }
+}
+
+:is(deferred-media, .video-placeholder-wrapper).border-style {
+  /* Apply the border radius to the video */
+  overflow: hidden;
+}
+
+deferred-media {
+  /* The overflow hidden in the deferred-media won't let the button show the focus ring */
+  &:has(:focus-visible) {
+    outline: var(--focus-outline-width) solid currentcolor;
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  @supports not selector(:focus-visible) {
+    &:has(:focus) {
+      outline: var(--focus-outline-width) solid currentcolor;
+      outline-offset: var(--focus-outline-offset);
+    }
+  }
+}
+
+.deferred-media__poster-button {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: var(--video-aspect-ratio, auto);
+}
+
+.deferred-media__poster-button.deferred-media__playing {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+deferred-media img {
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+deferred-media iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  aspect-ratio: var(--size-style-aspect-ratio, auto);
+}
+
+deferred-media[data-media-loaded] img {
+  opacity: 0;
+}
+
+.deferred-media__poster-icon,
+.video-placeholder-wrapper__poster-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deferred-media__poster-icon svg,
+.video-placeholder-wrapper__poster-icon svg {
+  width: var(--button-size);
+  height: var(--button-size);
+  color: var(--color-white);
+  filter: drop-shadow(var(--shadow-button));
+
+  &:hover {
+    color: rgb(var(--color-white-rgb) / var(--opacity-80));
+  }
+
+  @media screen and (min-width: 750px) {
+    width: 4rem;
+    height: 4rem;
+  }
+}
+
+deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__poster-button ~ video) {
+  /* only apply this on the video block not product media */
+  object-fit: cover;
+  height: 100%;
+  aspect-ratio: var(--size-style-aspect-ratio, auto);
+}
+
+.button-shopify-xr {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--padding-md);
+}
+
+.button-shopify-xr > svg {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  fill: currentcolor;
+  margin-inline-end: var(--margin-md);
+}
+
+.button-shopify-xr[data-shopify-xr-hidden] {
+  display: none;
+}
+
+/* Add to cart button */
+.button[id^='BuyButtons-ProductSubmitButton-'] {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Quantity selector */
+.quantity-selector {
+  --quantity-selector-width: 124px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-input-text);
+  background-color: var(--color-input-background);
+  border: var(--style-border-width-inputs) solid var(--color-input-border);
+  border-radius: var(--style-border-radius-inputs);
+  flex: 1 1 var(--quantity-selector-width);
+  align-self: stretch;
+  transition: background-color var(--animation-speed) var(--animation-easing);
+
+  &:hover {
+    background-color: var(--color-input-hover-background);
+  }
+}
+
+.product-form-buttons:has(.add-to-cart-button.button-secondary) .quantity-selector {
+  border-radius: var(--style-border-radius-buttons-secondary);
+}
+
+.quantity-selector :is(.quantity-minus, .quantity-plus) {
+  /* Unset button styles */
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  width: var(--minimum-touch-target);
+  height: var(--minimum-touch-target);
+  flex-shrink: 0;
+  color: var(--color-input-text);
+}
+
+.quantity-selector .quantity-minus {
+  border-start-start-radius: var(--style-border-radius-inputs);
+  border-end-start-radius: var(--style-border-radius-inputs);
+}
+
+.quantity-selector .quantity-plus {
+  border-start-end-radius: var(--style-border-radius-inputs);
+  border-end-end-radius: var(--style-border-radius-inputs);
+}
+
+.product-details .quantity-selector {
+  border-radius: var(--style-border-radius-buttons-primary);
+}
+
+.product-details .quantity-selector .quantity-minus {
+  border-start-start-radius: var(--style-border-radius-buttons-primary);
+  border-end-start-radius: var(--style-border-radius-buttons-primary);
+}
+
+.product-details .quantity-selector .quantity-plus {
+  border-start-end-radius: var(--style-border-radius-buttons-primary);
+  border-end-end-radius: var(--style-border-radius-buttons-primary);
+}
+
+.quantity-selector .svg-wrapper {
+  transition: transform var(--animation-speed) var(--animation-easing);
+}
+
+.quantity-selector svg {
+  width: var(--icon-size-xs);
+  height: var(--icon-size-xs);
+}
+
+:is(.quantity-minus, .quantity-plus):active .svg-wrapper {
+  transform: scale(0.9);
+}
+
+.quantity-selector input[type='number'] {
+  margin: 0;
+  text-align: center;
+  border: none;
+  appearance: none;
+  max-width: calc(var(--quantity-selector-width) - var(--minimum-touch-target) * 2);
+  border-radius: var(--style-border-radius-buttons);
+  color: var(--color-input-text);
+  background-color: transparent;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.quantity-selector input[type='number']::-webkit-inner-spin-button,
+.quantity-selector input[type='number']::-webkit-outer-spin-button {
+  appearance: none;
+}
+
+/* Firefox */
+.quantity-selector input[type='number'] {
+  appearance: textfield;
+}
+
+/* Pills (used in facets and predictive search) */
+
+.pills__pill {
+  --pills-pill-background-color: rgb(var(--color-foreground-rgb) / var(--opacity-5-15));
+
+  color: var(--color-foreground);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--gap-sm);
+  min-width: 48px;
+  padding: 6px 12px;
+  border-radius: var(--style-border-radius-pills);
+  cursor: pointer;
+  background-color: var(--pills-pill-background-color);
+  transition: background-color var(--animation-speed) var(--animation-easing);
+
+  &:hover {
+    --pills-pill-background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
+  }
+
+  @media screen and (max-width: 749px) {
+    padding: var(--padding-xs) var(--padding-md);
+  }
+}
+
+.pills__pill > .svg-wrapper {
+  --close-icon-opacity: 0.4;
+  --icon-stroke-width: 1px;
+
+  color: var(--color-foreground);
+}
+
+.pills__pill--swatch {
+  @media screen and (max-width: 749px) {
+    padding-inline-start: var(--padding-sm);
+  }
+}
+
+.pills__pill--swatch .swatch {
+  margin-right: -4px;
+}
+
+.pills__pill--desktop-small {
+  @media screen and (min-width: 750px) {
+    font-size: var(--font-size--xs);
+  }
+}

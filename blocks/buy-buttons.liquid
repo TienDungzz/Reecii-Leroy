@@ -1,11 +1,11 @@
-
 {% liquid
-  assign product = block.settings.product
+  assign block_settings = block.settings
+  assign product = closest.product
   if request.visual_preview_mode and product == blank
     assign product = collections.all.products.first
   endif
 
-  assign variant = block.settings.product.selected_or_first_available_variant
+  assign variant = closest.product.selected_or_first_available_variant
   assign inventory_quantity = variant.inventory_quantity
   assign inventory_policy = variant.inventory_policy
 
@@ -26,7 +26,7 @@
       assign add_to_cart_text = 'products.product.add_to_cart' | t
     endif
   else
-    if block.settings.product.selected_or_first_available_variant != null
+    if closest.product.selected_or_first_available_variant != null
       assign can_add_to_cart = true
       assign add_to_cart_text = 'products.product.add_to_cart' | t
     else
@@ -35,6 +35,185 @@
     endif
   endif
 %}
+
+<span
+  class="buy-buttons-block buy-buttons-block--{{ block.id }}"
+  {{ block.shopify_attributes }}
+>
+  {%- if product != blank -%}
+    {%- assign product_form_id = 'BuyButtons-ProductForm-' | append: section.id -%}
+    <product-form-component
+      data-section-id="{{ section.id }}"
+      data-product-id="{{ product.id }}"
+      data-product-url="{{ product.url }}"
+      on:submit="/handleSubmit"
+      data-quantity-default="{% if product.selected_or_first_available_variant.quantity_rule.min %}{{ product.selected_or_first_available_variant.quantity_rule.min }}{% else %}1{% endif %}"
+    >
+      <div
+        class="visually-hidden"
+        aria-live="assertive"
+        role="status"
+        aria-atomic="true"
+        ref="liveRegion"
+      ></div>
+      {%- form 'product', product, id: product_form_id, data-type: 'add-to-cart-form' -%}
+        <input
+          type="hidden"
+          name="id"
+          ref="variantId"
+          value="{{ product.selected_or_first_available_variant.id }}"
+        >
+        {%- if block_settings.gift_card_form and product.gift_card? -%}
+          {%- render 'gift-card-recipient-form', product: product, form: form, section: section, block: block -%}
+        {%- endif -%}
+        <div
+          class="product-form-buttons spacing-style{% if block_settings.stacking %} product-form-buttons--stacked{% endif %}"
+          style="{% render 'spacing-style', settings: block_settings %}"
+        >
+          {% content_for 'block', type: 'quantity', id: 'quantity' %}
+
+          {% content_for 'block',
+            type: 'add-to-cart',
+            id: 'add-to-cart',
+            can_add_to_cart: can_add_to_cart,
+            add_to_cart_text: add_to_cart_text
+          %}
+          {%- unless block_settings.gift_card_form and product.gift_card? -%}
+            <span
+              class="product-form-text__error hidden"
+              ref="addToCartTextError"
+            >
+              <span class="svg-wrapper product-form-icon--error">
+                {{- 'icon-error.svg' | inline_asset_content -}}
+              </span>
+            </span>
+          {%- endunless -%}
+          {% content_for 'block',
+            type: 'accelerated-checkout',
+            id: 'accelerated-checkout',
+            can_add_to_cart: can_add_to_cart,
+            form_obj: form
+          %}
+        </div>
+      {%- endform -%}
+    </product-form-component>
+  {%- else -%}
+    <div class="product-form-buttons">
+      <button
+        type="submit"
+        name="add"
+        class="button"
+        disabled
+      >
+        {{ 'products.product.sold_out' | t }}
+      </button>
+    </div>
+  {%- endif -%}
+</span>
+
+{% if block_settings.show_pickup_availability %}
+  {% comment %} <script
+    src="{{ 'local-pickup.js' | asset_url }}"
+    type="module"
+  ></script> {% endcomment %}
+
+  {%- assign pick_up_availabilities = closest.product.selected_or_first_available_variant.store_availabilities
+    | where: 'pick_up_enabled', true
+  -%}
+
+  <local-pickup
+    class="spacing-style product__pickup-availabilities"
+    {% if pick_up_availabilities.size == 0 %}
+      hidden
+    {% endif %}
+    data-section-id="{{ section.id }}"
+    data-product-url="{{ closest.product.url }}"
+    data-variant-id="{{ closest.product.selected_or_first_available_variant.id }}"
+    style="{% render 'spacing-style', settings: block_settings %}"
+    ref="localPickupButton"
+  >
+    {% if can_add_to_cart %}
+      <dialog-component>
+        <div class="pickup-availability__row">
+          <div class="pickup-availability__column">
+            <span class="svg-wrapper">
+              {% if pick_up_availabilities.first.available %}
+                {{- 'icon-available.svg' | inline_asset_content -}}
+              {% else %}
+                {{- 'icon-unavailable.svg' | inline_asset_content -}}
+              {% endif %}
+            </span>
+          </div>
+          <div class="pickup-availability__column">
+            {% if pick_up_availabilities.first.available %}
+              <p class="pickup-location__text-sm">
+                {{ 'content.pickup_available_at_html' | t: location: pick_up_availabilities.first.location.name }}
+              </p>
+              <p class="pickup-location__text-xs">
+                {{ 'content.pickup_ready_in' | t: pickup_time: pick_up_availabilities.first.pick_up_time }}
+              </p>
+            {% else %}
+              <p class="pickup-location__text-sm">
+                {{ 'content.pickup_not_available' | t }}
+              </p>
+            {% endif %}
+            <button
+              on:click="/showDialog"
+              class="button-unstyled pickup-location__button"
+            >
+              {{ 'actions.view_store_information' | t }}
+            </button>
+          </div>
+        </div>
+        <dialog
+          ref="dialog"
+          class="dialog-modal dialog-drawer pickup-location__dialog color-{{ settings.drawer_color_scheme }}"
+          scroll-lock
+        >
+          <div class="pickup-availability__dialog-row pickup-availability__header-container">
+            <div class="pickup-availability__column">
+              <h4 class="pickup-location__h4">{{ closest.product.title }}</h4>
+              <p class="pickup-location__text-sm">
+                {{ closest.product.selected_or_first_available_variant.title }}
+              </p>
+            </div>
+            <button
+              ref="closeButton"
+              on:click="/closeDialog"
+              class="button button-unstyled close-button pickup-location__close-button"
+              aria-label="{{ 'accessibility.close_dialog' | t }}"
+            >
+              <span class="svg-wrapper">
+                {{- 'icon-close.svg' | inline_asset_content -}}
+              </span>
+            </button>
+          </div>
+          {% for pick_up_availability in pick_up_availabilities %}
+            <div class="pickup-location__wrapper">
+              <p class="pickup-location__text-bold">{{ pick_up_availability.location.name }}</p>
+              <div class="pickup-location__address-wrapper">
+                <span class="pickup-location__availability-wrapper">
+                  {% if pick_up_availability.available %}
+                    {{- 'icon-available.svg' | inline_asset_content -}}
+                    {% assign pickup_time = pick_up_availability.pick_up_time | downcase %}
+                    {{ 'content.pickup_available_in' | t: pickup_time: pickup_time }}
+                  {% else %}
+                    {{- 'icon-unavailable.svg' | inline_asset_content -}}
+                    {{ 'content.pickup_not_available' | t }}
+                  {% endif %}
+                </span>
+                <address class="pickup-location__address">
+                  {{ pick_up_availability.location.address | format_address }}
+                  {{ pick_up_availability.location.address.phone }}
+                </address>
+              </div>
+            </div>
+          {% endfor %}
+        </dialog>
+      </dialog-component>
+    {% endif %}
+  </local-pickup>
+{% endif %}
 
 {% stylesheet %}
   .buy-buttons-block {
@@ -52,8 +231,8 @@
   }
 
   .product-form-buttons > *:not(.quantity-selector) {
-    flex: 1;
-    min-width: 185px;
+    flex: 1 1 185px;
+    min-width: fit-content;
   }
 
   .product-form-buttons--stacked > *:not(.quantity-selector) {
@@ -137,7 +316,7 @@
     margin: 0 0 0 auto;
     border: var(--style-border-drawer);
     box-shadow: var(--shadow-drawer);
-    background: var(--color-background);
+    background-color: var(--color-background);
   }
 
   .pickup-location__dialog:modal {
@@ -196,199 +375,19 @@
   }
 
   .pickup-location__close-button {
-    position: absolute;
     top: calc(var(--padding-2xl) - (var(--icon-size-xs) / 2));
     right: calc(var(--padding-2xl) - var(--icon-size-xs));
-    height: var(--minimum-touch-target);
-    width: var(--minimum-touch-target);
-  }
-
-  .pickup-location__close-button svg {
-    width: var(--icon-size-xs);
-    height: var(--icon-size-xs);
   }
 {% endstylesheet %}
 
-<span
-  class="buy-buttons-block buy-buttons-block--{{ block.id }}"
-  {{ block.shopify_attributes }}
->
-  {%- if product != blank -%}
-    {%- assign product_form_id = 'BuyButtons-ProductForm-' | append: block.id -%}
-    <product-form-component
-      data-section-id="{{ section.id }}"
-      data-product-id="{{ product.id }}"
-      data-product-url="{{ product.url }}"
-      on:submit="/handleSubmit"
-    >
-      <div
-        class="visually-hidden"
-        aria-live="assertive"
-        role="status"
-        aria-atomic="true"
-        ref="liveRegion"
-      ></div>
-      {%- form 'product', product, id: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
-        <input
-          type="hidden"
-          name="id"
-          ref="variantId"
-          value="{{ product.selected_or_first_available_variant.id }}"
-        >
-        <div
-          class="product-form-buttons spacing-style{% if block.settings.stacking %} product-form-buttons--stacked{% endif %}"
-          style="{% render 'spacing-style', settings: block.settings %}"
-        >
-          {% content_for 'block', type: 'quantity', id: 'quantity' %}
-          {% content_for 'block',
-            type: 'add-to-cart',
-            id: 'add-to-cart',
-            can_add_to_cart: can_add_to_cart,
-            add_to_cart_text: add_to_cart_text
-          %}
-          <span
-            class="product-form-text__error hidden"
-            ref="addToCartTextError"
-          >
-            <span class="svg-wrapper product-form-icon--error">
-              {{- 'icon-error.svg' | inline_asset_content -}}
-            </span>
-          </span>
-          {% content_for 'block',
-            type: 'accelerated-checkout',
-            id: 'accelerated-checkout',
-            can_add_to_cart: can_add_to_cart
-          %}
-        </div>
-      {%- endform -%}
-    </product-form-component>
-  {%- else -%}
-    <div class="product-form-buttons">
-      <button
-        type="submit"
-        name="add"
-        class="button"
-        disabled
-      >
-        {{ 'blocks.sold_out' | t }}
-      </button>
-    </div>
-  {%- endif -%}
-</span>
-
-{% if block.settings.show_pickup_availability %}
-  <script
-    src="{{ 'local-pickup.js' | asset_url }}"
-    type="module"
-  ></script>
-
-  {%- assign pick_up_availabilities = block.settings.product.selected_or_first_available_variant.store_availabilities
-    | where: 'pick_up_enabled', true
-  -%}
-
-  <local-pickup
-    class="spacing-style product__pickup-availabilities"
-    {% if pick_up_availabilities.size == 0 %}
-      hidden
-    {% endif %}
-    data-section-id="{{ section.id }}"
-    data-product-url="{{ block.settings.product.url }}"
-    data-variant-id="{{ block.settings.product.selected_or_first_available_variant.id }}"
-    style="{% render 'spacing-style', settings: block.settings %}"
-    ref="localPickupButton"
-  >
-    {% if can_add_to_cart %}
-      <dialog-component>
-        <div class="pickup-availability__row">
-          <div class="pickup-availability__column">
-            <span class="svg-wrapper">
-              {% if pick_up_availabilities.first.available %}
-                {{- 'icon-available.svg' | inline_asset_content -}}
-              {% else %}
-                {{- 'icon-unavailable.svg' | inline_asset_content -}}
-              {% endif %}
-            </span>
-          </div>
-          <div class="pickup-availability__column">
-            {% if pick_up_availabilities.first.available %}
-              <p class="pickup-location__text-sm">
-                {{ 'content.pickup_available_at_html' | t: location: pick_up_availabilities.first.location.name }}
-              </p>
-              <p class="pickup-location__text-xs">
-                {{ 'content.pickup_ready_in' | t: pickup_time: pick_up_availabilities.first.pick_up_time }}
-              </p>
-            {% else %}
-              <p class="pickup-location__text-sm">
-                {{ 'content.pickup_not_available' | t }}
-              </p>
-            {% endif %}
-            <button
-              on:click="/showDialog"
-              class="button-unstyled pickup-location__button"
-            >
-              {{ 'actions.view_store_information' | t }}
-            </button>
-          </div>
-        </div>
-        <dialog
-          ref="dialog"
-          class="dialog-modal dialog-drawer pickup-location__dialog color-{{ settings.drawer_color_scheme }}"
-          scroll-lock
-        >
-          <div class="pickup-availability__dialog-row pickup-availability__header-container">
-            <div class="pickup-availability__column">
-              <h4 class="pickup-location__h4">{{ block.settings.product.title }}</h4>
-              <p class="pickup-location__text-sm">
-                {{ block.settings.product.selected_or_first_available_variant.title }}
-              </p>
-            </div>
-            <button
-              ref="closeButton"
-              on:click="/closeDialog"
-              class="button button-unstyled pickup-location__close-button"
-              aria-label="{{ 'actions.close_dialog' | t }}"
-            >
-              <span class="svg-wrapper">
-                {{- 'icon-close.svg' | inline_asset_content -}}
-              </span>
-            </button>
-          </div>
-          {% for pick_up_availability in pick_up_availabilities %}
-            <div class="pickup-location__wrapper">
-              <p class="pickup-location__text-bold">{{ pick_up_availability.location.name }}</p>
-              <div class="pickup-location__address-wrapper">
-                <span class="pickup-location__availability-wrapper">
-                  {% if pick_up_availability.available %}
-                    {{- 'icon-available.svg' | inline_asset_content -}}
-                    {% assign pickup_time = pick_up_availability.pick_up_time | downcase %}
-                    {{ 'content.pickup_available_in' | t: pickup_time: pickup_time }}
-                  {% else %}
-                    {{- 'icon-unavailable.svg' | inline_asset_content -}}
-                    {{ 'content.pickup_not_available' | t }}
-                  {% endif %}
-                </span>
-                <address class="pickup-location__address">
-                  {{ pick_up_availability.location.address | format_address }}
-                  {{ pick_up_availability.location.address.phone }}
-                </address>
-              </div>
-            </div>
-          {% endfor %}
-        </dialog>
-      </dialog-component>
-    {% endif %}
-  </local-pickup>
-{% endif %}
-
 {% schema %}
 {
-  "name": "Product buy buttons",
+  "name": "t:names.product_buy_buttons",
   "tag": null,
   "settings": [
     {
-      "type": "product",
-      "id": "product",
-      "label": "t:settings.product"
+      "type": "paragraph",
+      "content": "t:content.resource_reference_product"
     },
     {
       "type": "checkbox",
@@ -401,6 +400,16 @@
       "id": "show_pickup_availability",
       "label": "t:settings.show_pickup_availability",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "gift_card_form",
+      "label": "t:settings.gift_card_form",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "t:content.gift_card_form_description"
     },
     {
       "type": "header",
@@ -449,33 +458,23 @@
   ],
   "presets": [
     {
-      "name": "Product buy buttons",
+      "name": "t:names.product_buy_buttons",
       "category": "t:categories.product",
-      "settings": {
-        "product": "{{  closest.product }}"
-      },
       "blocks": {
         "quantity": {
           "type": "quantity",
-          "static": true,
-          "settings": {
-            "product": "{{ closest.product }}"
-          }
+          "static": true
         },
         "add-to-cart": {
           "type": "add-to-cart",
           "static": true,
           "settings": {
-            "product": "{{ closest.product }}",
             "style_class": "button-secondary"
           }
         },
         "accelerated-checkout": {
           "type": "accelerated-checkout",
-          "static": true,
-          "settings": {
-            "product": "{{ closest.product }}"
-          }
+          "static": true
         }
       }
     }

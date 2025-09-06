@@ -920,26 +920,156 @@ class DeferredMedia extends HTMLElement {
     poster.addEventListener("click", this.loadContent.bind(this));
   }
 
-  loadContent(focus = true) {
-    window.pauseAllMedia();
-    if (!this.getAttribute("loaded")) {
-      const content = document.createElement("div");
-      content.appendChild(
-        this.querySelector("template").content.firstElementChild.cloneNode(true)
-      );
+  connectedCallback() {
+    this.toggleMediaButton = this.querySelector('button[ref="toggleMediaButton"]');
+    this.isPlaying = false;
+    this.abortController = new AbortController();
+    const { signal } = this.abortController;
+    
+    this.setupEventListeners();
+    
+    // Check if ThemeEvents and DialogCloseEvent are defined before using them
+    if (typeof ThemeEvents !== 'undefined' && ThemeEvents.mediaStartedPlaying) {
+      document.addEventListener(ThemeEvents.mediaStartedPlaying, this.pauseMedia.bind(this), { signal });
+    }
+    if (typeof DialogCloseEvent !== 'undefined' && DialogCloseEvent.eventName) {
+      window.addEventListener(DialogCloseEvent.eventName, this.pauseMedia.bind(this), { signal });
+    }
+  }
 
-      this.setAttribute("loaded", true);
-      const deferredElement = this.appendChild(
-        content.querySelector("video, model-viewer, iframe")
-      );
-      if (focus) deferredElement.focus();
-      if (
-        deferredElement.nodeName == "VIDEO" &&
-        deferredElement.getAttribute("autoplay")
-      ) {
+  disconnectedCallback() {
+    this.abortController.abort();
+  }
+
+  setupEventListeners() {
+    if (this.toggleMediaButton) {
+      this.toggleMediaButton.addEventListener('click', () => {
+        this.toggleMedia();
+      });
+    }
+  }
+
+  updatePlayPauseHint(isPlaying) {
+    if (this.toggleMediaButton instanceof HTMLElement) {
+      this.toggleMediaButton.classList.remove('hidden');
+      const playIcon = this.toggleMediaButton.querySelector('.icon-play');
+      if (playIcon) playIcon.classList.toggle('hidden', isPlaying);
+      const pauseIcon = this.toggleMediaButton.querySelector('.icon-pause');
+      if (pauseIcon) pauseIcon.classList.toggle('hidden', !isPlaying);
+    }
+  }
+
+  showDeferredMedia = () => {
+    this.loadContent(true);
+    this.isPlaying = true;
+    this.updatePlayPauseHint(this.isPlaying);
+  };
+
+  loadContent(focus = true) {
+    if (typeof window.pauseAllMedia === 'function') {
+      window.pauseAllMedia();
+    }
+    if (this.getAttribute('data-media-loaded')) return;
+
+    // Dispatch event if MediaStartedPlayingEvent is defined
+    if (typeof MediaStartedPlayingEvent !== 'undefined') {
+      this.dispatchEvent(new MediaStartedPlayingEvent(this));
+    }
+
+    const content = this.querySelector('template')?.content.firstElementChild?.cloneNode(true);
+
+    if (!content) return;
+
+    this.setAttribute('data-media-loaded', true);
+    this.appendChild(content);
+
+    if (focus && content instanceof HTMLElement) {
+      content.focus();
+    }
+
+    this.toggleMediaButton?.classList.add('deferred-media__playing');
+
+    if (content instanceof HTMLVideoElement) {
+      // Set up video event listeners
+      content.addEventListener('play', () => {
+        this.isPlaying = true;
+        this.updatePlayPauseHint(this.isPlaying);
+      });
+      
+      content.addEventListener('pause', () => {
+        this.isPlaying = false;
+        this.updatePlayPauseHint(this.isPlaying);
+      });
+
+      if (content.getAttribute('autoplay')) {
         // force autoplay for safari
-        deferredElement.play();
+        content.play().catch(e => console.log('Autoplay failed:', e));
       }
+    }
+  }
+
+  /**
+   * Toggle play/pause state of the media
+   */
+  toggleMedia() {
+    if (this.isPlaying) {
+      this.pauseMedia();
+    } else {
+      this.playMedia();
+    }
+  }
+
+  playMedia() {
+    /** @type {HTMLIFrameElement | null} */
+    const iframe = this.querySelector('iframe[data-video-type]');
+    if (iframe) {
+      iframe.contentWindow?.postMessage(
+        iframe.dataset.videoType === 'youtube'
+          ? '{"event":"command","func":"playVideo","args":""}'
+          : '{"method":"play"}',
+        '*'
+      );
+      this.isPlaying = true;
+      this.updatePlayPauseHint(this.isPlaying);
+    } else {
+      const video = this.querySelector('video');
+      if (video) {
+        video.play().then(() => {
+          this.isPlaying = true;
+          this.updatePlayPauseHint(this.isPlaying);
+        }).catch(e => {
+          console.log('Video play failed:', e);
+        });
+      }
+    }
+  }
+
+  /**
+   * Pauses the media
+   */
+  pauseMedia() {
+    /** @type {HTMLIFrameElement | null} */
+    const iframe = this.querySelector('iframe[data-video-type]');
+
+    if (iframe) {
+      iframe.contentWindow?.postMessage(
+        iframe.dataset.videoType === 'youtube'
+          ? '{"event":"command","func":"pauseVideo","args":""}'
+          : '{"method":"pause"}',
+        '*'
+      );
+      this.isPlaying = false;
+    } else {
+      const video = this.querySelector('video');
+      if (video) {
+        video.pause();
+        this.isPlaying = false;
+      }
+    }
+
+    // If we've already revealed the deferred media, we should toggle the play/pause hint
+    if (this.getAttribute('data-media-loaded')) {
+      this.updatePlayPauseHint(this.isPlaying);
     }
   }
 }
@@ -1337,7 +1467,6 @@ class SlideshowComponent extends SliderComponent {
 if (!customElements.get("slideshow-component"))
   customElements.define("slideshow-component", SlideshowComponent);
 
-// SWIPER COMPONENT KHINH
 class SwiperComponent extends HTMLElement {
   constructor() {
     super();
@@ -1608,7 +1737,6 @@ class SwiperComponent extends HTMLElement {
 }
 if (!customElements.get("swiper-component"))
   customElements.define("swiper-component", SwiperComponent);
-// END SWIPER COMPONENT KHINH
 
 class VariantSelects extends HTMLElement {
   constructor() {
