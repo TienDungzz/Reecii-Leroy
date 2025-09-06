@@ -5,41 +5,45 @@
 {%- endcomment -%}
 
 {%- if settings.width == 'custom' -%}
-  {% if settings.unit == 'pixel' %}
+  {%- if settings.unit == 'pixel' -%}
     --size-style-width: {{ settings.custom_width_pixel }}px;
-  {% else %}
+  {%- else -%}
     --size-style-width: {{ settings.custom_width }}%;
-  {% endif %}
-{%- elsif settings.width == 'fill' -%}
+  {%- endif -%}
+{%- elsif settings.width == 'fill' or settings.width == '100%' -%}
   --size-style-width: 100%;
-{%- else -%}
+{%- elsif settings.width == 'fit-content' -%}
   --size-style-width: {{ settings.width }};
 {%- endif -%}
 
 {%- if settings.height == 'custom' -%}
   --size-style-height: {{ settings.custom_height }}%;
-{%- elsif settings.height == 'fill' -%}
+{%- elsif settings.height == 'fill' or settings.height == '100%' -%}
   --size-style-height: 100%;
-{%- else -%}
+{%- elsif settings.height == 'fit-content' -%}
   --size-style-height: {{ settings.height }};
 {%- endif -%}
 
 {%- if settings.width_tablet == 'custom' -%}
-  --size-style-width-tablet: {{ settings.custom_width_tablet }}%;
-{%- elsif settings.width_tablet == 'fill' -%}
+  {%- if settings.unit_tablet == 'pixel' -%}
+    --size-style-width-tablet: {{ settings.custom_width_tablet_pixel }}px;
+  {%- else -%}
+    --size-style-width-tablet: {{ settings.custom_width_tablet }}%;
+  {%- endif -%}
+{%- elsif settings.width_tablet == 'fill' or settings.width_tablet == '100%' -%}
   --size-style-width-tablet: 100%;
 {%- elsif settings.width_tablet == 'fit-content' -%}
   --size-style-width-tablet: {{ settings.width_tablet }};
 {%- endif -%}
 
-{% if settings.width_mobile == 'custom' %}
-  {% if settings.unit_mobile == 'pixel' %}
-    --size-style-width-mobile: {{ settings.custom_width_pixel_mobile }}px;
-  {% else %}
+{%- if settings.width_mobile == 'custom' -%}
+  {%- if settings.unit_mobile == 'pixel' -%}
+    --size-style-width-mobile: {{ settings.custom_width_mobile_pixel }}px;
+  {%- else -%}
     --size-style-width-mobile: {{ settings.custom_width_mobile }}%;
-  {% endif %}
+  {%- endif -%}
   --size-style-width-mobile-min: {{ settings.custom_width_mobile }}%;
-{%- elsif settings.width_mobile == 'fill' -%}
+{%- elsif settings.width_mobile == 'fill' or settings.width_mobile == '100%' -%}
   --size-style-width-mobile: 100%; 
   --size-style-width-mobile-min: 5rem;
 {%- elsif settings.width_mobile == 'fit-content' -%}

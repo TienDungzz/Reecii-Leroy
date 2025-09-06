@@ -64,7 +64,7 @@
       {% endif %}
 
       --color-background-rgb: {{ scheme.settings.background.rgb }};
-      
+
       /* Body */
       --color-foreground: rgb({{ scheme.settings.foreground.rgba }});
       --color-foreground-rgb: {{ scheme.settings.foreground.rgb }};
@@ -397,7 +397,7 @@
     /* Typography presets */
     {%- liquid
       assign font_sizes = "paragraph, h1, h2, h3, h4, h5, h6" | split: ", "
-      assign fluid_size_cutoff = 48
+      assign fluid_size_cutoff = 4.8
       assign absolute_font_size_min = 10
 
       assign font_size_values = ''
@@ -406,7 +406,7 @@
         assign size_setting_value = settings[size_setting] | times: 1
 
         if size_setting_value < 100
-          assign size_setting_value = '0[size_setting_value]' | replace: '[size_setting_value]', size_setting_value
+          assign size_setting_value = '[size_setting_value]' | replace: '[size_setting_value]', size_setting_value
         endif
 
         assign font_size_values = font_size_values | append: '[size_setting_value],' | replace: '[size_setting_value]', size_setting_value
@@ -416,7 +416,7 @@
 
       for font_size in font_sizes
         assign size_setting = 'type_size_[font_size]' | replace: '[font_size]', font_size
-        assign font_size_value = settings[size_setting] | times: 1
+        assign font_size_value = settings[size_setting] | replace: 'rem', '' | times: 1
         assign font_size_string = '[font_size_value]' | replace: '[font_size_value]', font_size_value
         assign index = font_size_values | find_index: font_size_string
 
@@ -441,7 +441,7 @@
           endif
 
           assign fluid_size_min_rem = fluid_font_size_min
-          assign fluid_size = font_size_value | times: 0.1
+          assign fluid_size = font_size_value
           assign fluid_size_max_rem = font_size_value
 
           echo '--font-size--[font_size]: clamp([fluid_size_min_rem]rem, [fluid_size]vw, [fluid_size_max_rem]rem);' | replace: '[font_size]', font_size | replace: '[fluid_size_min_rem]', fluid_size_min_rem | replace: '[fluid_size]', fluid_size | replace: '[fluid_size_max_rem]', fluid_size_max_rem
@@ -603,7 +603,7 @@
     --button-font-weight-secondary: {{ settings.button_font_weight_secondary }};
     --button-text-case-primary: {{ settings.button_text_case_primary }};
     --button-text-case-secondary: {{ settings.button_text_case_secondary }};
-    
+
     --buttons-shadow-horizontal-offset: {{ settings.buttons_shadow_horizontal_offset | divided_by: 10.0 }}rem;
     --buttons-shadow-vertical-offset: {{ settings.buttons_shadow_vertical_offset | divided_by: 10.0 }}rem;
     --buttons-shadow-blur-radius: {{ settings.buttons_shadow_blur | divided_by: 10.0 }}rem;

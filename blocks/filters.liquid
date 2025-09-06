@@ -446,6 +446,11 @@
 
 {%- liquid
   assign bl_stts = block.settings
+
+  assign limit = section.settings.products_per_page
+
+  assign columns_desktop = section.settings.columns_desktop
+
   # Calculate facets margin style
   capture facets_margin_style
     echo '--facets-margin: 0px '
@@ -455,48 +460,167 @@
       echo ' 0px ' | append: bl_stts.facets_margin_bottom | append: 'px'
     endif
     echo ' 0px;'
+    echo ' --facets-margin-right: ' | append: bl_stts.facets_margin_right | append: 'px;'
+    echo ' --facets-margin-bottom: ' | append: bl_stts.facets_margin_bottom | append: 'px;'
   endcapture
+
+  capture filter_gap_vertical_style
+    echo '--filter-gap-vertical: ' | append: bl_stts.filter_gap_vertical | append: 'px;'
+  endcapture
+
+  assign enable_grid_view = section.settings.enable_grid_view
+  assign enable_products_per_page = section.settings.enable_products_per_page
+  assign enable_sorting = section.settings.enable_sorting
+  assign filter_type = bl_stts.filter_style
+  assign filter_variant_pill = section.settings.filter_variant_pill
+  assign enable_hover_reveal = section.settings.enable_hover_reveal
+  assign heading_label_case = bl_stts.heading_label_case
+  assign text_label_case = bl_stts.text_label_case
+  assign enable_divider = bl_stts.enable_divider
+  assign divider_color = bl_stts.divider_color
+  assign divider_spacing_top = bl_stts.divider_spacing_top
+  assign divider_spacing_bottom = bl_stts.divider_spacing_bottom
+  assign style = bl_stts.style
 -%}
 
-{%- if section.settings.enable_filtering or show_sort -%}
-  {{ 'component-facets.css' | asset_url | stylesheet_tag }}
-  <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+{{ 'component-facets.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+<div
+  class="
+    facets-block-wrapper
+    facets-block-wrapper--{{ block.settings.filter_style }}
+    {%- if block.settings.filter_width == 'full-width' %} facets-block-wrapper--full-width{% endif %}
+  "
+  style="
+    --grid-column--desktop:
+      {%- if bl_stts.filter_style == 'horizontal' -%}
+        var(--{{ bl_stts.filter_width }})
+      {%- else -%}
+        2 / var(--facets-vertical-col-width)
+      {%- endif -%};
+    {{ facets_margin_style }}
+    {{ filter_gap_vertical_style }}
+    --facets-inner-padding-block: {{ bl_stts.padding-block-start }}px {{ bl_stts.padding-block-end }}px;
+    --facets-inner-padding-inline: var(--padding-lg);
+  "
+>
   <div
-    class="facets-block-wrapper facets-block-wrapper--vertical"
-    style="
-      --grid-column--desktop:
-        {%- if bl_stts.filter_style == 'horizontal' -%}
-          var(--{{ bl_stts.filter_width }})
-        {%- else -%}
-          2 / var(--facets-vertical-col-width)
-        {%- endif -%};
-      {{ facets_margin_style }}
-      --facets-inner-padding-block: {{ bl_stts.padding-block-start }}px {{ bl_stts.padding-block-end }}px;
-      --facets-inner-padding-inline: var(--padding-lg);
+    aria-labelledby="verticalTitle"
+    class="
+      facets-wrapper
+      facets--{{ bl_stts.filter_style }}
+      {% unless section.settings.enable_filtering %} facets-wrapper--no-filters{% endunless %}
     "
+    id="main-collection-filters"
+    data-id="{{ section.id }}"
   >
-    <div
-      aria-labelledby="verticalTitle"
-      class="facets-wrapper facets--{{ bl_stts.filter_style }}{% unless section.settings.enable_filtering %} facets-wrapper--no-filters{% endunless %}"
-      id="main-collection-filters"
-      data-id="{{ section.id }}"
-    >
-      {% render 'facets',
-        results: collection,
-        enable_filtering: bl_stts.enable_filtering,
-        enable_sorting: bl_stts.enable_sorting,
-        enable_products_per_page: section.settings.enable_products_per_page,
-        enable_grid_view: section.settings.enable_grid_view,
-        filter_type: bl_stts.filter_style,
-        filter_variant_pill: section.settings.filter_variant_pill,
-        paginate: paginate,
-        enable_hover_reveal: bl_stts.enable_hover_reveal,
-        heading_label_case: bl_stts.heading_label_case,
-        text_label_case: bl_stts.text_label_case,
-        style: bl_stts.style
-      %}
-    </div>
+    {% render 'facets',
+      results: collection,
+      enable_filtering: bl_stts.enable_filtering,
+      enable_sorting: enable_sorting,
+      enable_products_per_page: enable_products_per_page,
+      enable_grid_view: enable_grid_view,
+      filter_type: filter_type,
+      filter_variant_pill: filter_variant_pill,
+      paginate: paginate,
+      enable_hover_reveal: enable_hover_reveal,
+      heading_label_case: heading_label_case,
+      text_label_case: text_label_case,
+      style: style,
+      limit: limit,
+      enable_divider: enable_divider,
+      divider_color: divider_color,
+      divider_spacing_top: divider_spacing_top,
+      divider_spacing_bottom: divider_spacing_bottom
+    %}
+
+    {% content_for 'blocks' %}
   </div>
+</div>
+
+{%- if bl_stts.filter_style == 'vertical' -%}
+  <facet-filters-form class="facets facets-vertical-sort facets-vertical-sort--vertical small-hide medium-hide">
+    <form class="facets-vertical-form" id="FacetSortForm">
+      <div class="sorting-wrapper flex items-center gap-lg">
+        {%- if enable_grid_view -%}
+          {% render 'switcher-grid',
+            columns_desktop: columns_desktop,
+            filter_type: filter_type,
+            style: style,
+            enable_hover_reveal: enable_hover_reveal
+          %}
+        {%- endif -%}
+
+        <div class="sorting-wrapper-rightcol flex justify-end gap-lg small-hide medium-hide">
+          {%- if enable_products_per_page -%}
+            <div class="facet-per-page products-per-page caption">
+              {% render 'products-per-page', limit: limit, style: style, enable_hover_reveal: enable_hover_reveal %}
+            </div>
+          {%- endif -%}
+
+          {%- if enable_sorting -%}
+            <div class="facet-filters sorting caption">
+              <div class="facet-filters__field">
+                {%- assign results = results -%}
+                {%- assign sort_by = results.sort_by | default: results.default_sort_by -%}
+                {%- assign selected_sort_by = results.sort_options | where: 'value', sort_by | first -%}
+                <details
+                  id="Details-SortBy"
+                  class="facets__panel facets__panel--{{ style }} details--dropdown facet-filters__sort relative caption-large"
+                  is="dropdown-details"
+                  {% if enable_hover_reveal %}
+                    activate-event="hover"
+                  {% endif %}
+                  data-index="0"
+                >
+                  <summary class="details__summary facets__summary focus-inset">
+                    <span class="flex items-center gap-xl">
+                      {{ selected_sort_by.name }}
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  </summary>
+                  <div
+                    id="SortByDropdown"
+                    class="details__list absolute top-full right-0 z-1 global-settings-popup"
+                    style="--min-w: 20rem;"
+                    tabindex="-1"
+                  >
+                    <ul
+                      class="list-unstyled"
+                      role="list"
+                      style="--p: 1.3rem 2rem;"
+                    >
+                      {%- for option in results.sort_options -%}
+                        <li
+                          class="facet-filters__sort_item relative{% if option.value == sort_by %} selected{% endif %}"
+                          style="--p: 0;"
+                          tabindex="-1"
+                        >
+                          <label
+                            for="Filter-{{ option.value | escape }}-{{ forloop.index }}"
+                            class="facet-checkbox cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              name="sort_by"
+                              value="{{ option.value | escape }}"
+                              id="Filter-{{ option.value | escape }}-{{ forloop.index }}"
+                              class="visually-hidden"
+                            >
+                            <span class="label full-unstyled-link">{{ option.name | escape }}</span>
+                          </label>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                </details>
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </form>
+  </facet-filters-form>
 {%- endif -%}
 
 {% stylesheet %}
@@ -506,7 +630,7 @@
     }
 
     @media screen and (min-width: 990px) {
-      --facets-vertical-col-width: 5;
+      --facets-vertical-col-width: 3;
     }
   }
 
@@ -520,6 +644,7 @@
   .facets-block-wrapper--vertical {
     @media screen and (min-width: 750px) {
       grid-column: var(--grid-column--desktop);
+      grid-row: 1 / 4;
     }
   }
 
@@ -529,6 +654,7 @@
 
   .facets-block-wrapper--vertical .facets__summary {
     margin-bottom: 0;
+    padding: var(--padding-sm);
   }
 
   .facets-block-wrapper--vertical + .facets-toggle {
@@ -590,6 +716,8 @@
     max-width: var(--drawer-max-width);
     box-shadow: none;
     padding-block: 0;
+    display: block;
+    grid-column-start: span 3;
 
     &:not(.facets--drawer) {
       @media screen and (min-width: 750px) {
@@ -615,17 +743,30 @@
 
   @media screen and (max-width: 1024px) {
     .facets-container {
-      grid-template-columns: auto minmax(0, max-content);
+      grid-template-columns: 1fr 1fr 1fr;
       column-gap: 2rem;
+    }
+
+    .facets {
+      grid-column-start: span 1;
+
+      .divider {
+        display: none;
+      }
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .facets-container {
+      grid-template-columns: 1fr max-content 1fr;
     }
   }
 
   .facets--horizontal {
-    display: none;
+    display: flex;
 
     @media screen and (min-width: 750px) {
       padding-block: var(--padding-block-start) var(--padding-block-end);
-      display: flex;
       align-items: center;
       position: relative;
       z-index: var(--facets-upper-z-index);
@@ -644,14 +785,40 @@
 
     @media screen and (min-width: 750px) {
       padding-block: 0 var(--padding-block-end);
-      display: block;
-      position: static;
-      top: auto;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
       bottom: auto;
       height: auto;
       max-height: none;
       width: auto;
       overflow: visible;
+      gap: var(--filter-gap-vertical);
+    }
+  }
+
+  @media screen and (min-width: 1025px) {
+    .facets-vertical-form {
+      display: grid;
+      align-items: baseline;
+      gap: 0 3.5rem;
+      grid-template-columns: 1fr max-content max-content;
+    }
+  }
+
+  .facets-vertical-sort--vertical .facets-vertical-form {
+    @media screen and (min-width: 1025px) {
+      grid-template-columns: 1fr;
+    }
+
+    .sorting-wrapper {
+      justify-content: space-between;
+    }
+
+    .facets__summary {
+      margin-bottom: 0;
+      padding: var(--padding-sm);
     }
   }
 
@@ -713,11 +880,39 @@
     width: 100%;
   }
 
+  .facets__form-vertical .facets__form-wrapper-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--filter-gap-vertical);
+  }
+
   .facets--horizontal .facets__form-wrapper {
     @media screen and (min-width: 750px) {
       flex-direction: row;
       height: auto;
+      align-items: flex-start;
+      display: flex;
+      gap: var(--margin-2xl);
+      flex: 1 0 60%;
+      max-width: 60%;
     }
+
+    .facets__form-wrapper-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--margin-2xl);
+    }
+  }
+
+  .facets--horizontal .facets__form.facets__form--divider .facets__form-wrapper {
+    flex: 1 0 100%;
+    max-width: 100%;
+  }
+
+  .facets--horizontal .facets__form.facets__form--divider .divider__line {
+    flex-basis: 100%;
+    min-height: 100%;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .facets__form {
@@ -731,6 +926,10 @@
     @media screen and (min-width: 750px) {
       flex-flow: row nowrap;
       height: auto;
+
+      &.facets__form--divider {
+        flex-direction: column;
+      }
     }
   }
 
@@ -747,6 +946,31 @@
       flex-wrap: wrap;
       column-gap: var(--gap-xl);
       margin-inline-end: 0;
+    }
+  }
+
+  .facets--horizontal .facets__summary {
+    padding: var(--padding-xs) var(--padding-sm);
+    min-width: 9rem;
+  }
+
+  /* sorting */
+  .sorting-wrapper {
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .facets--horizontal .facets__form.facets__form--divider .sorting-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--margin-xl);
+
+    @media screen and (min-width: 1025px) {
+      grid-template-columns: 1fr max-content 1fr;
+    }
+
+    @media screen and (min-width: 1440px) {
+      grid-template-columns: 1fr 2fr 1fr;
     }
   }
 
@@ -940,12 +1164,12 @@
   }
 
   .facets__panel--frame .facets__summary {
-    border: var(--popup-border-width) solid var(--color-foreground);
+    border: var(--style-border-width) solid var(--color-foreground);
     border-radius: var(--style-border-radius-buttons-primary);
   }
 
   .facets__display {
-    border-width: var(--popup-border-width);
+    border-width: var(--style-border-width);
     border-style: solid;
     border-color: var(--color-foreground);
     border-radius: var(--style-border-radius-buttons-primary);
@@ -1009,10 +1233,6 @@
   }
 
   @media screen and (min-width: 750px) {
-    .facets:not(.facets--drawer) :is(.facets__item, .sorting-filter)::before {
-      width: 100%;
-    }
-
     .facets--horizontal .facets__item:not(:first-of-type)::before,
     .facets--horizontal .sorting-filter::before {
       content: none;
@@ -1073,6 +1293,41 @@
   }
 
   /* Facets - Active facets */
+  .active-facets {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    margin-top: -0.5rem;
+    row-gap: var(--margin-xs);
+
+    @media screen and (max-width: 1024px) {
+      margin: 0 -1.2rem 1.2rem;
+    }
+
+    @media screen and (min-width: 1025px) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+
+  .active-facets__button {
+    margin-right: var(--margin-xs);
+    margin-top: 1.5rem;
+    padding: var(--padding-3xs);
+    border: 1px solid rgba(var(--color-foreground-rgb) / 0.05);
+    background: rgba(var(--color-foreground-rgb) / 0.05);
+    transition: background var(--animation-speed-slow) var(--animation-timing-hover),
+      border var(--animation-speed-slow) var(--animation-timing-hover),
+      transform var(--animation-speed-slow) var(--animation-timing-hover);
+  }
+
+  @media (hover: hover) {
+    facet-remove:hover .active-facets__button {
+      background: rgba(var(--color-foreground-rgb) / 0.2);
+      border: 1px solid rgba(var(--color-foreground-rgb) / 0.2);
+      transform: translateY(-0.2rem);
+    }
+  }
+
   .facets--horizontal .active-facets {
     margin-top: var(--margin-2xl);
   }
@@ -1173,6 +1428,17 @@
 {
   "name": "t:names.filters",
   "tag": null,
+  "blocks": [
+    {
+      "type": "_blog-post-sidebar-products"
+    },
+    {
+      "type": "_blog-post-sidebar-image"
+    },
+    {
+      "type": "_blog-post-sidebar-text"
+    }
+  ],
   "settings": [
     {
       "type": "header",
@@ -1274,6 +1540,43 @@
     },
     {
       "type": "checkbox",
+      "id": "enable_divider",
+      "label": "Divider",
+      "default": true,
+      "visible_if": "{{ block.settings.filter_style == 'horizontal' }}"
+    },
+    {
+      "type": "range",
+      "id": "divider_spacing_top",
+      "label": "Divider spacing top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.filter_style == 'horizontal' and block.settings.enable_divider == true }}"
+    },
+    {
+      "type": "range",
+      "id": "divider_spacing_bottom",
+      "label": "Divider spacing bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.filter_style == 'horizontal' and block.settings.enable_divider == true }}"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color",
+      "alpha": true,
+      "default": "#000",
+      "visible_if": "{{ block.settings.filter_style == 'horizontal' and block.settings.enable_divider == true }}"
+    },
+    {
+      "type": "checkbox",
       "id": "inherit_color_scheme",
       "label": "t:settings.inherit_color_scheme",
       "default": true
@@ -1295,6 +1598,17 @@
       "label": "t:settings.enable",
       "info": "t:info.enable_filtering_info",
       "default": false
+    },
+    {
+      "type": "range",
+      "id": "filter_gap_vertical",
+      "label": "t:settings.vertical_gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.filter_style == 'vertical' }}"
     },
     {
       "type": "checkbox",

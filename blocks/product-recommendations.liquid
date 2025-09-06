@@ -186,7 +186,7 @@
         {% for product in products limit: block.settings.max_products %}
           <div class="resource-list__item">
             {% content_for 'block',
-              type: 'product-card',
+              type: '_product-card',
               id: 'static-product-card',
               closest.product: product
             %}
@@ -274,6 +274,9 @@
     },
     {
       "type": "@app"
+    },
+    {
+      "type": "_product-card"
     }
   ],
   "settings": [
@@ -474,52 +477,6 @@
           "settings": {
             "text": "<h4>You may also like</h4>"
           }
-        },
-        "static-product-card": {
-          "type": "product-card",
-          "static": true,
-          "settings": {
-            "product": "{{ closest.product }}"
-          },
-          "blocks": {
-            "product-card-gallery": {
-              "type": "_product-card-gallery",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "group": {
-              "type": "group",
-              "settings": {
-                "content_direction": "column",
-                "gap": 4
-              },
-              "blocks": {
-                "text": {
-                  "type": "product-title",
-                  "settings": {
-                    "product": "{{ closest.product }}",
-                    "type_preset": "paragraph"
-                  }
-                },
-                "price": {
-                  "type": "price",
-                  "settings": {
-                    "product": "{{ closest.product }}",
-                    "show_tax_info": false
-                  }
-                },
-                "swatches": {
-                  "type": "swatches",
-                  "settings": {
-                    "product": "{{ closest.product }}"
-                  }
-                }
-              },
-              "block_order": ["text", "price", "swatches"]
-            }
-          },
-          "block_order": ["product-card-gallery", "group"]
         }
       },
       "block_order": ["heading"]
