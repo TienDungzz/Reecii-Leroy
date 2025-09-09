@@ -1,0 +1,31 @@
+{%- liquid
+  assign iframe_code = block.settings.iframe_code
+-%}
+
+<div class="map-embed">
+  {{ iframe_code }}
+</div>
+
+{% stylesheet %}
+  .shopify-block:has(.map-embed) {
+    width: 100%;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Map (iframe)",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "iframe_code",
+      "label": "Embed iframe code",
+      "info": "Paste your Google Maps iframe embed code."
+    }
+  ],
+  "presets": [
+    { "name": "Map (iframe)" }
+  ]
+}
+{% endschema %}
+

@@ -6,6 +6,7 @@ function loadFunction() {
 
         handleViewLookbook();
         renderDotsNumber();
+        handleLookBookAllItemsLayout();
     }
 }
 
@@ -279,11 +280,75 @@ function renderDotsNumber() {
             const dot = dots[i];
             const number = dot.querySelector('.lookbook-dot__icon');
             dot.classList.add('dot-number');
-            console.log("dot:", dot);
 
             if (number) {
                 number.innerHTML = i + 1;
             }
         }
+    });
+}
+
+function handleLookBookAllItemsLayout() {
+    const lookbookAllItemsLayout = document.querySelectorAll('.lookbook-section-list.lookbook-all-items-layout');
+
+    if (!lookbookAllItemsLayout) return;
+
+    lookbookAllItemsLayout.forEach(function(item){
+        const dots = item.querySelectorAll('lookbook-dot .lookbook-dot__content');
+        const showProductsBtn = item.querySelector('.lookBook__btnShowProducts');
+
+        if (showProductsBtn) {
+            console.log("showProductsBtn", showProductsBtn);
+            showProductsBtn.remove();
+        }
+
+        dots.forEach(function(content){
+            content.classList.add('hidden');
+        });
+
+        // Click a dot -> read its product title -> scroll matching slide in the all-items swiper
+        const dotElements = item.querySelectorAll('lookbook-dot');
+        const allItemsSwiper = item.querySelector('.swiper');
+
+        dotElements.forEach(function(dot){
+            dot.addEventListener('click', function(e){
+                const titleEl = dot.querySelector('.product-title');
+                const productName = titleEl ? (titleEl.textContent || '').trim().toLowerCase() : '';
+
+                if (!allItemsSwiper) return;
+                e.preventDefault();
+                e.stopPropagation();
+
+                const swiperInstance = allItemsSwiper.swiper;
+
+                // Find slide index by matching product title text
+                const slides = Array.from(allItemsSwiper.querySelectorAll('.swiper-slide'));
+                let targetIndex = -1;
+                if (productName) {
+                    for (let i = 0; i < slides.length; i++) {
+                        const slideTitleEl = slides[i].querySelector('.product-title');
+                        const slideTitle = (slideTitleEl && slideTitleEl.textContent) ? slideTitleEl.textContent.trim().toLowerCase() : '';
+                        if (slideTitle && slideTitle === productName) {
+                            targetIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                // Fallback: if no name match (or no name), slide to same index as the clicked dot
+                if (targetIndex < 0) {
+                    const dotIndex = Array.from(dotElements).indexOf(dot);
+                    if (dotIndex >= 0 && dotIndex < slides.length) {
+                        targetIndex = dotIndex;
+                    }
+                }
+
+                if (targetIndex >= 0) {
+                    try {
+                        swiperInstance.slideTo(targetIndex, 600);
+                    } catch (_) {}
+                }
+            });
+        });
     });
 }

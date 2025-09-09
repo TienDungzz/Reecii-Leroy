@@ -1,0 +1,101 @@
+{% liquid
+    assign pl = block.settings.padding_left
+    assign pr = block.settings.padding_right
+    assign pt = block.settings.padding_top
+    assign pb = block.settings.padding_bottom
+
+    assign border = block.settings.border
+%}
+
+{%- capture attr -%}
+class="{% if border != 'none' %} border-style-{{ border }}{% endif %}" {{ block.shopify_attributes }}
+style="
+{% if pl != 0 %}--pl:{{ pl }}px;{% endif %}
+{% if pt != 0 %}--pt:{{ pt }}px;{% endif %}
+{% if pb != 0 %}--pb:{{ pb }}px;{% endif %}
+{% if pr != 0 %}--pr:{{ pr }}px;{% endif %}
+"
+{%- endcapture -%}
+
+<div {{ attr }}>
+    <label for="{{ block.id }}">{{ block.settings.label }}</label>
+    <input type="text" id="{{ block.id }}" name="{{ block.id }}" />
+</div>
+
+{% schema %}
+{
+    "name": "Input",
+    "settings": [
+        {
+            "type": "text",
+            "id": "label",
+            "label": "Label"
+        },
+        {
+            "type": "range",
+            "id": "padding_left",
+            "label": "Padding left",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding_right",
+            "label": "Padding right",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding_top",
+            "label": "Padding top",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding_bottom",
+            "label": "Padding bottom",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "select",
+            "id": "border",
+            "label": "Border",
+            "options": [
+                {
+                    "value": "none",
+                    "label": "None"
+                },
+                {
+                    "value": "all",
+                    "label": "All"
+                },
+                {
+                    "value": "underline",
+                    "label": "Underline"
+                }
+            ],
+            "default": "none"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Input"
+        }
+    ]
+}
+{% endschema %}
