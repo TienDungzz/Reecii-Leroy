@@ -1,19 +1,68 @@
+{% if closest.collection == blank %}
+  {% assign text = 'placeholders.collection_title' | t %}
+  {% assign collection_title = '<p>' | append: text | append: '</p>' %}
+  {% render 'text', fallback_text: collection_title, block: block %}
+{% elsif closest.collection != blank %}
+  {% assign collection_title = '<p>' | append: closest.collection.title | append: '</p>' %}
+  {% render 'text', fallback_text: collection_title, block: block %}
+{% endif %}
 
-
-{%- doc -%}
-  Renders a heading block.
-
-  @param {string} text
-{%- enddoc -%}
-
-{% render 'text', width: '100%', block: block, fallback_text: text %}
-
-{% # theme-check-disable %}
 {% schema %}
 {
-  "name": "Heading",
+  "name": "t:names.collection_title",
   "tag": null,
   "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit"
+        },
+        {
+          "value": "100%",
+          "label": "t:options.fill"
+        }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "select",
+      "id": "max_width",
+      "label": "t:settings.max_width",
+      "options": [
+        {
+          "value": "narrow",
+          "label": "t:options.narrow"
+        },
+        {
+          "value": "normal",
+          "label": "t:options.normal"
+        },
+        {
+          "value": "none",
+          "label": "t:options.none"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.width == '100%' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.typography"
+    },
     {
       "type": "select",
       "id": "type_preset",
@@ -75,6 +124,10 @@
         {
           "value": "var(--font-heading--family)",
           "label": "t:options.heading"
+        },
+        {
+          "value": "var(--font-accent--family)",
+          "label": "t:options.accent"
         }
       ],
       "default": "var(--font-body--family)",
@@ -178,7 +231,7 @@
           "label": "120px"
         }
       ],
-      "default": "1.2rem",
+      "default": "1.6rem",
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {
@@ -235,10 +288,6 @@
         {
           "value": "uppercase",
           "label": "t:options.uppercase"
-        },
-        {
-          "value": "capitalize",
-          "label": "t:options.capitalize"
         }
       ],
       "default": "none",
@@ -286,32 +335,32 @@
       "visible_if": "{{ block.settings.type_preset != 'rte' }}"
     },
     {
-      "type": "richtext",
-      "id": "text",
-      "label": "t:settings.text",
-      "default": "t:html_defaults.share_information_about_your",
-      "visible_if": "{{ block.settings.read_only != true }}"
+      "type": "header",
+      "content": "t:content.appearance"
     },
     {
       "type": "checkbox",
-      "id": "read_only",
-      "label": "t:settings.read_only",
-      "visible_if": "{{ false }}",
+      "id": "background",
+      "label": "t:settings.background",
       "default": false
     },
     {
-      "type": "text_alignment",
-      "id": "alignment",
-      "label": "t:settings.alignment",
-      "default": "left",
-      "visible_if": "{{ block.settings.show_alignment != false }}"
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "alpha": true,
+      "default": "#00000026",
+      "visible_if": "{{ block.settings.background }}"
     },
     {
-      "type": "checkbox",
-      "id": "show_alignment",
-      "label": "t:settings.show_alignment",
-      "default": true,
-      "visible_if": "{{ false }}"
+      "type": "range",
+      "id": "corner_radius",
+      "label": "t:settings.corner_radius",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "visible_if": "{{ block.settings.background }}"
     },
     {
       "type": "header",
@@ -357,7 +406,12 @@
       "unit": "px",
       "default": 0
     }
+  ],
+  "presets": [
+    {
+      "name": "t:names.collection_title",
+      "category": "t:categories.collection"
+    }
   ]
 }
 {% endschema %}
-{% # theme-check-enable %}

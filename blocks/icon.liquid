@@ -12,7 +12,6 @@
     attributes: block.shopify_attributes
   %}
 {% endcapture %}
-
 {%- if block_settings.link != blank -%}
   <a
     href="{{ block_settings.link }}"
@@ -24,7 +23,11 @@
     {{ icon }}
   </a>
 {%- else -%}
-  {{ icon }}
+  {% if block.id contains 'collection-infor-icon' %}
+    <a class="button-secondary" href="{{ closest.collection.url }}">{{ icon }}</a>
+  {% else %}
+    {{ icon }}
+  {% endif %}
 {%- endif -%}
 
 {% stylesheet %}

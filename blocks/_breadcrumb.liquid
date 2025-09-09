@@ -29,7 +29,7 @@
       itemtype="https://schema.org/BreadcrumbList"
       style="{% render 'gap-style', value: block.settings.gap %}"
     >
-      <li {{ attr_item }}>
+      <li {{ attr_item }} hiepne="{{ page_title }}">
         <a
           href="{{ routes.root_url }}"
           title="{{ 'blocks.breadcrumb.home_link_title' | t }}"
@@ -152,6 +152,11 @@
       {% elsif template.name contains 'page' and page %}
         <li {{ attr_item }}>
           <span itemprop="name">{{ page.title | escape }}</span>
+          <meta itemprop="position" content="{{ position }}">
+        </li>
+      {% else %}
+        <li {{ attr_item }}>
+          <span itemprop="name">{{ page_title | split: '|' | first | escape }}</span>
           <meta itemprop="position" content="{{ position }}">
         </li>
       {% endif %}
