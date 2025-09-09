@@ -2677,6 +2677,47 @@ class ShowMoreProductGrid extends HTMLElement {
 if (!customElements.get("show-more-product-grid"))
   customElements.define("show-more-product-grid", ShowMoreProductGrid);
 
+class ShowMoreCollectionList extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.init();
+  }
+
+  init() {
+    this.itemsPerClick = this.getAttribute("data-max-items");
+    this.currentIndex = 0;
+    this.button = this.querySelector("button");
+    this.button.addEventListener("click", this.handleButtonClick.bind(this));
+  }
+
+  handleButtonClick(event) {
+    event.preventDefault();
+
+    const sectionContent = this.closest(".collection-list-page");
+    const template = sectionContent.querySelector("template[data-collection-card-template-showmore]");
+    const allHiddenItems = Array.from(template.content.querySelectorAll(".resource-list__item"));
+    const collectionList = sectionContent.querySelector(".resource-list");
+    const nextItems = allHiddenItems.slice(this.currentIndex, this.currentIndex + this.itemsPerClick);
+
+    nextItems.forEach(item => {
+      const clone = item.cloneNode(true);
+      collectionList.appendChild(clone);
+    });
+
+    this.currentIndex += this.itemsPerClick;
+
+    if (this.currentIndex >= allHiddenItems.length) {
+      this.remove();
+    }
+
+  }
+}
+if (!customElements.get("show-more-collection-list"))
+  customElements.define("show-more-collection-list", ShowMoreCollectionList);
+
 class ParallaxImg extends HTMLElement {
   constructor() {
     super();
