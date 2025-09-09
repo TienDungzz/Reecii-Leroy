@@ -17,17 +17,15 @@
   endif
 -%}
 
-<add-to-cart-component
-  ref="addToCartButtonContainer"
+<div
+  class="add-to-cart-button-container"
   data-product-variant-media="{{ product_variant_media }}"
 >
   <button
     id="{{ id }}"
     type="submit"
     name="add"
-    ref="addToCartButton"
-    on:click="/handleClick"
-    class="button {{ class }}"
+    class="product-form__submit button button--primary button--full-width add-to-cart-button {{ class }}"
     {% unless can_add_to_cart %}
       disabled
     {% endunless %}
@@ -55,8 +53,9 @@
         {{- 'actions.added' | t -}}
       </span>
     </span>
+    {%- render 'loading-spinner' -%}
   </button>
-</add-to-cart-component>
+</div>
 
 {% stylesheet %}
   .add-to-cart-text {

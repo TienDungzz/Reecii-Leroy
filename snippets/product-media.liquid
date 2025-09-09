@@ -22,7 +22,9 @@
 
 <div
   class="product-media"
-  style="--ratio: {{ media.aspect_ratio }}"
+  {%- if media.media_type == 'image' -%}
+    style="--ratio: {{ media.aspect_ratio }}"
+  {%- endif -%}
   data-media-id="{{ media.id }}"
 >
   {% liquid

@@ -1,7 +1,7 @@
-if (!customElements.get('recipient-form')) {
+if (!customElements.get('gift-card-recipient-form')) {
   customElements.define(
-    'recipient-form',
-    class RecipientForm extends HTMLElement {
+    'gift-card-recipient-form',
+    class GiftCardRecipientForm extends HTMLElement {
       constructor() {
         super();
         this.recipientFieldsLiveRegion = this.querySelector(`#Recipient-fields-live-region-${this.dataset.sectionId}`);

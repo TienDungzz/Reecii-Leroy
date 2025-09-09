@@ -1,6 +1,6 @@
-if (!customElements.get('product-form')) {
+if (!customElements.get('product-form-component')) {
   customElements.define(
-    'product-form',
+    'product-form-component',
     class ProductForm extends HTMLElement {
       constructor() {
         super();
@@ -25,7 +25,7 @@ if (!customElements.get('product-form')) {
 
         this.submitButton.setAttribute('aria-disabled', true);
         this.submitButton.classList.add('loading');
-        this.querySelector('.loading__spinner').classList.remove('hidden');
+        this.submitButton.querySelector('.loading__spinner').classList.remove('hidden');
 
         const config = fetchConfig('javascript');
         config.headers['X-Requested-With'] = 'XMLHttpRequest';
@@ -44,7 +44,7 @@ if (!customElements.get('product-form')) {
           .then((response) => {
             if (response.status) {
               publish(PUB_SUB_EVENTS.cartError, {
-                source: 'product-form',
+                source: 'product-form-component',
                 productVariantId: formData.get('id'),
                 errors: response.errors || response.description,
                 message: response.message,
@@ -65,7 +65,7 @@ if (!customElements.get('product-form')) {
 
             if (!this.error)
               publish(PUB_SUB_EVENTS.cartUpdate, {
-                source: 'product-form',
+                source: 'product-form-component',
                 productVariantId: formData.get('id'),
                 cartData: response,
               });
@@ -89,7 +89,7 @@ if (!customElements.get('product-form')) {
             this.submitButton.classList.remove('loading');
             if (this.cart && this.cart.classList.contains('is-empty')) this.cart.classList.remove('is-empty');
             if (!this.error) this.submitButton.removeAttribute('aria-disabled');
-            this.querySelector('.loading__spinner').classList.add('hidden');
+            this.submitButton.querySelector('.loading__spinner').classList.add('hidden');
           });
       }
 

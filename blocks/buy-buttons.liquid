@@ -5,7 +5,7 @@
     assign product = collections.all.products.first
   endif
 
-  assign variant = closest.product.selected_or_first_available_variant
+  assign variant = product.selected_or_first_available_variant
   assign inventory_quantity = variant.inventory_quantity
   assign inventory_policy = variant.inventory_policy
 
@@ -26,7 +26,7 @@
       assign add_to_cart_text = 'products.product.add_to_cart' | t
     endif
   else
-    if closest.product.selected_or_first_available_variant != null
+    if product.selected_or_first_available_variant != null
       assign can_add_to_cart = true
       assign add_to_cart_text = 'products.product.add_to_cart' | t
     else
@@ -41,14 +41,27 @@
   {{ block.shopify_attributes }}
 >
   {%- if product != blank -%}
-    {%- assign product_form_id = 'BuyButtons-ProductForm-' | append: section.id -%}
+    {%- liquid
+      assign product_form_id = 'product-form-' | append: section.id
+      assign gift_card_recipient_feature_active = false
+      if block_settings.gift_card_form and product.gift_card?
+        assign gift_card_recipient_feature_active = true
+      endif
+    -%}
     <product-form-component
+      class="product-form"
       data-section-id="{{ section.id }}"
       data-product-id="{{ product.id }}"
       data-product-url="{{ product.url }}"
-      on:submit="/handleSubmit"
+      data-hide-errors="{{ gift_card_recipient_feature_active }}"
       data-quantity-default="{% if product.selected_or_first_available_variant.quantity_rule.min %}{{ product.selected_or_first_available_variant.quantity_rule.min }}{% else %}1{% endif %}"
     >
+      <div class="product-form__error-message-wrapper" role="alert" hidden>
+        <span class="svg-wrapper">
+          {{- 'icon-error.svg' | inline_asset_content -}}
+        </span>
+        <span class="product-form__error-message"></span>
+      </div>
       <div
         class="visually-hidden"
         aria-live="assertive"
@@ -56,29 +69,41 @@
         aria-atomic="true"
         ref="liveRegion"
       ></div>
-      {%- form 'product', product, id: product_form_id, data-type: 'add-to-cart-form' -%}
+      {%- form 'product', 
+        product, 
+        id: product_form_id, 
+        class: 'form', 
+        novalidate: 'novalidate', 
+        data-type: 'add-to-cart-form'
+      -%}
         <input
           type="hidden"
           name="id"
           ref="variantId"
           value="{{ product.selected_or_first_available_variant.id }}"
+          {% unless can_add_to_cart %}
+            disabled
+          {% endunless %}
+          class="product-variant-id"
         >
-        {%- if block_settings.gift_card_form and product.gift_card? -%}
+        {%- if gift_card_recipient_feature_active -%}
           {%- render 'gift-card-recipient-form', product: product, form: form, section: section, block: block -%}
         {%- endif -%}
         <div
-          class="product-form-buttons spacing-style{% if block_settings.stacking %} product-form-buttons--stacked{% endif %}"
+          class="product-form__buttons spacing-style{% if block_settings.stacking %} product-form__buttons--stacked{% endif %}"
           style="{% render 'spacing-style', settings: block_settings %}"
         >
-          {% content_for 'block', type: 'quantity', id: 'quantity' %}
-
+          {% content_for 'block',
+            type: 'quantity',
+            id: 'quantity'
+          %}
           {% content_for 'block',
             type: 'add-to-cart',
             id: 'add-to-cart',
             can_add_to_cart: can_add_to_cart,
             add_to_cart_text: add_to_cart_text
           %}
-          {%- unless block_settings.gift_card_form and product.gift_card? -%}
+          {%- unless gift_card_recipient_feature_active -%}
             <span
               class="product-form-text__error hidden"
               ref="addToCartTextError"
@@ -98,7 +123,7 @@
       {%- endform -%}
     </product-form-component>
   {%- else -%}
-    <div class="product-form-buttons">
+    <div class="product-form__buttons">
       <button
         type="submit"
         name="add"
@@ -117,7 +142,7 @@
     type="module"
   ></script> {% endcomment %}
 
-  {%- assign pick_up_availabilities = closest.product.selected_or_first_available_variant.store_availabilities
+  {%- assign pick_up_availabilities = product.selected_or_first_available_variant.store_availabilities
     | where: 'pick_up_enabled', true
   -%}
 
@@ -127,8 +152,8 @@
       hidden
     {% endif %}
     data-section-id="{{ section.id }}"
-    data-product-url="{{ closest.product.url }}"
-    data-variant-id="{{ closest.product.selected_or_first_available_variant.id }}"
+    data-product-url="{{ product.url }}"
+    data-variant-id="{{ product.selected_or_first_available_variant.id }}"
     style="{% render 'spacing-style', settings: block_settings %}"
     ref="localPickupButton"
   >
@@ -172,9 +197,9 @@
         >
           <div class="pickup-availability__dialog-row pickup-availability__header-container">
             <div class="pickup-availability__column">
-              <h4 class="pickup-location__h4">{{ closest.product.title }}</h4>
+              <h4 class="pickup-location__h4">{{ product.title }}</h4>
               <p class="pickup-location__text-sm">
-                {{ closest.product.selected_or_first_available_variant.title }}
+                {{ product.selected_or_first_available_variant.title }}
               </p>
             </div>
             <button
@@ -220,7 +245,7 @@
     width: 100%;
   }
 
-  .product-form-buttons {
+  .product-form__buttons {
     display: flex;
     flex-wrap: wrap;
     gap: calc(var(--gap-sm) / 2);
@@ -230,12 +255,12 @@
     }
   }
 
-  .product-form-buttons > *:not(.quantity-selector) {
+  .product-form__buttons > *:not(.quantity-selector) {
     flex: 1 1 185px;
     min-width: fit-content;
   }
 
-  .product-form-buttons--stacked > *:not(.quantity-selector) {
+  .product-form__buttons--stacked > *:not(.quantity-selector) {
     flex-basis: 51%; /* Force the buttons to be on separate rows */
   }
 
@@ -243,7 +268,7 @@
     flex-grow: 0;
   }
 
-  .product-form-buttons button {
+  .product-form__buttons button {
     width: 100%;
     padding-inline: var(--padding-4xl);
     padding-block: var(--padding-lg);
@@ -257,7 +282,7 @@
     text-transform: var(--button-text-case-secondary);
   }
 
-  .product-form-buttons .shopify-payment-button__button {
+  .product-form__buttons .shopify-payment-button__button {
     width: 100%;
     min-height: var(--minimum-touch-target);
   }

@@ -287,7 +287,7 @@
       media-gallery--extend {{ section.settings.page_width }}
     {% endif %}
   "
-  style="{% render 'spacing-style', settings: bl_stts %} --thumbnail-width: {{ bl_stts.thumbnail_width }}px; --media-radius: {{ bl_stts.media_radius }}px;{% if bl_stts.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ bl_stts.image_gap }}px;{% unless bl_stts.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ bl_stts.aspect_ratio }};{% endunless %}"
+  style="{% render 'spacing-style', settings: bl_stts %} --thumbnail-width: {{ bl_stts.thumbnail_width }}px; --media-radius: {{ bl_stts.media_radius }}px; --image-gap: {{ bl_stts.image_gap }}px;{% unless bl_stts.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ bl_stts.aspect_ratio }};{% endunless %}"
   data-presentation="{{ bl_stts.media_presentation }}"
   {{ block.shopify_attributes }}
 >
@@ -353,41 +353,12 @@
     {% endfor %}
   {% endcapture %}
 
-  {% if sorted_media.size > 1 %}
-    {% capture controls %}
-      {% if render_slideshow_controls %}
-        {%- render 'slideshow-controls',
-          class: slideshow_controls_class,
-          style: slideshow_controls_style,
-          item_count: sorted_media.size,
-          thumbnails: sorted_media,
-          controls_on_media: controls_on_media,
-          pagination_position: pagination_position,
-          aspect_ratio: bl_stts.aspect_ratio
-        -%}
-      {% endif %}
-
-      {% if render_mobile_slideshow_controls %}
-        {%- render 'slideshow-controls',
-          class: 'desktop:hidden media-gallery__mobile-controls',
-          style: bl_stts.slideshow_mobile_controls_style,
-          item_count: sorted_media.size,
-          controls_on_media: true,
-          pagination_position: 'center',
-        -%}
-      {% endif %}
-    {% endcapture %}
-  {% endif %}
-
   {% render 'slideshow',
     settings: bl_stts,
-    ref: 'slideshow',
     class: slideshow_class,
     slides: slides,
     slide_count: sorted_media.size,
-    slideshow_arrows: slideshow_arrows,
-    arrows_position: icons_position,
-    controls: controls
+    arrows_position: icons_position
   %}
 
   {% if bl_stts.media_presentation == 'grid' %}
@@ -781,31 +752,6 @@
     {
       "type": "header",
       "content": "t:content.carousel"
-    },
-    {
-      "type": "select",
-      "id": "icons_style",
-      "label": "t:settings.icons",
-      "options": [
-        {
-          "value": "arrow",
-          "label": "t:options.arrows"
-        },
-        {
-          "value": "chevron",
-          "label": "t:options.chevrons"
-        },
-        {
-          "value": "arrows_large",
-          "label": "t:options.large_arrows"
-        },
-        {
-          "value": "chevron_large",
-          "label": "t:options.large_chevrons"
-        }
-      ],
-      "default": "arrow",
-      "visible_if": "{{ block.settings.media_presentation == 'carousel' }}"
     },
     {
       "type": "select",

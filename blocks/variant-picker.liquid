@@ -37,10 +37,25 @@
       "default": "buttons"
     },
     {
-      "type": "checkbox",
-      "id": "show_swatches",
+      "type": "select",
+      "id": "swatch_shape",
       "label": "t:settings.swatches",
-      "default": true
+      "visible_if": "{{ block.settings.variant_style == 'buttons' }}",
+      "options": [
+        {
+          "value": "image_color",
+          "label": "t:options.variant_image_and_color_swatch"
+        },
+        {
+          "value": "visualizations",
+          "label": "t:options.variant_visualizations"
+        },
+        {
+          "value": "none",
+          "label": "t:options.none"
+        }
+      ],
+      "default": "image_color"
     },
     {
       "type": "text_alignment",

@@ -398,14 +398,14 @@
     {%- liquid
       assign font_sizes = "paragraph, h1, h2, h3, h4, h5, h6" | split: ", "
       assign fluid_size_cutoff = 4.8
-      assign absolute_font_size_min = 10
+      assign absolute_font_size_min = 1.0
 
       assign font_size_values = ''
       for font_size in font_sizes
         assign size_setting = 'type_size_[font_size]' | replace: '[font_size]', font_size
-        assign size_setting_value = settings[size_setting] | times: 1
+        assign size_setting_value = settings[size_setting] | replace: 'rem', '' | times: 1
 
-        if size_setting_value < 100
+        if size_setting_value < 10
           assign size_setting_value = '[size_setting_value]' | replace: '[size_setting_value]', size_setting_value
         endif
 
@@ -431,7 +431,7 @@
             assign next_font_size_value_number = next_font_size_value | times: 1
 
             if next_font_size_value_number < fluid_size_cutoff
-              assign fluid_font_size_min = next_font_size_value_number | plus: 4
+              assign fluid_font_size_min = next_font_size_value_number | times: 0.75
               if font_size_value < fluid_font_size_min
                 assign fluid_font_size_min = font_size_value
               endif
@@ -440,17 +440,14 @@
             endif
           endif
 
-          assign fluid_size_min_rem = fluid_font_size_min
-          assign fluid_size = font_size_value
-          assign fluid_size_max_rem = font_size_value
+          assign fluid_size = font_size_value| times: 1.6
 
-          echo '--font-size--[font_size]: clamp([fluid_size_min_rem]rem, [fluid_size]vw, [fluid_size_max_rem]rem);' | replace: '[font_size]', font_size | replace: '[fluid_size_min_rem]', fluid_size_min_rem | replace: '[fluid_size]', fluid_size | replace: '[fluid_size_max_rem]', fluid_size_max_rem
+          echo '--font-size--[font_size]: clamp([fluid_font_size_min]rem, [fluid_size]vw, [font_size_value]rem);' | replace: '[font_size]', font_size | replace: '[fluid_font_size_min]', fluid_font_size_min | replace: '[fluid_size]', fluid_size | replace: '[font_size_value]', font_size_value
         else
-          assign fluid_size_rem = font_size_value
-          echo '--font-size--[font_size]: [fluid_size_rem]rem;' | replace: '[font_size]', font_size | replace: '[fluid_size_rem]', fluid_size_rem
+          echo '--font-size--[font_size]: [font_size_value]rem;' | replace: '[font_size]', font_size | replace: '[font_size_value]', font_size_value
           if font_size == 'paragraph'
-            echo '--font-size--[font_size]-md: calc([fluid_size_rem]rem + 0.2rem);' | replace: '[font_size]', font_size | replace: '[fluid_size_rem]', fluid_size_rem
-            echo '--font-size--[font_size]-sm: clamp(1rem, calc([fluid_size_rem]rem - 0.2rem), [fluid_size_rem]rem);' | replace: '[font_size]', font_size | replace: '[fluid_size_rem]', fluid_size_rem
+            echo '--font-size--[font_size]-md: calc([font_size_value]rem + 0.2rem);' | replace: '[font_size]', font_size | replace: '[font_size_value]', font_size_value
+            echo '--font-size--[font_size]-sm: clamp(1rem, calc([font_size_value]rem - 0.2rem), [font_size_value]rem);' | replace: '[font_size]', font_size | replace: '[font_size_value]', font_size_value
           endif
         endif
       endfor

@@ -118,8 +118,6 @@ if (!customElements.get('product-info')) {
         this.abortController?.abort();
         this.abortController = new AbortController();
 
-        console.log('targetId', targetId)
-
         fetch(requestUrl, { signal: this.abortController.signal })
           .then((response) => response.text())
           .then((responseText) => {
@@ -194,7 +192,7 @@ if (!customElements.get('product-info')) {
           updateSourceFromDestination('Inventory', ({ innerText }) => innerText === '');
           updateSourceFromDestination('Volume');
           updateSourceFromDestination('Price-Per-Item', ({ classList }) => classList.contains('hidden'));
-
+          console.log('this.sectionId', this.sectionId)
           this.updateQuantityRules(this.sectionId, html);
           this.querySelector(`#Quantity-Rules-${this.dataset.section}`)?.classList.remove('hidden');
           this.querySelector(`#Volume-Note-${this.dataset.section}`)?.classList.remove('hidden');
@@ -340,7 +338,10 @@ if (!customElements.get('product-info')) {
 
       fetchQuantityRules() {
         const currentVariantId = this.productForm?.variantIdInput?.value;
+        console.log('this.productForm', this.productForm)
         if (!currentVariantId) return;
+
+        console.log('currentVariantId', currentVariantId)
 
         this.querySelector('.quantity__rules-cart .loading__spinner').classList.remove('hidden');
         fetch(`${this.dataset.url}?variant=${currentVariantId}&section_id=${this.dataset.section}`)
@@ -348,6 +349,7 @@ if (!customElements.get('product-info')) {
           .then((responseText) => {
             const html = new DOMParser().parseFromString(responseText, 'text/html');
             this.updateQuantityRules(this.dataset.section, html);
+            console.log('html', this.dataset.section)
           })
           .catch((e) => console.error(e))
           .finally(() => this.querySelector('.quantity__rules-cart .loading__spinner').classList.add('hidden'));
@@ -358,6 +360,8 @@ if (!customElements.get('product-info')) {
         this.setQuantityBoundries();
 
         const quantityFormUpdated = html.getElementById(`Quantity-Form-${sectionId}`);
+        if (!quantityFormUpdated) return;
+        
         const selectors = ['.quantity__input', '.quantity__rules', '.quantity__label'];
         for (let selector of selectors) {
           const current = this.quantityForm.querySelector(selector);
@@ -390,7 +394,7 @@ if (!customElements.get('product-info')) {
       }
 
       get productForm() {
-        return this.querySelector(`product-form`);
+        return this.querySelector(`product-form-component`);
       }
 
       get productModal() {
