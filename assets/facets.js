@@ -8,10 +8,13 @@ class FacetFiltersForm extends HTMLElement {
     }, 800);
 
     const facetForm = this.querySelector('form');
-    facetForm.addEventListener('input', this.debouncedOnSubmit.bind(this));
+    facetForm.addEventListener('input', this.onInputChange.bind(this));
 
     const facetWrapper = this.querySelector('#FacetsWrapperDesktop');
     if (facetWrapper) facetWrapper.addEventListener('keyup', onKeyUpEscape);
+
+    // Add event listener for price range apply button
+    this.addEventListener('click', this.onPriceRangeApply.bind(this));
   }
 
   static setListeners() {
@@ -95,6 +98,12 @@ class FacetFiltersForm extends HTMLElement {
       .forEach((element) => {
         element.classList.add('scroll-trigger--cancel');
       });
+
+    // Rebind 'show more swatches' buttons after grid re-render
+    if (typeof initMoreSwatchButtons === 'function') {
+      const container = document.getElementById('ProductGridContainer');
+      initMoreSwatchButtons(container || document);
+    }
   }
 
   static clickGridView (event) {
@@ -338,6 +347,31 @@ class FacetFiltersForm extends HTMLElement {
     }
   }
 
+  onInputChange(event) {
+    // Check if the input is a price range input
+    const isPriceRangeInput = event.target.classList.contains('filter__price_change') ||
+                             event.target.classList.contains('filter__price_number');
+
+    // Only auto-submit if it's not a price range input
+    if (!isPriceRangeInput) {
+      this.debouncedOnSubmit(event);
+    }
+  }
+
+  onPriceRangeApply(event) {
+    // Check if the clicked element is the price range apply button
+    if (event.target.closest('.facets-price__apply button')) {
+      event.preventDefault();
+
+      // Find the form and submit it manually
+      const form = this.querySelector('form');
+      if (form) {
+        const searchParams = this.createSearchParams(form);
+        this.onSubmitForm(searchParams, event);
+      }
+    }
+  }
+
   onActiveFilterClick(event) {
     event.preventDefault();
     FacetFiltersForm.toggleActiveFacets();
@@ -347,6 +381,13 @@ class FacetFiltersForm extends HTMLElement {
         : event.currentTarget.href.slice(event.currentTarget.href.indexOf('?') + 1);
     FacetFiltersForm.renderPage(url);
     FacetFiltersForm.renderPage(url);
+
+    if(window.innerWidth <= 1024) {
+      document.querySelectorAll('.mobile-facets__details').forEach(item => {
+        item.removeAttribute('style');
+        item.removeAttribute('open')
+      })
+    }
   }
 }
 
@@ -375,6 +416,7 @@ class PriceRange extends HTMLElement {
   onRangeChange(event) {
     // this.adjustToValidValues(event.currentTarget);
     this.setMinAndMaxValues();
+    // Note: Form submission is now handled by the apply button click
   }
 
   onKeyDown(event) {

@@ -1,0 +1,201 @@
+{% capture separator %}
+  {%- case settings.separator %}
+    {% when 'slash' %}
+      {{ 'blocks.breadcrumb.separator' | t }}
+    {% when 'caret' %}
+    <span class="svg-wrapper">
+      {{- 'icon-caret.svg' | inline_asset_content -}}
+    </span>
+  {% endcase -%}
+{% endcapture %}
+
+{%- capture attr_item -%}
+  class="breadcrumbs__item inline-flex items-center gap-style"
+  itemprop="itemListElement"
+  itemscope
+  itemtype="https://schema.org/ListItem"
+  style="{% render 'gap-style', value: settings.gap %}"
+{%- endcapture -%}
+
+{%- capture class_link -%}
+  class="link link--effect-unnderline link--text"
+{%- endcapture -%}
+
+<nav class="breadcrumbs element-margin-bottom" role="navigation" aria-label="{{ 'blocks.breadcrumb.title' | t }}">
+  <ol
+    class="breadcrumbs__list list-unstyled flex justify-{{ settings.horizontal_alignment }} items-center gap-style"
+    itemscope
+    itemtype="https://schema.org/BreadcrumbList"
+    style="{% render 'gap-style', value: settings.gap %}"
+  >
+    <li {{ attr_item }}>
+      <a
+        href="{{ routes.root_url }}"
+        title="{{ 'blocks.breadcrumb.home_link_title' | t }}"
+        itemprop="item"
+        {{ class_link }}
+      >
+        <span itemprop="name">{{ 'blocks.breadcrumb.home' | t }}</span>
+      </a>
+      <meta itemprop="position" content="1">
+
+      <span class="breadcrumbs__separator">
+        {{ separator }}
+      </span>
+    </li>
+    {% assign position = 2 %}
+
+    {% if template.name contains 'collection' and collection %}
+      <li {{ attr_item }}>
+        <a
+          href="{{ routes.collections_url }}"
+          title="{{ 'blocks.breadcrumb.collections' | t }}"
+          itemprop="item"
+          {{ class_link }}
+        >
+          <span itemprop="name">{{ 'blocks.breadcrumb.collections' | t }}</span>
+        </a>
+        <meta itemprop="position" content="{{ position }}">
+        <span class="breadcrumbs__separator">
+          {{ separator }}
+        </span>
+      </li>
+      {% assign position = position | plus: 1 %}
+      {% if collection.handle %}
+        <li {{ attr_item }}>
+          <span itemprop="name">{{ collection.title | escape }}</span>
+          <meta itemprop="position" content="{{ position }}">
+        </li>
+        {% assign position = position | plus: 1 %}
+      {% endif %}
+    {% elsif template.name == 'product' and product %}
+      {% assign current_collection = collection %}
+      {% if current_collection == blank and product.collections.size == 1 %}
+        {% assign current_collection = product.collections.first %}
+      {% endif %}
+      {% if current_collection %}
+        <li {{ attr_item }}>
+          <a
+            href="{{ routes.collections_url }}"
+            title="{{ 'blocks.breadcrumb.collections' | t }}"
+            itemprop="item"
+            {{ class_link }}
+          >
+            <span itemprop="name">{{ 'blocks.breadcrumb.collections' | t }}</span>
+          </a>
+          <meta itemprop="position" content="{{ position }}">
+          <span class="breadcrumbs__separator">
+            {{ separator }}
+          </span>
+        </li>
+        {% assign position = position | plus: 1 %}
+        <li {{ attr_item }}>
+          <a
+            href="{{ current_collection.url }}"
+            title="{{ current_collection.title | escape }}"
+            itemprop="item"
+            {{ class_link }}
+          >
+            <span itemprop="name">{{ current_collection.title | escape }}</span>
+          </a>
+          <meta itemprop="position" content="{{ position }}">
+          <span class="breadcrumbs__separator">
+            {{ separator }}
+          </span>
+        </li>
+        {% assign position = position | plus: 1 %}
+      {% endif %}
+      <li {{ attr_item }}>
+        <span itemprop="name">{{ product.title | escape }}</span>
+        <meta itemprop="position" content="{{ position }}">
+      </li>
+    {% elsif template.name contains 'blog' and blog %}
+      <li {{ attr_item }}>
+        <a
+          href="{{ routes.blogs_url }}"
+          title="{{ 'blocks.breadcrumb.blogs' | t }}"
+          itemprop="item"
+          {{ class_link }}
+        >
+          <span itemprop="name">{{ 'blocks.breadcrumb.blogs' | t }}</span>
+        </a>
+        <meta itemprop="position" content="{{ position }}">
+        <span class="breadcrumbs__separator">
+          {{ separator }}
+        </span>
+      </li>
+      {% assign position = position | plus: 1 %}
+      <li {{ attr_item }}>
+        <a href="{{ blog.url }}" title="{{ blog.title | escape }}" itemprop="item" {{ class_link }}>
+          <span itemprop="name">{{ blog.title | escape }}</span>
+        </a>
+        <meta itemprop="position" content="{{ position }}">
+        {% if article %}
+          <span class="breadcrumbs__separator">
+            {{ separator }}
+          </span>
+        {% endif %}
+      </li>
+      {% assign position = position | plus: 1 %}
+      {% if article %}
+        <li {{ attr_item }}>
+          <span itemprop="name">{{ article.title | escape }}</span>
+          <meta itemprop="position" content="{{ position }}">
+        </li>
+      {% endif %}
+    {% elsif template.name == 'search' %}
+      <li {{ attr_item }}>
+        <span itemprop="name">{{ 'blocks.breadcrumb.search' | t }}</span>
+        <meta itemprop="position" content="{{ position }}">
+      </li>
+    {% elsif template.name contains 'page' and page %}
+      <li {{ attr_item }}>
+        <span itemprop="name">{{ page.title | escape }}</span>
+        <meta itemprop="position" content="{{ position }}">
+      </li>
+    {% elsif template contains 'customers/login' %}
+      <li {{ attr_item }}>
+        <span itemprop="name">{{ 'customer.account.title' | t }}</span>
+        <meta itemprop="position" content="{{ position }}">
+      </li>
+
+    {% elsif template contains 'customers/register' %}
+      <li {{ attr_item }}>
+        <span itemprop="name">{{ 'customer.register.title' | t }}</span>
+        <meta itemprop="position" content="{{ position }}">
+      </li>
+    {% elsif template contains 'customers/account' %}
+      <li {{ attr_item }}>
+        <span itemprop="name">{{ 'customer.account.title' | t }}</span>
+        <meta itemprop="position" content="{{ position }}">
+      </li>
+    {% elsif template contains 'customers/orders' %}
+      <li {{ attr_item }}>
+        <span itemprop="name">{{ 'customer.orders.title' | t }}</span>
+        <meta itemprop="position" content="{{ position }}">
+      </li>
+    {% elsif template contains 'customers/order' %}
+      <li {{ attr_item }}>
+        <span itemprop="name">{{ 'customer.order.title' | t }}</span>
+        <meta itemprop="position" content="{{ position }}">
+      </li>
+    {% endif %}
+  </ol>
+</nav>
+
+{% stylesheet %}
+  .breadcrumbs__separator .svg-wrapper {
+    width: 16px;
+    height: 16px;
+  }
+  .breadcrumbs__separator:has(.icon-caret) .svg-wrapper {
+    width: 12px;
+    height: 12px;
+  }
+
+  .breadcrumbs__separator .icon-caret {
+    transform: rotate(-90deg);
+    position: relative;
+    top: 1px;
+  }
+{% endstylesheet %}

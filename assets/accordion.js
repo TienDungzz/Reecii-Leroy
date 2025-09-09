@@ -74,7 +74,7 @@ class AccordionCustom extends HTMLElement {
       ]).finished;
     } else {
       await Motion.timeline([
-        [this.contentElement, { opacity: 0 }, { duration: 0.15 }],
+        [this.contentElement, { opacity: 0, height: 0 }, { duration: 0.15 }],
         [
           this.details,
           {

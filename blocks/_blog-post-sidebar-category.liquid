@@ -6,12 +6,13 @@
 
   assign collapse = bl_stts.collapse
   assign collapse_default = bl_stts.collapse_default
+  assign collapse_icon = bl_stts.collapse_icon
   if collapse == true
-    assign element = 'sidebar-collapse'
+    assign element = 'accordion-custom'
     if collapse_default == 'open'
-      assign aria_expanded = 'true'
+      assign is_open = true
     else
-      assign aria_expanded = 'false'
+      assign is_open = false
     endif
   else
     assign element = 'div'
@@ -30,7 +31,19 @@
   current-cate is-clicked
 {%- endcapture -%}
 
-<{{ element }} class="blog-post__category blog-posts__sidebar-item">
+<{{ element }} class="blog-post__category blog-posts__sidebar-item" {% if is_open %}
+  open-by-default-on-desktop
+  open-by-default-on-mobile
+{% endif %}>
+  {% if collapse %}
+    <details
+      {% if is_open %}
+        open
+      {% endif %}
+    >
+      <summary>
+  {% endif %}
+
   {% if text != blank %}
     <h3 class="blog-posts__sidebar-heading{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}{% if collapse %} blog-posts__sidebar-collapse-button cursor-pointer{% endif %}">
       {{ text }}
@@ -42,7 +55,16 @@
   {% endif %}
 
   {% if collapse %}
-    <div class="blog-posts__sidebar-collapse-content" aria-expanded="{{ aria_expanded }}">
+    {% if collapse_icon != 'none' %}
+      <span class="svg-wrapper icon-caret-wrapper">
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </span>
+    {% endif %}
+    </summary>
+  {% endif %}
+
+  {% if collapse %}
+    <div class="details-content">
   {% endif %}
 
   <ul
@@ -136,7 +158,8 @@
     {%- endif -%}
   </ul>
   {% if collapse %}
-    </div>
+      </div>
+    </details>
   {% endif %}
 </{{ element }}>
 
