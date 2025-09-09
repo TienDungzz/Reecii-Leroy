@@ -27,8 +27,19 @@
 
   .blog-posts__sidebar-heading {
     font-size: var(--body-s-font-size);
-    margin-block-end: var(--margin-md);
-    padding-block: calc(var(--padding-xs) - var(--padding-3xs));
+
+    &:not(.blog-posts__sidebar-collapse-button) {
+      padding-block: calc(var(--padding-xs) - var(--padding-3xs));
+      margin-block-end: var(--margin-md);
+    }
+
+    &.blog-posts__sidebar-collapse-button {
+      margin-block: 0;
+    }
+
+    + .svg-wrapper {
+      margin-right: 0;
+    }
   }
 
   @media (max-width: 1024px) {
@@ -93,39 +104,24 @@
     }
   }
 
-  /* sidebar collapse */
-  .blog-posts__sidebar-collapse-content {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows var(--animation-slowest-smooth);
-
-    > * {
-      overflow: hidden;
-    }
-
-    &[aria-expanded="true"] {
-      grid-template-rows: 1fr;
-    }
-  }
-
 {%- endstylesheet -%}
 
 {% javascript %}
-  class SidebarCollapse extends HTMLElement {
-    constructor() {
-      super();
-      this.button = this.querySelector(".blog-posts__sidebar-collapse-button");
-      this.content = this.querySelector(".blog-posts__sidebar-collapse-content");
-    }
+  // class SidebarCollapse extends HTMLElement {
+  //   constructor() {
+  //     super();
+  //     this.button = this.querySelector(".blog-posts__sidebar-collapse-button");
+  //     this.content = this.querySelector(".blog-posts__sidebar-collapse-content");
+  //   }
 
-    connectedCallback() {
-      this.button.addEventListener("click", () => {
-        this.content.setAttribute("aria-expanded", this.content.getAttribute("aria-expanded") === "true" ? "false" : "true");
-      });
-    }
-  }
+  //   connectedCallback() {
+  //     this.button.addEventListener("click", () => {
+  //       this.content.setAttribute("aria-expanded", this.content.getAttribute("aria-expanded") === "true" ? "false" : "true");
+  //     });
+  //   }
+  // }
 
-  customElements.define("sidebar-collapse", SidebarCollapse);
+  // customElements.define("sidebar-collapse", SidebarCollapse);
 {% endjavascript %}
 
 {% schema %}

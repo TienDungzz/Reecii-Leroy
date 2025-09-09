@@ -1,15 +1,10 @@
 <div
   class="
-    card-product-information group-block
+    card-product-information group-block w-full flex
     group-block--{{block.id}}
-    group-align-{{ block.settings.alignment }}
-    group-align-mb-{{ block.settings.alignment_mb }}
-    flex-section w-full flex
-    flex-{{ block.settings.content_direction }}
-    flex-{{ block.settings.wrap }}
-    items-{{ block.settings.align_items}}
-    justify-{{ block.settings.justify_content }}
     color-{{ block.settings.color_scheme }}
+    layout-panel-flex
+    layout-panel-flex--{{ block.settings.content_direction | default: 'column' }}
   "
   style="
     --pl:{{ block.settings.padding_left }}px;
@@ -21,10 +16,17 @@
     {%- endif -%}
     {%- render 'gap-style', value: block.settings.gap_x, name: 'gap-x' -%}
     {%- render 'gap-style', value: block.settings.gap_y, name: 'gap-y' -%}
+    {% render 'layout-panel-style', settings: block.settings, scale_min: 8 %}
   "
 >
   {% content_for 'blocks' %}
 </div>
+
+{%- stylesheet -%}
+  .card-product-information {
+    height: auto;
+  }
+{%- endstylesheet -%}
 
 {% schema %}
 {
@@ -129,7 +131,7 @@
       "default": "wrap",
       "options": [
         {
-          "value": "no-wrap",
+          "value": "nowrap",
           "label": "No"
         },
         {
@@ -140,59 +142,99 @@
     },
     {
       "type": "select",
-      "id": "align_items",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
       "options": [
         {
           "value": "stretch",
-          "label": "Default"
+          "label": "t:options.stretch"
         },
         {
-          "value": "start",
-          "label": "⤒"
+          "value": "flex-start",
+          "label": "t:options.top"
         },
         {
           "value": "center",
-          "label": "⮃"
+          "label": "t:options.center"
         },
         {
-          "value": "end",
-          "label": "⤓"
+          "value": "flex-end",
+          "label": "t:options.bottom"
         }
       ],
-      "default": "stretch",
-      "label": "Align items"
+      "default": "center",
+      "visible_if": "{{ block.settings.content_direction == 'row' }}"
     },
     {
       "type": "select",
-      "id": "justify_content",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
       "options": [
         {
-          "value": "start",
-          "label": "Start"
+          "value": "flex-start",
+          "label": "t:options.left"
         },
         {
           "value": "center",
-          "label": "Center"
+          "label": "t:options.center"
         },
         {
-          "value": "end",
-          "label": "End"
+          "value": "flex-end",
+          "label": "t:options.right"
         },
         {
-          "value": "between",
-          "label": "Space Between"
-        },
-        {
-          "value": "around",
-          "label": "Space Around"
-        },
-        {
-          "value": "evenly",
-          "label": "Space Evenly"
+          "value": "space-between",
+          "label": "t:options.space_between"
         }
       ],
-      "default": "start",
-      "label": "Justify"
+      "default": "flex-start",
+      "visible_if": "{{ block.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_flex_direction_column",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ block.settings.content_direction != 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_flex_direction_column",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ block.settings.content_direction == 'column' }}"
     },
     {
       "type": "range",

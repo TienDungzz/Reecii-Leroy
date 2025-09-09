@@ -1,5 +1,13 @@
 {{ 'template-collection.css' | asset_url | stylesheet_tag }}
 
+{% if section.settings.image_shape == 'blob' %}
+  {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{%- if section.settings.quick_add != 'none' -%}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
 {%- liquid
   if cart.attributes.pagination != blank and cart.attributes.pagination
     assign paginate_by = cart.attributes.pagination
@@ -7,7 +15,11 @@
     assign paginate_by = section.settings.products_per_page
   endif
 
-  assign limit = paginate_by
+  assign collection_products_per_page = paginate_by
+
+  if section.settings.enable_sorting or section.settings.enable_grid_view or section.settings.enable_products_per_page
+    assign show_sort = true
+  endif
 
   assign columns_tablet = 2
   assign columns_mobile = section.settings.columns_mobile
@@ -17,6 +29,7 @@
     assign columns_mobile = 1
     assign horizontal_class = true
   endif
+
 -%}
 
 <div
@@ -30,13 +43,12 @@
     type: 'filters',
     id: 'filters',
     results: collection,
-    results_size: collection.products_count,
-    limit: limit
+    results_size: collection.products_count
   %}
 
   {% content_for 'block', type: '_collection-header', id: 'collection-header' %}
 
-  {%- paginate collection.products by limit -%}
+  {%- paginate collection.products by collection_products_per_page -%}
     <div
       class="
         main-collection-grid
@@ -53,7 +65,6 @@
         --padding-inline-end: {{ section.settings.padding-inline-end }}px;
       "
     >
-
       <div class="product-grid-container" id="ProductGridContainer">
         {%- if collection.products.size == 0 -%}
           <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
@@ -72,7 +83,6 @@
             </div>
           </div>
         {%- else -%}
-
           <div
             class="collection"
             data-id="{{ section.id }}"
@@ -81,11 +91,113 @@
               {% render 'loading-spinner' %}
             </div>
 
+            {%- liquid
+              assign img_banner1 = section.settings.img_banner1
+              assign img_banner2 = section.settings.img_banner2
+              assign img_banner3 = section.settings.img_banner3
+              assign banner_position_1 = section.settings.banner_position_1 | round | default: 4
+              assign banner_position_2 = section.settings.banner_position_2 | round | default: 5
+              assign banner_position_3 = section.settings.banner_position_3 | round | default: 12
+            -%}
+
+            {%- capture class_banner -%}
+              product-grid__item product-grid__item--banner product-grid__item--{{ forloop.index0 }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}
+            {%- endcapture -%}
+
+            {%- capture class_banner_img -%}
+              product-grid__item--banner-image
+            {%- endcapture -%}
+
+            {%- capture class_tag_a -%}
+              media media--adapt
+            {%- endcapture -%}
+
+            {%- capture attr_tag_a_1 -%}
+              {% if section.settings.link_banner_1 == blank %}
+                role="link" aria-disabled="true"{% else %}
+                href="{{ section.settings.link_banner_1 }}"
+              {% endif %}
+              style="{%- if img_banner1 != blank -%}--media-adapt-ratio: {{ img_banner1.aspect_ratio }};{% endif %}"
+            {%- endcapture -%}
+
+            {%- capture attr_tag_a_2 -%}
+              {% if section.settings.link_banner_2 == blank %}
+                role="link" aria-disabled="true"{% else %}
+                href="{{ section.settings.link_banner_2 }}"
+              {% endif %}
+              style="{%- if img_banner2 != blank -%}--media-adapt-ratio: {{ img_banner2.aspect_ratio }};{% endif %}"
+            {%- endcapture -%}
+
+            {%- capture attr_tag_a_3 -%}
+              {% if section.settings.link_banner_3 == blank %}
+                role="link" aria-disabled="true"{% else %}
+                href="{{ section.settings.link_banner_3 }}"
+              {% endif %}
+              style="{%- if img_banner3 != blank -%}--media-adapt-ratio: {{ img_banner3.aspect_ratio }};{% endif %}"
+            {%- endcapture -%}
+
             {% capture children %}
               {% for product in collection.products %}
+                {%- if forloop.index == banner_position_1 and section.settings.show_banner_1 -%}
+                  <li class="{{ class_banner }}" data-product-banner="1" data-first-position="{{ banner_position_1 }}">
+                      <div class="{{ class_banner_img }}">
+                          <a
+                            class="{{ class_tag_a }}"
+                            {{ attr_tag_a_1 }}
+                          >
+                          {%- if img_banner1 != blank -%}
+                              {%- assign height = img_banner1.width | divided_by: img_banner1.aspect_ratio | round -%}
+                              <img {% if settings.enable_lazyload %}data-{% endif %}srcset="{{ img_banner1 | img_url: 'master' }}" src="{{ img_banner1 | img_url: 'master' }}" alt="{{ img_banner1.alt | default: shop.name | escape }}"{% if settings.enable_lazyload %} loading="lazy"{% endif %} width="{{img_banner1.width}}" height="{{height}}">
+                          {%- else -%}
+                              <div class="placeholder" style="--height_placeholder: clamp(270px, calc(560 / 1920 * 100vw), 560px);">
+                                  {{ 'blog-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                              </div>
+                          {%- endif -%}
+                          </a>
+                      </div>
+                  </li>
+              {%- endif -%}
+              {%- if forloop.index == banner_position_2 and section.settings.show_banner_2 -%}
+                  <li class="{{ class_banner }}" data-product-banner="2" data-first-position="{{ banner_position_2 }}">
+                      <div class="{{ class_banner_img }}">
+                          <a
+                            class="{{ class_tag_a }}"
+                            {{ attr_tag_a_2 }}
+                          >
+                          {%- if img_banner2 != blank -%}
+                              {%- assign height = img_banner2.width | divided_by: img_banner2.aspect_ratio | round -%}
+                              <img {% if settings.enable_lazyload %}data-{% endif %}srcset="{{ img_banner2 | img_url: 'master' }}" src="{{ img_banner2 | img_url: 'master' }}" alt="{{ img_banner2.alt | default: shop.name | escape }}"{% if settings.enable_lazyload %} loading="lazy"{% endif %} width="{{img_banner2.width}}" height="{{height}}">
+                          {%- else -%}
+                              <div class="placeholder" style="--height_placeholder: clamp(270px, calc(560 / 1920 * 100vw), 560px);">
+                                  {{ 'blog-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                              </div>
+                          {%- endif -%}
+                          </a>
+                      </div>
+                  </li>
+              {%- endif -%}
+              {%- if forloop.index == banner_position_3 and section.settings.show_banner_3 -%}
+                  <li class="{{ class_banner }}" data-product-banner="3" data-first-position="{{ banner_position_3 | plus: 2 }}">
+                      <div class="{{ class_banner_img }}">
+                          <a
+                            class="{{ class_tag_a }}"
+                            {{ attr_tag_a_3 }}
+                          >
+                          {%- if img_banner3 != blank -%}
+                              {%- assign height = img_banner3.width | divided_by: img_banner3.aspect_ratio | round -%}
+                              <img {% if settings.enable_lazyload %}data-{% endif %}srcset="{{ img_banner3 | img_url: 'master' }}" src="{{ img_banner3 | img_url: 'master' }}" alt="{{ img_banner3.alt | default: shop.name | escape }}"{% if settings.enable_lazyload %} loading="lazy"{% endif %} width="{{img_banner3.width}}" height="{{height}}">
+                          {%- else -%}
+                              <div class="placeholder" style="--height_placeholder: clamp(270px, calc(560 / 1920 * 100vw), 560px);">
+                                  {{ 'blog-apparel-3' | placeholder_svg_tag: 'placeholder-svg' }}
+                              </div>
+                          {%- endif -%}
+                          </a>
+                      </div>
+                  </li>
+              {%- endif -%}
                 <li
                   id="{{ section.id }}-{{ product.id }}"
-                  class="product-grid__item thinh-{{product }} product-grid__item--{{ forloop.index0 }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                  class="product-grid__item product-grid__item--{{ forloop.index0 }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
                   data-page="{{ paginate.current_page }}"
                   data-product-id="{{ product.id }}"
                   {% if settings.animations_reveal_on_scroll %}
@@ -222,17 +334,23 @@
     }
   }
 
-  .collection-wrapper:has(.facets--vertical) .facets-block-wrapper--vertical:not(.hidden) ~ .facets-vertical-sort ,
-  .collection-wrapper:has(.facets--vertical) .facets-block-wrapper--vertical:not(.hidden) ~ .collection-header ,
+  .collection-wrapper:has(.facets--vertical) .facets-block-wrapper--vertical:not(.hidden) ~ .facets-vertical-sort,
+  .collection-wrapper:has(.facets--vertical) .facets-block-wrapper--vertical:not(.hidden) ~ .collection-header,
   .collection-wrapper:has(.facets--vertical) .facets-block-wrapper--vertical:not(.hidden) ~ .main-collection-grid {
     @media screen and (min-width: 1025px) {
       grid-column: var(--facets-vertical-col-width) / var(--full-width-column-number);
     }
   }
 
-  .collection-wrapper:has(.facets-block-wrapper--right .facets--vertical) .facets-block-wrapper--vertical:not(.hidden) ~ .facets-vertical-sort ,
-  .collection-wrapper:has(.facets-block-wrapper--right .facets--vertical) .facets-block-wrapper--vertical:not(.hidden) ~ .collection-header ,
-  .collection-wrapper:has(.facets-block-wrapper--right .facets--vertical) .facets-block-wrapper--vertical:not(.hidden) ~ .main-collection-grid {
+  .collection-wrapper:has(.facets-block-wrapper--right .facets--vertical)
+    .facets-block-wrapper--vertical:not(.hidden)
+    ~ .facets-vertical-sort,
+  .collection-wrapper:has(.facets-block-wrapper--right .facets--vertical)
+    .facets-block-wrapper--vertical:not(.hidden)
+    ~ .collection-header,
+  .collection-wrapper:has(.facets-block-wrapper--right .facets--vertical)
+    .facets-block-wrapper--vertical:not(.hidden)
+    ~ .main-collection-grid {
     @media screen and (min-width: 1025px) {
       grid-column: 2 / var(--facets-vertical-col-start);
     }
@@ -261,7 +379,6 @@
         border-bottom: var(--style-border-width) solid var(--color-border);
       }
     }
-
 
     .facets-block-wrapper--vertical:not(.hidden) ~ .facets-vertical-sort {
       grid-row: 2 / 3;
@@ -516,108 +633,83 @@
     },
     {
       "type": "header",
-      "content": "t:sections.main-collection-product-grid.settings.header__3.content"
-    },
-    {
-      "type": "select",
-      "id": "image_ratio",
-      "options": [
-        {
-          "value": "adapt",
-          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label"
-        },
-        {
-          "value": "portrait",
-          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
-        },
-        {
-          "value": "square",
-          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label"
-        }
-      ],
-      "default": "adapt",
-      "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
-    },
-    {
-      "type": "select",
-      "id": "image_shape",
-      "options": [
-        {
-          "value": "default",
-          "label": "t:sections.all.image_shape.options__1.label"
-        },
-        {
-          "value": "arch",
-          "label": "t:sections.all.image_shape.options__2.label"
-        },
-        {
-          "value": "blob",
-          "label": "t:sections.all.image_shape.options__3.label"
-        },
-        {
-          "value": "chevronleft",
-          "label": "t:sections.all.image_shape.options__4.label"
-        },
-        {
-          "value": "chevronright",
-          "label": "t:sections.all.image_shape.options__5.label"
-        },
-        {
-          "value": "diamond",
-          "label": "t:sections.all.image_shape.options__6.label"
-        },
-        {
-          "value": "parallelogram",
-          "label": "t:sections.all.image_shape.options__7.label"
-        },
-        {
-          "value": "round",
-          "label": "t:sections.all.image_shape.options__8.label"
-        }
-      ],
-      "default": "default",
-      "label": "t:sections.all.image_shape.label",
-      "info": "t:sections.all.image_shape.info"
+      "content": "Product banner in collection",
+      "info": "Add a banner to the collection page. This banner will be displayed in the collection page."
     },
     {
       "type": "checkbox",
-      "id": "show_secondary_image",
-      "default": false,
-      "label": "t:sections.main-collection-product-grid.settings.show_secondary_image.label"
+      "id": "show_banner",
+      "label": "Enable banner",
+      "default": false
     },
     {
       "type": "checkbox",
-      "id": "show_vendor",
-      "default": false,
-      "label": "t:sections.main-collection-product-grid.settings.show_vendor.label"
+      "id": "show_banner_1",
+      "label": "Enable banner 1",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "banner_position_1",
+      "label": "Banner position 1",
+      "default": "4",
+      "info": "Banner position default is: 4"
+    },
+    {
+      "type": "image_picker",
+      "id": "img_banner1",
+      "label": "t:settings.image"
+    },
+    {
+      "type": "url",
+      "id": "link_banner_1",
+      "label": "t:settings.link"
     },
     {
       "type": "checkbox",
-      "id": "show_rating",
-      "default": false,
-      "label": "t:sections.main-collection-product-grid.settings.show_rating.label",
-      "info": "t:sections.main-collection-product-grid.settings.show_rating.info"
+      "id": "show_banner_2",
+      "label": "Enable banner 2",
+      "default": true
     },
     {
-      "type": "select",
-      "id": "quick_add",
-      "default": "none",
-      "label": "t:sections.main-collection-product-grid.settings.quick_add.label",
-      "info": "t:sections.main-collection-product-grid.settings.quick_add.info",
-      "options": [
-        {
-          "value": "none",
-          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_1"
-        },
-        {
-          "value": "standard",
-          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_2"
-        },
-        {
-          "value": "bulk",
-          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_3"
-        }
-      ]
+      "type": "text",
+      "id": "banner_position_2",
+      "label": "Banner position 2",
+      "default": "5",
+      "info": "Banner position default is: 5"
+    },
+    {
+      "type": "image_picker",
+      "id": "img_banner2",
+      "label": "t:settings.image"
+    },
+    {
+      "type": "url",
+      "id": "link_banner_2",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_banner_3",
+      "label": "Enable banner 3",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "banner_position_3",
+      "label": "Banner position 3",
+      "default": "12",
+      "info": "Banner position default is: 12"
+    },
+    {
+      "type": "image_picker",
+      "id": "img_banner3",
+      "label": "t:settings.image"
+    },
+    {
+      "type": "url",
+      "id": "link_banner_3",
+      "label": "t:settings.link"
     },
     {
       "type": "header",

@@ -1,93 +1,216 @@
 {{ 'component-collection-hero.css' | asset_url | stylesheet_tag }}
 
-<div class="collection-hero{% if section.settings.show_collection_image and collection.image %} collection-hero--with-image color-{{ section.settings.color_scheme_image }}{% else %} color-{{ section.settings.color_scheme }}{% endif %}">
-  {%- if section.settings.show_collection_image and collection.image -%}
-    {{ 'section-media-banner.css' | asset_url | stylesheet_tag }}
-    {%- style -%}
-      .collection-hero__image-wrapper.banner__media:after {
-        opacity: {{ section.settings.image_overlay_opacity | divided_by: 100.0 }};
-        background: var(--color-background);
-      }
-    {%- endstyle -%}
+{%- liquid
+  assign sec_stts = section.settings
+  assign page_width = sec_stts.page_width
+  assign color_scheme = sec_stts.color_scheme
+  assign section_height = sec_stts.section_height
+  assign scroll_reveal = settings.animations_reveal_on_scroll
+  assign alignment = sec_stts.alignment
+  assign vertical_alignment = sec_stts.vertical_alignment
+  assign content_stacked = sec_stts.content_stacked
+-%}
 
-    <div
-      class="collection-hero__inner banner banner--content-align-mobile-bottom-center banner--content-align-left banner--content-align-mobile-left banner--medium{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
-    >
-      {%- liquid
-        assign loading = 'lazy'
-        assign fetch_priority = 'auto'
-        if section.index == 1
-          assign loading = 'eager'
-          assign fetch_priority = 'high'
-        endif
-        assign image_height = collection.image.width | divided_by: collection.image.aspect_ratio
-      -%}
-      <div class="collection-hero__image-wrapper banner__media media">
-        {{
-          collection.image
-          | image_url: width: 3840
-          | image_tag:
-            width: collection.image.width,
+{% capture children %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+
+<div
+  class="
+    relative z-0 spacing
+    section
+    section--{{ page_width }}
+    section--height-{{ section_height }}
+    {% if content_stacked %} section--content-stacked{% endif %}
+  "
+  id="collection-hero-{{ section.id }}"
+>
+  <div class="collection-hero{% if sec_stts.show_collection_image and collection.image %} collection-hero--with-image color-{{ sec_stts.color_scheme_image }}{% else %} color-{{ sec_stts.color_scheme }}{% endif %}">
+    {%- if sec_stts.show_collection_image and collection.image -%}
+      {{ 'section-media-banner.css' | asset_url | stylesheet_tag }}
+      {%- style -%}
+        .collection-hero__image-wrapper.banner__media:after {
+          opacity: {{ sec_stts.image_overlay_opacity | divided_by: 100.0 }};
+          background: var(--color-background);
+        }
+
+        #collection-hero-{{ section.id }}.section--content-stacked .banner {
+          flex-direction: column;
+        }
+
+        #collection-hero-{{ section.id }}.section--content-stacked .banner__media {
+          position: relative;
+        }
+      {%- endstyle -%}
+
+      <div
+        class="collection-hero__inner banner h-full{% if scroll_reveal %} scroll-trigger animate--fade-in{% endif %}"
+      >
+        {%- liquid
+          assign loading = 'lazy'
+          assign fetch_priority = 'auto'
+          if section.index == 1
+            assign loading = 'eager'
+            assign fetch_priority = 'high'
+          endif
+          assign image_height = collection.image.width | divided_by: collection.image.aspect_ratio
+        -%}
+        {% style %}
+          {%- liquid
+            assign ratio = collection.image.aspect_ratio
+          -%}
+
+          {% if section_height == 'adapt' %}
+            #collection-hero-{{ section.id }}:not(.section--content-stacked)  {
+              aspect-ratio: {{ ratio }};
+            }
+          {% endif %}
+
+          {% if content_stacked %}
+            #collection-hero-{{ section.id }}.section--content-stacked .banner__media {
+              aspect-ratio: {{ ratio }};
+            }
+          {% endif %}
+        {% endstyle %}
+        <div class="collection-hero__image-wrapper banner__media media">
+          {%- render 'image',
+            image: collection.image,
             height: image_height,
-            sizes: '100vw',
-            widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840',
+            fetch_priority: fetch_priority,
             loading: loading,
-            fetchpriority: fetch_priority
-        }}
-      </div>
-      <div class="collection__text-wrapper page-width banner__content banner__content--bottom-left{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-        <div class="collection-hero__text-wrapper banner__box">
-          <h1 class="collection-hero__title m-0">
-            <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
-            {{- collection.title | escape -}}
-          </h1>
-
-          {%- if section.settings.show_collection_description and collection.description != blank -%}
-            <div class="collection-hero__description rte"
-              style="--md-max-w: 100%;"
-            >
-              {{ collection.description }}
-            </div>
-          {%- endif -%}
+            sizes: '100vw',
+            loading: loading,
+            fetch_priority: fetch_priority,
+            class: 'banner__media-image'
+          -%}
+        </div>
+        <div
+          class="
+            collection__text-wrapper
+            relative flex w-full z-2
+            justify-{{ alignment | replace: 'left', 'start' | replace: 'right', 'end' }}
+            items-{{ vertical_alignment | replace: 'flex-', '' | replace: 'flex-', '' }}
+            {% if page_width == 'full-width' %} page-width{% endif %}
+            {% if scroll_reveal %} scroll-trigger animate--fade-in{% endif %}
+          "
+        >
+          <div class="collection-hero__text-wrapper flex flex-column items-{{ alignment | replace: 'left', 'start' | replace: 'right', 'end' }}">
+            {{ children }}
+          </div>
         </div>
       </div>
-    </div>
-  {%- else -%}
-    <div class="collection-hero__inner page-width{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-      <div class="collection-hero__text-wrapper"
+    {%- else -%}
+      <div class="collection-hero__inner page-width{% if scroll_reveal %} scroll-trigger animate--fade-in{% endif %}">
+        <div
+          class="collection-hero__text-wrapper"
           style="--lg-p: 5rem 0; --p: 2.5rem 0;"
-      >
-        <h1 class="collection-hero__title m-0">
-          <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
-          {{- collection.title | escape -}}
-        </h1>
-
-        {%- if section.settings.show_collection_description and collection.description != blank -%}
-          <div class="collection-hero__description rte"
-              style="--md-max-w: 66.67%;"
-            >
-              {{ collection.description }}
-            </div>
-        {%- endif -%}
+        >
+          {{ children }}
+        </div>
       </div>
-    </div>
-  {%- endif -%}
+    {%- endif -%}
+  </div>
 </div>
 
 {% schema %}
 {
   "name": "t:sections.main-collection-banner.name",
-  "class": "section",
+  "class": "section-wrapper",
+  "blocks": [
+    {
+      "type": "text"
+    },
+    {
+      "type": "heading"
+    },
+    {
+      "type": "_breadcrumb"
+    }
+  ],
   "settings": [
     {
       "type": "paragraph",
       "content": "t:sections.main-collection-banner.settings.paragraph.content"
     },
     {
+      "type": "header",
+      "content": "Section layout"
+    },
+    {
       "type": "checkbox",
-      "id": "show_collection_description",
-      "default": true,
-      "label": "t:sections.main-collection-banner.settings.show_collection_description.label"
+      "id": "content_stacked",
+      "label": "Content stacked",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "page_width",
+      "label": "Width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page"
+        },
+        {
+          "value": "full-width",
+          "label": "Full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "full-screen",
+          "label": "Full screen"
+        }
+      ],
+      "default": "medium",
+      "label": "Section height"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "center"
     },
     {
       "type": "color_scheme",

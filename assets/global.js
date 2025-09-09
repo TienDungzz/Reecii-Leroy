@@ -226,10 +226,10 @@ function trapFocus(container, elementToFocus = container) {
   document.addEventListener("focusout", trapFocusHandlers.focusout);
   document.addEventListener("focusin", trapFocusHandlers.focusin);
 
-  elementToFocus.focus();
+  elementToFocus?.focus();
 
   if (
-    elementToFocus.tagName === "INPUT" &&
+    elementToFocus?.tagName === "INPUT" &&
     ["search", "text", "email", "url"].includes(elementToFocus.type) &&
     elementToFocus.value
   ) {
@@ -776,6 +776,7 @@ class MenuDrawer extends HTMLElement {
     this.mainDetailsToggle.querySelectorAll("details").forEach((details) => {
       details.removeAttribute("open");
       details.classList.remove("menu-opening");
+      details.removeAttribute('style');
     });
     this.mainDetailsToggle
       .querySelectorAll(".submenu-open")
@@ -2121,11 +2122,20 @@ if (!customElements.get("recently-viewed-products"))
 const moreButton = document.querySelectorAll(
   ".card__swatch .item-swatch-more .number-showmore"
 );
-moreButton.forEach((button) => {
+
+// Initialize 'show more swatches' buttons; safe to call multiple times
+function initMoreSwatchButtons(root = document) {
+  const buttons = root.querySelectorAll(
+    ".card__swatch .item-swatch-more .number-showmore"
+  );
+
+  buttons.forEach((button) => {
+    if (button.dataset.moreSwatchBound === "true") return;
+    button.dataset.moreSwatchBound = "true";
+
   button.addEventListener("click", function (event) {
     const swatch = event.target.closest(".swatch-list");
-    (span = button.querySelector("span")),
-      (groupSwatch = swatch.querySelector(".group-swatch"));
+      (span = button.querySelector("span")), (groupSwatch = swatch.querySelector(".group-swatch"));
 
     if (groupSwatch.style.display == "flex") {
       groupSwatch.style.display = "none";
@@ -2136,6 +2146,14 @@ moreButton.forEach((button) => {
     }
   });
 });
+}
+
+// First-time bind on initial page load
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => initMoreSwatchButtons());
+} else {
+  initMoreSwatchButtons();
+}
 
 class Wishlist extends HTMLElement {
   constructor() {
@@ -2377,7 +2395,7 @@ class ColorSwatch extends HTMLElement {
 
   handleSwatchClick(event) {
     let target = event.target,
-      title = target.getAttribute("data-title").trim(),
+      title = target.getAttribute("data-title")?.trim(),
       product = target.closest(".card-wrapper"),
       template = product.querySelector("template"),
       fragment = template.content.cloneNode(true),
@@ -2395,6 +2413,12 @@ class ColorSwatch extends HTMLElement {
       newImage = target.dataset.variantImg,
       mediaList = [];
 
+    // if (target.closest(".swatch-item")) {
+    //   console.log("swatch-item");
+    //   return;
+    // }
+
+    if (target.closest(".swatch-item")) {
     // CHANGE TITLE
     if (productTitle.classList.contains("card-title-change")) {
       // productTitle.querySelector("[data-change-title]").textContent =
@@ -2482,6 +2506,8 @@ class ColorSwatch extends HTMLElement {
       }
     }
   }
+
+  }
 }
 if (!customElements.get("color-swatch"))
   customElements.define("color-swatch", ColorSwatch);
@@ -2511,7 +2537,7 @@ class ShowMoreProductGrid extends HTMLElement {
     );
     if (!template) return;
 
-    const productGrid = sectionContent.querySelector(".product-grid");
+    const productGrid = sectionContent.querySelector(".collection--grid-layout .grid-layout");
     if (!productGrid) return;
 
     const templateContent = template.content.cloneNode(true);
@@ -2782,14 +2808,6 @@ class StrokeText extends HTMLElement {
 if (!customElements.get("stroke-text"))
   customElements.define("stroke-text", StrokeText);
 
-function initSplitting() {
-  const buttons = document.querySelectorAll("[data-splitting-target]");
-  buttons.forEach((button) => {
-    Splitting({ target: button, by: button.dataset.splittingTextBy });
-  });
-}
-initSplitting();
-
 // Drawer khinh
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -2831,14 +2849,15 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // close drawer
-  const closeDrawer = (drawer) => {
+  const closeDrawer = async (drawer) => {
     const dir = drawer.getAttribute("data-drawer-direction");
     const overlay = drawer.querySelector("[data-drawer-overlay]");
+    const detailsElement = overlay.closest("details");
     const contentElement = drawer.querySelector("[data-drawer-content]");
 
     drawer.classList.remove("open");
     document.body.classList.remove("overflow-hidden", "drawer--open");
-    Motion.timeline([
+    await Motion.timeline([
       [
         contentElement,
         {
@@ -2860,14 +2879,20 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" },
       ],
-    ]);
+    ]).finished;
+
+    if (detailsElement) {
+      detailsElement.removeAttribute("open");
+      detailsElement.classList.remove("menu-opening");
+      document.body.classList.remove('overflow-hidden-mobile')
+    }
   };
 
   // handle overlay click
   const handleOverlayClick = (drawer) => {
     const overlay = drawer.querySelector("[data-drawer-overlay]");
     overlay.addEventListener("click", () => {
-      if (overlay.closest(".drawer__container.open")) {
+      if (drawer.classList.contains("open")) {
         closeDrawer(drawer);
       }
     });
@@ -2875,11 +2900,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // handle close button click
   const handleCloseButtonClick = (drawer) => {
-    const closeButton = drawer.querySelector("[data-close-sidebar]");
-    console.log("closeButton", closeButton);
+    const closeButton = document.querySelector(`[data-close-drawer="${drawer.getAttribute("data-drawer-target")}"]`);
+
+    console.log(`%c🔍 Log closeButton:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", closeButton);
 
     closeButton.addEventListener("click", () => {
-      if (closeButton.closest(".drawer__container.open")) {
+      if (drawer.classList.contains("open")) {
         closeDrawer(drawer);
       }
     });
@@ -2902,9 +2928,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   buttons.forEach((button) => {
     button.addEventListener("click", () => {
-      const drawer = document.querySelector(
-        button.getAttribute("data-toggle-drawer")
-      );
+      const drawer = document.querySelector(`[data-drawer-target="${button.getAttribute("data-toggle-drawer")}"]`);
       if (drawer) {
         openDrawer(drawer);
       }
@@ -2924,3 +2948,300 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("resize", handleResize);
 });
+
+// Infinite Scrolling Function
+class InfiniteScrolling extends HTMLElement {
+  constructor() {
+    super();
+    this.isLoading = false;
+    this.currentPage = 1;
+    this.hasNextPage = true;
+    this.productGrid = null;
+    this.init();
+  }
+
+  init() {
+    this.productGrid = document.querySelector('#ResultsList .product-grid');
+    if (!this.productGrid) return;
+
+    this.currentPage = parseInt(this.productGrid.dataset.currentPage) || 1;
+    this.hasNextPage = parseInt(this.productGrid.dataset.totalPages) > this.currentPage;
+
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    const infiniteButton = document.querySelector('[data-infinite-scrolling]');
+    if (infiniteButton) {
+
+      this.setupIntersectionObserver(infiniteButton);
+    }
+
+    window.addEventListener('scroll', this.handleScroll.bind(this));
+  }
+
+  setupIntersectionObserver(target) {
+    const options = {
+      root: null,
+      rootMargin: '-100px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !this.isLoading && this.hasNextPage) {
+          this.loadNextPage();
+        }
+      });
+    }, options);
+
+    observer.observe(target);
+  }
+
+  handleScroll() {
+    const infiniteButton = this.querySelector('[data-infinite-scrolling]');
+    if (!infiniteButton || this.isLoading || !this.hasNextPage) return;
+
+    const rect = infiniteButton.getBoundingClientRect();
+    const height = rect.height + 100;
+    const isVisible = rect.top <= window.innerHeight - height;
+
+    if (isVisible) {
+      this.loadNextPage();
+    }
+  }
+
+  async loadNextPage() {
+    if (this.isLoading || !this.hasNextPage) return;
+
+    this.isLoading = true;
+    this.showLoadingState();
+
+    try {
+      const nextPage = this.currentPage + 1;
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('page', nextPage);
+
+      // Fetch next page
+      const response = await fetch(currentUrl.toString());
+      const html = await response.text();
+
+      // Parse HTML response
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Extract products from next page
+      const newProducts = doc.querySelectorAll('.product-grid__item');
+
+      if (newProducts.length > 0 && this.productGrid) {
+        // Append new products
+        newProducts.forEach(product => {
+          const clonedProduct = product.cloneNode(true);
+          // Update data attributes for new products
+          clonedProduct.dataset.page = nextPage;
+          this.productGrid.appendChild(clonedProduct);
+        });
+
+        this.currentPage = nextPage;
+
+        // Check if there are more pages
+        const pagination = doc.querySelector('.pagination');
+        if (pagination) {
+          const nextButton = pagination.querySelector('.pagination__item--next');
+          this.hasNextPage = !!nextButton;
+        } else {
+          this.hasNextPage = false;
+        }
+
+        // Update product grid data attributes
+        this.productGrid.dataset.currentPage = this.currentPage;
+
+        // Update pagination progress
+        this.updatePaginationProgress();
+
+        // Update URL without page reload
+        if (this.hasNextPage) {
+          window.history.replaceState({}, '', currentUrl.toString());
+        } else {
+          // Hide infinite scrolling button if no more pages
+          const infiniteButton = this.querySelector('[data-infinite-scrolling]');
+          if (infiniteButton) {
+            infiniteButton.style.display = 'none';
+          }
+        }
+
+        // Trigger any necessary reinitializations
+        this.reinitializeComponents();
+
+        // Dispatch custom event
+        this.dispatchProductsLoadedEvent();
+      } else {
+        this.hasNextPage = false;
+      }
+
+    } catch (error) {
+      console.error('Error loading next page:', error);
+      this.hasNextPage = false;
+    } finally {
+      this.hideLoadingState();
+      this.isLoading = false;
+    }
+  }
+
+  showLoadingState() {
+    const infiniteButton = this.querySelector('[data-infinite-scrolling]');
+    const spinner = infiniteButton.querySelector('.loading__spinner');
+    if (infiniteButton) {
+      infiniteButton.classList.add('loading');
+      spinner.classList.remove('hidden');
+      infiniteButton.disabled = true;
+    }
+
+    // Add loading state to product grid
+    if (this.productGrid) {
+      this.productGrid.classList.add('loading');
+    }
+  }
+
+  hideLoadingState() {
+    const infiniteButton = this.querySelector('[data-infinite-scrolling]');
+    const spinner = infiniteButton.querySelector('.loading__spinner');
+    const text = infiniteButton.querySelector('.text');
+    if (infiniteButton) {
+      if (!this.hasNextPage) {
+        text.innerHTML = window.button_load_more.no_more;
+      } else {
+        text.innerHTML = window.button_load_more.default;
+      }
+      infiniteButton.classList.remove('loading');
+      spinner.classList.add('hidden');
+      infiniteButton.disabled = false;
+    }
+
+    // Remove loading state from product grid
+
+    if (this.productGrid) {
+      this.productGrid.classList.remove('loading');
+    }
+  }
+
+  reinitializeComponents() {
+    // Reinitialize any components that need to be updated
+    // For example, lazy loading images, animations, etc.
+
+    // Reinitialize lazy loading if exists
+    if (window.lazyLoad) {
+      window.lazyLoad.update();
+    }
+
+    // Reinitialize animations if exists
+    if (window.animateOnScroll) {
+      window.animateOnScroll.init();
+    }
+
+    // Reinitialize product cards if needed
+    this.reinitializeProductCards();
+
+    // Rebind 'show more swatches' buttons for newly added products
+    if (typeof initMoreSwatchButtons === 'function') {
+      initMoreSwatchButtons(this.productGrid || document);
+    }
+  }
+
+  reinitializeProductCards() {
+    // Reinitialize product cards for new products
+    const newProducts = this.productGrid.querySelectorAll(`[data-page="${this.currentPage}"]`);
+
+    newProducts.forEach(product => {
+      // Reinitialize any product card specific functionality
+      const quickAddButtons = product.querySelectorAll('[data-quick-add]');
+      quickAddButtons.forEach(button => {
+        // Reinitialize quick add functionality if needed
+        if (window.QuickAdd) {
+          window.QuickAdd.initButton(button);
+        }
+      });
+    });
+  }
+
+  dispatchProductsLoadedEvent() {
+    // Trigger custom event for other components
+    const event = new CustomEvent('productsLoaded', {
+      detail: {
+        page: this.currentPage,
+        totalPages: parseInt(this.productGrid.dataset.totalPages),
+        hasNextPage: this.hasNextPage
+      }
+    });
+    document.dispatchEvent(event);
+  }
+
+  updatePaginationProgress() {
+    // Update pagination progress elements
+    const totalStartElement = this.querySelector('[data-total-start]');
+    const totalEndElement = this.querySelector('[data-total-end]');
+    const progressBar = this.querySelector('.pagination-total-item');
+
+    if (totalStartElement && totalEndElement && progressBar) {
+      const currentPage = this.currentPage;
+      const pageSize = parseInt(this.productGrid.dataset.pageSize) || 24; // Default page size
+      const totalItems = parseInt(this.productGrid.dataset.totalItems) || 0;
+
+      // Calculate new values
+      const newStart = (currentPage - 1) * pageSize + 1;
+      const newEnd = Math.min(currentPage * pageSize, totalItems);
+
+      // Update display
+      // totalStartElement.textContent = newStart;
+      totalEndElement.textContent = newEnd;
+
+      // Update progress bar
+      const progressPercentage = (newEnd / totalItems) * 100;
+      progressBar.style.width = `${Math.min(progressPercentage, 100)}%`;
+
+      // Update progress text if exists
+      const progressText = this.querySelector('.pagination-total-progress');
+      if (progressText) {
+        progressText.setAttribute('aria-valuenow', newEnd);
+        progressText.setAttribute('aria-valuemax', totalItems);
+      }
+
+      progressBar.style.transition = 'width 0.5s ease-in-out';
+
+      // Update progress text with animation
+      this.animateProgressUpdate(totalStartElement, totalEndElement, newStart, newEnd);
+    }
+  }
+
+  animateProgressUpdate(startElement, endElement, newStart, newEnd) {
+    if (startElement && endElement) {
+      startElement.classList.add('updating');
+      endElement.classList.add('updating');
+
+      setTimeout(() => {
+        startElement.classList.remove('updating');
+        endElement.classList.remove('updating');
+      }, 500);
+    }
+  }
+
+  // Function to get current progress information
+  getProgressInfo() {
+    const currentPage = this.currentPage;
+    const pageSize = parseInt(this.productGrid.dataset.pageSize) || 24;
+    const totalItems = parseInt(this.productGrid.dataset.totalItems) || 0;
+
+    return {
+      currentPage,
+      pageSize,
+      totalItems,
+      currentStart: (currentPage - 1) * pageSize + 1,
+      currentEnd: Math.min(currentPage * pageSize, totalItems),
+      progressPercentage: Math.min((Math.min(currentPage * pageSize, totalItems) / totalItems) * 100, 100),
+      hasNextPage: this.hasNextPage
+    };
+  }
+
+}
+
+customElements.define('infinite-scrolling', InfiniteScrolling);

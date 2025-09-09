@@ -629,6 +629,10 @@ img {
   position: static;
 }
 
+.sticky {
+  position: sticky;
+}
+
 .absolute-c-c,
 .absolute-c-y,
 .absolute-c-x,
@@ -1011,19 +1015,21 @@ img {
 }
 /* khinh fix bug */
 [style*="--pt:"] {
-  padding-top: var(--pt);
-}
-/* khinh fix bug */
-[style*="--pr:"] {
-  padding-right: var(--pr);
+  padding-top: calc(var(--pt) * 0.5);
 }
 /* khinh fix bug */
 [style*="--pb:"] {
-  padding-bottom: var(--pb);
+  padding-bottom: calc(var(--pb) * 0.5);
 }
 
+/* khinh fix bug */
 [style*="--pl:"] {
-  padding-left: var(--pl);
+  padding-left: calc(var(--pl) * 0.5);
+}
+
+/* khinh fix bug */
+[style*="--pr:"] {
+  padding-right: calc(var(--pr) * 0.5);
 }
 /* khinh fix bug */
 [style*="--m:"] {
@@ -1127,7 +1133,7 @@ img {
     margin-bottom: calc(var(--mb) * 0.75);
   }
 
-  [style*="--pt:"] {
+  /* [style*="--pt:"] {
     padding-top: calc(var(--pt) * 0.75);
   }
 
@@ -1141,7 +1147,7 @@ img {
 
   [style*="--pr:"] {
     padding-right: calc(var(--pr) * 0.75);
-  }
+  } */
 
   .page-width[style*="--pr:"] {
     padding-right: 1rem;
@@ -1236,7 +1242,7 @@ img {
   [style*="--mb:"] {
     margin-bottom: calc(var(--mb) * 0.5);
   }
-
+/*
   [style*="--pt:"] {
     padding-top: calc(var(--pt) * 0.5);
   }
@@ -1251,7 +1257,7 @@ img {
 
   [style*="--pr:"] {
     padding-right: calc(var(--pr) * 0.5);
-  }
+  } */
 
   [style*="--max-sm-p:"] {
     padding: var(--max-sm-p);
@@ -1408,6 +1414,22 @@ img {
   .md\:h-auto {
     height: auto;
   }
+  /* khinh fix bug */
+  [style*="--pt:"] {
+    padding-top: calc(var(--pt) * 0.75);
+  }
+  /* khinh fix bug */
+  [style*="--pb:"] {
+    padding-bottom: calc(var(--pb) * 0.75);
+  }
+  /* khinh fix bug */
+  [style*="--pl:"] {
+    padding-left: calc(var(--pl) * 0.75);
+  }
+  /* khinh fix bug */
+  [style*="--pr:"] {
+    padding-right: calc(var(--pr) * 0.75);
+  }
 
   [style*="--md-w:"] {
     width: var(--md-w);
@@ -1497,6 +1519,22 @@ img {
 
   [style*="--lg-gap:"] {
     gap: var(--lg-gap, 0);
+  }
+  /* khinh fix bug */
+  [style*="--pt:"] {
+    padding-top: var(--pt);
+  }
+  /* khinh fix bug */
+  [style*="--pb:"] {
+    padding-bottom: var(--pb);
+  }
+  /* khinh fix bug */
+  [style*="--pl:"] {
+    padding-left: var(--pl);
+  }
+  /* khinh fix bug */
+  [style*="--pr:"] {
+    padding-right: var(--pr);
   }
 
   .lg\:absolute {
@@ -2521,11 +2559,6 @@ shopify-accelerated-checkout-cart {
   opacity: var(--opacity-50);
 }
 
-.button--full-width {
-  display: flex;
-  width: 100%;
-}
-
 .button.loading {
   color: transparent;
   position: relative;
@@ -2592,6 +2625,10 @@ button.shopify-payment-button__button--unbranded {
     padding-block:  var(--button-padding-vertical);
     padding-inline: var(--button-padding-horizontal);
   }
+}
+
+.button--full-width {
+  width: 100%;
 }
 
 .button:not(.button-secondary, .button-unstyled) {

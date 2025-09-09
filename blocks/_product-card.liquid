@@ -25,7 +25,7 @@
   assign product = closest.product
 -%}
 
-<div class="card--block card-wrapper product-card-wrapper underline-links-hover color-{{ block.settings.color_scheme }} {{ product }}">
+<div class="card--block {{ product.title }} card-wrapper product-card-wrapper underline-links-hover color-{{ block.settings.color_scheme }}">
   <div
     class="
       card card--{{ settings.card_style }} card--quickadd-type-{{ settings.quick_add_type }}
@@ -44,7 +44,7 @@
         data-json-product='{"id": {{product.id}},"handle": "{{product.handle}}","media": {{product.media | json | escape}},"variants": {{ product.variants | json | escape}}}'
       ></div>
     </template>
-    {% content_for 'block', type: '_card-product-media-flex', id: 'card-product-media', closest.product: product %}
+    {% content_for 'block', type: '_card-product-media', id: 'card-product-media', closest.product: product %}
     {% content_for 'block',
       type: '_card-product-information',
       id: 'card-product-information',
@@ -62,14 +62,9 @@
     { "type": "spacer" },
     { "type": "icon" },
     { "type": "_card-product-information" },
-    { "type": "_card-product-media-flex" }
+    { "type": "_card-product-media" }
   ],
   "settings": [
-    {
-      "type": "product",
-      "id": "product",
-      "label": "t:settings.product"
-    },
     {
       "type": "color_scheme",
       "id": "color_scheme",
@@ -184,10 +179,7 @@
       "name": "Product card",
       "blocks": {
         "card-product-media": {
-          "type": "_card-product-media-flex",
-          "settings": {
-            "product": "{{ closest.product }}"
-          }
+          "type": "_card-product-media"
         },
         "card-product-information": {
           "type": "_card-product-information",

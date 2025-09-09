@@ -240,11 +240,13 @@ class PredictiveSearch extends SearchForm {
 
   getResultsMaxHeight() {
     this.resultsMaxHeight =
-      window.innerHeight - document.querySelector('.section-header').getBoundingClientRect().bottom;
+      window.innerHeight - document.querySelector('.section-header-main').getBoundingClientRect().bottom;
     return this.resultsMaxHeight;
   }
 
   open() {
+    console.log(`%c🔍 Log this.predictiveSearchResults:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.predictiveSearchResults);
+
     this.predictiveSearchResults.style.maxHeight = this.resultsMaxHeight || `${this.getResultsMaxHeight()}px`;
     this.setAttribute('open', true);
     this.input.setAttribute('aria-expanded', true);
