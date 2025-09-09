@@ -39,7 +39,7 @@
     <li id="Slide-{{ child_block.id }}-{{ forloop.index }}" class="grid__item{% if show_mobile_slider or block.settings.layout_type == 'carousel' %} swiper-slide{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
       {% if settings.animations_reveal_on_scroll %} style="--animation-order: {{ forloop.index }};"{% endif %}
     >
-      {% render child_block %}
+      {% render child_block, enable_lookbook_all_items_layout: block.settings.enable_lookbook_all_items_layout %}
     </li>
 
     {% unless forloop.last %}
@@ -51,7 +51,7 @@
 <div
   class="
     lookbook-section-list group-block relative
-    style-{{ view_product }}
+    {% if block.settings.enable_lookbook_all_items_layout == false %} style-{{ view_product }}{% endif %}
     group-block--height-{{ block.settings.height }}
     group-block--width-{{ block.settings.width }}
     spacing-style
@@ -59,6 +59,7 @@
     {% if block.settings.inherit_color_scheme == false %}color-{{ block.settings.color_scheme }}{% endif %}
     layout-panel-flex
     layout-panel-flex--column
+    {% if block.settings.enable_lookbook_all_items_layout %} lookbook-all-items-layout{% endif %}
   "
 
   {% if request.visual_preview_mode %}
@@ -93,7 +94,7 @@
 
   {% case block.settings.layout_type %}
     {% when 'grid' %}
-      <div class="collection--grid-layout w-full block">
+      <div class="lookbook--grid-layout w-full block">
         {%- if show_mobile_slider -%}
           <swiper-component
             class="swiper-component-mobile"
@@ -160,6 +161,11 @@
           {%- endif -%}
         </div>
       </swiper-component>
+
+    {% when 'custom' %}
+      <div class="lookbook-section-list-custom w-full list-unstyled product-side-{{ block.settings.product_side }}" style="--column-1-width: {{ block.settings.column_1_width }}%; --column-2-width: {{ block.settings.column_2_width }}%;">
+        {{- list_items -}}
+      </div>
   {% endcase %}
 </div>
 
@@ -170,6 +176,60 @@
 
     .group-block--width-fit {
         width: fit-content;
+    }
+
+    .lookbook-section-list-custom {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0px;
+    }
+
+    @media screen and (min-width: 750px) {
+      .lookbook-section-list-custom.product-side-left {
+        justify-content: flex-end;
+      }
+
+      .lookbook-section-list-custom.product-side-right {
+        justify-content: flex-start;
+      }
+
+      .lookbook-section-list-custom .grid__item:nth-child(1) {
+          width: var(--column-1-width);
+      }
+
+      .lookbook-section-list-custom .grid__item:nth-child(2) {
+          width: var(--column-2-width);
+      }
+
+      .lookbook-section-list-custom .grid__item:has(.lookbook-item-all-swiper-component) {
+        position: absolute;
+        z-index: 99;
+      }
+
+      .lookbook-section-list-custom.product-side-left .grid__item:has(.lookbook-item-all-swiper-component) {
+        left: 0;
+      }
+
+      .lookbook-section-list-custom.product-side-right .grid__item:has(.lookbook-item-all-swiper-component) {
+        right: 0;
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      .lookbook-section-list-custom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .lookbook-section-list-custom .grid__item {
+        width: 100%;
+        order: 1;
+      }
+
+      .lookbook-section-list-custom .grid__item:has(.lookbook-item-all-swiper-component) {
+        order: 2;
+      }
     }
 {% endstylesheet %}
 
@@ -193,6 +253,12 @@
     },
     {
         "type": "_lookbook-item"
+    },
+    {
+      "type": "_lookbook-item-all"
+    },
+    {
+      "type": "_lookbook-circle-text"
     }
   ],
   "tag": null,
@@ -213,9 +279,50 @@
         {
           "value": "carousel",
           "label": "Carousel"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
         }
       ],
       "default": "grid"
+    },
+    {
+      "type": "range",
+      "id": "column_1_width",
+      "label": "Column 1 width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "visible_if": "{{ block.settings.layout_type == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "column_2_width",
+      "label": "Column 2 width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "visible_if": "{{ block.settings.layout_type == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "product_side",
+      "label": "Product side",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left",
+      "visible_if": "{{ block.settings.layout_type == 'custom' }}"
     },
     {
       "type": "checkbox",
@@ -364,8 +471,15 @@
       "default": "bullets"
     },
     {
+      "type": "checkbox",
+      "id": "enable_lookbook_all_items_layout",
+      "label": "Enable lookbook all items layout",
+      "default": false
+    },
+    {
         "type": "header",
-        "content": "Lookbook view product"
+        "content": "Lookbook view product",
+        "visible_if": "{{ block.settings.enable_lookbook_all_items_layout == false }}"
     },
     {
         "type": "select",
@@ -381,7 +495,8 @@
                 "label": "On image"
             }
         ],
-        "default": "popup"
+        "default": "popup",
+        "visible_if": "{{ block.settings.enable_lookbook_all_items_layout == false }}"
     },
     {
       "type": "header",

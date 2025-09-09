@@ -1,7 +1,16 @@
+{% liquid
+  assign columns_desktop = 1
+  assign columns_tablet = 1
+  assign columns_mobile = 1
+  assign columns_gap = 0
+
+  assign enable_navigation = true
+%}
+
 {% capture list_items %}
   {% for product in block.settings.product_list  %}
-    <li id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}" class="grid__item">
-      {% render 'card-lookbook', card_product: product, show_product_image: true, show_product_title: true, show_product_price: true, show_product_variant: true, show_product_button: true, option: 'default' %}
+    <li id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}" class="grid__item swiper-slide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}" {% if settings.animations_reveal_on_scroll %} style="--animation-order: {{ forloop.index }};"{% endif %}>
+      {% render 'card-lookbook', card_product: product, show_product_image: true, show_product_title: true, show_product_price: true, show_product_variant: true, show_product_button: true, option: 'standard' %}
     </li>
 
     {% unless forloop.last %}
@@ -12,14 +21,78 @@
 {% endcapture %}
 
 <div class="lookbook-item-all">
-  <ul class="lookbook-item-all__list">
-    {{list_items}}
-  </ul>
+  <div
+      class="section-resource-list__content"
+      style="--horizontal-alignment: {{ section.settings.horizontal_alignment }};"
+  >
+      {%- content_for 'blocks' -%}
+  </div>
+
+  {%- assign slides_per_view = columns_mobile -%}
+      {%- capture breakpoints -%}
+        {
+          "768": { "slidesPerView": {{ columns_tablet }} },
+          "1024": { "slidesPerView": {{ columns_tablet }} },
+          "1400": { "slidesPerView": {{ columns_desktop }} }
+        }
+      {%- endcapture -%}
+      <swiper-component
+        class="lookbook-item-all-swiper-component w-full block"
+        {%- render 'swiper-data',
+          settings: block.settings,
+          slides_per_view: slides_per_view,
+          space_between: columns_gap,
+          watch_slides_progress: true,
+          breakpoints: breakpoints
+        -%}
+      >
+        <div class="swiper w-full" style="--swiper-navigation-top-offset: 50%;">
+          <ul
+            id="Slider-{{ block.id }}"
+            data-id="{{ block.id }}"
+            class="swiper-wrapper grid-layout-no-js list-unstyled contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+          >
+            {{ list_items }}
+          </ul>
+
+          {%- if enable_navigation -%}
+            <div class="swiper-btns-wrap small-hide">
+              {%- render 'swiper-button' -%}
+            </div>
+          {%- endif -%}
+          {%- if enable_pagination -%}
+            <div class="swiper-pagination"></div>
+          {%- endif -%}
+        </div>
+      </swiper-component>
 </div>
 
 {% schema %}
 {
   "name": "Lookbook item all",
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "_heading"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "button"
+    },
+    {
+      "type": "spacer"
+    },
+    {
+      "type": "_divider"
+    }
+  ],
   "settings": [
     {
       "type": "product_list",

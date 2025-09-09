@@ -1,0 +1,235 @@
+{{ 'az-brands-layout.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+    assign array = "A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|#" | split: "|"
+    
+%}
+
+<azTable class="azTable">
+    {% assign array = "A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|#" | split: "|" %}
+    <div class="azTable__top">
+        <ul id="haloAZTable" class="haloAZTable style-{{ style }} list-unstyled {% if style == '1' %}visible-all{% endif %} scroll-snap-mobile disable-srollbar">
+            <li data-letter="all" class="all-letter is-active">
+                <a href="javascript:void(0)" role="button">All</a>
+            </li>
+            {%- for item in array -%}
+                <li data-letter="{{ item | downcase }}" class="disable">
+                    <a href="#az-code-{{ item | downcase }}" data-href="{{ item | downcase }}" role="button">{{ item | downcase }}</a>
+                </li>
+            {%- endfor -%}
+        </ul>
+    </div>
+    
+    <div class="azTable__content">
+        <div id="haloAZWrapper" class="haloAZWrapper active-all{% if style == '1' %} visible-all{% endif %}{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--slide-in{% endif %}">
+            {%- for item in array -%}
+                <div class="az-group" data-letter="{{ item | downcase }}" id="az-code-{{ item | downcase }}">
+                    <h3 class="az-group-title text-left">{{ item | downcase }}</h3>
+                    <ul class="az-group-list list-unstyled" role="list"></ul>
+                </div>
+            {%- endfor -%}
+        </div>
+    </div>
+</azTable>
+
+<script type="text/javascript">
+    const azWrapper = document.getElementById('haloAZWrapper');
+    const azNavigation = document.getElementById('haloAZTable');
+
+    getAllBrands();
+
+    function getAllBrands() {
+        let brandGroup, brand;
+        {%- for vendor in shop.vendors -%}
+            {% assign letter = vendor | strip_html | downcase | truncate: 1, '' %}
+
+            {%- if section.settings.type == 'vendor' -%}
+                {% assign link = vendor | link_to_vendor %}
+                brand = `{{ link }}`;
+            {%- else -%}
+                brand = `<a href="/collections/{{ vendor | handleize }}">{{ vendor | downcase }}</a>`;
+            {%- endif -%}
+            
+            {%- if letter == '1' or letter == '2' or letter == '3' or letter == '4' or letter == '5' or letter == '6' or letter == '7' or letter == '8' or letter == '9' or letter == '0' -%}
+                brandGroup = azWrapper.querySelector('.az-group[data-letter="#"] ul');
+            {%- else -%}
+                brandGroup = azWrapper.querySelector('.az-group[data-letter="{{ letter }}"] ul');
+            {%- endif -%}
+
+            if (brandGroup) {
+                const li = document.createElement('li');
+                li.className = 'brand';
+                li.setAttribute('data-az-letter', '{{ letter }}');
+                li.innerHTML = brand;
+                brandGroup.appendChild(li);
+            }
+        {%- endfor -%}
+
+        parseBrandList();
+    }
+
+    function parseBrandList() {
+        const azGroups = azWrapper.querySelectorAll('.az-group');
+        azGroups.forEach((element) => {
+            const letter = element.getAttribute('data-letter');
+            const groupList = element.querySelector('.az-group-list');
+            
+            if (groupList && groupList.children.length > 0) {
+                const navItem = azNavigation.querySelector(`[data-letter="${letter}"]`);
+                if (navItem) {
+                    navItem.classList.remove('disable');
+                    navItem.classList.add('has-letter');
+                }
+            } else {
+                element.style.display = 'none';
+            }
+        });
+        
+        addNavigationClickHandlers();
+    }
+
+    function addNavigationClickHandlers() {
+        const navItems = azNavigation.querySelectorAll('li[data-letter]');
+        
+        navItems.forEach((navItem) => {
+            navItem.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                if (this.classList.contains('disable')) {
+                    return;
+                }
+                
+                const letter = this.getAttribute('data-letter');
+                
+                navItems.forEach(item => {
+                    item.classList.remove('is-active');
+                });
+                
+                this.classList.add('is-active');
+                
+                showBrandGroup(letter);
+                
+                scrollToContent();
+            });
+        });
+    }
+
+    function showBrandGroup(selectedLetter) {
+        const azGroups = azWrapper.querySelectorAll('.az-group');
+        
+        azGroups.forEach((group) => {
+            const groupLetter = group.getAttribute('data-letter');
+            const brandItems = group.querySelectorAll('.brand');
+            
+            if (selectedLetter === 'all') {
+                if (group.style.display === 'none') {
+                    group.style.display = 'flex';
+                    group.style.opacity = '0';
+                    group.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        group.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        group.style.opacity = '1';
+                        group.style.transform = 'translateY(0)';
+                        
+                        animateBrandItems(brandItems);
+                    }, 50);
+                }
+            } else if (groupLetter === selectedLetter) {
+                if (group.style.display === 'none') {
+                    group.style.display = 'block';
+                    group.style.opacity = '0';
+                    group.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        group.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        group.style.opacity = '1';
+                        group.style.transform = 'translateY(0)';
+                        
+                        // Animate individual brand items with stagger
+                        animateBrandItems(brandItems);
+                    }, 50);
+                }
+            } else {
+                // Hide other groups with animation
+                if (group.style.display !== 'none') {
+                    group.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                    group.style.opacity = '0';
+                    group.style.transform = 'translateY(-10px)';
+                    
+                    setTimeout(() => {
+                        group.style.display = 'none';
+                    }, 200);
+                }
+            }
+        });
+    }
+
+    function animateBrandItems(brandItems) {
+        brandItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(15px)';
+            item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            
+            setTimeout(() => {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, index * 50); 
+        });
+    }
+
+    function scrollToContent() {
+        const contentArea = document.querySelector('.azTable__content');
+        if (contentArea) {
+            // Add a small delay to allow animations to start
+            setTimeout(() => {
+                contentArea.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                    inline: 'nearest'
+                });
+            }, 100);
+        }
+    }
+
+    window.addEventListener('load', () => {
+        const collectionLinksElement = document.querySelector('.azTable')
+        const collectionLinksList = [...collectionLinksElement.querySelectorAll('ul li')]
+        const firstLink = collectionLinksList[0]
+        const lastLink = collectionLinksList.pop()
+        
+        collectionLinksElement.classList.add('initialized')
+
+        const scrollToLastObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                collectionLinksElement.classList.add('disable-last')
+            } else {
+                collectionLinksElement.classList.remove('disable-last')
+            }
+        }, {
+            threshold: 0.6
+        })
+
+        const scrollToFirstObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                collectionLinksElement.classList.add('disable-first')
+            } else {
+                collectionLinksElement.classList.remove('disable-first')
+            }
+        }, {
+            threshold: 0.6
+        })
+
+        scrollToLastObserver.observe(lastLink)
+        scrollToFirstObserver.observe(firstLink)
+    })
+</script>
+
+{% schema %}
+{
+    "name": "AZ Brands Layout",
+    "presets": [
+        { "name": "AZ Brands Layout" }
+    ]
+}
+{% endschema %}
