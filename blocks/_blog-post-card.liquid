@@ -1,44 +1,4 @@
-{% stylesheet %}
-  .blog-post-card {
-    text-align: var(--text-align);
-  }
-  .blog-post-item .blog-post-card__content {
-    width: 100%;
-  }
-  .blog-post-item .blog-post-card {
-    gap: var(--blog-post-gap);
-  }
-  .blog-post-card__content :is(a, .blog-post-card__content-text) {
-    text-wrap: pretty;
-  }
-  .blog-post-card__content-label {
-    padding: var(--padding-sm) var(--padding-md);
-    color: #ba7a2d;
-    border: var(--style-border-width) solid #ba7a2d;
-    border-radius: var(--style-border-radius-sm);
-    margin-right: var(--margin-lg);
-  }
-  .blog-post-item:first-child .blog-post-card {
-    flex-direction: column;
-  }
-  @media screen and (max-width: 749px) {
-    .blog-post-item:not(:first-child) .blog-post-card {
-      flex-direction: column;
-    }
-  }
-  @media screen and (min-width: 1025px) {
-    .blog-post-item:first-child .blog-post-card {
-      flex-direction: column-reverse;
-    }
-    .blog-post-item:not(:first-child) .blog-post-card__image-container {
-      width: 40%;
-    }
-
-    .blog-post-item:not(:first-child) .blog-post-card__content {
-      width: 60%;
-    }
-  }
-{% endstylesheet %}
+{%- assign block_settings = block.settings -%}
 
 {% capture title %}
   {% content_for 'block', id: 'heading', type: '_heading', text: article.title %}
@@ -48,47 +8,158 @@
   {% content_for 'block', id: 'content', type: '_blog-post-description', article: article %}
 {% endcapture %}
 
-{% capture details %}
-  {% content_for 'block',
-    id: 'blog-post-details',
-    type: '_blog-post-info-text',
-    alignment: block.settings.alignment,
-    article: article
-  %}
+{% capture button %}
+  {% content_for 'block', id: 'button', type: '_blog-post-button', link: article.url %}
 {% endcapture %}
+
+{% capture details %}
+  {% content_for 'block', id: 'blog-post-details', type: '_blog-post-info-text', alignment: block_settings.alignment, article: article %}
+{% endcapture %}
+
+{% capture image %}
+  {% content_for 'block', id: 'image', type: '_blog-post-image', image: article.image %}
+{% endcapture %}
+
 <div
-  class="blog-post-card flex"
-  style="--text-align: {{ block.settings.alignment }}; --blog-post-gap: {{ block.settings.gap }}px;"
+  class="blog-post-card blog-post-card--{{ block_settings.layout_type }} flex"
+  style="--text-align: {{ block_settings.alignment }}; --blog-post-gap: {{ block_settings.gap }}px;"
 >
-  {%- if article.image -%}
-    <div class="blog-post-card__image-container">
-      <a href="{{ article.url }}">
-        {% content_for 'block', id: 'image', type: '_blog-post-image', image: article.image %}
+  {% case block_settings.layout_type %}
+  {% when 'default' %}
+    {%- if article.image -%}
+      <div class="blog-post-card__image-container">
+        <a href="{{ article.url }}">
+          {{ image }}
+        </a>
+      </div>
+    {%- endif -%}
+    <div class="blog-post-card__content flex flex-column">
+      <a
+        href="{{ article.url }}"
+        class="decoration-none{% if first == true %} has-label flex flex-wrap items-center{% else %} block{% endif %}"
+      >
+        {% if first == true %}
+          <span class="blog-post-card__content-label inline-block font-bold">{{ 'blogs.article.featured' | t }}</span>
+        {% endif %}
+        {{ title }}
       </a>
+
+      {{ description }}
+
+      {{ details }}
     </div>
-  {%- endif -%}
+  {% when 'style-2' %}
+    <div class="blog-post-card__content flex flex-column">
+      <a
+        href="{{ article.url }}"
+        class="decoration-none{% if first == true %} has-label flex flex-wrap items-center{% else %} block{% endif %}"
+      >
+        {% if first == true %}
+          <span class="blog-post-card__content-label inline-block font-bold">{{ 'blogs.article.featured' | t }}</span>
+        {% endif %}
+        {{ title }}
+      </a>
 
-  <div class="blog-post-card__content flex flex-column">
-    <a
-      href="{{ article.url }}"
-      class="decoration-none{% if first == true %} has-label flex flex-wrap items-center{% else %} block{% endif %}"
-    >
-      {% if first == true %}
-        <span class="blog-post-card__content-label inline-block font-bold">{{ 'blogs.article.featured' | t }}</span>
-      {% endif %}
-      {{ title }}
-    </a>
+      {{ details }}
+    </div>
+    {%- if article.image -%}
+      <div class="blog-post-card__image-container">
+        <a href="{{ article.url }}">
+          {{ image }}
+        </a>
+      </div>
+    {%- endif -%}
+    <div class="blog-post-card__content flex flex-column">
+      {{ description }}
 
-    {{ description }}
-
-    {{ details }}
-  </div>
+      {{ button }}
+    </div>
+  {% endcase %}
 </div>
+
+{% stylesheet %}
+  .blog-post-card {
+    text-align: var(--text-align);
+    gap: var(--blog-post-gap);
+  }
+
+  .blog-post-item .blog-post-card__content {
+    width: 100%;
+  }
+
+  .blog-post-card__content :is(a, .blog-post-card__content-text) {
+    text-wrap: pretty;
+  }
+
+  .blog-post-card__content-label {
+    padding: var(--padding-sm) var(--padding-md);
+    color: #ba7a2d;
+    border: var(--style-border-width) solid #ba7a2d;
+    border-radius: var(--style-border-radius-sm);
+    margin-right: var(--margin-lg);
+  }
+
+  /* Type: Default */
+  .blog-post-item:has(.blog-post-card--default) {
+    &:first-child .blog-post-card {
+      flex-direction: column;
+
+      @media screen and (min-width: 1025px) {
+        flex-direction: column-reverse;
+      }
+    }
+
+    &:not(:first-child) {
+      @media screen and (max-width: 749px) {
+        & .blog-post-card {
+          flex-direction: column;
+        }
+      }
+
+      @media screen and (min-width: 1025px) {
+        & .blog-post-card__image-container {
+          width: 40%;
+        }
+
+        & .blog-post-card__content {
+          width: 60%;
+        }
+      }
+    }
+  }
+
+  /* Type: Style 2 */
+  .blog-post-item:has(.blog-post-card--style-2) {
+    & .blog-post-card {
+      flex-direction: column;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "Blog post",
   "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_type",
+      "label": "t:settings_schema.global.settings.type.label",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "style-2",
+          "label": "Style 2"
+        }
+      ],
+      "default": "default"
+    },
     {
       "type": "text_alignment",
       "id": "alignment",

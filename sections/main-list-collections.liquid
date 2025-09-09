@@ -61,8 +61,15 @@
     >
       {% content_for 'block', type: '_collection-card', id: 'static-collection-card', closest.collection: collection %}
     </div>
+    {% unless forloop.last %}
+      <!--@list/split-->
+    {% endunless %}
   {% endfor %}
 {% endcapture %}
+
+{% liquid
+  assign list_items_array = list_items | strip | split: '<!--@list/split-->'
+%}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 
@@ -85,7 +92,6 @@
     {{ styles }}
   "
 >
-
   {{ header }}
 
   <div class="resource-list {{ classes }}"
@@ -101,7 +107,7 @@
         {% render 'editorial-collection-grid', items: list_items_array %}
     {% endcase %}
   </div>
-  {% if max_items < section_collections.size %}
+  {% if max_items < section_collections.size and section.settings.layout_type == 'grid' %}
     {{ template_showmore }}
   {% endif %}
 </div>
@@ -150,7 +156,8 @@
       "min": 1,
       "max": 8,
       "step": 1,
-      "default": 4
+      "default": 4,
+      "visible_if": "{{ section.settings.layout_type == 'grid'}}"
     },
     {
       "type": "select",
@@ -166,7 +173,8 @@
           "label": "t:options.two_number"
         }
       ],
-      "default": "2"
+      "default": "2",
+      "visible_if": "{{ section.settings.layout_type == 'grid'}}"
     },
     {
       "type": "range",
@@ -186,20 +194,19 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 8,
-      "visible_if": "{{ section.settings.layout_type == 'grid'}}"
+      "default": 8
     },
     {
       "type": "header",
       "content": "Show more",
-      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+      "visible_if": "{{ section.settings.layout_type == 'grid'}}"
     },
     {
       "type": "text",
       "id": "show_more",
       "label": "Text",
       "default": "Show more",
-      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+      "visible_if": "{{ section.settings.layout_type == 'grid'}}"
     },
     {
       "type": "header",

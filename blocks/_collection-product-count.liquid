@@ -1,18 +1,18 @@
-  {% assign product_count_value = closest.collection.all_products_count %}
-  {% capture product_count %}
-    {%- if product_count_value == 1 or product_count_value == 0 -%}
-        {{- 'products.facets.product_count_simple.one' | t: count: product_count_value -}}
-    {%- else -%}
-        {{- 'products.facets.product_count_simple.other' | t: count: product_count_value -}}
-    {%- endif -%}
-  {% endcapture %}
+{% assign product_count_value = closest.collection.all_products_count %}
+{% capture product_count %}
+  {%- if product_count_value == 1 or product_count_value == 0 -%}
+      {{- 'products.facets.product_count_simple.one' | t: count: product_count_value -}}
+  {%- else -%}
+      {{- 'products.facets.product_count_simple.other' | t: count: product_count_value -}}
+  {%- endif -%}
+{% endcapture %}
 
-  {% if closest.collection != blank %}
-    {% assign product_count = '<p>' | append: product_count | append: '</p>' %}
-    {% render 'text', fallback_text: product_count, block: block %}
-  {% endif %}
-  
-  {% schema %}
+{% if closest.collection != blank %}
+  {% assign product_count = '<p>' | append: product_count | append: '</p>' %}
+  {% render 'text', fallback_text: product_count, block: block %}
+{% endif %}
+
+{% schema %}
   {
     "name": "t:names.product_count",
     "tag": null,
@@ -138,107 +138,107 @@
         "default": "var(--font-body--family)",
         "visible_if": "{{ block.settings.type_preset == 'custom' }}"
       },
-    {
-      "type": "select",
-      "id": "font_size",
-      "label": "t:settings.size",
-      "options": [
-        {
-          "value": "",
-          "label": "t:options.default"
-        },
-        {
-          "value": "1.0rem",
-          "label": "10px"
-        },
-        {
-          "value": "1.2rem",
-          "label": "12px"
-        },
-        {
-          "value": "1.4rem",
-          "label": "14px"
-        },
-        {
-          "value": "1.6rem",
-          "label": "16px"
-        },
-        {
-          "value": "1.8rem",
-          "label": "18px"
-        },
-        {
-          "value": "2.0rem",
-          "label": "20px"
-        },
-        {
-          "value": "2.2rem",
-          "label": "22px"
-        },
-        {
-          "value": "2.4rem",
-          "label": "24px"
-        },
-        {
-          "value": "2.6rem",
-          "label": "26px"
-        },
-        {
-          "value": "2.8rem",
-          "label": "28px"
-        },
-        {
-          "value": "3.0rem",
-          "label": "30px"
-        },
-        {
-          "value": "3.2rem",
-          "label": "32px"
-        },
-        {
-          "value": "3.4rem",
-          "label": "34px"
-        },
-        {
-          "value": "3.6rem",
-          "label": "36px"
-        },
-        {
-          "value": "4.0rem",
-          "label": "40px"
-        },
-        {
-          "value": "5.0rem",
-          "label": "50px"
-        },
-        {
-          "value": "6.0rem",
-          "label": "60px"
-        },
-        {
-          "value": "7.0rem",
-          "label": "70px"
-        },
-        {
-          "value": "8.0rem",
-          "label": "80px"
-        },
-        {
-          "value": "9.0rem",
-          "label": "90px"
-        },
-        {
-          "value": "10.0rem",
-          "label": "100px"
-        },
-        {
-          "value": "12.0rem",
-          "label": "120px"
-        }
-      ],
-      "default": "1.6rem",
-      "visible_if": "{{ block.settings.type_preset == 'custom' }}"
-    },
+      {
+        "type": "select",
+        "id": "font_size",
+        "label": "t:settings.size",
+        "options": [
+          {
+            "value": "",
+            "label": "t:options.default"
+          },
+          {
+            "value": "1.0rem",
+            "label": "10px"
+          },
+          {
+            "value": "1.2rem",
+            "label": "12px"
+          },
+          {
+            "value": "1.4rem",
+            "label": "14px"
+          },
+          {
+            "value": "1.6rem",
+            "label": "16px"
+          },
+          {
+            "value": "1.8rem",
+            "label": "18px"
+          },
+          {
+            "value": "2.0rem",
+            "label": "20px"
+          },
+          {
+            "value": "2.2rem",
+            "label": "22px"
+          },
+          {
+            "value": "2.4rem",
+            "label": "24px"
+          },
+          {
+            "value": "2.6rem",
+            "label": "26px"
+          },
+          {
+            "value": "2.8rem",
+            "label": "28px"
+          },
+          {
+            "value": "3.0rem",
+            "label": "30px"
+          },
+          {
+            "value": "3.2rem",
+            "label": "32px"
+          },
+          {
+            "value": "3.4rem",
+            "label": "34px"
+          },
+          {
+            "value": "3.6rem",
+            "label": "36px"
+          },
+          {
+            "value": "4.0rem",
+            "label": "40px"
+          },
+          {
+            "value": "5.0rem",
+            "label": "50px"
+          },
+          {
+            "value": "6.0rem",
+            "label": "60px"
+          },
+          {
+            "value": "7.0rem",
+            "label": "70px"
+          },
+          {
+            "value": "8.0rem",
+            "label": "80px"
+          },
+          {
+            "value": "9.0rem",
+            "label": "90px"
+          },
+          {
+            "value": "10.0rem",
+            "label": "100px"
+          },
+          {
+            "value": "12.0rem",
+            "label": "120px"
+          }
+        ],
+        "default": "1.6rem",
+        "visible_if": "{{ block.settings.type_preset == 'custom' }}"
+      },
       {
         "type": "select",
         "id": "line_height",
@@ -419,5 +419,4 @@
       }
     ]
   }
-  {% endschema %}
-  
+{% endschema %}
