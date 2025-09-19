@@ -34,7 +34,6 @@
 {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
 {{ 'component-accordion.css' | asset_url | stylesheet_tag }}
 {{ 'component-rating.css' | asset_url | stylesheet_tag }}
-{{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
 {%- if closest.product.quantity_price_breaks_configured? -%}
   {{ 'component-volume-pricing.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
@@ -49,10 +48,6 @@
   <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
-
-{% if section.settings.image_zoom == 'hover' %}
-  <script id="EnableZoomOnHover-main" src="{{ 'magnify.js' | asset_url }}" defer="defer"></script>
-{% endif %}
 {%- if request.design_mode -%}
   <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
@@ -90,6 +85,10 @@
     {% assign product_href = '#ProductInformation-' | append: section.id %}
     {% render 'skip-to-content-link', href: product_href, text: 'accessibility.skip_to_product_info' %}
   {% endif %}
+  {%- content_for 'block',
+    type: '_breadcrumb',
+    id: 'breadcrumb'
+  -%}
   <div
     class="{{ product_grid_class }}"
     data-product-grid-content
@@ -109,11 +108,11 @@
     {% endcapture %}
 
     {% capture details %}
-      {% content_for 'block',
+      {%- content_for 'block',
         type: '_product-details',
         id: 'product-details',
         closest.product: closest.product
-      %}
+      -%}
     {% endcapture %}
 
     {% for block in render_order_array %}
@@ -125,7 +124,11 @@
     {% endfor %}
   </div>
 
-  {% content_for 'blocks' %}
+  {%- if closest.product.media.size > 0 -%}
+    <script src="{{ 'media-gallery.js' | asset_url }}" defer="defer"></script>
+  {%- endif -%}
+  
+  {%- content_for 'blocks'-%}
 </product-info>
 
 {% stylesheet %}
@@ -301,7 +304,7 @@
         .product-information__grid--half,
         :has(.product-information__media:empty)
       ).product-information--media-left {
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: 2fr 1.34fr;
     }
 
     .product-information__grid:not(
@@ -388,7 +391,7 @@
       "id": "gap",
       "label": "t:settings.gap",
       "min": 0,
-      "max": 48,
+      "max": 100,
       "step": 4,
       "unit": "px",
       "default": 16

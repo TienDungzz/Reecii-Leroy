@@ -1,7 +1,6 @@
 {%- liquid
   assign ratio = stts.media_ratio
 -%}
-{{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
 {% capture video_style %}
   --size-style-width: 100%; --size-style-width-mobile: 100%;
   --media-image-fit: {{ stts.image_position }};
@@ -28,9 +27,9 @@
     <div class="popup__inner video-modal__content w-auto h-full flex flex-column global-settings-popup"
       role="dialog"
       aria-modal="true"
-      aria-label="{{ 'products.product.media.play_video' | t }}"
+      aria-label="{{ 'accessibility.play_video' | t }}"
       tabindex="-1"
-      style="--popup-max-height: 85%; --w: max(72rem, 55vw);--p: 0rem;"
+      style="--modal-max-height: 85dvh; --w: max(72rem, 55vw);--p: 0rem;"
     >
         {% if stts.source == 'uploaded' %}
           {% render 'video-frame',
@@ -80,4 +79,4 @@
       transform: none;
     }
   }
-{%- endstylesheet -%}l
+{%- endstylesheet -%}

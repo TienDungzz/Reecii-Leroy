@@ -30,32 +30,29 @@
           "label": "t:options.dropdowns"
         },
         {
-          "value": "buttons",
-          "label": "t:options.buttons"
+          "value": "pills",
+          "label": "t:options.pills"
         }
       ],
-      "default": "buttons"
+      "default": "pills"
     },
     {
-      "type": "select",
-      "id": "swatch_shape",
+      "type": "checkbox",
+      "id": "show_swatches",
       "label": "t:settings.swatches",
-      "visible_if": "{{ block.settings.variant_style == 'buttons' }}",
-      "options": [
-        {
-          "value": "image_color",
-          "label": "t:options.variant_image_and_color_swatch"
-        },
-        {
-          "value": "visualizations",
-          "label": "t:options.variant_visualizations"
-        },
-        {
-          "value": "none",
-          "label": "t:options.none"
-        }
-      ],
-      "default": "image_color"
+      "default": true,
+      "visible_if": "{{ block.settings.variant_style == 'pills' }}"
+    },
+    {
+      "type": "range",
+      "id": "swatch_size",
+      "min": 20,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.swatch_size",
+      "default": 38,
+      "visible_if": "{{ block.settings.show_swatches == true }}"
     },
     {
       "type": "text_alignment",

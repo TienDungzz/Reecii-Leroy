@@ -296,3 +296,183 @@ class CartDrawerItems extends CartItems {
   }
 }
 if (!customElements.get('cart-drawer-items')) customElements.define('cart-drawer-items', CartDrawerItems);
+
+class CountryProvince extends HTMLElement {
+  constructor() {
+    super();
+
+    this.provinceElement = this.querySelector('[name="address[province]"]');
+    this.countryElement = this.querySelector('[name="address[country]"]');
+    this.countryElement.addEventListener('change', this.handleCountryChange.bind(this));
+
+    if (this.getAttribute('country') !== '') {
+      this.countryElement.selectedIndex = Math.max(0, Array.from(this.countryElement.options).findIndex((option) => option.textContent === this.dataset.country));
+      this.countryElement.dispatchEvent(new Event('change'));
+    }
+    else {
+      this.handleCountryChange();
+    }
+  }
+
+  handleCountryChange() {
+    const option = this.countryElement.options[this.countryElement.selectedIndex], provinces = JSON.parse(option.dataset.provinces);
+    this.provinceElement.parentElement.hidden = provinces.length === 0;
+
+    if (provinces.length === 0) {
+      return;
+    }
+
+    this.provinceElement.innerHTML = '';
+
+    provinces.forEach((data) => {
+      const selected = data[1] === this.dataset.province;
+      this.provinceElement.options.add(new Option(data[1], data[0], selected, selected));
+    });
+  }
+}
+customElements.define('country-province', CountryProvince);
+
+class ShippingCalculator extends HTMLFormElement {
+  constructor() {
+    super();
+
+    this.submitButton = this.querySelector('[type="submit"]');
+    this.resultsElement = this.querySelector('.results');
+
+    this.submitButton.addEventListener('click', this.handleFormSubmit.bind(this));
+  }
+
+  handleFormSubmit(event) {
+    event.preventDefault();
+
+    const zip = this.querySelector('[name="address[zip]"]').value,
+      country = this.querySelector('[name="address[country]"]').value,
+      province = this.querySelector('[name="address[province]"]').value;
+
+    this.submitButton.setAttribute('aria-busy', 'true');
+
+    // Get product variant ID from the current product page
+    const variantId = this.getProductVariantId();
+    
+    // Create a temporary cart with the product variant to calculate shipping
+    if (variantId) {
+      this.addToCartAndCalculateShipping(variantId, { zip, country, province });
+    } else {
+      this.formatError({ error: 'No product variant selected' });
+      this.resultsElement.hidden = false;
+      this.submitButton.removeAttribute('aria-busy');
+    }
+  }
+
+  addToCartAndCalculateShipping(variantId, shippingAddress) {
+    // First, add the item to cart temporarily
+    const addToCartBody = JSON.stringify({
+      items: [{ id: variantId, quantity: 1 }]
+    });
+
+    console.log(variantId, shippingAddress);
+
+    fetch(`${routes.cart_add_url}`, {
+      ...fetchConfig(),
+      body: addToCartBody
+    })
+    .then(() => {
+      // Now calculate shipping rates with the item in cart
+      const body = JSON.stringify({
+        shipping_address: shippingAddress
+      });
+      
+      let sectionUrl = `${routes.cart_url}/shipping_rates.json`;
+      sectionUrl = sectionUrl.replace('//', '/');
+
+      return fetch(sectionUrl, { ...fetchConfig(), ...{ body } });
+    })
+    .then((response) => response.json())
+    .then((parsedState) => {
+      if (parsedState.shipping_rates) {
+        this.formatShippingRates(parsedState.shipping_rates);
+      } else {
+        this.formatError(parsedState);
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+      this.formatError({ error: 'An error occurred while calculating shipping rates.' });
+    })
+    .finally(() => {
+      // Remove the temporarily added item from cart
+      this.removeFromCart(variantId);
+      this.resultsElement.hidden = false;
+      this.submitButton.removeAttribute('aria-busy');
+    });
+  }
+
+  removeFromCart(variantId) {
+    // Remove the temporarily added item
+    const removeBody = JSON.stringify({
+      updates: { [variantId]: 0 }
+    });
+
+    fetch(`${routes.cart_update_url}`, {
+      ...fetchConfig(),
+      body: removeBody
+    }).catch((e) => {
+      console.error('Error removing temporary item from cart:', e);
+    });
+  }
+
+  getProductVariantId() {
+    // Try to get variant ID from product form
+    const productForm = document.querySelector('product-form-component form');
+    if (productForm) {
+      const variantInput = productForm.querySelector('[name="id"]');
+      if (variantInput && variantInput.value) {
+        return variantInput.value;
+      }
+    }
+    
+    // Fallback: try to get from variant selector
+    const variantSelector = document.querySelector('variant-selects');
+    if (variantSelector) {
+      const currentVariant = variantSelector.currentVariant;
+      if (currentVariant && currentVariant.id) {
+        return currentVariant.id;
+      }
+    }
+    
+    // Fallback: try to get from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const variantFromUrl = urlParams.get('variant');
+    if (variantFromUrl) {
+      return variantFromUrl;
+    }
+    
+    return null;
+  }
+
+  formatError(errors) {
+    const shippingRatesList = Object.keys(errors).map((errorKey) => {
+      return `<li>${errors[errorKey]}</li>`;
+    });
+    this.resultsElement.innerHTML = `
+      <div class="alert alert--error grid gap-2 text-sm leading-tight">
+        <p>Error calculating shipping rates</p>
+        <ul class="list-disc grid gap-2" role="list">${shippingRatesList.join('')}</ul>
+      </div>
+    `;
+  }
+
+  formatShippingRates(shippingRates) {
+    const shippingRatesList = shippingRates.map(({ presentment_name, currency, price }) => {
+      return `<li>${presentment_name}: ${currency} ${price}</li>`;
+    });
+
+    this.resultsElement.innerHTML = `
+      <div class="alert alert--${shippingRates.length === 0 ? 'error' : 'success'} grid gap-2 text-sm leading-tight">
+        <p>${shippingRates.length === 0 ? 'No shipping rates found' : shippingRates.length === 1 ? 'Shipping rate found' : 'Multiple shipping rates found'}</p>
+        ${shippingRatesList.length === 0 ? '' : `<ul class="list-disc grid gap-2" role="list">${shippingRatesList.join('')}</ul>`}
+      </div>
+    `;
+  }
+}
+customElements.define('shipping-calculator', ShippingCalculator, { extends: 'form' });

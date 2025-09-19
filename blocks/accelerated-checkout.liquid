@@ -16,6 +16,25 @@
   endif
 %}
 
+{% capture agree_condition %}
+  {%- if block.settings.agree_condition and block.settings.agree_condition_text != blank -%}
+    <div class="spacing-style"
+      style="--padding-block-start: {{ block.settings.condition-padding-block-start }}px; --padding-block-end:{{- block.settings.condition-padding-block-end -}}px;--padding-inline-start: 0px;--padding-inline-end: 0px;"
+    >
+      <input
+        type="checkbox"
+        id="agree_condition"
+        name="agree_condition"
+        class="checkbox__input"
+        required
+      >
+      <label for="agree_condition" class="checkbox__label">
+        {{ block.settings.agree_condition_text }}
+      </label>
+    </div>
+  {%- endif -%}
+{% endcapture %}
+
 <div
   class="accelerated-checkout-block"
   ref="acceleratedCheckoutButtonContainer"
@@ -28,6 +47,7 @@
   {% endunless %}
 >
   {% if product != blank and form_obj != blank %}
+    {{ agree_condition }}
     {{ form_obj | payment_button }}
   {% endif %}
 </div>
@@ -57,6 +77,44 @@
 {% schema %}
 {
   "name": "t:names.accelerated_checkout",
-  "tag": null
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "agree_condition",
+      "label": "t:sections.newsletter.settings.agree_condition.label",
+      "default": true,
+      "info": "t:sections.newsletter.settings.agree_condition.info"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "agree_condition_text",
+      "label": "t:sections.newsletter.settings.agree_condition.content",
+      "default": "I agree with the terms and conditions",
+      "visible_if": "{{ block.settings.agree_condition == true }}"
+    },
+    {
+      "type": "range",
+      "id": "condition-padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.agree_condition == true }}"
+    },
+    {
+      "type": "range",
+      "id": "condition-padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.agree_condition == true }}"
+    }
+  ]
 }
 {% endschema %}

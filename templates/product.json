@@ -12,26 +12,35 @@
     "main": {
       "type": "product-information",
       "blocks": {
+        "breadcrumb": {
+          "type": "_breadcrumb",
+          "static": true,
+          "settings": {
+            "separator": "caret",
+            "horizontal_alignment": "start",
+            "gap": 10,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "padding-block-start": 0,
+            "padding-block-end": 0
+          },
+          "blocks": {}
+        },
         "media-gallery": {
           "type": "_product-media-gallery",
           "static": true,
           "settings": {
-            "media_presentation": "carousel",
+            "media_presentation": "grid",
             "media_columns": "two",
             "image_gap": 4,
             "large_first_image": false,
-            "slideshow_controls_style": "thumbnails",
-            "slideshow_mobile_controls_style": "dots",
-            "thumbnail_position": "right",
-            "thumbnail_width": 44,
-            "slide_direction": "horizontal",
-            "autoplay": false,
-            "autoplay_speed": 5,
-            "loop": false,
-            "navigation": "arrows",
-            "arrows_position": "center_vert",
-            "swiper_buttons_gap": 0,
-            "pagination_type": "bullets",
+            "loop": true,
+            "navigation": "arrows-pagination",
+            "arrows_position": "bottom_center",
+            "swiper_buttons_gap": 20,
+            "pagination_type": "thumbnails",
+            "pagination_mobile_type": "bullets",
+            "thumbnail_position": "left",
             "pagination_position": "inside",
             "dot_style": "filled",
             "dot_appearance": false,
@@ -43,8 +52,11 @@
             "media_radius": 0,
             "extend_media": false,
             "zoom": true,
+            "zoom_type": "inline",
             "video_loop": true,
-            "hide_variants": true,
+            "video_autoplay": true,
+            "video_type": "dialog",
+            "hide_variants": false,
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
@@ -175,9 +187,9 @@
                     "custom_width_mobile_pixel": 100,
                     "inherit_text_alignment_mobile": true,
                     "alignment_mobile": "left",
-                    "type_preset": "h3",
-                    "font": "var(--font-primary--family)",
-                    "font_size": "",
+                    "type_preset": "custom",
+                    "font": "var(--font-heading--family)",
+                    "font_size": "2.0rem",
                     "line_height": "normal",
                     "letter_spacing": "normal",
                     "case": "none",
@@ -246,8 +258,9 @@
             "variant_picker_R3rGDr": {
               "type": "variant-picker",
               "settings": {
-                "variant_style": "buttons",
-                "swatch_shape": "image_color",
+                "variant_style": "pills",
+                "show_swatches": true,
+                "swatch_size": 34,
                 "alignment": "left",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -286,7 +299,12 @@
                 "accelerated-checkout": {
                   "type": "accelerated-checkout",
                   "static": true,
-                  "settings": {},
+                  "settings": {
+                    "agree_condition": true,
+                    "agree_condition_text": "I agree with the terms and conditions",
+                    "condition-padding-block-start": 20,
+                    "condition-padding-block-end": 20
+                  },
                   "blocks": {}
                 }
               },
@@ -295,6 +313,7 @@
             "text_aEtTtq": {
               "type": "text",
               "name": "Product description",
+              "disabled": true,
               "settings": {
                 "text": "{{ closest.product.description }}",
                 "typing_text": false,
@@ -368,9 +387,9 @@
       "settings": {
         "page_width": "page-width",
         "desktop_media_position": "left",
-        "equal_columns": true,
+        "equal_columns": false,
         "limit_details_width": false,
-        "gap": 48,
+        "gap": 60,
         "color_scheme": "",
         "padding-block-start": 0,
         "padding-block-end": 0
@@ -1300,8 +1319,10 @@
                 "padding_left": 0,
                 "content_direction": "column",
                 "wrap": "wrap",
-                "align_items": "stretch",
-                "justify_content": "start",
+                "vertical_alignment": "center",
+                "horizontal_alignment": "flex-start",
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
                 "gap_x": 10,
                 "gap_y": 10,
                 "color_scheme": "",
@@ -1322,8 +1343,8 @@
                     "case": "none",
                     "wrap": "pretty",
                     "padding-block-start": 0,
-                    "padding-inline-end": 0,
                     "padding-block-end": 0,
+                    "padding-inline-end": 0,
                     "padding-inline-start": 0
                   },
                   "blocks": {}
@@ -1349,8 +1370,8 @@
                     "case": "none",
                     "wrap": "pretty",
                     "padding-block-start": 0,
-                    "padding-inline-end": 0,
                     "padding-block-end": 0,
+                    "padding-inline-end": 0,
                     "padding-inline-start": 0
                   },
                   "blocks": {}
@@ -1433,6 +1454,7 @@
         "rows_gap": 30,
         "media_size": "medium",
         "source": "uploaded",
+        "video_url": "",
         "video_display_mode": "inline",
         "video_autoplay": false,
         "video_loop": true,

@@ -119,6 +119,72 @@
 
         <div id="cart-errors"></div>
       </div>
+
+      <div class="cart-details">
+        <details class="details" is="accordion-details">
+          <summary class="details__summary flex items-center justify-between gap-2 cursor-pointer">
+            <span class="text-sm md:text-2xl font-medium leading-none">Shipping calculator</span>
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </summary>
+          <form class="details__content grid gap-4 md:gap-6" action="{{ routes.cart_url }}" method="POST" novalidate is="shipping-calculator">
+            <div class="grid xl:flex gap-4">
+              <country-province class="grid xl:flex gap-4"{% if shop.customer_accounts_enabled and customer %} data-country="{{ customer.default_address.country }}"{% if customer.default_address.province != '' %} data-province="{{ customer.default_address.province }}"{% endif %}{% endif %}>
+                <div class="field">
+                  <select
+                    name="address[country]"
+                    class="select is-floating"
+                    autocomplete="country"
+                    is="custom-select"
+                    id="ShippingCalculatorCountry-{{ section.id }}"
+                  >
+                    {{- all_country_option_tags -}}
+                  </select>
+                  <span class="svg-wrapper">
+                    {{- 'icon-caret.svg' | inline_asset_content -}}
+                  </span>
+                  <label class="label is-floating" for="ShippingCalculatorCountry-{{ section.id }}">{{ 'customer.addresses.country' | t }}</label>
+                </div>
+                <div class="field" hidden>
+                  <select
+                    name="address[province]"
+                    class="select is-floating"
+                    autocomplete="address-level1"
+                    is="custom-select"
+                    id="ShippingCalculatorProvince-{{ section.id }}"
+                  >
+                  </select>
+                  <span class="svg-wrapper">
+                    {{- 'icon-caret.svg' | inline_asset_content -}}
+                  </span>
+                  <label class="label is-floating" for="ShippingCalculatorProvince-{{ section.id }}">{{ 'customer.addresses.province' | t }}</label>
+                </div>
+              </country-province>
+              <div class="field">
+                <input
+                  name="address[zip]"
+                  class="input is-floating"
+                  type="text"
+                  autocapitalize="characters"
+                  autocomplete="postal-code"
+                  placeholder=" "
+                  id="ShippingCalculatorZip-{{ section.id }}"
+                  {% if shop.customer_accounts_enabled and customer %}value="{{ customer.default_address.zip }}"{% endif %}
+                />
+                <label class="label is-floating" for="ShippingCalculatorZip-{{ section.id }}">{{ 'customer.addresses.zip' | t }}</label>
+              </div>
+              <div class="justify-self-start">
+                <button class="button button--secondary button--fixed" type="submit" is="hover-button">
+                  <span class="btn-fill" data-fill></span>
+                  <span class="btn-text">shipping calculator</span>
+                </button>
+              </div>
+            </div>
+            <div class="grid gap-3 text-sm results"></div>
+          </form>
+        </details>
+      </div>
     </div>
   </div>
 </div>

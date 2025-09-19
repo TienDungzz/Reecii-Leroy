@@ -383,7 +383,7 @@ media-gallery.media-gallery--grid .media-gallery__grid .product-media-container 
   }
 
   /* Display grid view as a carousel on mobile, grid on desktop */
-  media-gallery:is(.media-gallery--grid) slideshow-component {
+  media-gallery:is(.media-gallery--grid) swiper-component {
     display: none;
   }
 
@@ -514,12 +514,13 @@ zoom-dialog dialog {
   gap: 8px;
   bottom: 0;
   overflow-x: auto;
-  opacity: 0;
+  opacity: 1;
   padding: var(--padding-lg);
   margin-inline: auto;
   scrollbar-width: none;
   animation: thumbnailsSlideInBottom calc(var(--animation-speed) * 0.75) var(--animation-easing) forwards;
   animation-delay: calc(var(--animation-speed) * 1.5);
+  transform: translateY(-50%);
 }
 
 .dialog--closed .dialog-thumbnails-list {
@@ -544,7 +545,7 @@ zoom-dialog dialog {
 }
 
 .dialog-thumbnails-list__thumbnail {
-  width: var(--thumbnail-width);
+  width: 48px;
   height: auto;
   transition: transform var(--animation-speed) var(--animation-easing);
   flex-shrink: 0;
@@ -552,7 +553,7 @@ zoom-dialog dialog {
 
   img {
     height: 100%;
-    object-fit: cover;
+    object-fit: cover;  
     border-radius: var(--media-radius);
     aspect-ratio: var(--aspect-ratio);
   }
@@ -562,6 +563,10 @@ zoom-dialog dialog {
     outline-offset: calc(var(--focus-outline-offset) / 2);
     border: var(--style-border-width) solid rgb(var(--color-border-rgb) / var(--media-border-opacity));
   }
+}
+
+.button.dialog-thumbnails-list__thumbnail:active {
+  transform: none;
 }
 
 .close-button:hover {
@@ -622,12 +627,12 @@ slideshow-slide .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui_
 
 .dialog-zoomed-gallery .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui__controls-area {
   /* Move the controls above the thumbnails. Need to calculate the height of the thumbnails list */
-  bottom: calc(var(--thumbnail-width) / calc(var(--media-preview-ratio)) + var(--padding-lg) * 2);
+  bottom: var(--padding-lg);
   right: var(--padding-lg);
 }
 
 @media screen and (max-width: 749px) {
-  slideshow-component:has(:not(.mobile\:hidden) :is(.slideshow-controls__dots, .slideshow-controls__counter))
+  swiper-component:has(:not(.mobile\:hidden) :is(.swiper-controls__dots, .swiper-controls__counter))
     .shopify-model-viewer-ui__controls-area {
     /* Position the controls just above the counter */
     bottom: calc(var(--minimum-touch-target) + var(--padding-sm));
@@ -635,7 +640,7 @@ slideshow-slide .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui_
 }
 
 @media screen and (min-width: 750px) {
-  slideshow-component:has(:not(.desktop\:hidden) :is(.slideshow-controls__dots, .slideshow-controls__counter))
+  swiper-component:has(:not(.desktop\:hidden) :is(.swiper-controls__dots, .swiper-controls__counter))
     .shopify-model-viewer-ui__controls-area {
     /* Position the controls just above the counter */
     bottom: calc(var(--minimum-touch-target) + var(--padding-sm));
@@ -646,7 +651,7 @@ slideshow-slide .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui_
     bottom: var(--padding-lg);
 
     /* Move the controls to the left of the thumbnails list on the right */
-    right: calc(var(--thumbnail-width) + var(--padding-lg) * 2);
+    right:  var(--padding-lg);
   }
 }
 
@@ -903,5 +908,126 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
 .pills__pill--desktop-small {
   @media screen and (min-width: 750px) {
     font-size: var(--font-size--xs);
+  }
+}
+
+
+.swiper-controls__thumbnails-container {
+  padding-top: var(--padding-xl);
+  padding-bottom: var(--padding-xl);
+}
+
+/* .swiper-thumbs {
+  height: 600px;
+} */
+
+.swiper-controls__thumbnails {
+  height: fit-content;
+
+  .swiper-control {
+    border-radius: var(--media-radius);
+    height: auto;
+    aspect-ratio: var(--aspect-ratio);
+
+    img {
+      height: 100%;
+      object-fit: cover;
+      border-radius: var(--media-radius);
+    }
+  }
+}
+
+.button.swiper-controls__thumbnail:active {
+  transform: none;
+}
+
+.swiper-slide-thumb-active {
+  opacity: var(--opacity-30);
+}
+
+.swiper-main {
+  width: 100%;
+  margin-left: calc(100px + var(--padding-2xs));
+}
+
+product-info .swiper-main .swiper-pagination-progressbar {
+  width: 100%;
+}
+
+.swiper-controls__thumbnail-badge {
+  position: absolute;
+  top: var(--padding-2xs);
+  right: var(--padding-2xs);
+  width: clamp(32px, 25%, 44px);
+  height: clamp(32px, 25%, 44px);
+  background-color: var(--color-background);
+  border-radius: var(--style-border-radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 1px rgb(var(--color-foreground-rgb) / var(--opacity-50));
+}
+
+.swiper-controls__thumbnail-badge svg {
+  width: 60%;
+  height: 60%;
+  fill: var(--color-foreground);
+  opacity: 0.6;
+}
+
+swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
+  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']),
+  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
+    display: flex;
+    align-items: stretch;
+    gap: var(--padding-2xs);
+
+    .swiper-controls__thumbnails-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      height: 100%;
+
+      .swiper {
+        height: 100%;
+      }
+    }
+  }
+
+  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
+    .swiper-main {
+      width: 100%;
+      margin-left: calc(68px + var(--padding-2xs));
+    }
+  }
+
+  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']) {
+    .swiper-controls__thumbnails-container {
+      left: auto;
+      right: 0;
+    }
+
+    .swiper-main {
+      width: 100%;
+      margin-right: calc(68px + var(--padding-2xs));
+    }
+  }
+
+  .swiper-controls__thumbnails-container[data-thumbnail-position='left'] {
+    order: -1;
+  }
+
+  [data-thumbnail-position='right'],
+  [data-thumbnail-position='left'] {
+    width: 68px;
+  }
+
+  [data-thumbnail-position='right'] {
+    justify-content: flex-end;
+  }
+
+  [data-thumbnail-position='left'] {
+    justify-content: flex-start;
   }
 }

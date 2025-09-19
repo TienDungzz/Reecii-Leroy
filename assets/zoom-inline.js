@@ -18,10 +18,10 @@ function createOverlay(image) {
 }
 
 function prepareOverlay(container, image) {
-  container.setAttribute('class', 'image-magnify-full-size');
+  container.setAttribute('class', 'image-zoom-inline-full-size');
   container.setAttribute('aria-hidden', 'true');
   container.style.backgroundImage = `url('${image.src}')`;
-  container.style.background = 'var(--color-background)';
+  container.style.backgroundColor = 'var(--color-background)';
 }
 
 function toggleLoadingSpinner(image) {
@@ -51,7 +51,7 @@ function magnify(image, zoomRatio) {
 }
 
 function enableZoomOnHover(zoomRatio) {
-  const images = document.querySelectorAll('.image-magnify-hover');
+  const images = document.querySelectorAll('.image-zoom-inline');
   images.forEach((image) => {
     image.onclick = (event) => {
       magnify(image, zoomRatio);

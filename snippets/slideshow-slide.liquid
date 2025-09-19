@@ -17,26 +17,28 @@
   assign style = style | strip | strip_newlines
 -%}
 
-<div
-  class="swiper-slide"
-  {% if style != blank %}
-    style="{{ style }}"
-  {% endif %}
-  {{ attributes }}
->
+{% if children contains 'product-media' %}
   <div
-    id="slide-{{ block.id }}-{{ index }}"
-    class="slideshow__slide flex relative justify-center size-full {{ class }}"
-    aria-hidden="{% if index == 0 %}false{% else %}true{% endif %}"
-    {{ block.shopify_attributes }}
+    class="swiper-slide {{ class }}"
     {% if style != blank %}
       style="{{ style }}"
     {% endif %}
+    {{ attributes }}
   >
-    <div class="slide__image-container flex size-full overflow-hidden absolute">
-      <div class="slide__img-wrapper grid w-full">
-        {{ children }}
+    <div
+      id="slide-{{ block.id }}-{{ index }}"
+      class="slideshow__slide flex relative justify-center size-full"
+      aria-hidden="{% if index == 0 %}false{% else %}true{% endif %}"
+      {{ block.shopify_attributes }}
+      {% if style != blank %}
+        style="{{ style }}"
+      {% endif %}
+    >
+      <div class="flex size-full overflow-hidden absolute">
+        <div class="slide__img-wrapper grid w-full">
+          {{ children }}
+        </div>
       </div>
     </div>
   </div>
-</div>
+{% endif %}

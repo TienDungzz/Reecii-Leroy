@@ -11,10 +11,30 @@ if (!customElements.get('product-form-component')) {
         this.cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
         this.submitButton = this.querySelector('[type="submit"]');
         this.submitButtonText = this.submitButton.querySelector('span');
+        this.checkbox = this.querySelector('#agree_condition');
+        this.buyItNowButton = this.querySelector('shopify-buy-it-now-button button');
 
         if (document.querySelector('cart-drawer')) this.submitButton.setAttribute('aria-haspopup', 'dialog');
 
         this.hideErrors = this.dataset.hideErrors === 'true';
+
+        this.initAgreeCondition();
+      }
+
+      initAgreeCondition() {
+        if (!this.checkbox || !this.buyItNowButton) return;
+  
+        this.buyItNowButton.disabled = true;
+  
+        this.checkbox.addEventListener('change', () => {
+          this.buyItNowButton.disabled = !this.checkbox.checked;
+        });
+  
+        this.form.addEventListener('submit', (e) => {
+          if (!this.checkbox.checked) {
+            e.preventDefault();
+          }
+        });
       }
 
       onSubmitHandler(evt) {

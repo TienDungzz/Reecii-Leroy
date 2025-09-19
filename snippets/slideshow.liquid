@@ -5,9 +5,13 @@
   @param {object[]} slides - the slides of the slideshow
   @param {string} [arrows_position] - The position of the arrows, defaults to 'bottom'
   @param {string} [class] - The class of the slideshow component
+  @param {string} [controls] - The controls of the slideshow component
+  @param {string} [thumbnail_position] - The position of the thumbnails, defaults to 'bottom'
+  @param {string} [thumbnail_direction] - The direction of the thumbnails, defaults to 'horizontal'
+  @param {string} [video_dialog_html] - The video dialog html
 
   @example
-  {% render 'slideshow', slides: slides, slide_count: collection.products.size, ref: 'mobileSlideshow' %}
+  {% render 'slideshow', slides: slides, ref: 'mobileSlideshow' %}
 {%- enddoc -%}
 
 {%- liquid
@@ -28,6 +32,7 @@
   endif
 
   assign pagination_type = settings.pagination_type
+  assign arrows_position = settings.arrows_position
   assign dot_style = settings.dot_style
   assign dot_appearance = settings.dot_appearance
   assign dot_background = settings.dot_background
@@ -36,21 +41,20 @@
 -%}
 
 <swiper-component
-  class="slideshow__container {{ class }}"
+  class="swiper__container relative {{ class }}"
   {%- render 'swiper-data',
     settings: settings,
     space_between: 0,
     parallax: true,
     speed: 800,
-    direction: settings.slide_direction,
+    thumbnail_position: thumbnail_position,
+    thumbnail_direction: thumbnail_direction,
   -%}
 >
-
-  <div class="swiper">
-    <div class="swiper-wrapper slideshow__slides w-full">
+  <div class="swiper swiper-main">
+    <div class="swiper-wrapper swiper__slides w-full">
       {{ slides }}
     </div>
-
     <div class="swiper-actions{% if enable_navigation %} swiper-actions--{{ arrows_position }}{% endif %} w-full">
       {%- capture pagi_class -%}
         swiper-pagination
@@ -93,5 +97,7 @@
         {% endif %}
       </div>
     </div>
+    {{ video_dialog_html }}
   </div>
+  {{ controls }}
 </swiper-component>

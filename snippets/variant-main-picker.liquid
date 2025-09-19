@@ -32,28 +32,27 @@
   >
     {%- for product_option in product_resource.options_with_values -%}
       {%- liquid
-        assign swatch_count = product_option.values | map: 'swatch' | compact | size
         assign variant_style = bl_stts.variant_style
+        assign show_swatches = bl_stts.show_swatches
+        assign swatch_size = bl_stts.swatch_size
+        assign product_swatch_option = settings.swatch | downcase
+        assign swatch_type = settings.swatch_type
+        assign option_name = product_option.name | downcase
+        assign is_color = false
+        if show_swatches and product_swatch_option contains option_name
+          assign is_color = true
+        endif
 
-        if swatch_count > 0 and bl_stts.swatch_shape != 'none'
+        if is_color
           if bl_stts.variant_style == 'dropdowns'
-            assign variant_style = 'swatch_dropdown'
+            assign variant_style = 'dropdowns'
           else
             assign variant_style = 'swatch'
           endif
         endif
-
-        if variant_style == 'buttons' and bl_stts.variant_button_width == 'equal-width-buttons'
-          assign fieldset_id = block.id | append: '-' | append: product_resource.id | append: '-' | append: product_option.name | handleize
-          assign option_id_attribute = 'data-option-id="' | append: fieldset_id | append: '"'
-          assign longest_value = 0
-        endif
       -%}
-      {%- if variant_style == 'swatch' or variant_style == 'buttons' -%}
-        <fieldset 
-          class="js product-form__input variant-option variant-option--buttons{% if variant_style == 'swatch' %} product-form__input--swatch variant-option--swatches{% else %} product-form__input--pill variant-option--{{ bl_stts.variant_button_width }}{% endif %}" 
-          {{ option_id_attribute }}
-        >
+      {%- if variant_style == 'pills' or variant_style == 'swatch' -%}
+        <fieldset  class="js product-form__input variant-option variant-option--buttons{% if is_color %} product-form__input--swatch variant-option--swatches{% else %} product-form__input--pill variant-option--{{ bl_stts.variant_button_width }}{% endif %}">
           <legend class="form__label">
             {{ product_option.name  | escape }}:
             <span data-selected-value>
@@ -63,15 +62,12 @@
           {% render 'product-variant-options',
             option: product_option,
             block: block,
-            variant_style: variant_style
+            variant_style: variant_style,
+            swatch_type: swatch_type,
+            swatch_size: swatch_size,
+            is_color: is_color,
+            index: forloop.index0
           %}
-          {% if option_id_attribute %}
-            {% style %}
-              [data-option-id="{{ fieldset_id }}"] {
-                --variant-ch: {{ longest_value }}ch;
-              }
-            {% endstyle %}
-          {% endif %}
         </fieldset>
       {%- elsif variant_style == 'dropdowns' -%}
         {% liquid
@@ -81,7 +77,6 @@
             assign new_width = settings.variant_swatch_width | times: 1.0 | divided_by: settings.variant_swatch_height | times: 20
           endif
         %}
-
         <div class="product-form__input product-form__input--dropdown variant-option variant-option--dropdowns">
           <label class="form__label" for="Option-{{ block.id }}-{{ forloop.index0 }}">
             {{ product_option.name  | escape }}:
@@ -97,37 +92,15 @@
               {%- endif -%}
             "
           >
-            {%- if variant_style == 'swatch_dropdown' -%}
-              <span
-                data-selected-value
-                class="dropdown-swatch"
-              >
-                {% render 'swatch', swatch: product_option.selected_value.swatch, shape: block.settings.swatch_shape %}
-              </span>
-            {%- endif -%}
-            <select
-              id="Option-{{ block.id }}-{{ forloop.index0 }}"
-              class="select__select variant-option__select"
-              name="options[{{ product_option.name | escape }}]"
-              form="{{ product_resource.form_id }}"
-            >
-              {% render 'product-variant-options',
-                product: product_resource,
-                option: product_option,
-                block: block,
-                variant_style: variant_style
-              %}
-            </select>
-            <span class="svg-wrapper">
-              <svg
-                aria-hidden="true"
-                focusable="false"
-                class="icon icon-caret"
-                viewBox="0 0 10 6"
-              >
-                {%- render 'icon', icon: 'caret' -%}
-              </svg>
-            </span>
+            {% render 'product-variant-options',
+              option: product_option,
+              block: block,
+              variant_style: variant_style,
+              swatch_type: swatch_type,
+              swatch_size: swatch_size,
+              is_color: is_color,
+              index: forloop.index0
+            %}
           </div>
         </div>
       {%- endif -%}
@@ -431,10 +404,6 @@
     width: var(--icon-size-2xs);
     height: var(--icon-size-2xs);
     pointer-events: none;
-  }
-
-  .variant-option__select--has-swatch {
-    padding-inline-start: calc((2 * var(--padding-sm)) + var(--variant-selects-swatch-width));
   }
 
   .variant-option__select-wrapper .swatch {

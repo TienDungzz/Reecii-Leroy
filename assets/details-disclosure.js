@@ -128,7 +128,7 @@ class ModalDialog extends HTMLElement {
       const focusElement = this.querySelector('[role="dialog"], .popup__inner');
       trapFocus(containerToTrapFocusOn, focusElement);
     }, { once: true });
-  }
+  }  
 }
 if (!customElements.get('modal-dialog')) customElements.define('modal-dialog', ModalDialog);
 

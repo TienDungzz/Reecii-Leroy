@@ -8,6 +8,7 @@
   @param {string} [video_class] - Additional classes for the video element
   @param {string} [video_style] - Additional inline styles
   @param {object} [video_preview_image] - Preview image to show before video plays
+  @param {string} [video_ratio] - The aspect ratio of the video
   @param {string} [widths] - Responsive widths
   @param {string} [sizes] - Responsive sizes
   @param {string} [loading] - Loading attribute
@@ -15,8 +16,8 @@
   @param {string} [video_type] - 'youtube' or 'vimeo'
   @param {boolean} [disable_controls] - Whether to disable controls. If true, only play/pause will be usable.
   @param {object} video - The Shopify video object or a string containing a YouTube ID or Vimeo ID
-  @param {string} section_id - The section ID
   @param {object} [block] - The block object
+  @param {string} [section] - The section object
 
   Video from URL:
 
@@ -134,7 +135,6 @@
       <button
         id="Deferred-Poster-Modal-{{ video_id }}"
         class="button deferred-media__poster deferred-media__poster-button button-unstyled w-full media--{{ video_ratio }}"
-        ref="deferredMediaPlayButton"
         aria-label="{{ alt }}"
         type="button"
         style="--video-aspect-ratio: {{ video.aspect_ratio }}"
@@ -155,7 +155,7 @@
     {% if disable_controls %}
       <button
         class="button button-unstyled deferred-media__poster-button video-interaction-hint hidden"
-        ref="toggleMediaButton"
+        data-click-handler="toggleMediaButton"
         type="button"
       >
         <span class="deferred-media__poster-icon icon-play hidden">

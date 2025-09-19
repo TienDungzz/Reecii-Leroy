@@ -5,6 +5,7 @@
     color-{{ block.settings.color_scheme }}
     layout-panel-flex
     layout-panel-flex--{{ block.settings.content_direction | default: 'column' }}
+    mobile-{{ block.settings.content_direction_mobile | default: 'column' }}
   "
   style="
     --pl:{{ block.settings.padding_left }}px;
@@ -122,7 +123,23 @@
           "label": "t:options.horizontal"
         }
       ],
-      "default": "row"
+      "default": "column"
+    },
+    {
+      "type": "select",
+      "id": "content_direction_mobile",
+      "label": "t:settings.direction_on_mobile",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "column"
     },
     {
       "type": "select",

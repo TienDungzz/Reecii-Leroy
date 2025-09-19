@@ -297,7 +297,15 @@ function pauseAllMedia() {
   document.querySelectorAll(".js-vimeo").forEach((video) => {
     video.contentWindow.postMessage('{"method":"pause"}', "*");
   });
-  document.querySelectorAll("video").forEach((video) => video.pause());
+  document.querySelectorAll("video").forEach((video) => {
+    video.pause();
+    // Update deferred media poster icon when video is paused
+    const deferredMedia = video.closest('deferred-media');
+    if (deferredMedia) {
+      deferredMedia.isPlaying = false;
+      deferredMedia.updatePlayPauseHint(false);
+    }
+  });
   document.querySelectorAll("product-model").forEach((model) => {
     if (model.modelViewerUI) model.modelViewerUI.pause();
   });
@@ -922,7 +930,7 @@ class DeferredMedia extends HTMLElement {
   }
 
   connectedCallback() {
-    this.toggleMediaButton = this.querySelector('button[ref="toggleMediaButton"]');
+    this.toggleMediaButton = this.querySelector('button[data-click-handler="toggleMediaButton"]');
     this.isPlaying = false;
     this.abortController = new AbortController();
     const { signal } = this.abortController;
@@ -935,6 +943,24 @@ class DeferredMedia extends HTMLElement {
     }
     if (typeof DialogCloseEvent !== 'undefined' && DialogCloseEvent.eventName) {
       window.addEventListener(DialogCloseEvent.eventName, this.pauseMedia.bind(this), { signal });
+    }
+
+    // Handle autoplay videos
+    if (this.hasAttribute('autoplay')) {
+      this.isPlaying = true;
+      
+      if (this.toggleMediaButton) {
+        this.toggleMediaButton.classList.remove('hidden');
+        const playIcon = this.toggleMediaButton.querySelector('.icon-play');
+        if (playIcon) playIcon.classList.toggle('hidden', this.isPlaying);
+        const pauseIcon = this.toggleMediaButton.querySelector('.icon-pause');
+        if (pauseIcon) pauseIcon.classList.toggle('hidden', !this.isPlaying);
+
+        this.toggleMediaButton.addEventListener('click', (e) => {
+          if (playIcon) playIcon.classList.toggle('hidden', this.isPlaying);
+          if (pauseIcon) pauseIcon.classList.toggle('hidden', !this.isPlaying);
+        });
+      }
     }
   }
 
@@ -967,9 +993,6 @@ class DeferredMedia extends HTMLElement {
   };
 
   loadContent(focus = true) {
-    if (typeof window.pauseAllMedia === 'function') {
-      window.pauseAllMedia();
-    }
     if (this.getAttribute('data-media-loaded')) return;
 
     // Dispatch event if MediaStartedPlayingEvent is defined
@@ -1595,6 +1618,9 @@ class SwiperComponent extends HTMLElement {
           dynamicBullets: getOption("dynamic-bullets", false),
         },
         breakpoints: defaultBreakpoints,
+        thumbs: {
+          swiper: null,
+        },
       };
 
       this.initSwiperMobile();
@@ -1644,6 +1670,44 @@ class SwiperComponent extends HTMLElement {
       }
 
       try {
+        // Check for thumbnail swiper - works on both mobile and desktop
+        const thumbnailSwiper = this.querySelector('.swiper-controls__thumbnails-container .swiper');
+        let thumbsSwiper = null;
+
+        if (thumbnailSwiper && !thumbnailSwiper._swiperInitialized) {
+          thumbnailSwiper._swiperInitialized = true;
+          
+          // Get thumbnail direction from data attribute
+          const thumbnailDirection = this.getAttribute('data-thumbnail-direction') || 'horizontal';
+          const isVerticalThumbnails = thumbnailDirection === 'vertical';
+          
+          // Get thumbnail position to determine slidesPerView
+          const thumbnailPosition = this.querySelector('.swiper-controls__thumbnails-container')?.getAttribute('data-thumbnail-position') || 'bottom';
+          const slidesPerView = (thumbnailPosition === 'left' || thumbnailPosition === 'right') ? 'auto' : 4;
+          
+          thumbsSwiper = new Swiper(thumbnailSwiper, {
+            direction: isVerticalThumbnails ? 'vertical' : 'horizontal',
+            spaceBetween: 16,
+            slidesPerView: slidesPerView,
+            freeMode: false,
+            watchSlidesProgress: true,
+            allowTouchMove: true,
+            grabCursor: true,
+            slideToClickedSlide: true,
+            loop: false,
+            breakpoints: {
+              768: { slidesPerView: slidesPerView },
+              1024: { slidesPerView: slidesPerView },
+              1400: { slidesPerView: slidesPerView }
+            },
+            pagination: {
+              el: '.swiper-controls__thumbnails-container .swiper-pagination',
+              type: 'bullets',
+              clickable: true,
+            }, 
+          });
+        }
+
         // Ensure proper swiper options for both desktop and mobile
         const swiperOptions = {
           ...this.options,
@@ -1677,14 +1741,71 @@ class SwiperComponent extends HTMLElement {
           // Enable resistance
           resistance: true,
           resistanceRatio: 0.85,
+          // Connect thumbnail swiper if exists
+          thumbs: thumbsSwiper ? {
+            swiper: thumbsSwiper,
+          } : undefined,
         };
 
         this.initSwiper = new Swiper(this.swiperEl, swiperOptions);
+
+        // Handle thumbnail clicks - works on both mobile and desktop
+        if (thumbnailSwiper && thumbsSwiper) {
+          const thumbnailButtons = thumbnailSwiper.querySelectorAll('.swiper-controls__thumbnail');
+          thumbnailButtons.forEach((button, index) => {
+            button.addEventListener('click', (e) => {
+              e.preventDefault();
+              this.initSwiper.slideTo(index);
+            });
+          });
+
+          // Update active thumbnail on slide change
+          this.initSwiper.on('slideChange', () => {
+            thumbnailButtons.forEach((button, index) => {
+              if (index === this.initSwiper.activeIndex) {
+                button.setAttribute('aria-selected', 'true');
+                button.classList.add('active');
+              } else {
+                button.removeAttribute('aria-selected');
+                button.classList.remove('active');
+              }
+            });
+
+            const realIndex = this.initSwiper.realIndex;
+            let thumbsPerView = thumbsSwiper.params.slidesPerView;
+
+            if (thumbsPerView == 'auto') {
+              thumbsPerView = thumbsSwiper.slides.filter(slide => 
+                slide.classList.contains('swiper-slide-visible')
+              ).length;
+            }
+
+            const firstVisible = thumbsSwiper.activeIndex;
+            const lastVisible = firstVisible + thumbsPerView - 1;
+
+            if (realIndex >= lastVisible - 1) {
+              thumbsSwiper.slideTo(realIndex - 2); 
+            }
+            
+            if (realIndex <= firstVisible + 1 && firstVisible > 0) {
+              thumbsSwiper.slideTo(realIndex - 2 < 0 ? 0 : realIndex - 2);
+            }
+          });
+
+          // Set initial active state
+          if (thumbnailButtons.length > 0) {
+            thumbnailButtons[0].setAttribute('aria-selected', 'true');
+            thumbnailButtons[0].classList.add('active');
+          }
+        }
 
         // Force update to ensure proper rendering
         setTimeout(() => {
           if (this.initSwiper) {
             this.initSwiper.update();
+            if (thumbsSwiper) {
+              thumbsSwiper.update();
+            }
           }
         }, 200);
       } catch (error) {
@@ -1713,7 +1834,7 @@ class SwiperComponent extends HTMLElement {
           }
         }
       } else {
-        // For regular swipers, always enable
+        // For regular swipers, always enable (works on both mobile and desktop)
         if (!this.initSwiper) {
           enableSwiper();
         }
@@ -2351,7 +2472,6 @@ class Wishlist extends HTMLElement {
           bubbles: true,
         });
         document.dispatchEvent(updateWishlistMailEvent);
-        console.log("wishlistList", wishlistList);
       }
     } else {
       target.classList.remove("wishlist-added");
@@ -2374,9 +2494,6 @@ class Wishlist extends HTMLElement {
       if (index > -1) {
         wishlistList.splice(index, 1);
         localStorage.setItem("wishlistItem", JSON.stringify(wishlistList));
-
-        console.log("wishlistList", wishlistList);
-        console.log("localStorage", localStorage);
       }
 
       const updatePaginationEvent = new CustomEvent("updatepagination", {
@@ -2540,11 +2657,6 @@ class ColorSwatch extends HTMLElement {
       oneOption = target.dataset.withOneOption,
       newImage = target.dataset.variantImg,
       mediaList = [];
-
-    // if (target.closest(".swatch-item")) {
-    //   console.log("swatch-item");
-    //   return;
-    // }
 
     if (target.closest(".swatch-item")) {
     // CHANGE TITLE
@@ -2966,11 +3078,7 @@ class StrokeText extends HTMLElement {
 
   updatePosition(e) {
     const rect = this.getBoundingClientRect();
-    // console.log("e.clientX", e.clientX)
-    // console.log("rect.left", rect.left)
-    // console.log("rect.width", rect.width)
     const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
-    // console.log("xPercent", xPercent)
     this.style.backgroundPosition = `${xPercent}% 50%`;
   }
 }
@@ -3070,8 +3178,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // handle close button click
   const handleCloseButtonClick = (drawer) => {
     const closeButton = document.querySelector(`[data-close-drawer="${drawer.getAttribute("data-drawer-target")}"]`);
-
-    console.log(`%c🔍 Log closeButton:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", closeButton);
 
     closeButton.addEventListener("click", () => {
       if (drawer.classList.contains("open")) {
@@ -3412,5 +3518,22 @@ class InfiniteScrolling extends HTMLElement {
   }
 
 }
-
 customElements.define('infinite-scrolling', InfiniteScrolling);
+
+document.addEventListener(
+  'toggle',
+  (event) => {
+    if (event.target instanceof HTMLDialogElement || event.target instanceof HTMLDetailsElement) {
+      if (event.target.hasAttribute('scroll-lock')) {
+        const { open } = event.target;
+
+        if (open) {
+          document.documentElement.setAttribute('scroll-lock', '');
+        } else {
+          document.documentElement.removeAttribute('scroll-lock');
+        }
+      }
+    }
+  },
+  { capture: true }
+);
