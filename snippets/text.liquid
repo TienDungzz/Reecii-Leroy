@@ -32,7 +32,9 @@
   assign text_width_tablet = width_tablet | default: bl_stts.width_tablet
   assign text_width_mobile = width_mobile | default: bl_stts.width_mobile
 
-  assign text = bl_stts.text
+  if text == blank
+    assign text = bl_stts.text
+  endif
 
   if bl_stts.font_size contains 'heading-lg' or bl_stts.font_size contains 'heading-xl'
     assign type = 'display'

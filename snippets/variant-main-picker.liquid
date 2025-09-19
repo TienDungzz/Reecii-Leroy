@@ -5,7 +5,10 @@
   @param {object} [block] - The block object
 {%- enddoc -%}
 
-{% assign bl_stts = block.settings %}
+{%- liquid
+    assign bl_stts = block.settings
+    assign custom_fields = product.metafields.custom.combined_products_listing
+-%}
 
 {% unless product_resource.has_only_default_variant %}
   {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
@@ -30,6 +33,34 @@
       data-shopify-visual-preview
     {% endif %}
   >
+    {%- if custom_fields != blank and settings.enable_combined_products_listing -%}
+    <div class="swatch-custom product-form__input">
+        <p class="form__label-combined form__label">{{ 'products.product.color' | t }}<span>{{ product.metafields.custom.combined_products_listing_name_color }}</span></p>
+        <ul class="list-unstyled flex flex-align-center flex-wrap">
+            {%- for referenced_product in custom_fields.value -%}
+                {%- liquid
+                    assign image_custom = referenced_product.metafields.custom.combined_products_listing_image.value
+                -%}
+                <li class="item-custom{% if referenced_product.id == product.id %} current-item{% endif %} swatch-item">
+                    <div class="item-custom--image">
+                        <{% if referenced_product.id == product.id %}span{% else %}a href ="{{shop.url | append: "/products/" | append: referenced_product.handle }}"{% endif %}  
+                            class="item-custom--inner"
+                            style="
+                                {%- if image_custom != blank -%}
+                                    background: url({{ image_custom | img_url: 'medium' }});
+                                {%- else -%}
+                                    background: url({{ referenced_product.featured_image | img_url: 'medium' }});
+                                {%- endif -%}
+                                background-size: cover;"
+                            title="{{referenced_product.title}}"
+                        >
+                        </{% if referenced_product.id == product.id %}span{% else %}a{% endif %}>
+                    </div>
+                </li>
+            {%- endfor -%}
+        </ul>
+    </div>
+    {%- endif -%}
     {%- for product_option in product_resource.options_with_values -%}
       {%- liquid
         assign swatch_count = product_option.values | map: 'swatch' | compact | size
@@ -445,7 +476,8 @@
   }
 
   .variant-selects--center,
-  .variant-selects--center .variant-option {
+  .variant-selects--center .variant-option,
+  .variant-selects--center .swatch-custom ul {
     text-align: center;
     align-items: center;
     justify-content: center;
@@ -453,8 +485,32 @@
   }
 
   .variant-selects--right,
-  .variant-selects--right .variant-option {
+  .variant-selects--right .variant-option,
+  .variant-selects--right .swatch-custom ul {
     text-align: right;
     justify-content: right;
   }
+
+  {% if custom_fields != blank %}
+  .swatch-custom {
+      margin-bottom: 11px;
+  }
+
+  .swatch-custom ul {
+      column-gap: 10px;
+  }
+
+  .swatch-custom .item-custom--image .item-custom--inner {
+      display: block;
+      width: var(--swatch--size);
+      height: var(--swatch--size);
+      cursor: pointer;
+      border-radius: var(--swatch--border-radius);
+      text-align: center;
+      font-size: 0;
+      letter-spacing: 0;
+      position: relative;
+      background-size: cover;
+  }
+  {% endif %}
 {% endstylesheet %}

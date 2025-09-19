@@ -12,6 +12,10 @@
   <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
+{%- if settings.show_calculator_free_shipping_message -%}
+    <script src="{{ 'free-shipping-message.js' | asset_url }}" defer="defer"></script>
+{% endif %}
+
 <script>
     window.shopUrl = '{{ request.origin }}';
     window.routes = {
@@ -79,6 +83,23 @@
         m: `{{ 'countdown.general.m' | t }}`,
         s: `{{ 'countdown.general.s' | t }}`
     };
+
+    {% if settings.show_calculator_free_shipping_message %}
+        {% if settings.calculator_free_shipping_message_price != blank %}
+            window.free_shipping_price = {{ settings.calculator_free_shipping_message_price }};
+        {% else %}
+            window.free_shipping_price = 0;
+        {% endif %}
+        window.free_shipping_text = {
+            free_shipping_message: `{{ 'calculator_free_shipping_message.general.free_shipping_message' | t }}`,
+            free_shipping_message_1: `{{ 'calculator_free_shipping_message.general.free_shipping_message_1' | t }}`,
+            free_shipping_message_2:`{{ 'calculator_free_shipping_message.general.free_shipping_message_2' | t }}`,
+            free_shipping_message_3: `{{ 'calculator_free_shipping_message.general.free_shipping_message_3' | t }}`,
+            free_shipping_message_4: `{{ 'calculator_free_shipping_message.general.free_shipping_message_4' | t }}`,
+            free_shipping_1: `{{ 'calculator_free_shipping_message.general.free_shipping_1' | t }}`,
+            free_shipping_2: `{{ 'calculator_free_shipping_message.general.free_shipping_2' | t }}`
+        };
+    {% endif %}
 
     window.wishlist = {
         add: `{{ 'wishlist.general.add' | t }}`,

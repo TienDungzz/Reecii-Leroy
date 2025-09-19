@@ -509,7 +509,7 @@
     --font-body--family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
     --font-body--style: {{ settings.type_body_font.style }};
     --font-body--weight: {{ settings.type_body_font.weight }};
-    --font-body--size: {{ settings.type_size_paragraph | divided_by: 10.0 }}rem;
+    --font-body--size: {{ settings.type_size_paragraph }};
     --font-body--line-height: var(--line-height--{{ settings.type_line_height_paragraph }});
 
     /* Font subheading */
@@ -825,6 +825,18 @@
     /* Colors */
     --color-white: #FFFFFF;
     --color-white-rgb: 255 255 255;
+
+    {%- if settings.show_calculator_free_shipping_message -%}
+        --free-shipping-height : {{ settings.calculator_free_shipping_message_height | append: 'px' }};
+        --free-shipping-border-radius : {{ settings.calculator_free_shipping_message_border_radius | append: 'px' }};
+        --free-shipping-color : {{ settings.calculator_free_shipping_message_color }};
+         --free-shipping-bg : {{ settings.calculator_free_shipping_message_bg }};
+         --free-shipping-bg-1: {{ settings.calculator_free_shipping_message_bg_1 }};
+         --free-shipping-bg-2: {{ settings.calculator_free_shipping_message_bg_2 }};
+         --free-shipping-bg-3: {{ settings.calculator_free_shipping_message_bg_3 }};
+         --free-shipping-bg-4: {{ settings.calculator_free_shipping_message_bg_4 }}; 
+         --free-shipping-min-height : {{ settings.product_action_font_size | times: 1.5 | plus: settings.calculator_free_shipping_message_height | plus: 10 | append: 'px' }};
+    {%- endif -%}
   }
 
   @media screen and (min-width: 750px) {

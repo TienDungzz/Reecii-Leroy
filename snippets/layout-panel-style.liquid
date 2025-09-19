@@ -27,6 +27,14 @@
     assign horizontal_alignment_mobile = settings.horizontal_alignment_flex_direction_column_mobile
     assign vertical_alignment_mobile = settings.vertical_alignment_flex_direction_column_mobile
   endunless
+
+  if horizontal_alignment_mobile == blank
+    assign horizontal_alignment_mobile = horizontal_alignment
+  endif
+  
+  if vertical_alignment_mobile == blank
+    assign vertical_alignment_mobile = vertical_alignment
+  endif
 -%}
 
 --flex-direction: {{ content_direction | default: 'column' }}; --flex-wrap: {{ settings.wrap | default: 'nowrap' }};
