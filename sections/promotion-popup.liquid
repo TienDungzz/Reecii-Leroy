@@ -52,15 +52,15 @@
     assign width_info_md = 55
 -%}
 
-<side-drawer class="drawer active fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden" element-s-popup id="Promotion-popup-{{ section.id }}" data-moved="false" tabindex="-1">
+<side-drawer class="drawer promotionPopup fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden" element-s-popup id="Promotion-popup-{{ section.id }}" data-moved="false" tabindex="-1">
     <div id="Drawer-Overlay-Promotion-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
     <promotion-popup class="popup__inner promotion-popup w-full h-auto absolute-c-c flex flex-column global-settings-popup color-{{ section.settings.color_scheme }}"
         role="dialog"
         aria-modal="true"
         aria-label="{{ 'accessibility.promotion-popup' | t }}"
         style="--popup-max-width: {{ width_content }}px; --popup-max-height: min(100%, 75vh); --p: 0;"
-        data-expire="{{ section.settings.popup_expire }}"
-        data-delay="{{ section.settings.popup_delay | times: 1000 }}"
+        data-expire="1"
+        data-delay="5"
     >
         {% content_for 'blocks' %}
 
@@ -73,6 +73,11 @@
         >
             {{- 'icon-close.svg' | inline_asset_content -}}
         </button>
+
+        <div class="newsletter--checked text-center">
+            <input id="dismiss" type="checkbox" name="dismiss">
+            <label for="dismiss" class="form-label--checkbox" role="text">No, thanks</label>
+        </div>
     </promotion-popup>
 </side-drawer>
 
@@ -82,12 +87,23 @@
             super();
             this.drawer = this.closest('.drawer');
             this.cookieName = '_halo_promotion_popup';
+            this.dismissTodayCookieName = '_halo_promotion_popup_dismiss_today';
             this.expiresDate = this.getAttribute('data-expire');
-            this.timeToShow = parseInt(this.getAttribute('data-delay'));
+            this.timeToShow = parseInt(this.getAttribute('data-delay')) || 0;
+            this._storage = this.getBestStorage();
 
-            this.load();
             this.querySelector('.drawer__close').addEventListener('click', this.setClose.bind(this));
             this.drawer.querySelector('[id^="Drawer-Overlay-"]').addEventListener('click', this.setClose.bind(this));
+
+            // Dismiss until tomorrow
+            const dismissCheckbox = this.querySelector('#dismiss');
+            if (dismissCheckbox) {
+                dismissCheckbox.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        this.dismissUntilTomorrow();
+                    }
+                });
+            }
 
             if (Shopify.designMode) {
                 document.addEventListener('shopify:section:select', (e) => {
@@ -100,49 +116,109 @@
             }
         }
 
+        connectedCallback() {
+            // Run load after element is attached to DOM for reliability across browsers/private modes
+            try { this.load(); } catch (_) { this.setOpen(this.timeToShow || 0); }
+        }
+
         load() {
-            if (this.querySelector('.form__message') && !this.getCookie(this.cookieName)) this.drawer.classList.add('active');
-            if (!this.getCookie(this.cookieName) && !Shopify.designMode) this.setOpen(this.timeToShow);
+            // If user dismissed for today, do not open
+            if (this.getStore(this.dismissTodayCookieName)) return;
+
+            console.log('getStore(this.cookieName)', !this.getStore(this.cookieName));
+
+            if (!this.getStore(this.cookieName)) this.drawer.classList.add('active');
+            if (!this.getStore(this.cookieName) && !Shopify.designMode) this.setOpen(this.timeToShow);
         }
 
         setOpen(timeToShow) {
-            if (!this.querySelector('.promotion-popup__image, .promotion-popup__info')) {
-                this.setClose();
-                return;
-            }
+            console.log('setOpen');
 
             setTimeout(() => {
                 this.drawer.classList.add('active');
                 document.body.classList.add('overflow-hidden');
+
+                console.log("add class active");
 
                 this.drawer.addEventListener('transitionend', () => {
                     const containerToTrapFocusOn = this.drawer.querySelector('.popup__inner');
                     const focusElement = this.drawer.querySelector('.field__input');
                     trapFocus(containerToTrapFocusOn, focusElement);
                 }, { once: true });
-            }, timeToShow);
+            }, 0);
         }
 
         setClose() {
-            this.setCookie(this.cookieName, 'closed', this.expiresDate);
+            this.setStoreDays(this.cookieName, 'closed', this.expiresDate);
             this.drawer.classList.remove('active');
             document.body.classList.remove('overflow-hidden');
             removeTrapFocus(this.activeElement);
+        }
+
+        // Close without setting long-expiry cookie
+        tempClose() {
+            this.drawer.classList.remove('active');
+            document.body.classList.remove('overflow-hidden');
+            removeTrapFocus(this.activeElement);
+        }
+
+        // Set dismissal to expire at next local midnight
+        dismissUntilTomorrow() {
+            const now = new Date();
+            const tomorrowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+            this.setStoreUntil(this.dismissTodayCookieName, '1', tomorrowMidnight);
+            this.tempClose();
         }
 
         setActiveElement(element) {
             this.activeElement = element;
         }
 
-        setCookie(name, value, days) {
-            var d = new Date;
+        // LocalStorage helpers with expiry
+        setStoreDays(name, value, days) {
+            var d = new Date();
             d.setTime(d.getTime() + 24 * 60 * 60 * 1000 * days);
-            document.cookie = name + "=" + value + ";path=/;expires=" + d.toGMTString();
+            this.setStoreUntil(name, value, d);
         }
 
-        getCookie(name) {
-            var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
-            return v ? v[2] : null;
+        setStoreUntil(name, value, date) {
+            try {
+                if (!this._storage) return;
+                var payload = { v: value, exp: date.getTime() };
+                this._storage.setItem(name, JSON.stringify(payload));
+            } catch (_) {}
+        }
+
+        getStore(name) {
+            try {
+                if (!this._storage) return null;
+                var raw = this._storage.getItem(name);
+                if (!raw) return null;
+                var payload = JSON.parse(raw);
+                if (!payload || typeof payload.exp !== 'number') return null;
+                if (Date.now() > payload.exp) {
+                    this._storage.removeItem(name);
+                    return null;
+                }
+                return payload.v;
+            } catch (_) { return null; }
+        }
+
+        getBestStorage() {
+            // Prefer localStorage, fallback to sessionStorage. Return null if none work
+            try {
+                var k = '__pp_test__';
+                window.localStorage.setItem(k, '1');
+                window.localStorage.removeItem(k);
+                return window.localStorage;
+            } catch (_) {}
+            try {
+                var k2 = '__pp_test__';
+                window.sessionStorage.setItem(k2, '1');
+                window.sessionStorage.removeItem(k2);
+                return window.sessionStorage;
+            } catch (_) {}
+            return null;
         }
     }
     if (!customElements.get('promotion-popup')) customElements.define('promotion-popup', PromotionPopup);

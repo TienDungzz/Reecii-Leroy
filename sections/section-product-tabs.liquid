@@ -1,0 +1,581 @@
+{% liquid
+    assign tabs_design = section.settings.tabs_design
+
+    assign padding_top = section.settings.padding_top
+    assign padding_bottom = section.settings.padding_bottom
+    assign padding_left = section.settings.padding_left
+    assign padding_right = section.settings.padding_right
+    assign gap = section.settings.gap
+    assign font_size = section.settings.font_size
+
+    assign alignment = section.settings.alignment
+    assign alignment_mb = section.settings.alignment_mb
+%}
+
+{%- capture attr -%}
+style="
+  --pt: {{ padding_top }}px;
+  --pb: {{ padding_bottom }}px;
+  --pl: {{ padding_left }}px;
+  --pr: {{ padding_right }}px;
+  --gap-x: {{ gap }}px;
+  --gap-y: {{ gap }}px;
+  --font-size: {{ font_size }};
+"
+{%- endcapture -%}
+
+{{ 'product-tabs.css' | asset_url | stylesheet_tag }}
+
+<div class="section section-product-tabs section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
+style="
+{% if section.settings.section_width == 'custom' %}
+  --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
+  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+{% endif %}
+"
+>
+  {%- if section.blocks.size > 0 -%}
+    {%- if tabs_design == 'tab' -%}
+      <div class="product-tabs" {{ attr }}>
+          <div class="product-tabs-wrapper">
+            <div class="product-tabs-tab">
+                <ul class="tabs-list list-unstyled flex flex-wrap justify-{{ alignment }} max-sm:justify-{{ alignment_mb }} show-border-bottom">
+                  {%- for block in section.blocks -%}
+                      {%-liquid
+                          assign title = block.settings.title
+                          case block.type
+                            when 'description' 
+                              if title == blank or product.description == blank
+                                  continue
+                              endif
+                            when 'review'
+                              if title == blank 
+                                  continue
+                              endif
+                            when 'html'
+                              assign page_title = title | default: block.settings.page.title
+                              if page_title == blank or block.settings.content == blank and block.settings.page.content == blank
+                                  continue
+                              endif
+                            when 'liquid'
+                              if block.settings.title == blank or block.settings.custom_liquid == blank
+                                  continue
+                              endif
+                          endcase
+                      -%}
+
+                      <li class="tabs-item">
+                        <a class="tab-title{% if forloop.first %} is-active{% endif %}" href="#tabs-{{ block.id }}">{{ title | escape }}</a>
+                      </li>
+                  {%- endfor -%}
+                </ul>
+
+                <div class="tabs-content" style="font-size: 16px;">
+                  {%- for block in section.blocks -%}
+                    {% liquid
+                      assign title = block.settings.title
+                    %}
+
+                    {%- case block.type -%}
+                      {%- when 'description' -%}
+                      {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                          <div class="toggle-title">
+                            <a href="#" class="toggle-link">
+                              <span class="text">{{ title }}</span>
+                              <span class="svg-wrapper icon-caret-wrapper">
+                                {{- 'icon-caret.svg' | inline_asset_content -}}
+                              </span>
+                            </a>
+                          </div>
+                          <div class="toggle-content">
+                            {{ product.description }}
+                          </div>
+                        </div>
+                      {%- when 'review' -%}
+                      {%- if title == blank or product.reviews.rating_average == blank -%}{%- continue -%}{%- endif -%}
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                          <div class="toggle-title">
+                            <a href="#" class="toggle-link">
+                              <span class="text">{{ title }}</span>
+                              <span class="svg-wrapper icon-caret-wrapper">
+                                {{- 'icon-caret.svg' | inline_asset_content -}}
+                              </span>
+                            </a>
+                          </div>
+                          <div class="toggle-content">
+                            {{ product.reviews.rating_average }}
+                          </div>
+                        </div>
+                      {% when 'html' %}
+                        {%- assign page_title = title | default: block.settings.page.title -%}
+                        {%- if page_title == blank or block.settings.content == blank and block.settings.page.content == blank -%}{%- continue -%}{%- endif -%}
+
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                          <div class="toggle-title">
+                            <a href="#" class="toggle-link">
+                              <span class="text">{{ title }}</span>
+                              <span class="svg-wrapper icon-caret-wrapper">
+                                {{- 'icon-caret.svg' | inline_asset_content -}}
+                              </span>
+                            </a>
+                          </div>
+                          <div class="toggle-content">
+                            <div class="rte" style="margin-bottom: 2rem">{{ block.settings.content }}</div>
+                            {{ block.settings.page.content }}
+                          </div>
+                        </div>
+                      {% when 'liquid' %}
+                        {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
+
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                          <div class="toggle-title">
+                            <a href="#" class="toggle-link">
+                              <span class="text">{{ title }}</span>
+                              <span class="svg-wrapper icon-caret-wrapper">
+                                {{- 'icon-caret.svg' | inline_asset_content -}}
+                              </span>
+                            </a>
+                          </div>
+                          <div class="toggle-content">
+                            {{ block.settings.custom_liquid }}
+                          </div>
+                        </div>
+                    {%- endcase -%}
+                  {%- endfor -%}
+                </div>
+            </div>
+          </div>
+      </div>
+    {%- elsif tabs_design == 'accordion' -%}
+      <div class="tabs-content style-accordion" style="font-size: 16px;">
+        {%- for block in section.blocks -%}
+          {% liquid
+            assign title = block.settings.title
+          %}
+
+          {%- case block.type -%}
+            {%- when 'description' -%}
+            {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
+              <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                <div class="toggle-title">
+                  <a href="#" class="toggle-link">
+                    <span class="text">{{ title }}</span>
+                    <span class="svg-wrapper icon-caret-wrapper">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  </a>
+                </div>
+                <div class="toggle-content">
+                  {{ product.description }}
+                </div>
+              </div>
+            {%- when 'review' -%}
+            {%- if title == blank or product.reviews.rating_average == blank -%}{%- continue -%}{%- endif -%}
+              <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                <div class="toggle-title">
+                  <a href="#" class="toggle-link">
+                    <span class="text">{{ title }}</span>
+                    <span class="svg-wrapper icon-caret-wrapper">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  </a>
+                </div>
+                <div class="toggle-content">
+                  {{ product.reviews.rating_average }}
+                </div>
+              </div>
+            {% when 'html' %}
+              {%- assign page_title = title | default: block.settings.page.title -%}
+              {%- if page_title == blank or block.settings.content == blank and block.settings.page.content == blank -%}{%- continue -%}{%- endif -%}
+
+              <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                <div class="toggle-title">
+                  <a href="#" class="toggle-link">
+                    <span class="text">{{ title }}</span>
+                    <span class="svg-wrapper icon-caret-wrapper">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  </a>
+                </div>
+                <div class="toggle-content">
+                  <div class="rte" style="margin-bottom: 2rem">{{ block.settings.content }}</div>
+                  {{ block.settings.page.content }}
+                </div>
+              </div>
+            {% when 'liquid' %}
+              {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
+
+              <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                <div class="toggle-title">
+                  <a href="#" class="toggle-link">
+                    <span class="text">{{ title }}</span>
+                    <span class="svg-wrapper icon-caret-wrapper">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  </a>
+                </div>
+                <div class="toggle-content">
+                  {{ block.settings.custom_liquid }}
+                </div>
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+<side-drawer-opener data-side-drawer="#Global-Drawer">
+  <button>Open Global Sidebar</button>
+</side-drawer-opener>
+
+{% render 'global-sidebar' %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabTitles = document.querySelectorAll('.tab-title');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabTitles.forEach(title => {
+      title.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (e.currentTarget.classList.contains('is-active')) return;
+
+        const currentIndex = Array.from(tabTitles).indexOf(e.currentTarget);
+
+        tabTitles.forEach(title => {
+          title.classList.remove('is-active');
+        });
+
+        tabContents.forEach(content => {
+          content.classList.remove('is-active');
+        });
+
+        tabContents[currentIndex].classList.add('is-active');
+        e.currentTarget.classList.add('is-active');
+      });
+    });
+
+    const toggleLinks = document.querySelectorAll('.toggle-link');
+
+    toggleLinks.forEach(toggleLink => {
+      toggleLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleLink.closest('.toggle-title').classList.toggle('is-open');
+      });
+    });
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+    "name": "Product Tabs",
+    "disabled_on": {
+      "groups": ["header", "footer"]
+    },
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:content.appearance"
+      },
+      {
+        "type": "checkbox",
+        "id": "inherit_color_scheme",
+        "label": "t:settings.inherit_color_scheme",
+        "default": true
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "t:settings.color_scheme",
+        "default": "scheme-1",
+        "visible_if": "{{ section.settings.inherit_color_scheme == false }}"
+      },
+      {
+          "type": "select",
+          "id": "tabs_design",
+          "label": "Tabs design",
+          "options": [
+            {
+              "value": "tab",
+              "label": "Tab"
+            },
+            {
+              "value": "accordion",
+              "label": "Accordion"
+            }
+          ],
+          "default": "tab"
+      },
+      {
+        "type": "checkbox",
+        "label": "Open first tab by default",
+        "id": "open_first_tab_by_default",
+        "default": false,
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
+      },
+      {
+        "type": "header",
+        "content": "t:settings.layout"
+      },
+      {
+        "type": "select",
+        "id": "alignment",
+        "label": "Alignment",
+        "options": [
+          {
+            "value": "start",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "end",
+            "label": "Right"
+          }
+        ],
+        "default": "start"
+      },
+      {
+        "type": "select",
+        "id": "alignment_mb",
+        "label": "Alignment mobile",
+        "options": [
+          {
+            "value": "start",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "end",
+            "label": "Right"
+          }
+        ],
+        "default": "start"
+      },
+      {
+        "type": "range",
+        "id": "gap",
+        "label": "Gap between tabs",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 12
+      },
+      {
+        "type": "select",
+        "id": "font_size",
+        "label": "Font size",
+        "options": [
+          {
+            "value": "",
+            "label": "t:options.default"
+          },
+          {
+            "value": "1.0rem",
+            "label": "10px"
+          },
+          {
+            "value": "1.2rem",
+            "label": "12px"
+          },
+          {
+            "value": "1.4rem",
+            "label": "14px"
+          },
+          {
+            "value": "1.6rem",
+            "label": "16px"
+          },
+          {
+            "value": "1.8rem",
+            "label": "18px"
+          },
+          {
+            "value": "2.0rem",
+            "label": "20px"
+          },
+          {
+            "value": "2.2rem",
+            "label": "22px"
+          },
+          {
+            "value": "2.4rem",
+            "label": "24px"
+          },
+          {
+            "value": "2.6rem",
+            "label": "26px"
+          },
+          {
+            "value": "2.8rem",
+            "label": "28px"
+          },
+          {
+            "value": "3.0rem",
+            "label": "30px"
+          },
+          {
+            "value": "3.2rem",
+            "label": "32px"
+          },
+          {
+            "value": "3.4rem",
+            "label": "34px"
+          },
+          {
+            "value": "3.6rem",
+            "label": "36px"
+          },
+          {
+            "value": "4.0rem",
+            "label": "40px"
+          }
+        ],
+        "default": "1.6rem"
+      },
+      {
+        "type": "header",
+        "content": "t:content.size"
+      },
+      {
+        "type": "select",
+        "id": "section_width",
+        "label": "t:settings.width",
+        "options": [
+          {
+            "value": "page-width",
+            "label": "t:options.page"
+          },
+          {
+            "value": "full-width",
+            "label": "t:options.full"
+          },
+          {
+            "value": "custom",
+            "label": "Custom"
+          }
+        ],
+        "default": "page-width"
+      },
+      {
+        "type": "range",
+        "id": "page_width_custom",
+        "min": 1000,
+        "max": 2000,
+        "step": 10,
+        "default": 1570,
+        "unit": "px",
+        "label": "t:settings_schema.layout.settings.page_width.label",
+        "visible_if": "{{ section.settings.section_width == 'custom' }}"
+      },
+      {
+        "type":  "header",
+        "content": "t:content.padding"
+      },
+      {
+        "type": "range",
+        "id": "padding_left",
+        "label": "Padding left",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "padding_right",
+        "label": "Padding right",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "label": "Padding top",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "label": "Padding bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 0
+      }
+    ],
+    "blocks": [
+      {
+        "type": "description",
+        "name": "Description",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Description"
+          }
+        ]
+      },
+      {
+        "type": "review",
+        "name": "Review",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Reviews"
+          }
+        ]
+      },
+      {
+        "type": "html",
+        "name": "HTML",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Tab custom HTML"
+          },
+          {
+            "type": "textarea",
+            "id": "content",
+            "label": "Tab content"
+          },
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Tab content from page"
+          }
+        ]
+      }
+    ],
+    "presets": [
+        {
+          "name": "Product Tabs",
+          "category": "t:categories.products"
+        }
+    ]
+}
+{% endschema %}

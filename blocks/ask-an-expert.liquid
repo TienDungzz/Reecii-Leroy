@@ -1,0 +1,100 @@
+{% liquid
+    assign text = block.settings.text
+    assign font_size = block.settings.font_size | append: 'px'
+%}
+
+
+<div class="productView-askAnExpert" style="--font-size: {{ font_size }};">
+    <a class="link link-underline ask-an-expert-button" href="#" data-open-ask-an-expert>
+        <span class="text">{{ text }}</span>
+    </a>
+</div>
+
+{% stylesheet %}
+    .productView-askAnExpert .text {
+        font-size: var(--font-size);
+    }
+
+    .askAnExpertPopup .askAnExpertPopup__content {
+        transform: none !important;
+    }
+{% endstylesheet %}
+
+{% javascript %}
+    const askAnExpertButton = document.querySelector('.ask-an-expert-button');
+    const body = document.body;
+
+    if (askAnExpertButton) {
+        askAnExpertButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            let askAnExpertPopup = document.querySelector('[data-ask-an-expert-popup]'),
+            modalContent = askAnExpertPopup.querySelector('.askAnExpertPopup__content'),
+            overlay = askAnExpertPopup.querySelector('.drawer__overlay'),
+            url;
+
+            if (body.classList.contains('template-product')) {
+                const handle = document.querySelector('.product-information').getAttribute('data-url');
+
+                url = window.routes.root + handle + '?view=ajax_ask_an_expert';
+            } else if (body.classList.contains('quick-view-show')) {
+                const handle = document.querySelector('.quick-view-modal').getAttribute('product-quick-view-handle');
+
+                url = window.routes.root + '/products/' + handle + '?view=ajax_ask_an_expert';
+            } else {
+                url = window.routes.root + '/search?view=ajax_ask_an_expert';
+            }
+
+
+            if (url) {
+                fetch(url)
+                    .then(response => response.text())
+                    .then(data => {
+                        modalContent.innerHTML = data;
+
+                        console.log("data ne:", data);
+                    });
+            } else {
+                modalContent.innerHTML = '<div class="alertBox alertBox--error">Please try again later.</div>';
+            }
+
+            askAnExpertPopup.setAttribute('open', '');
+
+            overlay.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                askAnExpertPopup.removeAttribute('open');
+            });
+        });
+    }
+{% endjavascript %}
+
+{% schema %}
+{
+    "name": "Ask an expert",
+    "settings": [
+        {
+            "type": "text",
+            "id": "text",
+            "label": "Text",
+            "default": "Ask an expert"
+        },
+        {
+            "type": "range",
+            "id": "font_size",
+            "label": "Font size",
+            "default": 16,
+            "min": 12,
+            "max": 24,
+            "step": 1
+        }
+    ],
+    "presets": [
+        {
+            "name": "Ask an expert"
+        }
+    ]
+}
+{% endschema %}

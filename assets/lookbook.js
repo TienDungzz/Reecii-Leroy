@@ -298,7 +298,6 @@ function handleLookBookAllItemsLayout() {
         const showProductsBtn = item.querySelector('.lookBook__btnShowProducts');
 
         if (showProductsBtn) {
-            console.log("showProductsBtn", showProductsBtn);
             showProductsBtn.remove();
         }
 

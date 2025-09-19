@@ -139,6 +139,14 @@
   </variant-selects>
 {% endunless %}
 
+<script>
+  window.product_inventory_policy_array_{{ product.id }} = {
+      {% for variant in product.variants %}
+          '{{ variant.id }}': '{{ variant.inventory_policy }}',
+      {%endfor%}
+  };
+</script>
+
 {% stylesheet %}
   .variant-selects {
     width: 100%;

@@ -1,0 +1,93 @@
+{% liquid
+    assign variant_count = product.variants | size
+    assign current_variant = product.selected_or_first_available_variant
+    assign product_max_stock = block.settings.product_max_stock
+    assign text_size = block.settings.text_size | append: 'px'
+    assign text_color = block.settings.text_color
+    assign progress_bar_height = block.settings.progress_bar_height | append: 'px'
+    assign progress_bar_color = block.settings.progress_bar_color
+    assign progress_bar_color_2 = block.settings.progress_bar_color_2
+%}
+
+{% render 'product-hot-stock-main',
+    block: block,
+    product: product,
+    variantCount: variant_count,
+    productMaxStock: product_max_stock,
+    current_variant: current_variant,
+    text_size: text_size,
+    text_color: text_color,
+    progress_bar_height: progress_bar_height,
+    progress_bar_color: progress_bar_color,
+    progress_bar_color_2: progress_bar_color_2
+%}
+
+<script>
+    window.product_inventory_array_{{ product.id }} = {
+        {% for variant in product.variants %}
+            '{{ variant.id }}': '{{ variant.inventory_quantity }}',
+        {%endfor%}
+    };
+
+    window.inventory_text = {
+        hotStock: `{{ 'products.product.hot_stock' | t : inventory: '[inventory]' }}`,
+    }
+</script>
+
+{% schema %}
+{
+    "name": "Product Hot Stock",
+    "settings": [
+        {
+            "type": "header",
+            "content": "General"
+        },
+        {
+            "type": "number",
+            "id": "product_max_stock",
+            "label": "Product Max Stock",
+            "default": 20
+        },
+        {
+            "type": "number",
+            "id": "text_size",
+            "label": "Text Size",
+            "default": 16
+        },
+        {
+            "type": "color",
+            "id": "text_color",
+            "label": "Text Color",
+            "default": "#d62828"
+
+        },
+        {
+            "type": "header",
+            "content": "Progress Bar"
+        },
+        {
+            "type": "number",
+            "id": "progress_bar_height",
+            "label": "Progress Bar Height",
+            "default": 5
+        },
+        {
+            "type": "color",
+            "id": "progress_bar_color",
+            "label": "Progress Bar Color 1",
+            "default": "#d62828"
+        },
+        {
+            "type": "color",
+            "id": "progress_bar_color_2",
+            "label": "Progress Bar Color 2",
+            "default": "#69c69c"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Product Hot Stock"
+        }
+    ]
+}
+{% endschema %}
