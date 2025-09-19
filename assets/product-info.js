@@ -192,7 +192,6 @@ if (!customElements.get('product-info')) {
           updateSourceFromDestination('Inventory', ({ innerText }) => innerText === '');
           updateSourceFromDestination('Volume');
           updateSourceFromDestination('Price-Per-Item', ({ classList }) => classList.contains('hidden'));
-          console.log('this.sectionId', this.sectionId)
           this.updateQuantityRules(this.sectionId, html);
           this.querySelector(`#Quantity-Rules-${this.dataset.section}`)?.classList.remove('hidden');
           this.querySelector(`#Volume-Note-${this.dataset.section}`)?.classList.remove('hidden');
@@ -209,6 +208,10 @@ if (!customElements.get('product-info')) {
               variant,
             },
           });
+
+          this.handleHotStock(this);
+          this.handleBackInStockAlert(this);
+          this.updateAddButtonText(this);
         };
       }
 
@@ -338,10 +341,7 @@ if (!customElements.get('product-info')) {
 
       fetchQuantityRules() {
         const currentVariantId = this.productForm?.variantIdInput?.value;
-        console.log('this.productForm', this.productForm)
         if (!currentVariantId) return;
-
-        console.log('currentVariantId', currentVariantId)
 
         this.querySelector('.quantity__rules-cart .loading__spinner').classList.remove('hidden');
         fetch(`${this.dataset.url}?variant=${currentVariantId}&section_id=${this.dataset.section}`)
@@ -349,7 +349,6 @@ if (!customElements.get('product-info')) {
           .then((responseText) => {
             const html = new DOMParser().parseFromString(responseText, 'text/html');
             this.updateQuantityRules(this.dataset.section, html);
-            console.log('html', this.dataset.section)
           })
           .catch((e) => console.error(e))
           .finally(() => this.querySelector('.quantity__rules-cart .loading__spinner').classList.add('hidden'));
@@ -391,6 +390,98 @@ if (!customElements.get('product-info')) {
         if (listItems.includes(productId)) listItems = listItems.filter(id => id !== productId);
         listItems.unshift(productId);
         localStorage.setItem(name, JSON.stringify(listItems.slice(0, 25)));
+      }
+
+      handleHotStock(data) {
+        const variantId = data.productForm?.variantIdInput?.value;
+        const productId = data.dataset.productId;
+
+        const inventoryMapKey = `product_inventory_array_${productId}`;
+        const inventoryMap = window[inventoryMapKey] || {};
+        const inventoryQuantity = variantId ? Number(inventoryMap[variantId]) || 0 : 0;
+        
+        const hotStock = document.querySelector('.productView-hotStock');
+        if (!hotStock) return;
+
+        const maxStock = Number(hotStock.dataset.hotStock) || 0;
+        const hotStockText = hotStock.querySelector('.hotStock-text');
+        const progressBar = hotStock.querySelector('.hotStock-progress-item');
+
+        if (maxStock > 0 && inventoryQuantity > 0 && inventoryQuantity <= maxStock) {
+          if (hotStockText) {
+            const textStock = String(window.inventory_text?.hotStock || '').replace('[inventory]', inventoryQuantity);
+            hotStockText.innerHTML = textStock;
+          }
+          hotStock.classList.remove('hidden');
+        } else {
+          hotStock.classList.add('hidden');
+        }
+
+        if (progressBar && maxStock > 0) {
+          const percent = Math.max(0, Math.min(100, (inventoryQuantity / maxStock) * 100));
+          progressBar.style.width = `${percent}%`;
+        }
+      }
+
+      handleBackInStockAlert(data) {
+        const productForm = data.productForm;
+
+        const backInStockAlert = document.querySelector('.back-in-stock-alert');
+        
+        if (!backInStockAlert || !productForm) return;
+
+        setTimeout(() => {
+          const quantityInput = productForm.querySelector('.quantity__input');
+          const currentVariantStock = quantityInput.getAttribute('data-inventory-quantity');
+          const inventoryPolicy = quantityInput.getAttribute('data-inventory-policy');
+
+          if (!currentVariantStock) return;
+
+          backInStockAlert.classList.toggle('hidden', currentVariantStock > 0);
+
+          if (inventoryPolicy === 'continue') {
+            backInStockAlert.classList.add('hidden');
+          }
+        }, 100);
+
+      }
+
+      updateAddButtonText(data) {
+        const productForms = document.querySelectorAll(
+          `#product-form-${this.dataset.section}`
+        );
+        const productFormQuantities = document.querySelectorAll('.product-form__quantity');
+
+        const variantId = data.productForm?.variantIdInput?.value;
+        const productId = data.dataset.productId;
+
+        const inventoryMapKey = `product_inventory_array_${productId}`;
+        const inventoryPolicyMapKey = `product_inventory_policy_array_${productId}`;
+        const inventoryMap = window[inventoryMapKey] || {};
+        const inventoryQuantity = variantId ? Number(inventoryMap[variantId]) || 0 : 0;
+        const inventoryPolicy = variantId ? window[inventoryPolicyMapKey][variantId] : 'deny';
+
+        productForms.forEach((productForm, index) => {
+          if (!productForm) return;
+
+          const quantityInput = productForm.querySelector('.quantity__input');
+
+          quantityInput.setAttribute('data-inventory-quantity', inventoryQuantity);
+          quantityInput.setAttribute('data-inventory-policy', inventoryPolicy);
+
+          const addButton = productForm.querySelector('[name="add"]');
+          const addButtonText = productForm.querySelector('[name="add"] > .add-to-cart-text');
+          const maxInventory = parseInt(quantityInput.getAttribute('data-inventory-quantity'));
+
+          if (addButton.hasAttribute('disabled')) return;
+
+          if (maxInventory <= 0 && inventoryPolicy === 'continue') {
+            addButtonText.innerHTML = window.variantStrings.preOrder;
+          } else {
+            addButtonText.innerHTML = window.variantStrings.addToCart;
+          }
+
+        });
       }
 
       get productForm() {

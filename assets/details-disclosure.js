@@ -7,6 +7,8 @@ class SideDrawerOpener extends HTMLElement {
     let isFirstLoad  = true;
     button.addEventListener('click', () => {
       const drawer = document.querySelector(this.getAttribute('data-side-drawer'));
+      console.log("drawer", drawer);
+      
       if (isFirstLoad && this.hasAttribute('drawer-has-url')) {
         isFirstLoad = false;
         const urlStyle = drawer?.dataset.urlStyleSheet;

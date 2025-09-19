@@ -69,6 +69,9 @@
             if product.selected_or_first_available_variant.quantity_rule.min > product.selected_or_first_available_variant.inventory_quantity and check_against_inventory
               assign quantity_rule_soldout = true
             endif
+            if product.selected_or_first_available_variant.inventory_quantity <= 0 and product.selected_or_first_available_variant.inventory_policy == 'continue'
+              assign check_pre_order = true
+            endif
           -%}
           <button
             id="ProductSubmitButton-{{ section_id }}"
@@ -88,7 +91,11 @@
               {%- elsif product.selected_or_first_available_variant.available == false or quantity_rule_soldout -%}
                 {{ 'products.product.sold_out' | t }}
               {%- else -%}
-                {{ 'products.product.add_to_cart' | t }}
+                {% if check_pre_order %}
+                  {{ 'products.product.pre_order' | t }}
+                {% else %}
+                  {{ 'products.product.add_to_cart' | t }}
+                {% endif %}
               {%- endif -%}
             </span>
             {%- render 'loading-spinner' -%}

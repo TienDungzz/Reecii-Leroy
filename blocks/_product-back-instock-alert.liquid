@@ -1,0 +1,126 @@
+{% liquid
+    assign unavailable_variants = product.variants | where: "available", false
+    assign button_style = block.settings.button_style
+    assign button_label = block.settings.button_label
+
+    assign form_id = block.id | default: section.id | prepend: 'ContactForm-'
+
+    assign current_variant  = product.selected_or_first_available_variant
+%}
+
+{% if unavailable_variants.size > 0 %}
+    <div class="back-in-stock-alert{% if current_variant.inventory_quantity > 0 or current_variant.inventory_policy == 'continue' %} hidden{% endif %}">
+      {% content_for 'block', type: 'text', id: 'static-title' %}
+      <contact-form id="{{ form_id }}">
+      {%- form 'contact', id: form_id -%}
+          {%- if form.posted_successfully? -%}
+            <span>Success</span>
+          {%- elsif form.errors -%}
+            <span>Error</span>
+          {%- endif -%}
+          <textarea rows="1" name="contact[product]" class="hidden">
+            {{ product.title }}{% unless product.has_only_default_variant %} ( {{ unavailable_variants.first.title }} ){% endunless %} - {{ request.origin }}{{ unavailable_variants.first.url }}
+          </textarea>
+          <textarea rows="1" name="contact[message]" class="hidden">
+            Please notify me when this product is back in stock.
+          </textarea>
+  
+          <div class="flex flex-{{ block.settings.desktop_direction }} max-sm:flex-{{ block.settings.mobile_direction }}" style="--gap: {{ block.settings.gap }}px;">
+            <input type="email" name="contact[email]" placeholder="Email" autocomplete="email" required="required" class="w-full flex-1">
+  
+            <button class="button{% if button_style == 'outline' %}-secondary{% endif %} whitespace-nowrap" type="submit">{{ button_label }}</button>
+          </div>
+      {%- endform -%}
+      </contact-form>
+    </div>
+{% endif %}
+
+
+{% schema %}
+{
+    "name": "Back in stock alert",
+    "tag": null,
+    "blocks": [
+    
+    ],
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:settings.layout"
+      },
+      {
+        "type": "select",
+        "id": "desktop_direction",
+        "label": "Desktop direction",
+        "options": [
+          {
+            "value": "row",
+            "label": "Horizontal"
+          },
+          {
+            "value": "column",
+            "label": "Vertical"
+          }
+        ],
+        "default": "row"
+      },
+      {
+        "type": "select",
+        "id": "mobile_direction",
+        "label": "Mobile direction",
+        "options": [
+          {
+            "value": "row",
+            "label": "Horizontal"
+          },
+          {
+            "value": "column",
+            "label": "Vertical"
+          }
+        ],
+        "default": "column"
+      },
+      {
+        "type": "range",
+        "id": "gap",
+        "label": "Gap",
+        "unit": "px",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 12
+      },
+      {
+        "type": "header",
+        "content": "t:settings.button"
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "t:settings.label",
+        "default": "Notify me"
+      },
+      {
+        "type": "select",
+        "id": "button_style",
+        "label": "t:settings.type",
+        "options": [
+          {
+            "value": "default",
+            "label": "t:options.default"
+          },
+          {
+            "value": "outline",
+            "label": "t:options.outline"
+          }
+        ],
+        "default": "default"
+      }
+    ],
+    "presets": [
+        {
+            "name": "Back in stock alert"
+        }
+    ]
+}
+{% endschema %}
