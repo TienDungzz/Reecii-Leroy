@@ -85,6 +85,13 @@ class CartItems extends HTMLElement {
     this.validateQuantity(event);
   }
 
+  dispatchChangeForShippingMessage() {
+    document.querySelectorAll('[data-free-shipping-wrapper]').forEach(freeShippingWrapper => {
+        const changeEvent = new Event('change', { bubbles: true })
+        freeShippingWrapper.dispatchEvent(changeEvent);
+    })
+  }
+
   onCartUpdate() {
     if (this.tagName === 'CART-DRAWER-ITEMS') {
       fetch(`${routes.cart_url}?section_id=cart-drawer`)
@@ -211,6 +218,7 @@ class CartItems extends HTMLElement {
       })
       .finally(() => {
         this.disableLoading(line);
+        this.dispatchChangeForShippingMessage();
       });
   }
 
@@ -285,7 +293,12 @@ class CartDrawerItems extends CartItems {
       {
         id: 'CartDrawer',
         section: 'cart-drawer',
-        selector: '.drawer__inner',
+        selector: 'cart-drawer-items'
+      },
+      {
+        id: 'CartDrawer',
+        section: 'cart-drawer',
+        selector: '.drawer__footer'
       },
       {
         id: 'cart-icon-bubble',

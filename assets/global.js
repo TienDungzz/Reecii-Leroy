@@ -1596,14 +1596,10 @@ class SwiperComponent extends HTMLElement {
       const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
       const pagination = this.swiperEl.querySelector(".swiper-pagination");
       const arrowOnHeaderNextButton = this.arrowOnHeader
-        ? this.arrowOnHeader.querySelector(
-            ".swiper-btns-on-header .swiper-button-next"
-          )
+        ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next")
         : nextButton;
       const arrowOnHeaderPrevButton = this.arrowOnHeader
-        ? this.arrowOnHeader.querySelector(
-            ".swiper-btns-on-header .swiper-button-prev"
-          )
+        ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev")
         : prevButton;
 
       const getOption = (name, defaultValue = undefined) => {
@@ -1704,6 +1700,15 @@ class SwiperComponent extends HTMLElement {
   }
 
   initSwiperMobile() {
+    const nextButton = this.swiperEl.querySelector(".swiper-button-next");
+    const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
+    const arrowOnHeaderNextButton = this.arrowOnHeader
+      ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next")
+      : nextButton;
+    const arrowOnHeaderPrevButton = this.arrowOnHeader
+      ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev")
+      : prevButton;
+
     this.breakpoint = window.matchMedia("(min-width:750px)");
 
     const enableSwiper = () => {
@@ -1764,8 +1769,8 @@ class SwiperComponent extends HTMLElement {
           allowTouchMove: true,
           // Enable navigation buttons
           navigation: {
-            nextEl: this.swiperEl.querySelector(".swiper-button-next"),
-            prevEl: this.swiperEl.querySelector(".swiper-button-prev"),
+            nextEl: arrowOnHeaderNextButton,
+            prevEl: arrowOnHeaderPrevButton,
             disabledClass: "swiper-button-disabled",
             hiddenClass: "swiper-button-hidden",
           },
