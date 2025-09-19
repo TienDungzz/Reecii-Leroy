@@ -926,9 +926,9 @@ class DeferredMedia extends HTMLElement {
     this.isPlaying = false;
     this.abortController = new AbortController();
     const { signal } = this.abortController;
-    
+
     this.setupEventListeners();
-    
+
     // Check if ThemeEvents and DialogCloseEvent are defined before using them
     if (typeof ThemeEvents !== 'undefined' && ThemeEvents.mediaStartedPlaying) {
       document.addEventListener(ThemeEvents.mediaStartedPlaying, this.pauseMedia.bind(this), { signal });
@@ -996,7 +996,7 @@ class DeferredMedia extends HTMLElement {
         this.isPlaying = true;
         this.updatePlayPauseHint(this.isPlaying);
       });
-      
+
       content.addEventListener('pause', () => {
         this.isPlaying = false;
         this.updatePlayPauseHint(this.isPlaying);
@@ -1008,6 +1008,9 @@ class DeferredMedia extends HTMLElement {
       }
     }
   }
+
+  // Hover toggle play/pause state of the media
+
 
   /**
    * Toggle play/pause state of the media
@@ -1076,6 +1079,52 @@ class DeferredMedia extends HTMLElement {
 }
 if (!customElements.get("deferred-media"))
   customElements.define("deferred-media", DeferredMedia);
+
+class CardMedia extends HTMLElement {
+  constructor() {
+    super();
+    this.deferredMedia = null;
+    this.isHovered = false;
+  }
+
+  connectedCallback() {
+    this.deferredMedia = this.querySelector('deferred-media');
+
+    if (this.deferredMedia) {
+      if (typeof this.deferredMedia.loadContent === "function") {
+        this.deferredMedia.loadContent();
+      }
+      if (typeof this.deferredMedia.pauseMedia === "function") {
+        this.deferredMedia.pauseMedia();
+      }
+
+      this.addEventListener('mouseenter', this.handleMouseEnter.bind(this));
+      this.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
+    }
+  }
+
+  handleMouseEnter() {
+    if (this.deferredMedia && !this.isHovered) {
+      this.isHovered = true;
+      this.deferredMedia.playMedia();
+    }
+  }
+
+  handleMouseLeave() {
+    if (this.deferredMedia && this.isHovered) {
+      this.isHovered = false;
+      this.deferredMedia.pauseMedia();
+    }
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('mouseenter', this.handleMouseEnter.bind(this));
+    this.removeEventListener('mouseleave', this.handleMouseLeave.bind(this));
+  }
+}
+
+if (!customElements.get("card-media"))
+  customElements.define("card-media", CardMedia);
 
 class SliderComponent extends HTMLElement {
   constructor() {
@@ -2220,6 +2269,25 @@ class RecentlyViewedProducts extends HTMLElement {
           .parseFromString(text, "text/html")
           .querySelector("recently-viewed-products");
         if (recentlyViewed) this.innerHTML = recentlyViewed.innerHTML;
+
+        // Callback loadContent if it exists
+        const cardMedias = this.querySelectorAll("card-media");
+        cardMedias.forEach((cardMedia) => {
+          this.deferredMedia = cardMedia.querySelector('deferred-media');
+
+          if (this.deferredMedia && typeof this.deferredMedia.loadContent === "function") {
+            this.deferredMedia.loadContent();
+          }
+          if (this.deferredMedia && typeof this.deferredMedia.pauseMedia === "function") {
+            this.deferredMedia.pauseMedia();
+          }
+        });
+
+        // Callback initMoreSwatchButtons if it exists
+        if (typeof initMoreSwatchButtons === 'function') {
+          const container = document.getElementById('recently-viewed-products');
+          initMoreSwatchButtons(container || document);
+        }
       })
       .catch((e) => {
         console.error(e);
@@ -2976,147 +3044,6 @@ class StrokeText extends HTMLElement {
 }
 if (!customElements.get("stroke-text"))
   customElements.define("stroke-text", StrokeText);
-
-// Drawer khinh
-
-document.addEventListener("DOMContentLoaded", () => {
-  const buttons = document.querySelectorAll("[data-toggle-drawer]");
-  const drawers = document.querySelectorAll("[data-drawer-target]");
-
-  // open drawer
-  const openDrawer = (drawer) => {
-    const dir = drawer.getAttribute("data-drawer-direction");
-    const overlay = drawer.querySelector("[data-drawer-overlay]");
-    const contentElement = drawer.querySelector("[data-drawer-content]");
-
-    drawer.classList.add("open");
-    document.body.classList.add("overflow-hidden", "drawer--open");
-
-    Motion.timeline([
-      [
-        overlay,
-        {
-          transform:
-            dir === "left"
-              ? ["translateX(-100%)", "translateX(0)"]
-              : ["translateX(100%)", "translateX(0)"],
-        },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
-      ],
-      [
-        contentElement,
-        {
-          opacity: [0, 1],
-          transform:
-            dir === "left"
-              ? ["translateX(-100%)", "translateX(0)"]
-              : ["translateX(100%)", "translateX(0)"],
-        },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.05" },
-      ],
-    ]);
-  };
-
-  // close drawer
-  const closeDrawer = async (drawer) => {
-    const dir = drawer.getAttribute("data-drawer-direction");
-    const overlay = drawer.querySelector("[data-drawer-overlay]");
-    const detailsElement = overlay.closest("details");
-    const contentElement = drawer.querySelector("[data-drawer-content]");
-
-    drawer.classList.remove("open");
-    document.body.classList.remove("overflow-hidden", "drawer--open");
-    await Motion.timeline([
-      [
-        contentElement,
-        {
-          opacity: [1, 0],
-          transform:
-            dir === "left"
-              ? ["translateX(0)", "translateX(-100%)"]
-              : ["translateX(0)", "translateX(100%)"],
-        },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
-      ],
-      [
-        overlay,
-        {
-          transform:
-            dir === "left"
-              ? ["translateX(0)", "translateX(-100%)"]
-              : ["translateX(0)", "translateX(100%)"],
-        },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" },
-      ],
-    ]).finished;
-
-    if (detailsElement) {
-      detailsElement.removeAttribute("open");
-      detailsElement.classList.remove("menu-opening");
-      document.body.classList.remove('overflow-hidden-mobile')
-    }
-  };
-
-  // handle overlay click
-  const handleOverlayClick = (drawer) => {
-    const overlay = drawer.querySelector("[data-drawer-overlay]");
-    overlay.addEventListener("click", () => {
-      if (drawer.classList.contains("open")) {
-        closeDrawer(drawer);
-      }
-    });
-  };
-
-  // handle close button click
-  const handleCloseButtonClick = (drawer) => {
-    const closeButton = document.querySelector(`[data-close-drawer="${drawer.getAttribute("data-drawer-target")}"]`);
-
-    console.log(`%c🔍 Log closeButton:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", closeButton);
-
-    closeButton.addEventListener("click", () => {
-      if (drawer.classList.contains("open")) {
-        closeDrawer(drawer);
-      }
-    });
-  };
-
-  // reset animation if window width is greater than 1024
-  const resetAnimation = () => {
-    const drawers = document.querySelectorAll("[data-drawer-target]");
-    drawers.forEach((drawer) => {
-      const contentElement = drawer.querySelector("[data-drawer-content]");
-      const overlay = drawer.querySelector("[data-drawer-overlay]");
-
-      Motion.animate(
-        contentElement,
-        { opacity: 1, transform: "translateX(0)" },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] }
-      );
-    });
-  };
-
-  buttons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const drawer = document.querySelector(`[data-drawer-target="${button.getAttribute("data-toggle-drawer")}"]`);
-      if (drawer) {
-        openDrawer(drawer);
-      }
-    });
-  });
-
-  drawers.forEach((drawer) => {
-    handleOverlayClick(drawer);
-    handleCloseButtonClick(drawer);
-  });
-
-  const handleResize = () => {
-    if (window.innerWidth > 1024) {
-      resetAnimation();
-    }
-  };
-
-  window.addEventListener("resize", handleResize);
-});
 
 // Infinite Scrolling Function
 class InfiniteScrolling extends HTMLElement {

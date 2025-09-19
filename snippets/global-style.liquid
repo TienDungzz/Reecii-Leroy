@@ -509,7 +509,7 @@
     --font-body--family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
     --font-body--style: {{ settings.type_body_font.style }};
     --font-body--weight: {{ settings.type_body_font.weight }};
-    --font-body--size: {{ settings.type_size_paragraph | divided_by: 10.0 }}rem;
+    --font-body--size: {{ settings.type_size_paragraph }};
     --font-body--line-height: var(--line-height--{{ settings.type_line_height_paragraph }});
 
     /* Font subheading */
@@ -611,14 +611,18 @@
     --minimum-touch-target: 4.4rem;  /* 44px */
     --button-size: var(--minimum-touch-target);
 
+    /* Focus */
+    --focus-outline-width: 0.09375rem;  /* 0.9375px */
+    --focus-outline-offset: 0.2em;      /* 2px */
+
     /* Icons */
-    --icon-size-2xs: 0.8rem;
-    --icon-size-xs: 1.2rem;
-    --icon-size-sm: 1.6rem;
-    --icon-size-md: 2rem;
-    --icon-size-lg: 2.4rem;
-    --icon-size-xl: 3.2rem;
-    --icon-stroke-width: {% if settings.icon_stroke == 'thin' %}1px{% elsif settings.icon_stroke == 'heavy' %}2px{% else %}1.5px{% endif %};
+    --icon-size-2xs: 0.8rem;  /* 8px */
+    --icon-size-xs: 1.2rem;   /* 12px */
+    --icon-size-sm: 1.6rem;   /* 16px */
+    --icon-size-md: 2rem;     /* 20px */
+    --icon-size-lg: 2.4rem;   /* 24px */
+    --icon-size-xl: 3.2rem;   /* 32px */
+    --icon-stroke-width: {% if settings.icon_stroke == 'thin' %}1px{% elsif settings.icon_stroke == 'heavy' %}2px{% else %}1.5px{% endif %}; /* 1px, 2px, 1.5px */
 
     /* Inputs */
     --inputs-radius: {{ settings.inputs_radius | divided_by: 10.0 }}rem;
@@ -645,7 +649,8 @@
     --localization-shadow: 0 1rem 2rem rgb(40 40 40 / var(--opacity-8));
 
     /* Popover */
-    --modal-max-height: 65dvh;
+    --modal-max-width: 90dvw;
+    --modal-max-height: 90dvh;
     --style-border-width-popover: {{ settings.popover_border_width | divided_by: 10.0 }}rem;
     --style-border-radius-popover: {{ settings.popover_border_radius | divided_by: 10.0 }}rem;
     --style-border-popover: var(--style-border-width-popover) {{ settings.popover_border }} rgb(var(--color-border-rgb) / {{ settings.popover_border_opacity }}%);

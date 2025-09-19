@@ -5,9 +5,9 @@
   {% render 'cart-drawer' %}
 {% endcomment %}
 
-<cart-drawer id="Cart-Drawer" class="drawer fixed top-0 left-0 w-screen h-full z-9 flex justify-end no-js-hidden{% if cart == empty %} is-empty{% endif %}" data-moved="false">
+<cart-drawer id="Cart-Drawer" class="drawer fixed top-0 left-0 w-screen h-full z-9 flex no-js-hidden{% if cart == empty %} is-empty{% endif %}" data-moved="false" data-drawer-direction="left">
   <div id="CartDrawer-Overlay" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-  <div id="CartDrawer" class="cart-drawer">
+  <div id="CartDrawer" class="cart-drawer" data-drawer-content>
     <div
       class="drawer__inner color-{{ section.settings.color_scheme }} cus-scrollbar"
       role="dialog"
@@ -18,10 +18,10 @@
       {%- if cart == empty -%}
         <div class="drawer__inner-empty h-full overflow-hidden flex flex-column" style="--p: 0 1.5rem;">
           <div class="drawer__header flex justify-end items-center relative" style="--p: 1.5rem 0;">
-            <button 
-              class="drawer__close block t-button bor-none rounded-full cursor-pointer" 
-              type="button" 
-              onclick="this.closest('cart-drawer').close()" 
+            <button
+              class="drawer__close block t-button bor-none rounded-full cursor-pointer"
+              type="button"
+              onclick="this.closest('cart-drawer').close()"
               aria-label="{{ 'accessibility.close_dialog' | t }}"
               style="--top: 0.3rem; --right: 0.3rem;"
             >

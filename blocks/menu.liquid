@@ -16,10 +16,12 @@
     class="
       menu-block
       menu
+      size-style
       {% if show_as_accordion == true %} menu--accordion menu--{{ bl_stts.accordion_icon }}{% endif %}
       {% if heading_dividers_enabled == true %} menu--heading-dividers{% endif %}
       {% if accordion_item_dividers == true %} menu--item-dividers{% endif %}
     "
+    style="{% render 'size-style', settings: bl_stts %}"
     data-disable-on-desktop="true"
     open-by-default-on-desktop
     {% if show_as_accordion == false %}
@@ -77,7 +79,7 @@
 {% endif %}
 
 {% stylesheet %}
-:root {
+  :root {
     --text-align-default: left;
   }
 
@@ -103,6 +105,10 @@
 
   .menu-block {
     align-items: var(--horizontal-alignment);
+
+    .menu__heading {
+      justify-content: var(--text-align-default);
+    }
   }
 
   .menu-block > * {
@@ -115,7 +121,7 @@
     text-decoration-color: transparent;
     text-underline-offset: 0.3rem;
 
-    &:hover{
+    &:hover {
       color: var(--color-primary-hover);
       text-decoration-color: var(--color-primary-hover);
     }
@@ -253,7 +259,7 @@
       display: none;
     }
 
-    .menu--accordion .details-content  > ul {
+    .menu--accordion .details-content > ul {
       padding-block-start: var(--spacing--size);
     }
 
@@ -327,6 +333,72 @@
         }
       ],
       "default": "column"
+    },
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "t:settings.width_mobile",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
     },
     {
       "type": "header",

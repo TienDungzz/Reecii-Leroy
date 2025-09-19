@@ -58,7 +58,7 @@
   {% endif %}
 
   <div class="blog-post__sidebar-tags-content">
-    <ul class="blog-post__sidebar-tags-list list-unstyled flex flex-wrap gap-sm{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}">
+    <ul class="blog-post__sidebar-tags-list list-unstyled flex flex-wrap gap-sm{% if scroll_reveal and collapse == false %} scroll-trigger animate--slide-in{% endif %}">
       {%- for tag in blog.all_tags limit: number -%}
         {%- liquid
           assign tagCount = 0
@@ -68,7 +68,7 @@
             endif
           endfor
         -%}
-        <li class="blog-post__sidebar-tags-item inline-block center">
+        <li class="blog-post__sidebar-tags-item inline-block center tag-item">
           <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="blog-post__sidebar-tag link">
             {{ tag -}}
             {%- if show_tag_count %} ({{ tagCount }}){% endif %}
@@ -83,20 +83,6 @@
     </details>
   {% endif %}
 </{{element}}>
-
-{%- stylesheet -%}
-  .blog-post__sidebar-tags-item .link {
-    padding: var(--padding-sm) var(--padding-md);
-    background: rgba(var(--color-foreground-rgb) / 0.03);
-    transition: background-color var(--animation-speed) var(--ease-out-smooth), box-shadow var(--animation-speed) var(--ease-out-smooth);
-    border-radius: var(--style-border-radius-sm);
-
-    &:hover {
-      background: transparent;
-      box-shadow: rgba(var(--color-shadow-rgb) / 0.1) 2px 4px 5.2px 0;
-    }
-  }
-{%- endstylesheet -%}
 
 {% schema %}
 {

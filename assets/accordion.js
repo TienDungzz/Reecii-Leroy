@@ -46,7 +46,6 @@ class AccordionCustom extends HTMLElement {
   async transition(value) {
     if (value) {
       this.details.setAttribute("open", "");
-
       await Motion.timeline([
         [
           this.details,
@@ -73,6 +72,8 @@ class AccordionCustom extends HTMLElement {
         ],
       ]).finished;
     } else {
+      this.summary.focus();
+
       await Motion.timeline([
         [this.contentElement, { opacity: 0, height: 0 }, { duration: 0.15 }],
         [

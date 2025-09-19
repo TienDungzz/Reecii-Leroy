@@ -7,6 +7,7 @@
   endcomment
 
   assign content_direction = custom_content_direction | default: settings.content_direction
+  assign content_direction_tablet = custom_content_direction_tablet | default: settings.content_direction_tablet
   assign content_direction_mobile = custom_content_direction_mobile | default: settings.content_direction_mobile
   assign horizontal_alignment = settings.horizontal_alignment
 
@@ -20,6 +21,14 @@
     assign vertical_alignment = settings.vertical_alignment_flex_direction_column
   endunless
 
+  assign horizontal_alignment_tablet = settings.horizontal_alignment_tablet
+  assign vertical_alignment_tablet = settings.vertical_alignment_tablet
+
+  unless content_direction_tablet == 'row'
+    assign horizontal_alignment_tablet = settings.horizontal_alignment_flex_direction_column_tablet
+    assign vertical_alignment_tablet = settings.vertical_alignment_flex_direction_column_tablet
+  endunless
+
   assign horizontal_alignment_mobile = settings.horizontal_alignment_mobile
   assign vertical_alignment_mobile = settings.vertical_alignment_mobile
 
@@ -29,13 +38,28 @@
   endunless
 -%}
 
---flex-direction: {{ content_direction | default: 'column' }}; --flex-wrap: {{ settings.wrap | default: 'nowrap' }};
+--flex-direction: {{ content_direction | default: 'column' }};
+--flex-wrap: {{ settings.wrap | default: 'nowrap' }};
+{%- if settings.wrap_tablet -%}
+  --flex-wrap-tablet: {{ settings.wrap_tablet }};
+{%- endif -%}
 
 --flex-direction-mobile: {{ settings.content_direction_mobile | default: 'column' }};
 
 {% render 'gap-style', value: settings.gap, scale_min: scale_min  %}
 
 --horizontal-alignment: {{ horizontal_alignment }};
---horizontal-alignment-mobile: {{ horizontal_alignment_mobile }};
+{%- if horizontal_alignment_tablet != blank -%}
+  --horizontal-alignment-tablet: {{ horizontal_alignment_tablet }};
+{%- endif -%}
+{%- if horizontal_alignment_mobile != blank -%}
+  --horizontal-alignment-mobile: {{ horizontal_alignment_mobile }};
+{%- endif -%}
+
 --vertical-alignment: {{ vertical_alignment }};
---vertical-alignment-mobile: {{ vertical_alignment_mobile }};
+{%- if vertical_alignment_tablet != blank -%}
+  --vertical-alignment-tablet: {{ vertical_alignment_tablet }};
+{%- endif -%}
+{%- if vertical_alignment_mobile != blank -%}
+  --vertical-alignment-mobile: {{ vertical_alignment_mobile }};
+{%- endif -%}

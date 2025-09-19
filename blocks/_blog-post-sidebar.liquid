@@ -2,13 +2,22 @@
   {% content_for 'blocks' %}
 {%- endcapture -%}
 
-<sidebar-drawer class="blog-posts__sidebar-drawer drawer__container" id="Drawer-Blog-Sidebar" data-drawer-target data-drawer-direction="left">
-  <div id="Sidebar-Overlay" data-drawer-overlay class="drawer__overlay fixed inset-0 cursor-pointer lg:none"></div>
+<side-drawer
+  class="blog-posts__sidebar-drawer drawer__container"
+  id="Drawer-Blog-Sidebar"
+  data-drawer-direction="left"
+  data-moved="false"
+>
+  <div id="Drawer-Overlay-Blog-Sidebar" class="drawer__overlay fixed inset-0 cursor-pointer lg:none"></div>
   <div class="blog-posts__sidebar-container" data-drawer-content>
-    <a href="#" class="sidebar-close svg-wrapper cursor-pointer absolute" data-close-sidebar role="button">
-      <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
-      {{- 'icon-close.svg' | inline_asset_content -}}
-    </a>
+    <side-drawer-close href="#" class="sidebar-close absolute cursor-pointer" data-side-drawer="#Drawer-Blog-Sidebar">
+      <button class="button--drawer focus-inset">
+        <span class="svg-wrapper">
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </span>
+        <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+      </button>
+    </side-drawer-close>
     <div class="blog-posts__sidebar flex flex-column hide-scrollbar">
       <div class="blog-posts__sidebar-header lg:none">
         <span class="title h5">
@@ -18,7 +27,7 @@
       {{ children }}
     </div>
   </div>
-</sidebar-drawer>
+</side-drawer>
 
 {%- stylesheet -%}
   .blog-posts__sidebar {
@@ -40,6 +49,10 @@
     + .svg-wrapper {
       margin-right: 0;
     }
+
+    [open] & + .svg-wrapper {
+      transform: rotate(180deg);
+    }
   }
 
   @media (max-width: 1024px) {
@@ -54,15 +67,15 @@
       opacity: 0;
       pointer-events: none;
 
-      &[data-drawer-direction="right"] .blog-posts__sidebar-container {
+      &[data-drawer-direction='right'] .blog-posts__sidebar-container {
         margin-left: auto;
       }
 
-      &[data-drawer-direction="left"] .sidebar-close {
+      &[data-drawer-direction='left'] .sidebar-close {
         right: calc(var(--size-40) * -1);
       }
 
-      &[data-drawer-direction="right"] .sidebar-close {
+      &[data-drawer-direction='right'] .sidebar-close {
         left: calc(var(--size-40) * -1);
       }
 
@@ -85,6 +98,7 @@
       height: 100%;
       overflow-y: auto;
       padding: var(--padding-xl);
+      padding-bottom: var(--padding-6xl);
     }
 
     .sidebar-close {
@@ -103,7 +117,6 @@
       display: none;
     }
   }
-
 {%- endstylesheet -%}
 
 {% javascript %}
@@ -177,7 +190,7 @@
           "type": "_blog-post-sidebar-tags",
           "name": "Tags"
         }
-      },
+      }
     }
   ]
 }

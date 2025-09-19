@@ -51,6 +51,23 @@
       "visible_if": "{{ block.settings.typing_text == false }}"
     },
     {
+      "type": "select",
+      "id": "highlight_text_type",
+      "label": "Highlight type",
+      "options": [
+        {
+          "value": "text",
+          "label": "Text"
+        },
+        {
+          "value": "underline",
+          "label": "Underline"
+        }
+      ],
+      "default": "text",
+      "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true }}"
+    },
+    {
       "type": "text",
       "id": "highlight_text_content",
       "label": "Select highlight content",
@@ -62,7 +79,14 @@
       "id": "highlight_text_color",
       "label": "Highlight color",
       "default": "#000000",
-      "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true }}"
+      "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true and block.settings.highlight_text_type == 'text' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "highlight_underline_color",
+      "label": "Highlight color",
+      "default": "#000000",
+      "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true and block.settings.highlight_text_type == 'underline' }}"
     },
     {
       "type": "checkbox",

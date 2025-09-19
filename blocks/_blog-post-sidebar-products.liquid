@@ -63,75 +63,74 @@
       <summary>
   {% endif %}
 
-    {% if text != blank %}
-      <h3 class="blog-posts__sidebar-heading{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}{% if collapse %} blog-posts__sidebar-collapse-button cursor-pointer{% endif %}">
-        {{ text }}
-      </h3>
-    {%- elsif text == blank and collapse == true -%}
-      <h3 class="blog-posts__sidebar-heading blog-posts__sidebar-collapse-button cursor-pointer">
-        {{ 'content.sidebar.collapse' | t }}
-        {% if collapse_icon != 'none' and collapse %}
-          <span class="svg-wrapper icon-caret-wrapper">
-            {{- 'icon-caret.svg' | inline_asset_content -}}
-          </span>
-        {% endif %}
-      </h3>
-    {% endif %}
-
-  {% if collapse %}
-      {% if collapse_icon != 'none' %}
+  {% if text != blank %}
+    <h3 class="blog-posts__sidebar-heading{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}{% if collapse %} blog-posts__sidebar-collapse-button cursor-pointer{% endif %}">
+      {{ text }}
+    </h3>
+  {%- elsif text == blank and collapse == true -%}
+    <h3 class="blog-posts__sidebar-heading blog-posts__sidebar-collapse-button cursor-pointer">
+      {{ 'content.sidebar.collapse' | t }}
+      {% if collapse_icon != 'none' and collapse %}
         <span class="svg-wrapper icon-caret-wrapper">
           {{- 'icon-caret.svg' | inline_asset_content -}}
         </span>
       {% endif %}
-    </summary>
+    </h3>
   {% endif %}
 
+  {% if collapse %}
+    {% if collapse_icon != 'none' %}
+      <span class="svg-wrapper icon-caret-wrapper">
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </span>
+    {% endif %}
+    </summary>
+  {% endif %}
 
   {% if collapse %}
     <div class="details-content">
   {% endif %}
 
-      <div class="blog-post__sidebar-products-list">
-        {%- if is_slider -%}
-          <swiper-component
-            {%- render 'swiper-data',
-              settings: bl_stts,
-              loop: false,
-              auto_height: true,
-              slides_per_view: 1,
-              space_between: columns_gap
-            -%}
-          >
-            <div class="swiper">
-        {%- endif -%}
-        <ul
-          id="Grid-{{ bl_id }}"
-          data-id="{{ bl_id }}"
-          class="grid grid-layout product-grid list-unstyled{% if is_slider %} swiper-wrapper grid-layout-no-js{% else %} grid-layout--1{% endif %}"
-          role="list"
-          data-products-to-show="{{ limit }}"
-          aria-label="{{ 'general.grid.name' | t }}"
-          style="--grid-desktop-horizontal-spacing: {{ columns_gap }}px; --grid-desktop-vertical-spacing: {{ rows_gap }}px;"
-        >
-          {{ list_items }}
-        </ul>
-        {%- if is_slider -%}
-          {%- if arrows -%}
-            <div class="swiper-btns-wrap">
-              {%- render 'swiper-button' -%}
-            </div>
-          {%- endif -%}
-          {%- if dots -%}
-            <div class="swiper-pagination"></div>
-          {%- endif -%}
-          </div>
-          </swiper-component>
-        {%- endif -%}
+  <div class="blog-post__sidebar-products-list">
+    {%- if is_slider -%}
+      <swiper-component
+        {%- render 'swiper-data',
+          settings: bl_stts,
+          loop: false,
+          auto_height: true,
+          slides_per_view: 1,
+          space_between: columns_gap
+        -%}
+      >
+        <div class="swiper">
+    {%- endif -%}
+    <ul
+      id="Grid-{{ bl_id }}"
+      data-id="{{ bl_id }}"
+      class="grid grid-layout product-grid list-unstyled{% if is_slider %} swiper-wrapper grid-layout-no-js{% else %} grid-layout--1{% endif %}"
+      role="list"
+      data-products-to-show="{{ limit }}"
+      aria-label="{{ 'general.grid.name' | t }}"
+      style="--grid-desktop-horizontal-spacing: {{ columns_gap }}px; --grid-desktop-vertical-spacing: {{ rows_gap }}px;"
+    >
+      {{ list_items }}
+    </ul>
+    {%- if is_slider -%}
+      {%- if arrows -%}
+        <div class="swiper-btns-wrap">
+          {%- render 'swiper-button' -%}
+        </div>
+      {%- endif -%}
+      {%- if dots -%}
+        <div class="swiper-pagination"></div>
+      {%- endif -%}
       </div>
+      </swiper-component>
+    {%- endif -%}
+  </div>
 
   {% if collapse %}
-      </div>
+    </div>
     </details>
   {% endif %}
 </{{ element }}>

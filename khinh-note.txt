@@ -1,0 +1,51 @@
+Cấu trúc sử dụng drawer
+
+==> Nút open
+1. Nút mở có data-side-drawer trùng với id side-drawer
+2. Bên trong có 1 button
+
+<side-drawer-opener
+  data-side-drawer="#Drawer-Search"
+>
+  <button
+    class="{{ class_button }}"
+    type="button"
+    aria-haspopup="dialog"
+    aria-label="{{ 'general.search.search' | t }}"
+  >
+  </button>
+</side-drawer-opener>
+
+==> Drawer
+1. Có id trùng với nút open, có class "drawer__container drawer fixed top-0 left-0 w-screen h-full z-9 flex no-js-hidden"
+
+<side-drawer
+  id="Drawer-Search"
+  class="drawer__container drawer fixed top-0 left-0 w-screen h-full z-9 flex no-js-hidden">
+
+  ----------- Overlay -----------
+  <div id="Drawer-Overlay-(thêm gì cũng được để không bị trùng id)" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
+
+  ----------- Content -----------
+
+  <div
+    data-drawer-content
+  >
+    <div class="drawer__inner">
+      ----------- Content viết trong đây -----------
+    </div>
+  </div>
+</side-drawer>
+
+==> Nút close
+1. Nút mở có data-side-drawer trùng với id side-drawer
+2. Bên trong có 1 button
+
+<side-drawer-close href="#" class="drawer__close absolute cursor-pointer" data-side-drawer="#Drawer-Search">
+  <button class="button--drawer focus-inset">
+    <span class="svg-wrapper">
+      {{- 'icon-close.svg' | inline_asset_content -}}
+    </span>
+    <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+  </button>
+</side-drawer-close>

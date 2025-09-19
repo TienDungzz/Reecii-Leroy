@@ -493,8 +493,6 @@
                     settings: sec_stts,
                     id: sec_id,
                     labels: labels,
-                    splitting_text: true,
-                    splitting_text_by: "chars",
                     class: class_tabs_product_header_item
                   -%}
                 </div>
@@ -537,7 +535,7 @@
                     {%- endif -%}
                     <ul
                       {{ attr_ul }}
-                      class="grid grid-layout product-grid list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+                      class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
                     >
                       {% for product in section_collections limit: max_tiems %}
                         <li
@@ -627,7 +625,7 @@
                       {%- endif -%}
                       <ul
                         {{ attr_ul }}
-                        class="grid grid-layout product-grid list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+                        class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
                       >
                         {% for product in section_collections limit: max_tiems %}
                           <li
@@ -2382,32 +2380,61 @@
                 "spacer_height": 6
               }
             },
-            "vendor": {
-              "type": "_card-product-vendor-flex",
+            "group": {
+              "type": "_card-product-information",
+              "name": "Group: Information",
               "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "title": {
-              "type": "_card-product-title-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "price": {
-              "type": "_card-product-price-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "variant": {
-              "type": "_card-product-variant-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
+                "content_direction": "column",
+                "wrap": "wrap"
+              },
+              "blocks": {
+                "vendor": {
+                  "type": "_card-product-vendor-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "spacer_1": {
+                  "type": "spacer",
+                  "settings": {
+                    "spacer_height": 2
+                  }
+                },
+                "title": {
+                  "type": "_card-product-title-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "spacer_2": {
+                  "type": "spacer",
+                  "settings": {
+                    "spacer_height": 2
+                  }
+                },
+                "price": {
+                  "type": "_card-product-price-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "spacer_3": {
+                  "type": "spacer",
+                  "settings": {
+                    "spacer_height": 16
+                  }
+                },
+                "variant": {
+                  "type": "_card-product-variant-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                }
+              },
+              "block_order": ["vendor", "spacer_1", "title", "spacer_2", "price", "spacer_3", "variant"]
             }
           },
-          "block_order": ["media", "spacer", "vendor", "title", "price", "variant"]
+          "block_order": ["media", "spacer", "group"]
         }
       }
     },
@@ -2462,32 +2489,61 @@
                 "spacer_height": 6
               }
             },
-            "vendor": {
-              "type": "_card-product-vendor-flex",
+            "group": {
+              "type": "_card-product-information",
+              "name": "Group: Information",
               "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "title": {
-              "type": "_card-product-title-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "price": {
-              "type": "_card-product-price-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "variant": {
-              "type": "_card-product-variant-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
+                "content_direction": "column",
+                "wrap": "wrap"
+              },
+              "blocks": {
+                "vendor": {
+                  "type": "_card-product-vendor-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "spacer_1": {
+                  "type": "spacer",
+                  "settings": {
+                    "spacer_height": 2
+                  }
+                },
+                "title": {
+                  "type": "_card-product-title-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "spacer_2": {
+                  "type": "spacer",
+                  "settings": {
+                    "spacer_height": 2
+                  }
+                },
+                "price": {
+                  "type": "_card-product-price-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "spacer_3": {
+                  "type": "spacer",
+                  "settings": {
+                    "spacer_height": 16
+                  }
+                },
+                "variant": {
+                  "type": "_card-product-variant-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                }
+              },
+              "block_order": ["vendor", "spacer_1", "title", "spacer_2", "price", "spacer_3", "variant"]
             }
           },
-          "block_order": ["media", "spacer", "vendor", "title", "price", "variant"]
+          "block_order": ["media", "spacer", "group"]
         }
       }
     },
@@ -2635,32 +2691,61 @@
                 "spacer_height": 6
               }
             },
-            "vendor": {
-              "type": "_card-product-vendor-flex",
+            "group": {
+              "type": "_card-product-information",
+              "name": "Group: Information",
               "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "title": {
-              "type": "_card-product-title-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "price": {
-              "type": "_card-product-price-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "variant": {
-              "type": "_card-product-variant-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
+                "content_direction": "column",
+                "wrap": "wrap"
+              },
+              "blocks": {
+                "vendor": {
+                  "type": "_card-product-vendor-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "spacer_1": {
+                  "type": "spacer",
+                  "settings": {
+                    "spacer_height": 2
+                  }
+                },
+                "title": {
+                  "type": "_card-product-title-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "spacer_2": {
+                  "type": "spacer",
+                  "settings": {
+                    "spacer_height": 2
+                  }
+                },
+                "price": {
+                  "type": "_card-product-price-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "spacer_3": {
+                  "type": "spacer",
+                  "settings": {
+                    "spacer_height": 16
+                  }
+                },
+                "variant": {
+                  "type": "_card-product-variant-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                }
+              },
+              "block_order": ["vendor", "spacer_1", "title", "spacer_2", "price", "spacer_3", "variant"]
             }
           },
-          "block_order": ["media", "spacer", "vendor", "title", "price", "variant"]
+          "block_order": ["media", "spacer", "group"]
         }
       }
     }

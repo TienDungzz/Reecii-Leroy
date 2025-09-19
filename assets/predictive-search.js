@@ -39,6 +39,7 @@ class PredictiveSearch extends SearchForm {
     this.searchTerm = newSearchTerm;
 
     if (!this.searchTerm.length) {
+      this.renderEmptyState();
       this.close(true);
       return;
     }
@@ -57,6 +58,46 @@ class PredictiveSearch extends SearchForm {
       this.abortController.abort();
       this.abortController = new AbortController();
       this.closeResults(true);
+      this.renderEmptyState();
+    }
+  }
+
+  async renderEmptyState() {
+    try {
+      const emptySectionId = 'predictive-search-empty';
+      const url = new URL(window.location.href);
+      url.searchParams.delete('page');
+      url.searchParams.set('section_id', emptySectionId);
+      url.searchParams.sort();
+
+      const response = await fetch(`${url.toString()}`, {
+        signal: this.abortController.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const text = await response.text();
+
+      const parsedEmptySectionMarkup = new DOMParser()
+        .parseFromString(text, 'text/html')
+        .querySelector('#shopify-section-predictive-search-empty');
+
+      if (parsedEmptySectionMarkup) {
+        const emptyStateContent = parsedEmptySectionMarkup.querySelector('#predictive-search-results');
+
+        if (emptyStateContent) {
+          this.predictiveSearchResults.innerHTML = emptyStateContent.innerHTML;
+          this.setAttribute('results', true);
+          this.open();
+        }
+      }
+    } catch (error) {
+      if (error?.code === 20) {
+        return;
+      }
+      console.error('Error rendering empty state:', error);
     }
   }
 
@@ -103,6 +144,14 @@ class PredictiveSearch extends SearchForm {
     if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
       event.preventDefault();
     }
+
+    // Init predictive search tabs component
+    const tabsComponent = this.querySelector('tabs-component');
+    if(tabsComponent) {
+      tabsComponent.init();
+      // this.predictiveSearchResults.style.maxHeight = this.resultsMaxHeight || `${this.getResultsMaxHeight()}px`;
+    };
+
   }
 
   updateSearchForTerm(previousTerm, newTerm) {
@@ -176,7 +225,7 @@ class PredictiveSearch extends SearchForm {
       return;
     }
 
-    fetch(`${routes.predictive_search_url}?q=${encodeURIComponent(searchTerm)}&section_id=predictive-search`, {
+    fetch(`${routes.predictive_search_url}?q=${searchTerm}&resources[limit_scope]=each&section_id=predictive-search`, {
       signal: this.abortController.signal,
     })
       .then((response) => {
@@ -245,8 +294,6 @@ class PredictiveSearch extends SearchForm {
   }
 
   open() {
-    console.log(`%c🔍 Log this.predictiveSearchResults:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.predictiveSearchResults);
-
     this.predictiveSearchResults.style.maxHeight = this.resultsMaxHeight || `${this.getResultsMaxHeight()}px`;
     this.setAttribute('open', true);
     this.input.setAttribute('aria-expanded', true);

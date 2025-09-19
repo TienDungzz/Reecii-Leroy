@@ -60,21 +60,23 @@
     {%- endform -%}
   </div>
 
-  <h1 id="login" tabindex="-1">
-    {{ 'customer.login_page.title' | t }}
-  </h1>
   <div>
-    {%- if recover_success == true -%}
-      <h3 class="form__message" tabindex="-1" autofocus>
-        <span class="svg-wrapper">
-          {{- 'icon-success.svg' | inline_asset_content -}}
-        </span>
-        {{ 'customer.recover_password.success' | t }}
-      </h3>
-    {%- endif -%}
-
-    <div class="flex">
+    <div class="flex max-sm:flex-wrap">
       <div class="login-row--item login-row--item-left">
+        <h2 id="login" tabindex="-1" class="login-title body-l-font-size">
+          {{ 'customer.login_page.title' | t }}
+        </h2>
+        <div class="login-text">
+          {{ 'customer.recover_password.subtext' | t }}
+        </div>
+        {%- if recover_success == true -%}
+          <h3 class="form__message" tabindex="-1" autofocus>
+            <span class="svg-wrapper">
+              {{- 'icon-success.svg' | inline_asset_content -}}
+            </span>
+            {{ 'customer.recover_password.success' | t }}
+          </h3>
+        {%- endif -%}
         {%- form 'customer_login', novalidate: 'novalidate' -%}
           {%- if form.errors -%}
             <h2 class="form__message" tabindex="-1" autofocus>
@@ -100,6 +102,9 @@
           {%- endif -%}
 
           <div class="field">
+            <label for="CustomerEmail">
+              {{ 'customer.login_page.email' | t }}
+            </label>
             <input
               type="email"
               name="customer[email]"
@@ -112,13 +117,13 @@
               {% endif %}
               placeholder="{{ 'customer.login_page.email' | t }}"
             >
-            <label for="CustomerEmail">
-              {{ 'customer.login_page.email' | t }}
-            </label>
           </div>
 
           {%- if form.password_needed -%}
             <div class="field">
+              <label for="CustomerPassword">
+                {{ 'customer.login_page.password' | t }}
+              </label>
               <input
                 type="password"
                 value=""
@@ -130,31 +135,31 @@
                 {% endif %}
                 placeholder="{{ 'customer.login_page.password' | t }}"
               >
-              <label for="CustomerPassword">
-                {{ 'customer.login_page.password' | t }}
-              </label>
             </div>
+          {%- endif -%}
+          <div class="flex items-center gap-4xl" style="--mt: var(--margin-xl)">
+            <button class="button button--primary button--outline">
+              {{ 'customer.login_page.title' | t }}
+            </button>
+
+            {% comment %}
+              <a href="{{ routes.account_register_url }}">
+                {{ 'customer.login_page.create_account' | t }}
+              </a>
+            {% endcomment %}
 
             <a href="#recover">
               {{ 'customer.login_page.forgot_password' | t }}
             </a>
-          {%- endif -%}
-
-          <button>
-            {{ 'customer.login_page.sign_in' | t }}
-          </button>
-
-          <a href="{{ routes.account_register_url }}">
-            {{ 'customer.login_page.create_account' | t }}
-          </a>
+          </div>
         {%- endform -%}
       </div>
       <div class="login-row--item login-row--item-right">
         <div class="login-item">
-          <h2 class="halo-page-title page-subheader text-left">
-            {{ 'customer.register.register' | t }}
+          <h2 class="login-title body-l-font-size">
+            {{ 'customer.register.title' | t }}
           </h2>
-          <div class="halo-page-wrapper">
+          <div class="page-wrapper">
             <div class="login-text">
               {{ 'customer.register.text' | t }}
             </div>
@@ -183,7 +188,7 @@
                   </div>
                 </div>
               {% endif %}
-              <div class="form-field{% if form.errors contains "first_name" %} form-field--error{% endif %}">
+              <div class="field{% if form.errors contains "first_name" %} field--error{% endif %}">
                 <label class="form-label" for="RegisterForm-FirstName">
                   {{ 'customer.register.first_name' | t }}
                 </label>
@@ -199,7 +204,7 @@
                   placeholder=""
                 >
               </div>
-              <div class="form-field{% if form.errors contains "last_name" %} form-field--error{% endif %}">
+              <div class="field{% if form.errors contains "last_name" %} field--error{% endif %}">
                 <label class="form-label" for="RegisterForm-LastName">
                   {{ 'customer.register.last_name' | t }}
                 </label>
@@ -215,9 +220,9 @@
                   placeholder=""
                 >
               </div>
-              <div class="form-field{% if form.errors contains "email" %} form-field--error{% endif %}">
+              <div class="field{% if form.errors contains "email" %} field--error{% endif %}">
                 <label class="form-label" for="RegisterForm-email">
-                  {{ 'customer.register.you_email' | t }}
+                  {{ 'customer.register.email' | t }}
                   <em>*</em>
                 </label>
                 <input
@@ -240,9 +245,9 @@
                   required
                 >
               </div>
-              <div class="form-field{% if form.errors contains "password" %} form-field--error{% endif %}">
+              <div class="field{% if form.errors contains "password" %} field--error{% endif %}">
                 <label class="form-label" for="password">
-                  {{ 'customer.register.you_password' | t }}
+                  {{ 'customer.register.password' | t }}
                   <em>*</em>
                 </label>
                 <input
@@ -259,7 +264,7 @@
                   required
                 >
               </div>
-              <div class="form-actions">
+              <div class="form-actions" style="--mt: var(--margin-xl)">
                 {% if settings.enable_button_1_border_outside %}
                   <button class="button button--primary">
                     <span>{{ 'customer.register.submit' | t }}</span>
