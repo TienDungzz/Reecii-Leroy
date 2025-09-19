@@ -38,8 +38,8 @@
   }
 
   @media screen and (min-width: 750px) {
-    .overlay--extend-left::before,
-    .overlay--extend-right::after {
+    .overlay--extend-left:before,
+    .overlay--extend-right:after {
       --width-extend: 7rem;
       content: '';
       position: absolute;
@@ -52,11 +52,16 @@
       height: 100%;
     }
 
-    .overlay--extend-left::before {
+    .overlay--extend-left.overlay--gradient:before,
+    .overlay--extend-right.overlay--gradient:after {
+      background: linear-gradient(var(--overlay-direction), var(--overlay-color), var(--overlay-color--end));
+    }
+
+    .overlay--extend-left:before {
       left: calc(var(--width-extend) * -1);
     }
 
-    .overlay--extend-right::after {
+    .overlay--extend-right:after {
       right: calc(var(--width-extend) * -1);
       left: auto;
     }
