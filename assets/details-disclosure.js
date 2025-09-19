@@ -19,15 +19,32 @@ class SideDrawerOpener extends HTMLElement {
 }
 if (!customElements.get('side-drawer-opener')) customElements.define('side-drawer-opener', SideDrawerOpener);
 
+class SideDrawerClose extends HTMLElement {
+  constructor() {
+    super();
+    const button = this.querySelector('button');
+    if (!button) return;
+
+    button.addEventListener('click', () => {
+      const drawer = document.querySelector(this.getAttribute('data-side-drawer'));
+      if (drawer) drawer.close();
+    });
+  }
+}
+if (!customElements.get('side-drawer-close')) customElements.define('side-drawer-close', SideDrawerClose);
+
 class SideDrawer extends HTMLElement {
   constructor() {
     super();
     this.addEventListener('keyup', (evt) => evt.code === 'Escape' && this.close());
-    this.querySelector('[id^="Drawer-Overlay-"]')?.addEventListener('click', this.close.bind(this));
+    this.overlay = this.querySelector('[id^="Drawer-Overlay-"]');
+    this.overlay?.addEventListener('click', this.close.bind(this));
   }
 
   connectedCallback() {
     if (!this.dataset.moved) {
+      console.log(this);
+
       this.dataset.moved = true;
       document.body.appendChild(this);
     }
@@ -40,13 +57,77 @@ class SideDrawer extends HTMLElement {
     this.handleTransition(true, 'drawer--opening', 'drawer--open');
     this.trapFocus();
     document.body.classList.add('overflow-hidden');
+
+    const dir = this.getAttribute("data-drawer-direction");
+    const contentElement = this.querySelector("[data-drawer-content]");
+
+    this.classList.add("open");
+
+    Motion.timeline([
+      [
+        this.overlay,
+        {
+          transform:
+            dir === "left"
+              ? ["translateX(-100%)", "translateX(0)"]
+              : ["translateX(100%)", "translateX(0)"],
+        },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
+      ],
+      [
+        contentElement,
+        {
+          opacity: [0, 1],
+          transform:
+            dir === "left"
+              ? ["translateX(-100%)", "translateX(0)"]
+              : ["translateX(100%)", "translateX(0)"],
+        },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.05" },
+      ],
+    ]);
   }
 
-  close() {
+  async close() {
     this.classList.remove('active');
     if (this.activeElement) removeTrapFocus(this.activeElement);
     document.body.classList.remove('overflow-hidden');
     this.handleTransition(false, 'drawer--closing');
+
+    const dir = this.getAttribute("data-drawer-direction");
+    const detailsElement = this.overlay.closest("details");
+    const contentElement = this.querySelector("[data-drawer-content]");
+
+    this.classList.remove("open");
+    await Motion.timeline([
+      [
+        contentElement,
+        {
+          opacity: [1, 0],
+          transform:
+            dir === "left"
+              ? ["translateX(0)", "translateX(-100%)"]
+              : ["translateX(0)", "translateX(100%)"],
+        },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
+      ],
+      [
+        this.overlay,
+        {
+          transform:
+            dir === "left"
+              ? ["translateX(0)", "translateX(-100%)"]
+              : ["translateX(0)", "translateX(100%)"],
+        },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" },
+      ],
+    ]).finished;
+
+    if (detailsElement) {
+      detailsElement.removeAttribute("open");
+      detailsElement.classList.remove("menu-opening");
+      document.body.classList.remove('overflow-hidden-mobile')
+    }
   }
 
   handleTransition(checkOpen, startClass, endClass = '') {
@@ -70,7 +151,7 @@ class SideDrawer extends HTMLElement {
 
   trapFocus() {
     this.addEventListener('transitionend', () => {
-      const containerToTrapFocusOn = this.querySelector('.drawer__inner, .popup__inner');
+      const containerToTrapFocusOn = this.querySelector('.drawer__inner, .popup__inner, .blog-posts__sidebar');
       const focusElement = this.querySelector('.drawer__close, .search__input, .popup__input');
       trapFocus(containerToTrapFocusOn, focusElement);
     }, { once: true });

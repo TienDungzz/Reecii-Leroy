@@ -28,15 +28,16 @@
 <div class="card--block card-wrapper product-card-wrapper underline-links-hover color-{{ block.settings.color_scheme }}">
   <div
     class="
-      card card--{{ settings.card_style }} card--quickadd-type-{{ settings.quick_add_type }}
+      card
+      card--quickadd-type-{{ settings.quick_add_type }}
       {% if card_product.featured_media %} card--media{% else %} card--text{% endif %}
-      {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }}{% endif %}
-      {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
-      {% if extend_height %} card--extend-height{% endif %}
-      {% if card_product.featured_media == nil and settings.card_style == 'card' %} ratio{% endif %}
-      {% if horizontal_class %} card--horizontal{% endif %}
-      flex-{{ block.settings.content_direction }} flex-{{ block.settings.wrap }} items-{{ block.settings.align_items}} justify-{{ block.settings.justify_content }}
+      flex-{{ block.settings.content_direction }}
+      flex-{{ block.settings.wrap }}
+      items-{{ block.settings.align_items}}
+      justify-{{ block.settings.justify_content }}
+      gap-style
     "
+    style="{% render 'gap-style', value: block.settings.gap %}"
   >
     <template>
       <div
@@ -54,16 +55,8 @@
   "blocks": [
     { "type": "@app" },
     { "type": "spacer" },
-    { "type": "icon" },
     { "type": "_card-product-information" },
-    { "type": "_card-product-media-flex" },
-    { "type": "_card-product-button-flex" },
-    { "type": "_card-product-vendor-flex" },
-    { "type": "_card-product-title-flex" },
-    { "type": "_card-product-price-flex" },
-    { "type": "_card-product-variant-flex" },
-    { "type": "_card-product-marquee-flex" },
-    { "type": "_card-product-countdown-flex" }
+    { "type": "_card-product-media-flex" }
   ],
   "settings": [
     {
@@ -169,6 +162,16 @@
       ],
       "default": "start",
       "label": "Justify"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
     }
   ],
   "presets": [
@@ -183,40 +186,7 @@
           }
         },
         {
-          "type": "spacer",
-          "settings": {
-            "spacer_height": 6
-          }
-        },
-        {
-          "type": "_card-product-button-flex",
-          "settings": {
-            "product": "{{ closest.product }}"
-          }
-        },
-        {
-          "type": "_card-product-vendor-flex",
-          "settings": {
-            "product": "{{ closest.product }}"
-          }
-        },
-        {
-          "type": "_card-product-title-flex",
-          "settings": {
-            "product": "{{ closest.product }}"
-          }
-        },
-        {
-          "type": "_card-product-price-flex",
-          "settings": {
-            "product": "{{ closest.product }}"
-          }
-        },
-        {
-          "type": "_card-product-variant-flex",
-          "settings": {
-            "product": "{{ closest.product }}"
-          }
+          "type": "_card-product-information"
         }
       ]
     }

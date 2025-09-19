@@ -4,18 +4,23 @@
   endif
 -%}
 
+{%- capture class_item -%}
+  list-social__item social__item--effect
+{%- endcapture -%}
+
 {%- if social_links -%}
   {{ 'component-list-social.css' | asset_url | stylesheet_tag }}
-  <div class="flex flex-wrap justify-center flex-column h-full">
+  <div class="flex flex-wrap justify-center flex-column h-full spacing-style" style="{% render 'spacing-style', settings: block.settings %}">
     <ul
       class="list-unstyled list-social flex flex-wrap sm\:justify-center list-position-inherit{% if class %} {{ class}}{% endif %}"
       role="list"
       style="--gap-x: {{ block.settings.gap_x }}px; --gap-y: {{ block.settings.gap_y }}px;"
     >
       {%- if settings.social_twitter_link != blank -%}
-        <li class="list-social__item">
+        <li class="{{ class_item }}">
           <a href="{{ settings.social_twitter_link }}" class="list-social__link link">
             <span class="svg-wrapper">
+              {{- 'icon-twitter.svg' | inline_asset_content -}}
               {{- 'icon-twitter.svg' | inline_asset_content -}}
             </span>
             <span class="visually-hidden">{{ 'general.social.links.twitter' | t }}</span>
@@ -23,9 +28,10 @@
         </li>
       {%- endif -%}
       {%- if settings.social_facebook_link != blank -%}
-        <li class="list-social__item">
+        <li class="{{ class_item }}">
           <a href="{{ settings.social_facebook_link }}" class="list-social__link link">
             <span class="svg-wrapper">
+              {{- 'icon-facebook.svg' | inline_asset_content -}}
               {{- 'icon-facebook.svg' | inline_asset_content -}}
             </span>
             <span class="visually-hidden">{{ 'general.social.links.facebook' | t }}</span>
@@ -33,9 +39,10 @@
         </li>
       {%- endif -%}
       {%- if settings.social_pinterest_link != blank -%}
-        <li class="list-social__item">
+        <li class="{{ class_item }}">
           <a href="{{ settings.social_pinterest_link }}" class="list-social__link link">
             <span class="svg-wrapper">
+              {{- 'icon-pinterest.svg' | inline_asset_content -}}
               {{- 'icon-pinterest.svg' | inline_asset_content -}}
             </span>
             <span class="visually-hidden">{{ 'general.social.links.pinterest' | t }}</span>
@@ -43,9 +50,10 @@
         </li>
       {%- endif -%}
       {%- if settings.social_instagram_link != blank -%}
-        <li class="list-social__item">
+        <li class="{{ class_item }}">
           <a href="{{ settings.social_instagram_link }}" class="list-social__link link">
             <span class="svg-wrapper">
+              {{- 'icon-instagram.svg' | inline_asset_content -}}
               {{- 'icon-instagram.svg' | inline_asset_content -}}
             </span>
             <span class="visually-hidden">{{ 'general.social.links.instagram' | t }}</span>
@@ -53,9 +61,10 @@
         </li>
       {%- endif -%}
       {%- if settings.social_tiktok_link != blank -%}
-        <li class="list-social__item">
+        <li class="{{ class_item }}">
           <a href="{{ settings.social_tiktok_link }}" class="list-social__link link">
             <span class="svg-wrapper">
+              {{- 'icon-tiktok.svg' | inline_asset_content -}}
               {{- 'icon-tiktok.svg' | inline_asset_content -}}
             </span>
             <span class="visually-hidden">{{ 'general.social.links.tiktok' | t }}</span>
@@ -63,9 +72,10 @@
         </li>
       {%- endif -%}
       {%- if settings.social_tumblr_link != blank -%}
-        <li class="list-social__item">
+        <li class="{{ class_item }}">
           <a href="{{ settings.social_tumblr_link }}" class="list-social__link link">
             <span class="svg-wrapper">
+              {{- 'icon-tumblr.svg' | inline_asset_content -}}
               {{- 'icon-tumblr.svg' | inline_asset_content -}}
             </span>
             <span class="visually-hidden">{{ 'general.social.links.tumblr' | t }}</span>
@@ -73,9 +83,10 @@
         </li>
       {%- endif -%}
       {%- if settings.social_snapchat_link != blank -%}
-        <li class="list-social__item">
+        <li class="{{ class_item }}">
           <a href="{{ settings.social_snapchat_link }}" class="list-social__link link">
             <span class="svg-wrapper">
+              {{- 'icon-snapchat.svg' | inline_asset_content -}}
               {{- 'icon-snapchat.svg' | inline_asset_content -}}
             </span>
             <span class="visually-hidden">{{ 'general.social.links.snapchat' | t }}</span>
@@ -83,9 +94,10 @@
         </li>
       {%- endif -%}
       {%- if settings.social_youtube_link != blank -%}
-        <li class="list-social__item">
+        <li class="{{ class_item }}">
           <a href="{{ settings.social_youtube_link }}" class="list-social__link link">
             <span class="svg-wrapper">
+              {{- 'icon-youtube.svg' | inline_asset_content -}}
               {{- 'icon-youtube.svg' | inline_asset_content -}}
             </span>
             <span class="visually-hidden">{{ 'general.social.links.youtube' | t }}</span>
@@ -93,9 +105,10 @@
         </li>
       {%- endif -%}
       {%- if settings.social_vimeo_link != blank -%}
-        <li class="list-social__item">
+        <li class="{{ class_item }}">
           <a href="{{ settings.social_vimeo_link }}" class="list-social__link link">
             <span class="svg-wrapper">
+              {{- 'icon-vimeo.svg' | inline_asset_content -}}
               {{- 'icon-vimeo.svg' | inline_asset_content -}}
             </span>
             <span class="visually-hidden">{{ 'general.social.links.vimeo' | t }}</span>
@@ -127,6 +140,30 @@
       "step": 1,
       "default": 10,
       "label": "Row Gap"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     }
   ],
   "presets": [

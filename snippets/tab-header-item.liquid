@@ -35,45 +35,4 @@
     }
   }
 
-  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (min-width: 1025px) {
-    .splitting.chars {
-      .char {
-        overflow: hidden;
-        color: transparent;
-
-        &:before,
-        &:after {
-          visibility: visible;
-          color: var(--button-color);
-          transition: transform 0.35s var(--ease-out-smooth);
-          transition-delay: calc(0.2s + (0.02s * (var(--char-index))));
-        }
-
-        &:before {
-          color: var(--color-tab-active);
-          transition-delay: calc(0.02s * (var(--char-index)));
-        }
-      }
-
-      &:hover .char:before {
-        transition-delay: calc(0.2s + (0.02s * (var(--char-index))));
-      }
-      &:hover .char:after {
-        transition-delay: calc(0.02s * (var(--char-index)));
-      }
-    }
-
-    .splitting.chars {
-      .char:before {
-        transform: translateY(100%);
-      }
-      &:hover .char:before {
-        transform: translateY(0%);
-      }
-      &:hover .char:after {
-        transform: translateY(-100%);
-      }
-    }
-  }
-
 {%- endstylesheet -%}

@@ -3,16 +3,26 @@
     <div class="spacing-style newsletter-form__checkbox"
       style="--padding-block-start: {{ block.settings.condition-padding-block-start }}px; --padding-block-end:{{- block.settings.condition-padding-block-end -}}px;--padding-inline-start: 0px;--padding-inline-end: 0px;"
     >
-      <input
-        type="checkbox"
-        id="agree_condition"
-        name="agree_condition"
-        class="checkbox__input"
-        required
-      >
-      <label for="agree_condition" class="checkbox__label">
-        {{ block.settings.agree_condition_text }}
-      </label>
+      {% comment %} <div class="checkbox">
+        <label for="agree_condition" class="checkbox cursor-pointer">
+          <input
+            type="checkbox"
+            id="agree_condition"
+            name="agree_condition"
+            class="checkbox__input"
+            required
+          >
+          <div class="svg-wrapper">
+            {{- 'icon-checkmark.svg' | inline_asset_content -}}
+          </div>
+          <div class="checkbox__label">
+            <div class="checkbox__label-text">
+              {{ block.settings.agree_condition_text }}
+            </div>
+          </div>
+        </label>
+      </div> {% endcomment %}
+      {% render 'checkbox', label: block.settings.agree_condition_text, id: 'agree_condition', name: 'agree_condition', required: true %}
     </div>
   {%- endif -%}
 {% endcapture %}
@@ -65,15 +75,34 @@
 
   {%- form 'customer', id: 'EmailSignup', class: 'email-signup__form' %}
     <div
-      class="email-signup__input-groups{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}"
-      style="--border-width: {{ block.settings.border_width }}px; --border-radius: {{ block.settings.border_radius }}px;"
+      class="
+        email-signup__input-groups
+        border-style
+        spacing-style
+        {% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}
+      "
+      style="
+        {% if block.settings.border != 'none' %}
+          --padding-block-start: {{ block.settings.field-padding-block-start | default: 0 }}px;
+          --padding-block-end:{{- block.settings.field-padding-block-end | default: 0 -}}px;
+          --padding-inline-start:{{ block.settings.field-padding-inline-start | default: 0 }}px;
+          --padding-inline-end:{{- block.settings.field-padding-inline-end | default: 0 -}}px;
+        {% endif %}
+        --input-border-width: {{ block.settings.input_border_width }}px;
+        --input-border-radius: {{ block.settings.input_border_radius }}px;
+        {% render 'border-override', settings: block.settings %}
+      "
     >
       <div class="email-signup__input-group">
         <label
           for="EmailInput-{{ block.id }}"
           class="visually-hidden"
         >
-          {% if block.settings.input_label != blank %}{{ block.settings.input_label }}{% else %}{{ 'newsletter.label' | t }}{% endif %}
+          {% if block.settings.input_label != blank -%}
+            {{- block.settings.input_label -}}
+          {%- else -%}
+            {{- 'newsletter.label' | t -}}
+          {%- endif %}
         </label>
         <input
           id="EmailInput-{{ block.id }}"
@@ -93,11 +122,6 @@
             aria-describedby="Email-signup__message-success-{{ block.id }}"
           {% endif %}
         >
-
-        {%- if block.settings.display_type == 'text' and block.settings.integrated_button == false -%}
-          {{ agree_condition }}
-          {{ input_description }}
-        {%- endif -%}
       </div>
 
       <button
@@ -137,6 +161,10 @@
         {% endif %}
       </button>
     </div>
+    {%- if block.settings.display_type == 'text' and block.settings.integrated_button == false -%}
+      {{ agree_condition }}
+      {{ input_description }}
+    {%- endif -%}
 
     {%- if block.settings.display_type != 'text' or block.settings.integrated_button -%}
       {{ agree_condition }}
@@ -216,11 +244,12 @@
     --box-shadow-color: var(--color-input-border);
 
     width: 100%;
-    border-width: var(--border-width);
-    border-radius: var(--border-radius);
+    border-width: var(--input-border-width);
+    border-radius: var(--input-border-radius);
     border-style: solid;
     border-color: var(--color-input-border);
-    box-shadow: var(--inputs-shadow-horizontal-offset) var(--inputs-shadow-vertical-offset) var(--inputs-shadow-blur-radius) var(--box-shadow-color);
+    box-shadow: var(--inputs-shadow-horizontal-offset) var(--inputs-shadow-vertical-offset)
+      var(--inputs-shadow-blur-radius) var(--box-shadow-color);
 
     &.subscription-text {
       border: none;
@@ -356,7 +385,7 @@
     }
 
     &.button-unstyled {
-      border-radius: var(--border-radius);
+      border-radius: var(--input-border-radius);
     }
 
     &.email-signup__button--icon-fill:not(.button-unstyled) {
@@ -496,8 +525,16 @@
     async _animateShow(element) {
       element.style.overflow = 'hidden';
       await Motion.timeline([
-        [element, { height: ['0px', `${element.scrollHeight}px`] }, { duration: 0.45, easing: 'cubic-bezier(0.7, 0, 0.3, 1)' }],
-        [element, { opacity: [0, 1], transform: ['translateX(-1rem)', 'translateX(0)'] }, { duration: 0.25, at: '-0.1' }]
+        [
+          element,
+          { height: ['0px', `${element.scrollHeight}px`] },
+          { duration: 0.45, easing: 'cubic-bezier(0.7, 0, 0.3, 1)' },
+        ],
+        [
+          element,
+          { opacity: [0, 1], transform: ['translateX(-1rem)', 'translateX(0)'] },
+          { duration: 0.25, at: '-0.1' },
+        ],
       ]).finished;
       element.style.height = 'auto';
       element.style.overflow = 'visible';
@@ -507,7 +544,11 @@
       element.style.overflow = 'hidden';
       await Motion.timeline([
         [element, { opacity: 0, transform: ['translateX(0)', 'translateX(1rem)'] }, { duration: 0.15 }],
-        [element, { height: [`${element.clientHeight}px`, '0px'] }, { duration: 0.35, at: '<', easing: 'cubic-bezier(0.7, 0, 0.3, 1)' }]
+        [
+          element,
+          { height: [`${element.clientHeight}px`, '0px'] },
+          { duration: 0.35, at: '<', easing: 'cubic-bezier(0.7, 0, 0.3, 1)' },
+        ],
       ]).finished;
       element.style.height = 'auto';
       element.style.overflow = 'visible';
@@ -577,6 +618,37 @@
       "visible_if": "{{ block.settings.width == 'custom' }}"
     },
     {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "t:settings.width_mobile",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
       "type": "header",
       "content": "t:content.appearance"
     },
@@ -585,6 +657,88 @@
       "id": "inherit_color_scheme",
       "label": "t:settings.inherit_color_scheme",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.borders",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "label": "t:settings.border_width",
+      "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "field-padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "field-padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "field-padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "field-padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.border != 'none' }}"
     },
     {
       "type": "color_scheme",
@@ -625,7 +779,7 @@
     },
     {
       "type": "range",
-      "id": "border_width",
+      "id": "input_border_width",
       "label": "t:settings.border_width",
       "min": 0,
       "max": 4,
@@ -636,7 +790,7 @@
     },
     {
       "type": "range",
-      "id": "border_radius",
+      "id": "input_border_radius",
       "label": "t:settings.border_radius",
       "min": 0,
       "max": 100,

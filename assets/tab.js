@@ -16,10 +16,6 @@ class TabsComponent extends HTMLElement {
     this.tabs.forEach((tab) => {
       tab.addEventListener("click", this.handleTabClick.bind(this));
     });
-
-    // Motion.inView(this, this.initMaskBackground.bind(this));
-
-    this.initSplitting();
   }
 
   handleTabClick(event) {

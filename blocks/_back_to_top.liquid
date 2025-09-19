@@ -1,0 +1,68 @@
+<div
+  class="target-block relative button__back-to-top hide"
+>
+  <button
+    class="multi-t__button p-0 flex items-center justify-center relative cursor-pointer bor-none rounded-full"
+    data-target="back-to-top"
+    role="button"
+    aria-haspopup="dialog"
+    aria-label="{{ 'sections.multitasking_bar.back_to_top' | t }}"
+    {{ block.shopify_attributes }}
+  >
+    <span class="svg-wrapper">
+      {{- 'icon-arrow.svg' | inline_asset_content -}}
+
+      <svg class="progress-circle absolute inset-0" width="100%" height="100%" viewBox="-1 -1 102 102">
+        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
+      </svg>
+      <svg
+        class="progress-circle progress-circle-fill absolute inset-0"
+        width="100%"
+        height="100%"
+        viewBox="-1 -1 102 102"
+      >
+        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
+      </svg>
+    </span>
+  </button>
+  <span class="target-block--tooltip">{{ 'sections.multitasking_bar.back_to_top' | t }}</span>
+</div>
+
+<script defer="defer">
+  document.addEventListener('DOMContentLoaded', () => {
+    var progressPath = document.querySelector('.button__back-to-top .progress-circle-fill path');
+    if (!progressPath) return;
+    var pathLength = progressPath.getTotalLength();
+
+    progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
+
+    progressPath.style.strokeDasharray = pathLength + ' ' + pathLength;
+    progressPath.style.strokeDashoffset = pathLength;
+
+    progressPath.getBoundingClientRect();
+
+    progressPath.style.transition = progressPath.style.WebkitTransition = 'stroke-dashoffset 10ms linear';
+
+    var updateProgress = function () {
+      var scroll = window.scrollY || window.pageYOffset;
+      var height = document.documentElement.scrollHeight - window.innerHeight;
+      var progress = pathLength - (scroll * pathLength) / height;
+      progressPath.style.strokeDashoffset = progress;
+    };
+
+    updateProgress();
+    window.addEventListener('scroll', updateProgress);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Back to top",
+  "tag": null,
+  "presets": [
+    {
+      "name": "Back to top"
+    }
+  ]
+}
+{% endschema %}

@@ -3,7 +3,8 @@ class CartDrawer extends HTMLElement {
     super();
 
     this.addEventListener('keyup', (evt) => evt.code === 'Escape' && this.close());
-    this.querySelector('#CartDrawer-Overlay').addEventListener('click', this.close.bind(this));
+    this.overlay = this.querySelector('[id^="CartDrawer-Overlay"]');
+    this.overlay?.addEventListener('click', this.close.bind(this));
     this.setHeaderCartIconAccessibility();
 
     if (Shopify.designMode) {
@@ -49,6 +50,35 @@ class CartDrawer extends HTMLElement {
       this.classList.add('animate', 'active');
     });
 
+    const dir = this.getAttribute("data-drawer-direction");
+    const contentElement = this.querySelector("[data-drawer-content]");
+
+    this.classList.add("open");
+
+    Motion.timeline([
+      [
+        this.overlay,
+        {
+          transform:
+            dir === "left"
+              ? ["translateX(-100%)", "translateX(0)"]
+              : ["translateX(100%)", "translateX(0)"],
+        },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
+      ],
+      [
+        contentElement,
+        {
+          opacity: [0, 1],
+          transform:
+            dir === "left"
+              ? ["translateX(-100%)", "translateX(0)"]
+              : ["translateX(100%)", "translateX(0)"],
+        },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.05" },
+      ],
+    ]);
+
     this.addEventListener(
       'transitionend',
       () => {
@@ -62,10 +92,39 @@ class CartDrawer extends HTMLElement {
     document.body.classList.add('overflow-hidden');
   }
 
-  close() {
+  async close() {
     this.classList.remove('active');
     removeTrapFocus(this.activeElement);
     document.body.classList.remove('overflow-hidden');
+
+    const dir = this.getAttribute("data-drawer-direction");
+    const contentElement = this.querySelector("[data-drawer-content]");
+
+    this.classList.remove("open");
+
+    await Motion.timeline([
+      [
+        contentElement,
+        {
+          opacity: [1, 0],
+          transform:
+            dir === "left"
+              ? ["translateX(0)", "translateX(-100%)"]
+              : ["translateX(0)", "translateX(100%)"],
+        },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
+      ],
+      [
+        this.overlay,
+        {
+          transform:
+            dir === "left"
+              ? ["translateX(0)", "translateX(-100%)"]
+              : ["translateX(0)", "translateX(100%)"],
+        },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" },
+      ],
+    ]).finished;
   }
 
   setSummaryAccessibility(cartDrawerNote) {

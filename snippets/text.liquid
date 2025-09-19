@@ -57,11 +57,17 @@
 
   assign highlight_text = bl_stts.highlight_text
   assign highlight_content = bl_stts.highlight_text_content | split: ','
-  assign highlight_color = bl_stts.highlight_text_color
+  if bl_stts.highlight_text_type == 'underline'
+    assign highlight_color = bl_stts.highlight_underline_color
+    assign highlight_text_type = 'underline'
+  else
+    assign highlight_color = bl_stts.highlight_text_color
+    assign highlight_text_type = 'text'
+  endif
 
   if highlight_content != blank and highlight_text == true
     for highlight in highlight_content
-      assign highlight_text_code = highlight | prepend: '<span class="highlight_text--content" style="color: [highlight_color];">' | append: '</span>' | replace: '[highlight_color]', highlight_color
+      assign highlight_text_code = highlight | prepend: '<span class="highlight_text--content highlight_text--[highlight_text_type]" style="--color: [highlight_color];">' | append: '</span>' | replace: '[highlight_color]', highlight_color | replace: '[highlight_text_type]', highlight_text_type
       assign text = text | replace: highlight, highlight_text_code
     endfor
   endif
@@ -133,7 +139,9 @@
 
 {% capture attributes %}
   class="
-    size-style spacing-style text-block max-w-full flex {% if class == 'card--block-details' %}flex-row{% else %}flex-column{% endif %} text-block--{{ block.id }}
+    size-style spacing-style text-block max-w-full flex
+    text-block--{{ block.id }}
+    {% if class == 'card--block-details' %}flex-row{% else %}flex-column{% endif %}
     {{ bl_stts.type_preset }} {{ class }} {{ text_block_classes }}
     {% if has_heading_border %} {{ heading_border_classes }}{% endif %}
     {% if enable_border_bottom %} border-style text-border-style-bottom{% endif %}
@@ -144,17 +152,17 @@
     {% render 'spacing-padding', settings: bl_stts %}
     {% render 'typography-style', settings: bl_stts %}
     --width: {{ text_width }};
-    {% if text_width == "100%" or text_width == "custom" %}{{ text_align }}{% endif %}
-    {% if text_width_tablet == "100%" or text_width_tablet == "custom" %}{{ text_align_tablet }}{% endif %}
-    {% if text_width_mobile == "100%" or text_width_mobile == "custom" %}{{ text_align_mobile }}{% endif %}
-    {% if bl_stts.background %}
+    {%- if text_width == "100%" or text_width == "custom" %}{{ text_align }}{%- endif -%}
+    {%- if text_width_tablet == "100%" or text_width_tablet == "custom" -%}{{ text_align_tablet }}{%- endif -%}
+    {%- if text_width_mobile == "100%" or text_width_mobile == "custom" -%}{{ text_align_mobile }}{%- endif -%}
+    {%- if bl_stts.background -%}
       --text-background-color: {{ bl_stts.background_color | default: 'rgb(255 255 255 / var(--opacity-100))' }};
       --text-corner-radius: {{ bl_stts.corner_radius }}px;
       --text-padding: max(var(--padding-2xs), calc((var(--text-corner-radius) + var(--padding-xs)) * (1 - cos(45deg))));
-    {% endif %}
-    {% if has_heading_border or enable_border_bottom or has_border %}
+    {%- endif -%}
+    {%- if has_heading_border or enable_border_bottom or has_border -%}
       {%- render 'border-override', settings: bl_stts -%}
-    {% endif %}
+    {%- endif -%}
   "
   {% if bl_stts.typing_text %}data-texts='["{{ bl_stts.primary_text }}", "{{ bl_stts.secondary_text }}", "{{ bl_stts.third_text }}"]'{% endif %}
 
@@ -253,6 +261,24 @@
     [style*='--horizontal-alignment-mobile: flex-end'] > .text-block {
       --text-align-default: right;
     }
+  }
+
+  .highlight_text--content.highlight_text--text {
+    color: var(--color);
+  }
+  .highlight_text--content.highlight_text--underline {
+    position: relative;
+    display: inline-block;
+  }
+  .highlight_text--content.highlight_text--underline:after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: -0.2em;
+    left: 0;
+    width: 100%;
+    height: max(1px, 0.18em);
+    background: var(--color);
   }
 
   .text-border-style-bottom {
