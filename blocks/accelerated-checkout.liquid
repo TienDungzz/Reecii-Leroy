@@ -18,19 +18,11 @@
 
 {% capture agree_condition %}
   {%- if block.settings.agree_condition and block.settings.agree_condition_text != blank -%}
-    <div class="spacing-style"
+    <div class="spacing-style newsletter-form__checkbox"
       style="--padding-block-start: {{ block.settings.condition-padding-block-start }}px; --padding-block-end:{{- block.settings.condition-padding-block-end -}}px;--padding-inline-start: 0px;--padding-inline-end: 0px;"
     >
-      <input
-        type="checkbox"
-        id="agree_condition"
-        name="agree_condition"
-        class="checkbox__input"
-        required
-      >
-      <label for="agree_condition" class="checkbox__label">
-        {{ block.settings.agree_condition_text }}
-      </label>
+      {% assign checkbox_id = block.id | prepend: 'agree_condition-' %}
+      {% render 'checkbox', label: block.settings.agree_condition_text, id: checkbox_id, name: checkbox_id, required: true %}
     </div>
   {%- endif -%}
 {% endcapture %}

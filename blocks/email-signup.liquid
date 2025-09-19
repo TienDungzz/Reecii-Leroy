@@ -3,26 +3,8 @@
     <div class="spacing-style newsletter-form__checkbox"
       style="--padding-block-start: {{ block.settings.condition-padding-block-start }}px; --padding-block-end:{{- block.settings.condition-padding-block-end -}}px;--padding-inline-start: 0px;--padding-inline-end: 0px;"
     >
-      {% comment %} <div class="checkbox">
-        <label for="agree_condition" class="checkbox cursor-pointer">
-          <input
-            type="checkbox"
-            id="agree_condition"
-            name="agree_condition"
-            class="checkbox__input"
-            required
-          >
-          <div class="svg-wrapper">
-            {{- 'icon-checkmark.svg' | inline_asset_content -}}
-          </div>
-          <div class="checkbox__label">
-            <div class="checkbox__label-text">
-              {{ block.settings.agree_condition_text }}
-            </div>
-          </div>
-        </label>
-      </div> {% endcomment %}
-      {% render 'checkbox', label: block.settings.agree_condition_text, id: 'agree_condition', name: 'agree_condition', required: true %}
+      {% assign checkbox_id = block.id | prepend: 'agree_condition-' %}
+      {% render 'checkbox', label: block.settings.agree_condition_text, id: checkbox_id, name: checkbox_id, required: true %}
     </div>
   {%- endif -%}
 {% endcapture %}
@@ -73,7 +55,9 @@
     </div>
   {%- endif -%}
 
-  {%- form 'customer', id: 'EmailSignup', class: 'email-signup__form' %}
+  {% assign form_id = block.id | prepend: 'EmailSignup-' %}
+
+  {%- form 'customer', id: form_id, class: 'email-signup__form' %}
     <div
       class="
         email-signup__input-groups
@@ -125,6 +109,7 @@
       </div>
 
       <button
+        id="EmailSignup-submit-{{ block.id }}"
         type="submit"
         class="size-style email-signup__button{% if block.settings.integrated_button %} email-signup__button--integrated{% endif %} email-signup__button--{{ block.settings.display_type }} email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.button_type_preset }}{% if block.settings.display_type == 'icon' and block.settings.background_button == false %} email-signup__button--icon-fill{% endif %} {{ block.settings.style_class }} {{ block.settings.style_class }}--{{ block.id }}{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}"
         {% if block.settings.display_type != 'text' %}
@@ -456,9 +441,9 @@
     }
 
     connectedCallback() {
-      this.form = this.querySelector('#EmailSignup');
-      this.checkbox = this.querySelector('#agree_condition');
-      this.submitButton = this.form?.querySelector("button[type='submit']");
+      this.form = this.querySelector('[id^="EmailSignup-"]');
+      this.checkbox = this.form?.querySelector('[id^="agree_condition-"]');
+      this.submitButton = this.form?.querySelector("button[id^='EmailSignup-submit-']");
       this.subscriptionForm = this.querySelector('.subscription-form');
       this.emailForm = this.querySelector('.email-signup__form');
       this.promoBtn = this.querySelector('.promo-btn');
@@ -478,6 +463,7 @@
       this.submitButton.disabled = true;
 
       this.checkbox.addEventListener('change', () => {
+        console.log('checkbox changed', this.submitButton);
         this.submitButton.disabled = !this.checkbox.checked;
       });
 

@@ -9,10 +9,10 @@ if (!customElements.get('product-form-component')) {
         this.variantIdInput.disabled = false;
         this.form.addEventListener('submit', this.onSubmitHandler.bind(this));
         this.cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
-        this.submitButton = this.querySelector('[type="submit"]');
+        this.submitButton = this.form?.querySelector('[type="submit"]');
         this.submitButtonText = this.submitButton.querySelector('span');
-        this.checkbox = this.querySelector('#agree_condition');
-        this.buyItNowButton = this.querySelector('shopify-buy-it-now-button button');
+        this.checkbox = this.form?.querySelector('[id^="agree_condition-"]');
+        this.buyItNowButton = this.form?.querySelector('shopify-buy-it-now-button button');
 
         if (document.querySelector('cart-drawer')) this.submitButton.setAttribute('aria-haspopup', 'dialog');
 
