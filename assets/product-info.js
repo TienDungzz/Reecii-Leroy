@@ -76,7 +76,7 @@ if (!customElements.get('product-info')) {
           targetId: target.id,
           callback: shouldSwapProduct
             ? this.handleSwapProduct(productUrl, shouldFetchFullPage)
-            : this.handleUpdateProductInfo(productUrl),
+            : this.handleUpdateProductInfo(productUrl, event.target),
         });
       }
 
@@ -162,7 +162,7 @@ if (!customElements.get('product-info')) {
         }
       }
 
-      handleUpdateProductInfo(productUrl) {
+      handleUpdateProductInfo(productUrl, target) {
         return (html) => {
           const variant = this.getSelectedVariant(html);
 
@@ -177,6 +177,10 @@ if (!customElements.get('product-info')) {
           }
 
           this.updateMedia(html, variant?.featured_media?.id);
+
+          this.getVariantData();
+
+          this.updateVariantStatuses(target);
 
           const updateSourceFromDestination = (id, shouldHide = (source) => false) => {
             const source = html.getElementById(`${id}-${this.sectionId}`);
@@ -213,6 +217,60 @@ if (!customElements.get('product-info')) {
           this.handleBackInStockAlert(this);
           this.updateAddButtonText(this);
         };
+      }
+
+      updateVariantStatuses(target) {
+        const selectedOptionOneVariants1 = this.variantData.filter(variant => this.querySelectorAll(':checked')[0]?.value === variant.option1);
+        const selectedOptionOneVariants2 = this.variantData.filter(variant => this.querySelectorAll(':checked')[1]?.value === variant.option2);
+        const selectedOptionOneVariants3 = this.variantData.filter(variant => this.querySelectorAll(':checked')[2]?.value === variant.option3);
+        const variant_swatch = [...this.querySelectorAll('.product-form__input--swatch')];
+
+        if (variant_swatch.length > 1 && target){
+          if(target.closest('.product-form__input').dataset.optionIndex == 0) this.updateImageSwatch(selectedOptionOneVariants1, 0);
+          if(target.closest('.product-form__input').dataset.optionIndex == 1) this.updateImageSwatch(selectedOptionOneVariants2, 1);
+          if(target.closest('.product-form__input').dataset.optionIndex == 2) this.updateImageSwatch(selectedOptionOneVariants3, 2);
+        }
+      }
+
+      updateImageSwatch(selectedOptionOneVariants,optionIndex) {
+        const inputWrappers = this.querySelectorAll('.product-form__input');
+        if(inputWrappers){
+          inputWrappers.forEach((element, inputIndex) => {
+            const imageSpan = element.querySelectorAll(".swatch");
+            const inputList = element.querySelectorAll("input");
+
+            inputList.forEach((item, index) => {
+              if(inputIndex != optionIndex){
+                const image = selectedOptionOneVariants.filter(tmp => {
+                  if (inputIndex == 0) return tmp.option1 == item.value;
+                  if (inputIndex == 1) return tmp.option2 == item.value;
+                  if (inputIndex == 2) return tmp.option3 == item.value;
+                });
+
+                if(image.length > 0) {
+                  var remainingOptionValue = inputWrappers[3 - inputIndex - optionIndex]?.querySelector(':checked').value;
+                  let activeIndex = 0;
+                      
+                  for (let i = 0; i < image.length; i++) {
+                    const imageItem = image[i];
+                    const title = imageItem.title;
+
+                    if (title.includes(remainingOptionValue)) {
+                      activeIndex = i;
+                    }
+                  }
+                  
+                  if (imageSpan[index] != undefined && image[activeIndex].featured_image != null) imageSpan[index].style.backgroundImage = `url("${image[activeIndex].featured_image.src}")`;
+                }
+              }
+            })
+          });
+        }
+      }
+
+      getVariantData() {
+        this.variantData = this.variantData || JSON.parse(document.querySelector('.step-by-step-variant-picker [data-all-variants]').textContent);
+        return this.variantData;
       }
 
       updateVariantInputs(variantId) {

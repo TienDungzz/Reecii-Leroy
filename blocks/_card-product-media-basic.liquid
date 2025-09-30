@@ -1,0 +1,121 @@
+{%- liquid
+  assign section_id = section.id
+  assign card_product = block.settings.product
+  assign media_aspect_ratio = block.settings.image_ratio
+  assign show_secondary_image = block.settings.show_secondary_image
+  assign ratio = 1
+  if card_product.featured_media and media_aspect_ratio == 'portrait'
+    assign ratio = 0.8
+  elsif card_product.featured_media and media_aspect_ratio == 'adapt'
+    assign ratio = card_product.featured_media.aspect_ratio
+  endif
+  if ratio == 0 or ratio == null
+    assign ratio = 1
+  endif
+-%}
+{%- if card_product and card_product != empty -%}
+  {%- if card_product.featured_media -%}
+    <div class="card--block-media overflow-hidden relative group-block w-full" style="{%- if block.settings.width_option == 'custom' -%} --globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}">
+      <div class="ratio" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
+        {%- render 'card-product-media', show_secondary_image: show_secondary_image, card_product: card_product -%}
+      </div>
+    </div>
+  {%- endif -%}
+{%- else -%}
+  <div
+    class="group-block {{ block.settings | class_list }} media-block card__inner{% if settings.card_style == 'standard' %} color-{{ settings.card_color_scheme }}{% endif %} ratio"
+    data-cart-media
+    style="--ratio-percent: 100%;{%- if block.settings.width_option == 'custom' -%} --globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}"
+  >
+    <div class="card__media">
+      <div class="media media--transparent">
+        {{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product media",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:sections.collage.blocks.product.settings.product.label"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.featured-collection.settings.image_ratio.options__1.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.featured-collection.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.featured-collection.settings.image_ratio.options__3.label"
+        }
+      ],
+      "default": "adapt",
+      "label": "t:sections.featured-collection.settings.image_ratio.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "default": true,
+      "label": "t:sections.featured-collection.settings.show_secondary_image.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_quick_add",
+      "default": true,
+      "label": "t:sections.featured-collection.settings.enable_quick_buy.label"
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width_option",
+      "label": "Width",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full width"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "Custom (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 80,
+      "visible_if": "{{ block.settings.width_option == 'custom' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product media",
+      "settings": {
+        "product": "{{ closest.product }}"
+      }
+    }
+  ]
+}
+{% endschema %}

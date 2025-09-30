@@ -1,21 +1,18 @@
-<div class="customization-option product-property spacing-style"
+{{ 'component-sbs-variant-picker.css' | asset_url | stylesheet_tag }}
 
+<step-indicator 
+    class="step-by-step-variant-picker spacing-style"
     style="{% render 'spacing-style', settings: block.settings %}"
 >
-    {% content_for 'blocks' %}
-</div>
+    {% content_for 'block', type: '_sbs-variant-picker', id: 'sbs-variant-picker' %}
+    {% content_for 'block', type: '_sbs-buy-buttons', id: 'sbs-buy-buttons' %}
+</step-indicator>
+
+<script src="{{ 'step-by-step-variant-picker.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {
-    "name": "t:names.customization_option",
-    "blocks": [
-        {
-            "type": "_text-field"
-        },
-        {
-            "type": "_file-field"
-        }
-    ],
+    "name": "Stepbystep variant picker",
     "settings": [
         {
             "type": "header",
@@ -64,16 +61,8 @@
     ],
     "presets": [
         {
-            "name": "t:names.customization_option",
-            "category": "t:categories.product",
-            "blocks": [
-                {
-                    "type": "_text-field"
-                },
-                {
-                    "type": "_file-field"
-                }
-            ]
+            "name": "Stepbystep variant picker",
+            "category": "t:categories.product"
         }
     ]
 }
