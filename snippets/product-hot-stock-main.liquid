@@ -6,16 +6,19 @@
     endif
 
     assign progressBarWidth = current_variant.inventory_quantity | times: 100 | divided_by: productMaxStock
+
+    assign type_preset = type_preset
+    assign progress_bar_height = progress_bar_height
 %}
 
 {% capture attr %}
-    style="--progress-bar-width: {{ progressBarWidth }}%; --progress-bar-color: {{ progress_bar_color }}; --progress-bar-color_2: {{ progress_bar_color_2 }}; --hot-stock-text-color: {{ text_color }};"
+    style="--progress-bar-width: {{ progressBarWidth }}%; --progress-bar-height: {{ progress_bar_height }}; --progress-bar-color: {{ progress_bar_color }}; --progress-bar-color_2: {{ progress_bar_color_2 }}; --hot-stock-text-color: {{ text_color }};"
 {% endcapture %}
 
 {% stylesheet %}
     .hotStock-progress {
         max-width: 300px;
-        height: 5px;
+        height: var(--progress-bar-height);
         background-color: #f8f8f8;
         text-align: left;
         margin: 8px 0 0;
@@ -48,7 +51,7 @@
 {% endstylesheet %}
 
 <div class="productView-hotStock{% if checkShowHotStock == false %} hidden{% endif %}" data-hot-stock="{{ productMaxStock }}" {{variantCount}} {% if variantCount < 2 %} data-current-inventory="{{ current_variant.inventory_quantity }}"{% endif %} {{ attr }}>
-    <span class="hotStock-text" style="font-size: {{ text_size }}">
+    <span class="hotStock-text {{ type_preset }}">
         {{ 'products.product.hot_stock' | t : inventory: current_variant.inventory_quantity }}
     </span>
     <div class="hotStock-progress">

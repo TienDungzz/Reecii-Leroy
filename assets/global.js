@@ -2705,7 +2705,7 @@ class ColorSwatch extends HTMLElement {
 
   init() {
     this.swatchList = this.querySelector(".swatch-list");
-    this.swatchList.addEventListener(
+    this.swatchList?.addEventListener(
       "click",
       this.handleSwatchClick.bind(this)
     );
@@ -3453,6 +3453,40 @@ class InfiniteScrolling extends HTMLElement {
 
 }
 customElements.define('infinite-scrolling', InfiniteScrolling);
+
+class StickyATC extends HTMLElement {
+  constructor() {
+    super();
+
+    this.form = document.getElementById(this.getAttribute('product-form'));
+    // this.footer = document.querySelector('.shopify-section-group-footer-group');
+
+    const observer = new IntersectionObserver(this.onScroll.bind(this));
+    observer.observe(this.form);
+    // observer.observe(this.footer);
+    
+  }
+
+  onScroll(entries) {
+    entries.forEach((entry) => {
+      if (entry.target === this.form) this.passedForm = entry.boundingClientRect.bottom < 0;
+      // if (entry.target === this.footer) this.reachedFooter = entry.isIntersecting;
+    });
+
+    const shouldShow = this.passedForm && !this.reachedFooter;
+    document.body.classList.toggle('sticky-cart-visible', shouldShow);
+    this.classList.toggle('is-visible', shouldShow);
+    if (shouldShow) {
+      document.body.style.setProperty('--sticky-atc-height', `${this.offsetHeight}px`);
+    } else {
+      document.body.style.setProperty('--sticky-atc-height', `0px`);
+
+    }
+
+    if (!shouldShow) this.classList.remove('sticky-open');
+  }
+}
+customElements.define('sticky-atc', StickyATC);
 
 document.addEventListener(
   'toggle',

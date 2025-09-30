@@ -27,7 +27,11 @@
       -%}
 
       {%- capture input_id -%}
-        {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- if block.id -%}
+          {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- else -%}
+          StickyCart-{{ option.name | handle }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- endif -%}
       {%- endcapture -%}
 
       {%- capture input_name -%}
@@ -182,13 +186,13 @@
 
   {%- if variant_style == 'pills' or variant_style == 'swatch'-%}
     <color-swatch>
-      <ul class="swatch-list list-unstyled flex flex-wrap" style="--gap: 1rem;">
+      <ul class="tets1212121212121 list-unstyled flex flex-wrap" style="--gap: 1rem;">
         {{ product_variants }}
       </ul>
     </color-swatch>
   {%- elsif variant_style == 'dropdowns' -%}
     <select
-      id="Option-{{ block.id }}-{{ index }}"
+      id="{%- if block.id -%}Option-{{ block.id }}-{{ index }}{%- else -%}StickyCart-Option-{{ option.name | handle }}-{{ index }}{%- endif -%}"
       class="select__select variant-option__select variant-option__select--has-swatch"
       name="options[{{ option.name | escape }}]"
       form="{{ product_form_id }}"
@@ -217,7 +221,11 @@
       -%}
 
       {%- capture input_id -%}
-        {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- if block.id -%}
+          {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- else -%}
+          StickyCart-{{ option.name | handle }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- endif -%}
       {%- endcapture -%}
 
       {%- capture input_name -%}
@@ -279,7 +287,7 @@
     {{ product_variants }}
   {%- elsif variant_style == 'dropdowns' -%}
     <select
-      id="Option-{{ block.id }}-{{ index }}"
+      id="{%- if block.id -%}Option-{{ block.id }}-{{ index }}{%- else -%}StickyCart-Option-{{ option.name | handle }}-{{ index }}{%- endif -%}"
       class="select__select variant-option__select"
       name="options[{{ option.name | escape }}]"
       form="{{ product_form_id }}"
