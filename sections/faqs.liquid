@@ -1,86 +1,75 @@
-<div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<div
-  class="
-    section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}
-    {% if section.settings.section_height != "" %} {{ section.settings.section_height | prepend: "section--height-" }}{% endif %}
-  "
-
-  style="
-    {% if section.settings.section_width == 'custom' %}
-      --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
-      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
-    {% endif %}
-    {% if section.settings.section_height == 'custom' %}
-      --section-min-height: {{ section.settings.section_height_custom }}svh;
-    {% elsif section.settings.section_height == 'full-screen' %}
-      --section-min-height: 100svh;
-    {% elsif section.settings.section_height != '' %}
-      --section-min-height: var(--section-height-{{ section.settings.section_height }});
-    {% endif %}
-  "
->
-  <div class="custom-section-background">
-    {% render 'background-media',
-      background_media: section.settings.background_media,
-      background_video: section.settings.video,
-      background_video_position: section.settings.video_position,
-      background_image: section.settings.background_image,
-      background_image_position: section.settings.background_image_position,
-      image_behavior: section.settings.image_behavior
-    %}
-  </div>
-
-  <div
-    class="border-style custom-section-content"
-    style="{% render 'border-override', settings: section.settings %}"
-  >
-    {% if section.settings.toggle_overlay %}
-      {% render 'overlay', settings: section.settings, layer: '0' %}
-    {% endif %}
-
-    <div
-      class="
-        spacing-style
-        layout-panel-flex
-        layout-panel-flex--column
-        section-content-wrapper
-        mobile-column
-      "
-      style="
-        {% render 'layout-panel-style', settings: section.settings %}
-        {% render 'spacing-style', settings: section.settings %}
-      "
-    >
-      {% content_for 'blocks' %}
+{% capture children %}
+  {% if section.settings.faqs_filter %}
+    <div class="faqs-filterDropdown-container flex items-baseline flex-wrap gap-2xl">
+      {% if section.settings.faqs_filter_title != blank %}
+        <span class="text">{{ section.settings.faqs_filter_title }}</span>
+      {% endif %}
+      <details id="Details-FAQsFilter" class="details--dropdown faqs-filterDropdown relative" is="dropdown-details" activate-event="hover" data-index="0">
+        <summary
+          id="FAQsFilter"
+          class="details__summary faqs-filterDropdown-summary link link--text focus-inset caption-large"
+          data-faqs-filter
+        >
+          <span class="flex items-center justify-between w-full gap-xl">
+            <span class="text">All</span>
+            {{- 'icon-caret.svg' | inline_asset_content -}}
+          </span>
+        </summary>
+        <div
+          id="FAQsFilterDropdown"
+          class="details__list absolute top-full left-0 z-1 global-settings-popup"
+          style="--min-w-md: 26.7rem;"
+          tabindex="-1"
+        >
+          <ul
+            class="list-unstyled faqs-filterDropdown-menu"
+            role="list"
+            style="--p: 1.3rem 2rem;"
+          >
+            <li class="active" tabindex="-1"><span class="text">All</span></li>
+          </ul>
+        </div>
+      </details>
     </div>
-  </div>
-</div>
+  {% endif %}
+
+  {% content_for 'blocks' %}
+{% endcapture %}
+
+{% render 'section', section: section, children: children, is_element: 'filter-faqs' %}
 
 {% stylesheet %}
-  .section-wrapper {
-    --section-height-offset: 0px;
+  .faqs-filterDropdown {
+    width: fit-content;
+    min-width: 16rem;
+    min-height: 4rem;
+
+    & .faqs-filterDropdown-summary {
+      padding: 0.7rem 1.8rem;
+      display: flex;
+      align-items: center;
+      border: var(--style-border-width) solid var(--color-foreground);
+      border-radius: var(--style-border-radius-buttons-primary);
+    }
   }
 
-  body:has(> #header-group > .header-section > #header-component[transparent]):not(
-      :has(> #header-group > .header-section + .shopify-section)
-    )
-    > main
-    > .section-wrapper:first-child {
-    --section-height-offset: var(--header-group-height, 0);
+  .details__summary .icon-caret {
+    height: var(--icon-size-xs);
+    width: var(--icon-size-xs);
+    color: rgb(var(--color-foreground-rgb) / var(--icon-opacity));
+    margin-block: var(--margin-2xs);
+    transition: color var(--animation-speed) var(--animation-easing), transform var(--animation-speed) var(--animation-easing);
   }
 
-  .custom-section-background {
-    grid-column: 1 / -1;
-  }
-
-  .custom-section-content {
-    z-index: var(--layer-flat);
+  .faqs-filterDropdown-menu li {
+    text-transform: capitalize;
+    cursor: pointer;
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:names.404",
+  "name": "FAQs",
   "class": "section-wrapper",
   "blocks": [
     {
@@ -90,10 +79,35 @@
       "type": "@app"
     },
     {
+      "type": "_marquee"
+    },
+    {
       "type": "_divider"
+    },
+    {
+      "type": "_faqs-list"
     }
   ],
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.popup"]
+  },
   "settings": [
+    {
+      "type": "header",
+      "content": "FAQs layout"
+    },
+    {
+      "type": "text",
+      "id": "faqs_filter_title",
+      "label": "Title",
+      "default": "FAQs filter"
+    },
+    {
+      "type": "checkbox",
+      "id": "faqs_filter",
+      "label": "FAQs filter",
+      "default": true
+    },
     {
       "type": "header",
       "content": "t:content.layout"
@@ -106,10 +120,82 @@
         {
           "value": "column",
           "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
         }
       ],
-      "default": "column",
-      "visible_if": "{{ section.settings.horizontal_alignment_flex_direction_column == 'fake-value' }}"
+      "default": "column"
+    },
+    {
+      "type": "select",
+      "id": "content_direction_mobile",
+      "label": "t:settings.direction_on_mobile",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "align_baseline",
+      "label": "t:settings.align_baseline",
+      "default": false,
+      "visible_if": "{{ section.settings.vertical_alignment == 'flex-end' }}"
     },
     {
       "type": "select",
@@ -129,7 +215,8 @@
           "label": "t:options.right"
         }
       ],
-      "default": "center"
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction != 'row' }}"
     },
     {
       "type": "select",
@@ -147,9 +234,14 @@
         {
           "value": "flex-end",
           "label": "t:options.bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
         }
       ],
-      "default": "center"
+      "default": "center",
+      "visible_if": "{{ section.settings.content_direction == 'column' }}"
     },
     {
       "type": "range",
@@ -448,6 +540,12 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQs",
+      "category": "t:categories.storytelling"
     }
   ]
 }

@@ -12,7 +12,7 @@
 
 {% liquid
   assign bl_stts = block.settings
-  assign plain_text = bl_stts.text | strip_newlines | strip_html | strip
+  assign plain_text = fallback_text | default: bl_stts.text | strip_newlines | strip_html | strip
   assign inherit_text_alignment = bl_stts.inherit_text_alignment
   assign inherit_text_alignment_tablet = bl_stts.inherit_text_alignment_tablet
   assign inherit_text_alignment_mobile = bl_stts.inherit_text_alignment_mobile
@@ -33,7 +33,7 @@
   assign text_width_mobile = width_mobile | default: bl_stts.width_mobile
 
   if text == blank
-    assign text = bl_stts.text
+    assign text = fallback_text | default: bl_stts.text
   endif
 
   if bl_stts.font_size contains 'heading-lg' or bl_stts.font_size contains 'heading-xl'

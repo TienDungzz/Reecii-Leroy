@@ -33,7 +33,7 @@
 
 {% capture list_items %}
   {% for child_block in block.blocks %}
-    <li id="Slide-{{ child_block.id }}-{{ forloop.index }}" class="grid__item{% if show_mobile_slider or block.settings.layout_type == 'carousel' %} swiper-slide{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    <li id="Slide-{{ child_block.id }}-{{ forloop.index }}" class="grid__item{% if show_mobile_slider or block.settings.layout_type == 'carousel' %} swiper-slide{% endif %}{% if block.settings.border_separator_items %} border-separator-item{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
       {% if settings.animations_reveal_on_scroll %} style="--animation-order: {{ forloop.index }};"{% endif %}
     >
       {% render child_block %}
@@ -119,6 +119,20 @@
 {% endcapture %}
 
 {% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+
+{% stylesheet %}
+  .border-separator-item + .border-separator-item {
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: calc(var(--grid-desktop-horizontal-spacing) / -2);
+      width: 0.1rem;
+      height: 100%;
+      background-color: var(--color-border);
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -412,6 +426,63 @@
       "unit": "%",
       "default": 100,
       "visible_if": "{{ block.settings.height == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.borders"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "checkbox",
+      "id": "border_separator_items",
+      "label": "Border separator items",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.thickness",
+      "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.opacity",
+      "default": 100,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
     },
     {
       "type": "header",

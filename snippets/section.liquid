@@ -5,6 +5,17 @@
   @param {string} children - The children of the section
 {% enddoc %}
 
+{% liquid
+  # {{ attributes }} must be on the immediate HTML parent of the element to preserve
+  # the click-to-edit connection in the theme editor. Any break between the element,
+  # including if-statements, will break the connection.
+
+  assign element = 'div'
+  if is_element != blank
+    assign element = is_element
+  endif
+%}
+
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
   class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
@@ -52,7 +63,7 @@
       {% render 'overlay', settings: section.settings, layer: '0' %}
     {% endif %}
 
-    <div
+    <{{ element }}
       class="
         spacing-style
         layout-panel-flex
@@ -67,7 +78,7 @@
       data-testid="section-content"
     >
       {{ children }}
-    </div>
+    </{{ element }}>
   </div>
 </div>
 

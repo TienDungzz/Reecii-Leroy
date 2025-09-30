@@ -1,60 +1,8 @@
-
-
-{% stylesheet %}
-  .accordion {
-    flex: 1;
-    width: 100%;
-  }
-  @container style(--border-width: 0) or style(--border-style: none) {
-    .accordion--dividers:not([class*='color-']) accordion-custom:first-child .details {
-      border-block-start: var(--style-border-width) solid var(--color-border);
-    }
-
-    .accordion--dividers:not([class*='color-']) accordion-custom:last-child .details {
-      border-block-end: var(--style-border-width) solid var(--color-border);
-    }
-  }
-
-  .accordion--dividers accordion-custom:not(:first-child) .details {
-    border-block-start: var(--style-border-width) solid var(--color-border);
-  }
-
-  .accordion--dividers .details-content {
-    padding-block-end: var(--padding-sm);
-  }
-
-  .accordion--caret .icon-plus-wrapper,
-  .accordion--plus .icon-caret-wrapper {
-    display: none;
-  }
-
-  /* because we can't pass apply a specific class on a block based on its parent block setting */
-  .accordion .details__header {
-    font-family: var(--summary-font-family);
-    font-style: var(--summary-font-style);
-    font-weight: var(--summary-font-weight);
-    font-size: var(--summary-font-size);
-    line-height: var(--summary-font-line-height);
-    text-transform: var(--summary-font-case);
-  }
-{% endstylesheet %}
-
-<div
-  class="accordion accordion--{{ block.id }} accordion--{{ block.settings.icon }} border-style spacing-style{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}{% if block.settings.dividers %} accordion--dividers{% endif %}"
-  style="
-    --summary-font-family: var(--font-{{ block.settings.type_preset }}--family);
-     --summary-font-style: var(--font-{{ block.settings.type_preset }}--style);
-     --summary-font-weight: var(--font-{{ block.settings.type_preset }}--weight);
-     --summary-font-size: var(--font-{{ block.settings.type_preset }}--size);
-     --summary-font-line-height: var(--font-{{ block.settings.type_preset }}--line-height);
-     --summary-font-case: var(--font-{{ block.settings.type_preset }}--case);
-    {% render 'spacing-style', settings: block.settings %}
-    {% render 'border-override', settings: block.settings %}
-  "
-  {{ block.shopify_attributes }}
->
+{% capture children %}
   {% content_for 'blocks' %}
-</div>
+{% endcapture %}
+
+{% render 'accordion', block: block, children: children %}
 
 {% schema %}
 {
@@ -172,6 +120,17 @@
       "unit": "px",
       "label": "t:settings.thickness",
       "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.opacity",
+      "default": 100,
       "visible_if": "{{ block.settings.border != 'none' }}"
     },
     {

@@ -899,13 +899,15 @@
     font-weight: var(--font-body--weight);
   }
 {% endstyle %}
-{%- unless settings.type_body_font.system? -%}
-  {% comment %}theme-check-disable AssetPreload{% endcomment %}
-  <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
-  {% comment %}theme-check-enable AssetPreload{% endcomment %}
-{%- endunless -%}
-{%- unless settings.type_header_font.system? -%}
-  {% comment %}theme-check-disable AssetPreload{% endcomment %}
-  <link rel="preload" as="font" href="{{ settings.type_header_font | font_url }}" type="font/woff2" crossorigin>
-  {% comment %}theme-check-enable AssetPreload{% endcomment %}
-{%- endunless -%}
+
+{% comment %}theme-check-disable AssetPreload{% endcomment %}
+  {%- unless settings.type_body_font.system? -%}
+    <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
+  {%- endunless -%}
+  {%- unless settings.type_subheading_font.system? -%}
+    <link rel="preload" as="font" href="{{ settings.type_subheading_font | font_url }}" type="font/woff2" crossorigin>
+  {%- endunless -%}
+  {%- unless settings.type_header_font.system? -%}
+    <link rel="preload" as="font" href="{{ settings.type_header_font | font_url }}" type="font/woff2" crossorigin>
+  {%- endunless -%}
+{% comment %}theme-check-enable AssetPreload{% endcomment %}
