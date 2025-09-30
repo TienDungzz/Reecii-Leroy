@@ -1922,6 +1922,7 @@ class VariantSelects extends HTMLElement {
   connectedCallback() {
     this.addEventListener("change", (event) => {
       const target = this.getInputForEventTarget(event.target);
+      if (target.classList.contains('not-change')) return;
       this.updateSelectionMetadata(event);
 
       publish(PUB_SUB_EVENTS.optionValueSelectionChange, {

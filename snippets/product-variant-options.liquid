@@ -31,7 +31,7 @@
       {%- endcapture -%}
 
       {%- capture input_name -%}
-        {{ option.name | escape }}-{{ option.position }}
+        {{ option.name | escape | append: section_name }}-{{ product.id }}-{{ option.position }}
       {%- endcapture -%}
 
       {%- capture input_dataset -%}
@@ -66,7 +66,7 @@
 
                 case swatch_type
                 when 'variant_image'
-                  assign background_image = variant.image.src | image_url: width: '40x'
+                  assign background_image = variant.image.src | image_url: width: '200x'
                   if variant.image
                     assign enable_variant_image = true
                   endif
@@ -78,7 +78,7 @@
                   assign metaobject_image = color.swatch.image
                   assign has_metaobject = false
                   if metaobject_image != blank
-                    assign background_image = metaobject_image | image_url: width: '40x'
+                    assign background_image = metaobject_image | image_url: width: '200x'
                     assign enable_variant_image = true
                     assign has_metaobject = true
                   elsif metaobject_color != blank
@@ -87,7 +87,7 @@
                     assign has_metaobject = true
                     assign background_image = ''
                   elsif variant.image
-                    assign background_image = variant.image.src | image_url: width: '40x'
+                    assign background_image = variant.image.src | image_url: width: '200x'
                     assign enable_variant_image = true
                   else
                     assign background_color = color | handle
@@ -102,7 +102,11 @@
               {%- endcapture -%}
 
               {%- capture class_tooltip -%}
-                tooltip center absolute bottom-full  left-0  z-1 whitespace-nowrap capitalize text-sm
+                {%- if sbs_variant_picker -%}
+                  sbs-text block center w-full
+                {%- else -%}
+                  tooltip center absolute bottom-full left-50 z-1 whitespace-nowrap capitalize text-sm
+                {%- endif -%}
               {%- endcapture -%}
 
               <span
@@ -111,12 +115,14 @@
                   style="{%- if swatch_type == 'color' -%}--swatch--background-color: {{ color | split: ' ' | last | handle }};{%- endif -%}
                     {%- if has_metaobject and metaobject_color != blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
                     {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}
-                    {%- if swatch_size != blank -%}--swatch-input--size: {{ swatch_size }}px;{%- endif -%}"
+                    {%- if swatch_size != blank -%}--swatch-input--size: {{ swatch_size }}px;{%- endif -%}
+                    {%- if sbs_variant_picker -%}--swatch-input--size: 100%;{%- endif -%}"
                   data-title="{{ color | handle }}"
                   data-variant-id="{{ variant.id }}"
                   data-variant-img="{{ variant.image.src | image_url: '800x' }}"
                 {% else %}
                   class="{{ class_swatch }} swatch--unavailable"
+                  {%- if sbs_variant_picker -%}style="--swatch-input--size: 100%;"{%- endif -%}
                 {% endif %}
               >
                 <span class="visually-hidden">{{ color | escape }}</span>
@@ -133,7 +139,7 @@
       {%- endcapture -%}
 
       {%- if variant_style == 'pills' or variant_style == 'swatch'-%}
-        <li class="swatch-item relative{% if value.selected %} active{% endif %}">
+        <li class="{% if sbs_variant_picker %}sbs-swatch-item{% else %}swatch-item{% endif %} relative">
           <div class="swatch-wrapper">
             <input
               type="radio"
@@ -181,11 +187,11 @@
   {%- endcapture -%}
 
   {%- if variant_style == 'pills' or variant_style == 'swatch'-%}
-    <color-swatch>
+    {% if section_name == '-bundle' %}<div>{% else %}<color-swatch>{% endif %}
       <ul class="swatch-list list-unstyled flex flex-wrap" style="--gap: 1rem;">
         {{ product_variants }}
       </ul>
-    </color-swatch>
+    {% if section_name == '-bundle' %}</div>{% else %}</color-swatch>{% endif %}
   {%- elsif variant_style == 'dropdowns' -%}
     <select
       id="Option-{{ block.id }}-{{ index }}"
@@ -221,7 +227,7 @@
       {%- endcapture -%}
 
       {%- capture input_name -%}
-        {{ option.name | escape }}-{{ option.position }}
+        {{ option.name | escape | append: section_name }}-{{ product.id }}-{{ option.position }}
       {%- endcapture -%}
 
       {%- capture input_dataset -%}
