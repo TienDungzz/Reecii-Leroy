@@ -57,11 +57,11 @@
   </div>
 {%- endif -%}
 
-{%- if enable_search -%}
+{% comment %} {%- if enable_search -%}
   {% render 'header-search', input_id: 'Search-In-Modal', search_type: search_type %}
-{%- endif -%}
+{%- endif -%} {% endcomment %}
 
-{%- if enable_account and shop.customer_accounts_enabled -%}
+{% comment %} {%- if enable_account and shop.customer_accounts_enabled -%}
   <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__icon header__icon--account link focus-inset">
     {%- if block.settings.enable_customer_avatar -%}
       <account-icon>
@@ -88,7 +88,7 @@
       -%}
     </span>
   </a>
-{%- endif -%}
+{%- endif -%} {% endcomment %}
 
 {%- if enable_cart -%}
   {%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}

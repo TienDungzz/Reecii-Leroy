@@ -9,11 +9,28 @@
     var(--variant-pills-shadow-vertical-offset)
     var(--variant-pills-shadow-blur-radius)
     var(--color-shadow);
+
+  &::after{
+    content: '';
+    position: absolute;
+    inset: -.1rem;
+    border: 0.1rem solid rgb(var(--color-foreground-rgb) / var(--opacity-100));
+    border-radius: var(--swatch--border-radius);
+    pointer-events: none;
+    transform: scale(0.8);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: var(--opacity-0);
+  }
+
+  &.active::after{
+    transform: scale(1);
+    opacity: var(--opacity-100);
+  }
 }
 
 .swatch {
   --swatch--size: var(--swatch-input--size, 4.4rem);
-  
+
   width: var(--swatch--size);
   aspect-ratio: 1 / 1;
   background-color: var(--swatch--background-color);
@@ -35,7 +52,6 @@
   background: #232323;
   padding: 0.5rem;
   min-width: 4rem;
-  transform: translate(-50%);
   margin: 0 0 1rem;
   border-radius: 0.2rem;
   transition: opacity ease 0.3s;
@@ -45,7 +61,7 @@
   content: "";
   position: absolute;
   bottom: -0.4rem;
-  left: 50%;
+  left: 1rem;
   height: 0;
   width: 0;
   border-top: 0.7rem solid #232323;

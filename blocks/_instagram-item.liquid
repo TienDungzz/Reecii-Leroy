@@ -90,7 +90,7 @@
 
 {% capture attributes_fancybox %}
   href="{{ image | image_url: width: 1200 }}"
-  data-fancybox="instagram-gallery"
+  data-fancybox="{{ section.id }}-instagram-gallery"
   data-caption="{{ image.alt | default: 'Instagram Image' }}"
   data-fancybox-width="{{ image_width | default: 1200 }}"
   data-fancybox-height="{{ image_height | default: 800 }}"
@@ -98,7 +98,7 @@
 
 {% capture attributes_fancybox_video %}
   href="{{ background_video.sources.first.url }}"
-  data-fancybox="instagram-gallery"
+  data-fancybox="{{ section.id }}-instagram-gallery"
   data-type="video"
   data-caption="{{ background_video.alt | default: 'Instagram Video' }}"
 {% endcapture %}
@@ -149,7 +149,6 @@
                 sizes: sizes,
                 widths: widths
                 -%}
-                
             {%- else -%}
                 {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
             {%- endif -%}
@@ -157,10 +156,10 @@
             {% if block.settings.hover_plus_icon == true %}
                 <span class="icon_plus"></span>
             {% endif %}
-            
+
             {% if block.settings.enable_fancybox %}
                 {% if block.settings.icon_link != blank and block.settings.icon != 'none' %}
-                    <a href="{{ block.settings.icon_link }}" class="text-inherit" 
+                    <a href="{{ block.settings.icon_link }}" class="text-inherit"
                     {% if block.settings.icon_open_in_new_tab %}
                         target="_blank" rel="noopener"
                     {% endif %}
@@ -236,12 +235,12 @@
     <script>
         (function() {
             'use strict';
-            
+
             // Use more specific selector to avoid conflicts
             const instagramItems = document.querySelectorAll('.instagram-item[data-video-enabled="true"]');
-            
+
             if (instagramItems.length === 0) return;
-            
+
             // Debounce function to prevent rapid play/pause calls
             function debounce(func, wait) {
                 let timeout;
@@ -254,35 +253,35 @@
                     timeout = setTimeout(later, wait);
                 };
             }
-            
+
             // Optimized event handlers
             const handleMouseOver = debounce(function(video) {
                 if (video && video.readyState >= 2) { // HAVE_CURRENT_DATA
                     video.play().catch(e => console.warn('Video play failed:', e));
                 }
             }, 100);
-            
+
             const handleMouseOut = debounce(function(video) {
                 if (video && video.readyState >= 2) {
                     video.pause();
                 }
             }, 100);
-            
+
             // Add event listeners with proper cleanup
             instagramItems.forEach(item => {
                 const video = item.querySelector('video');
                 if (!video) return;
-                
+
                 // Mark item as video-enabled for future reference
                 item.setAttribute('data-video-enabled', 'true');
-                
+
                 // Use event delegation for better performance
                 const mouseOverHandler = () => handleMouseOver(video);
                 const mouseOutHandler = () => handleMouseOut(video);
-                
+
                 item.addEventListener('mouseenter', mouseOverHandler, { passive: true });
                 item.addEventListener('mouseleave', mouseOutHandler, { passive: true });
-                
+
                 // Store handlers for potential cleanup
                 item._videoHandlers = { mouseOver: mouseOverHandler, mouseOut: mouseOutHandler };
             });
@@ -347,7 +346,7 @@
                 item.classList.add('typing-active');
                 const content = item.querySelector('.instagram-item__content');
                 const textBlocks = content.querySelectorAll('.text-block');
-                
+
                 // Collect all text elements in order for sequential typing
                 const allTextElements = [];
                 textBlocks.forEach((textBlock, blockIndex) => {
@@ -360,19 +359,19 @@
                         });
                     });
                 });
-                
+
                 // Store original text content for infinite loop
                 const originalTexts = allTextElements.map(textData => textData.element.textContent);
-                
+
                 // Hide all text elements before starting typing
                 allTextElements.forEach((textData) => {
                     textData.element.style.opacity = '0';
                     textData.element.style.visibility = 'hidden';
                 });
-                
+
                 // Type text sequentially from first to last
                 let currentTextIndex = 0;
-                
+
                 function typeNextText() {
                     if (currentTextIndex >= allTextElements.length) {
                         // All text has been typed, start reverse typing effect
@@ -381,11 +380,11 @@
                         }, 2000); // 2 second pause before starting reverse effect
                         return;
                     }
-                    
+
                     const textData = allTextElements[currentTextIndex];
                     const textElement = textData.element;
                     const originalText = originalTexts[currentTextIndex];
-                    
+
                     // Show the text element and clear the text, then add cursor
                     textElement.style.opacity = '1';
                     textElement.style.visibility = 'visible';
@@ -395,7 +394,7 @@
                     cursor.textContent = '_';
                     cursor.style.animation = 'blink 1s infinite';
                     textElement.appendChild(cursor);
-                    
+
                     // Type the text character by character
                     let charIndex = 0;
                     const typeInterval = setInterval(() => {
@@ -418,11 +417,11 @@
                         }
                     }, 80); // Faster typing speed
                 }
-                
+
                 function reverseTypeAllTexts() {
                     // Start reverse typing from the last text element
                     let currentReverseIndex = allTextElements.length - 1;
-                    
+
                     function reverseTypeNextText() {
                         if (currentReverseIndex < 0) {
                             // All text has been reversed, start over
@@ -432,44 +431,44 @@
                             }, 1000); // 1 second pause before restarting
                             return;
                         }
-                        
+
                         const textData = allTextElements[currentReverseIndex];
                         const textElement = textData.element;
                         const currentText = textElement.textContent;
-                        
+
                         if (currentText.length === 0) {
                             // Text is already empty, move to previous
                             currentReverseIndex--;
                             reverseTypeNextText();
                             return;
                         }
-                        
+
                         // Remove last character
                         textElement.textContent = currentText.slice(0, -1);
-                        
+
                         // If text is now empty, hide the element
                         if (textElement.textContent.length === 0) {
                             textElement.style.opacity = '0';
                             textElement.style.visibility = 'hidden';
                         }
-                        
+
                         // Continue removing characters
                         setTimeout(() => {
                             reverseTypeNextText();
                         }, 50); // Faster reverse typing speed
                     }
-                    
+
                     // Start reverse typing
                     reverseTypeNextText();
                 }
-                
+
                 function clearAllTexts() {
                     // Clear all text elements completely
                     allTextElements.forEach((textData) => {
                         textData.element.textContent = '';
                     });
                 }
-                
+
                 function resetTexts() {
                     // Reset all text elements to their original state and hide them
                     allTextElements.forEach((textData, index) => {
@@ -478,7 +477,7 @@
                         textData.element.style.visibility = 'hidden';
                     });
                 }
-                
+
                 // Start the infinite typing loop
                 if (allTextElements.length > 0) {
                     typeNextText();
@@ -503,24 +502,24 @@
   <script>
     (function() {
       'use strict';
-      
+
       // Check if Fancybox is loaded
       if (typeof Fancybox === 'undefined') {
         console.error('Fancybox library not loaded');
         return;
       }
-      
+
       // Initialize Fancybox for Instagram gallery
       if (!window._fancyboxInitialized) {
         window._fancyboxInitialized = true;
-        
+
         // Wait for DOM to be ready
         setTimeout(() => {
           // Debug: Log all Fancybox elements
-          const fancyboxElements = document.querySelectorAll('[data-fancybox="instagram-gallery"]');
-          
+          const fancyboxElements = document.querySelectorAll('[data-fancybox]');
+
           // Initialize Fancybox with custom options
-          Fancybox.bind('[data-fancybox="instagram-gallery"]', {
+          Fancybox.bind('[data-fancybox]', {
           // Gallery options
           loop: true,
           buttons: [
@@ -571,7 +570,7 @@
         display: flex;
         justify-content: var(--horizontal-alignment, 'inline-start');
     }
-  
+
     .image-block--height-fill .image-block__image,
     .image-block--height-fill .video-block {
         height: 100%;
@@ -632,6 +631,7 @@
     .instagram-item__content {
         display: flex;
         flex-direction: column;
+        z-index: 3;
     }
 
     .instagram-item__content.text-left {
@@ -713,7 +713,7 @@
         background: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .6) 100%);
     }
 
-    .instagram-item__image:hover .image-overlay:before {
+    .instagram-item:hover .image-overlay:before {
         top: 0;
     }
 
@@ -754,25 +754,25 @@
       .fancybox__container {
         --fancybox-bg: rgba(0, 0, 0, 0.95);
       }
-      
+
       .fancybox__toolbar {
         --fancybox-toolbar-bg: rgba(0, 0, 0, 0.8);
       }
-      
+
       .fancybox__nav button {
         --fancybox-color: #ffffff;
         --fancybox-bg: rgba(255, 255, 255, 0.1);
       }
-      
+
       .fancybox__nav button:hover {
         --fancybox-bg: rgba(255, 255, 255, 0.2);
       }
-      
+
       .fancybox__button {
         --fancybox-color: #ffffff;
         --fancybox-bg: rgba(255, 255, 255, 0.1);
       }
-      
+
       .fancybox__button:hover {
         --fancybox-bg: rgba(255, 255, 255, 0.2);
       }
@@ -913,7 +913,7 @@
                 },
                 {
                 "value": "custom",
-                "label": "Custom"
+                "label": "t:options.custom"
                 }
             ],
             "default": "custom"
@@ -940,7 +940,7 @@
                 },
                 {
                 "value": "custom",
-                "label": "Custom"
+                "label": "t:options.custom"
                 }
             ],
             "default": "custom"
@@ -967,7 +967,7 @@
                 },
                 {
                 "value": "custom",
-                "label": "Custom"
+                "label": "t:options.custom"
                 }
             ],
             "default": "custom"
@@ -1069,7 +1069,7 @@
                     "value": "center",
                     "label": "Center"
                 },
-                
+
                 {
                     "value": "right",
                     "label": "Right"
@@ -1102,7 +1102,7 @@
                 },
                 {
                     "value": "custom",
-                    "label": "Custom"
+                    "label": "t:options.custom"
                 }
             ],
             "default": "absolute-c-c",
@@ -1171,7 +1171,7 @@
                 },
                 {
                     "value": "custom",
-                    "label": "Custom"
+                    "label": "t:options.custom"
                 }
             ],
             "default": "none"
@@ -1364,7 +1364,7 @@
         },
         {
             "type": "header",
-            "content": "Padding"
+            "content": "t:content.padding"
         },
         {
             "type": "range",

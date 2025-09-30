@@ -10,7 +10,12 @@
 {% capture list_items %}
   {% for product in block.settings.product_list  %}
     <li id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}" class="grid__item swiper-slide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}" {% if settings.animations_reveal_on_scroll %} style="--animation-order: {{ forloop.index }};"{% endif %}>
-      {% render 'card-lookbook', card_product: product, show_product_image: true, show_product_title: true, show_product_price: true, show_product_variant: true, show_product_button: true, option: 'standard' %}
+      {% comment %} {% render 'card-lookbook', card_product: product, show_product_image: true, show_product_title: true, show_product_price: true, show_product_variant: true, show_product_button: true, option: 'standard' %} {% endcomment %}
+      {% content_for 'block',
+        type: 'card-product-flex',
+        id: 'product-slide-item',
+        closest.product: product
+      %}
     </li>
 
     {% unless forloop.last %}
@@ -20,51 +25,59 @@
   {% endfor %}
 {% endcapture %}
 
-<div class="lookbook-item-all">
+<div class="lookbook-item-all size-style" style="{% render 'size-style', settings: block.settings %}">
   <div
-      class="section-resource-list__content"
-      style="--horizontal-alignment: {{ section.settings.horizontal_alignment }};"
+    class="section-resource-list__content gap-style"
+    style="--horizontal-alignment: {{ section.settings.horizontal_alignment }};{%  render 'gap-style', value: block.settings.gap %}"
   >
-      {%- content_for 'blocks' -%}
+    {%- content_for 'blocks' -%}
   </div>
 
   {%- assign slides_per_view = columns_mobile -%}
-      {%- capture breakpoints -%}
-        {
-          "768": { "slidesPerView": {{ columns_tablet }} },
-          "1024": { "slidesPerView": {{ columns_tablet }} },
-          "1400": { "slidesPerView": {{ columns_desktop }} }
-        }
-      {%- endcapture -%}
-      <swiper-component
-        class="lookbook-item-all-swiper-component w-full block"
-        {%- render 'swiper-data',
-          settings: block.settings,
-          slides_per_view: slides_per_view,
-          space_between: columns_gap,
-          watch_slides_progress: true,
-          breakpoints: breakpoints
-        -%}
-      >
-        <div class="swiper w-full" style="--swiper-navigation-top-offset: 50%;">
-          <ul
-            id="Slider-{{ block.id }}"
-            data-id="{{ block.id }}"
-            class="swiper-wrapper grid-layout-no-js list-unstyled contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
-          >
-            {{ list_items }}
-          </ul>
+  {%- capture breakpoints -%}
+    {
+      "768": { "slidesPerView": {{ columns_tablet }} },
+      "1024": { "slidesPerView": {{ columns_tablet }} },
+      "1400": { "slidesPerView": {{ columns_desktop }} }
+    }
+  {%- endcapture -%}
 
-          {%- if enable_navigation -%}
-            <div class="swiper-btns-wrap small-hide">
-              {%- render 'swiper-button' -%}
-            </div>
-          {%- endif -%}
-          {%- if enable_pagination -%}
-            <div class="swiper-pagination"></div>
-          {%- endif -%}
+  <swiper-component
+    class="lookbook-item-all-swiper-component w-full block"
+    {%- render 'swiper-data',
+      settings: block.settings,
+      slides_per_view: slides_per_view,
+      space_between: columns_gap,
+      watch_slides_progress: true,
+      breakpoints: breakpoints
+    -%}
+    style="
+      {% render 'swiper-style',
+        columns_mobile: columns_mobile,
+        columns_tablet: columns_tablet,
+        columns_desktop: columns_desktop,
+        columns_gap: columns_gap,
+      %}"
+  >
+    <div class="swiper w-full" style="--swiper-navigation-top-offset: 50%;">
+      <ul
+        id="Slider-{{ block.id }}"
+        data-id="{{ block.id }}"
+        class="swiper-wrapper grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+      >
+        {{ list_items }}
+      </ul>
+
+      {%- if enable_navigation -%}
+        <div class="swiper-btns-wrap small-hide">
+          {%- render 'swiper-button' -%}
         </div>
-      </swiper-component>
+      {%- endif -%}
+      {%- if enable_pagination -%}
+        <div class="swiper-pagination"></div>
+      {%- endif -%}
+    </div>
+  </swiper-component>
 </div>
 
 {% schema %}
@@ -99,6 +112,82 @@
       "id": "product_list",
       "label": "Product list",
       "limit": 10
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "t:settings.width_mobile",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
     }
   ],
   "presets": [

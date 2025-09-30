@@ -55,7 +55,7 @@
               assign variant_option_disabled = false
             endif
           -%}
-          
+
           {%- if color == value -%}
             {%- unless color_list contains color_check -%}
               {%- liquid
@@ -63,7 +63,7 @@
                 assign background_image = ''
                 assign background_color = ''
                 assign has_metaobject = false
-                
+
                 case swatch_type
                 when 'variant_image'
                   assign background_image = variant.image.src | image_url: width: '40x'
@@ -96,13 +96,13 @@
                   endif
                 endcase
               -%}
-              
+
               {%- capture class_swatch -%}
                 swatch cursor-pointer block max-w-full color-swacth-color--{{ color | handle }}
               {%- endcapture -%}
 
               {%- capture class_tooltip -%}
-                tooltip center absolute bottom-full left-50 z-1 whitespace-nowrap capitalize text-sm
+                tooltip center absolute bottom-full  left-0  z-1 whitespace-nowrap capitalize text-sm
               {%- endcapture -%}
 
               <span
@@ -133,7 +133,7 @@
       {%- endcapture -%}
 
       {%- if variant_style == 'pills' or variant_style == 'swatch'-%}
-        <li class="swatch-item relative">
+        <li class="swatch-item relative{% if value.selected %} active{% endif %}">
           <div class="swatch-wrapper">
             <input
               type="radio"
@@ -274,7 +274,7 @@
       {%- endif -%}
     {%- endfor -%}
   {%- endcapture -%}
-  
+
   {%- if variant_style == 'pills' or variant_style == 'swatch'-%}
     {{ product_variants }}
   {%- elsif variant_style == 'dropdowns' -%}

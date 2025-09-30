@@ -5,6 +5,10 @@ if (typeof window.compareColor === 'undefined') {
             constructor() {
                 super();
 
+                this.init();
+            }
+
+            init() {
                 this.imageList = this.querySelector('.halo-compareColors-image');
                 this.textList = this.querySelector('[class*="compare-colors-text"]');
                 this.sortTable = document.getElementById('sortTableList');

@@ -162,7 +162,7 @@ body.overflow-hidden {
 .page-width {
   width: 100%;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 var(--page-margin);
   max-width: var(--page-width);
 }
 
@@ -251,12 +251,13 @@ body.overflow-hidden {
 /* Typography presets */
 
 .text-body {
-  font-size: 1.5rem;
+  font-size: var(--font-body--size);
   letter-spacing: 0.06rem;
   line-height: var(--font-body--line-height);
   font-family: var(--font-body--family);
   font-style: var(--font-body--style);
   font-weight: var(--font-body--weight);
+  color: var(--color-foreground);
 }
 
 h1,
@@ -755,6 +756,10 @@ img {
 
 .z-9 {
   z-index: 9;
+}
+
+.z-10 {
+  z-index: 10;
 }
 
 .z-100 {
@@ -1837,8 +1842,10 @@ h3 .icon-arrow,
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 20px;
-  height: 20px;
+  /* width: 20px;
+  height: 20px; */
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
 }
 
 .svg-wrapper>svg {
@@ -1899,11 +1906,11 @@ summary {
     background-color: rgb(var(--color-foreground-rgb) / var(--opacity-4));
   }
 
-  > .svg-wrapper {
+  /* > .svg-wrapper {
     margin-inline-start: auto;
     height: 0.6rem;
     margin-right: 1.5rem;
-  }
+  } */
 }
 
 /* details[open]>summary .icon-caret { */ /* khinh fix bug */
@@ -2218,7 +2225,7 @@ details[open="true"]>summary .icon-caret {
 
 /* component grid */
 .swiper:not(.swiper-initialized) .grid-layout-no-js{
-  --card-grid-gap: var(--grid-mobile-horizontal-spacing);
+  --card-grid-gap: var(--card-grid-per-row-gap, var(--grid-mobile-horizontal-spacing));
   display: flex;
 
   > * {
@@ -3302,7 +3309,7 @@ details[open]>.share-button__fallback {
   width: 11rem;
   display: flex;
   border-radius: var(--quantity-radius);
-  min-height: 5rem;
+  min-height: var(--minimum-touch-target);
 
   &:after {
     pointer-events: none;
@@ -3320,8 +3327,10 @@ details[open]>.share-button__fallback {
   }
 
   &:before {
-    background: rgb(var(--quantity-color-background) / var(--opacity-10));
-    -webkit-background: rgb(var(--quantity-color-background) / var(--opacity-10));
+    /* muốn bỏ 2 dòng này được không */
+    /* background: rgb(var(--quantity-color-background) / var(--opacity-10)); */
+    /* -webkit-background: rgb(var(--quantity-color-background) / var(--opacity-10)); */
+    /* muốn bỏ 2 dòng này được không */
     pointer-events: none;
     content: "";
     position: absolute;
@@ -3337,7 +3346,7 @@ details[open]>.share-button__fallback {
   font-family: var(--font-body--family);
   font-style: var(--font-body--style);
   font-weight: var(--font-body--weight);
-  font-size: 1.6rem;
+  font-size: var(--font-body--size);
   font-weight: 500;
   opacity: var(--opacity-85);
   text-align: center;
@@ -4358,10 +4367,12 @@ details[open]>.share-button__fallback {
   pointer-events: visible;
 }
 
+.modal__overlay:empty,
 .drawer__overlay:empty {
   display: block;
   min-height: 100lvh;
   background-color: rgb(var(--color-shadow-rgb) / var(--opacity-70));
+  z-index: -1;
 }
 
 .drawer.justify-start .drawer__inner {

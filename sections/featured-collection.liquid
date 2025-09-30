@@ -131,7 +131,7 @@
     overflow: visible;
   }
 
-  .collection-carousel-swiper-component.full-width .swiper-btns-wrap {
+  .collection-carousel-swiper-component.full-width .swiper-btns-wrap:not(.swiper-btns-wrap--bottom) {
     position: absolute;
     width: 100%;
     top: 50%;
@@ -211,8 +211,8 @@
 {%- endstylesheet -%}
 
 <div
-  class="section section--{{ page_width }} color-{{ sec_stts.color_scheme }} relative z-0 spacing"
-  style=" --p-spacing-t: {{ sec_stts.padding_top }}px;--p-spacing-b: {{ sec_stts.padding_bottom }}px;"
+  class="section section--{{ page_width }} color-{{ sec_stts.color_scheme }} relative z-0 spacing-style"
+  style="{% render 'spacing-style', settings: sec_stts %}"
 >
   <div>
     {%- liquid
@@ -270,12 +270,10 @@
       assign content_media_position = sec_stts.content_media_position
       assign content_media_alignment = sec_stts.content_media_alignment
 
-      assign columns_gap = sec_stts.columns_gap
-      assign rows_gap = sec_stts.rows_gap
+      assign columns_gap = sec_stts.columns_gap | append: 'px'
+      assign rows_gap = sec_stts.rows_gap | append: 'px'
 
       assign pagination_type = sec_stts.pagination_type
-
-      assign show_view_all = sec_stts.show_view_all
     -%}
 
     {%- capture heading_block_classes -%}
@@ -480,7 +478,7 @@
       {%- endcapture -%}
 
       {%- capture style_media -%}
-        --gap: {{ columns_gap }}px;
+        --gap: {{ columns_gap }};
 
         {%- if widget_layout != 'spotlight' %}
           {%- if sec_stts.position == 'left' -%}
@@ -532,11 +530,11 @@
               <ul
                 id="Grid-{{ sec_id }}"
                 data-id="{{ sec_id }}"
-                class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} sm:grid-layout--{{ columns_mobile }}"
+                class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} sm:grid-layout--{{ columns_mobile }}"
                 role="list"
                 data-products-to-show="{{ max_tiems }}"
                 aria-label="{{ 'general.grid.name' | t }}"
-                style="--grid-desktop-horizontal-spacing: {{ columns_gap }}px; --grid-desktop-vertical-spacing: {{ rows_gap }}px;"
+                style="--grid-desktop-horizontal-spacing: {{ columns_gap }}; --grid-desktop-vertical-spacing: {{ rows_gap }};"
               >
                 {{ list_items }}
               </ul>
@@ -600,23 +598,31 @@
                 watch_slides_progress: true,
                 breakpoints: breakpoints
               -%}
+              style="
+                {% render 'swiper-style',
+                  columns_mobile: columns_mobile,
+                  columns_tablet: columns_tablet,
+                  columns_desktop: columns_desktop,
+                  columns_gap: columns_gap,
+                %}
+              "
             >
               <div class="swiper w-full">
                 <ul
                   id="Slider-{{ sec_id }}"
                   data-id="{{ sec_id }}"
-                  class="swiper-wrapper grid-layout-no-js list-unstyled contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+                  class="swiper-wrapper grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
                 >
                   {{ list_items }}
                 </ul>
 
-                {%- if enable_navigation -%}
-                  <div class="swiper-btns-wrap small-hide">
-                    {%- render 'swiper-button' -%}
-                  </div>
-                {%- endif -%}
                 {%- if enable_pagination -%}
                   <div class="swiper-pagination"></div>
+                {%- endif -%}
+                {%- if enable_navigation -%}
+                  <div class="swiper-btns-wrap small-hide swiper-btns-wrap--{{ sec_stts.arrows_position }}">
+                    {%- render 'swiper-button' -%}
+                  </div>
                 {%- endif -%}
               </div>
             </swiper-component>
@@ -1526,6 +1532,23 @@
     },
     {
       "type": "select",
+      "id": "arrows_position",
+      "label": "Arrows position",
+      "options": [
+        {
+          "value": "inside",
+          "label": "Inside slide"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom slide"
+        }
+      ],
+      "default": "inside",
+      "visible_if": "{{ section.settings.navigation == 'arrows' or section.settings.navigation == 'arrows-pagination' and section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "select",
       "id": "pagination_type",
       "label": "Pagination type",
       "visible_if": "{{ section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
@@ -1611,23 +1634,44 @@
     },
     {
       "type": "range",
-      "id": "padding_top",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
       "default": 36
     },
     {
       "type": "range",
-      "id": "padding_bottom",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
       "default": 36
+    },
+
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     }
   ],
   "blocks": [{ "type": "@theme" }, { "type": "@app" }],
@@ -1935,38 +1979,43 @@
                 "enable_quick_add": true
               }
             },
-            "spacer": {
-              "type": "spacer",
+            "group": {
+              "type": "_card-product-information",
+              "name": "Group: Information",
               "settings": {
-                "spacer_height": 6
-              }
-            },
-            "vendor": {
-              "type": "_card-product-vendor-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "title": {
-              "type": "_card-product-title-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "price": {
-              "type": "_card-product-price-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "variant": {
-              "type": "_card-product-variant-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
+                "content_direction": "column",
+                "wrap": "wrap"
+              },
+              "blocks": {
+                "vendor": {
+                  "type": "_card-product-vendor-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "title": {
+                  "type": "_card-product-title-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "price": {
+                  "type": "_card-product-price-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "variant": {
+                  "type": "_card-product-variant-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                }
+              },
+              "block_order": ["vendor", "title", "price", "variant"]
             }
           },
-          "block_order": ["media", "spacer", "vendor", "title", "price", "variant"]
+          "block_order": ["media", "spacer", "group"]
         }
       }
     },
@@ -2019,32 +2068,43 @@
                 "spacer_height": 6
               }
             },
-            "vendor": {
-              "type": "_card-product-vendor-flex",
+            "group": {
+              "type": "_card-product-information",
+              "name": "Group: Information",
               "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "title": {
-              "type": "_card-product-title-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "price": {
-              "type": "_card-product-price-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            "variant": {
-              "type": "_card-product-variant-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
+                "content_direction": "column",
+                "wrap": "wrap"
+              },
+              "blocks": {
+                "vendor": {
+                  "type": "_card-product-vendor-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "title": {
+                  "type": "_card-product-title-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "price": {
+                  "type": "_card-product-price-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                "variant": {
+                  "type": "_card-product-variant-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                }
+              },
+              "block_order": ["vendor", "title", "price", "variant"]
             }
           },
-          "block_order": ["media", "spacer", "vendor", "title", "price", "variant"]
+          "block_order": ["media", "spacer", "group"]
         }
       }
     }

@@ -22,8 +22,10 @@
       --section-min-height: {{ section.settings.section_height_custom }}svh;
     {% elsif section.settings.section_height == 'full-screen' %}
       --section-min-height: 100svh;
-    {% elsif section.settings.section_height != '' %}
+    {% elsif section.settings.section_height != '' and section.settings.section_height != 'adapt_image' %}
       --section-min-height: var(--section-height-{{ section.settings.section_height }});
+    {% elsif section.settings.section_height == 'adapt_image' %}
+      --section-min-height: {{ 1 | divided_by: section.settings.background_image.aspect_ratio | times: 100 }}svw;
     {% endif %}
 
     {% if section.settings.section_height != '' %}

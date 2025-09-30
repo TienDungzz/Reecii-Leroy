@@ -97,6 +97,7 @@ class CartItems extends HTMLElement {
       fetch(`${routes.cart_url}?section_id=cart-drawer`)
         .then((response) => response.text())
         .then((responseText) => {
+
           const html = new DOMParser().parseFromString(responseText, 'text/html');
           const selectors = ['cart-drawer-items', '.cart-drawer__footer'];
           for (const selector of selectors) {
@@ -246,10 +247,14 @@ class CartItems extends HTMLElement {
     const mainCartItems = document.getElementById('main-cart-items') || document.getElementById('CartDrawer-CartItems');
     mainCartItems.classList.add('cart__items--disabled');
 
+    const loadingSpinner = this.querySelector(`.cart-drawer__loading-spinner`);
     const cartItemElements = this.querySelectorAll(`#CartItem-${line} .loading__spinner`);
     const cartDrawerItemElements = this.querySelectorAll(`#CartDrawer-Item-${line} .loading__spinner`);
 
+    this.classList.add('loading');
     [...cartItemElements, ...cartDrawerItemElements].forEach((overlay) => overlay.classList.remove('hidden'));
+
+    loadingSpinner.classList.remove('hidden');
 
     document.activeElement.blur();
     this.lineItemStatusElement.setAttribute('aria-hidden', false);
@@ -259,11 +264,15 @@ class CartItems extends HTMLElement {
     const mainCartItems = document.getElementById('main-cart-items') || document.getElementById('CartDrawer-CartItems');
     mainCartItems.classList.remove('cart__items--disabled');
 
+    const loadingSpinner = this.querySelector(`.cart-drawer__loading-spinner`);
     const cartItemElements = this.querySelectorAll(`#CartItem-${line} .loading__spinner`);
     const cartDrawerItemElements = this.querySelectorAll(`#CartDrawer-Item-${line} .loading__spinner`);
 
+    this.classList.remove('loading');
     cartItemElements.forEach((overlay) => overlay.classList.add('hidden'));
     cartDrawerItemElements.forEach((overlay) => overlay.classList.add('hidden'));
+
+    loadingSpinner.classList.add('hidden');
   }
 }
 if (!customElements.get('cart-items')) customElements.define('cart-items', CartItems);
@@ -366,7 +375,7 @@ class ShippingCalculator extends HTMLFormElement {
 
     // Get product variant ID from the current product page
     const variantId = this.getProductVariantId();
-    
+
     // Create a temporary cart with the product variant to calculate shipping
     if (variantId) {
       this.addToCartAndCalculateShipping(variantId, { zip, country, province });
@@ -394,7 +403,7 @@ class ShippingCalculator extends HTMLFormElement {
       const body = JSON.stringify({
         shipping_address: shippingAddress
       });
-      
+
       let sectionUrl = `${routes.cart_url}/shipping_rates.json`;
       sectionUrl = sectionUrl.replace('//', '/');
 
@@ -443,7 +452,7 @@ class ShippingCalculator extends HTMLFormElement {
         return variantInput.value;
       }
     }
-    
+
     // Fallback: try to get from variant selector
     const variantSelector = document.querySelector('variant-selects');
     if (variantSelector) {
@@ -452,14 +461,14 @@ class ShippingCalculator extends HTMLFormElement {
         return currentVariant.id;
       }
     }
-    
+
     // Fallback: try to get from URL
     const urlParams = new URLSearchParams(window.location.search);
     const variantFromUrl = urlParams.get('variant');
     if (variantFromUrl) {
       return variantFromUrl;
     }
-    
+
     return null;
   }
 
