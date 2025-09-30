@@ -1,7 +1,13 @@
 {%- liquid
   assign card_product = block.settings.product
 -%}
-<div class="card--block-title">
+<div
+  class="card--block-title size-style"
+  style="
+    --text-align: {{ block.settings.alignment }};
+    {% render 'size-style', settings: block.settings %}
+  "
+>
   {%- if card_product and card_product != empty -%}
     {%- render 'card-product-heading', card_product: card_product, block: block -%}
   {%- else -%}
@@ -21,7 +27,7 @@
     },
     {
       "type": "header",
-      "content": "Layout"
+      "content": "t:content.layout"
     },
     {
       "type": "select",
@@ -281,7 +287,7 @@
     },
     {
       "type": "header",
-      "content": "Padding"
+      "content": "t:content.padding"
     },
     {
       "type": "range",

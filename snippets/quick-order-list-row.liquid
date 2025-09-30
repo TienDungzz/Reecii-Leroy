@@ -20,34 +20,36 @@
   data-cart-qty="{{ cart_qty }}"
 >
   <td class="variant-item__inner{% unless sku and show_sku %} variant-item__inner--no-sku{% endunless %}">
-    {%- if show_image -%}
-      <div class="variant-item__media">
-        <div class="variant-item__image-container{% unless image %} variant-item__image-container--no-img{% endunless %}">
-          {% if image %}
-            {%- assign img_height = 43 | divided_by: image.aspect_ratio | ceil -%}
-            {{
-              image
-              | image_url: width: 86
-              | image_tag:
-                loading: 'lazy',
-                fetchpriority: 'low',
-                decoding: 'async',
-                class: 'variant-item__image',
-                width: 43,
-                height: img_height,
-                widths: '86',
-                alt: image.alt
-              | escape
-            }}
-          {% endif %}
+    <div class="flex">
+      {%- if show_image -%}
+        <div class="variant-item__media">
+          <div class="variant-item__image-container{% unless image %} variant-item__image-container--no-img{% endunless %}">
+            {% if image %}
+              {%- assign img_height = 43 | divided_by: image.aspect_ratio | ceil -%}
+              {{
+                image
+                | image_url: width: 86
+                | image_tag:
+                  loading: 'lazy',
+                  fetchpriority: 'low',
+                  decoding: 'async',
+                  class: 'variant-item__image',
+                  width: 43,
+                  height: img_height,
+                  widths: '86',
+                  alt: image.alt
+                | escape
+              }}
+            {% endif %}
+          </div>
         </div>
-      </div>
-    {%- endif -%}
-    <div class="small-hide medium-hide">
-      <span class="variant-item__name h4 break">{{ item.title | escape }}</span>
-      {%- if show_sku -%}
-        <span class="variant-item__sku break">{{ sku | escape }}</span>
       {%- endif -%}
+      <div class="small-hide medium-hide">
+        <span class="variant-item__name h4 break">{{ item.title | escape }}</span>
+        {%- if show_sku -%}
+          <span class="variant-item__sku break">{{ sku | escape }}</span>
+        {%- endif -%}
+      </div>
     </div>
   </td>
 
@@ -330,7 +332,7 @@
     </quantity-popover>
   </td>
   {%- assign item_price = item.price | money -%}
-  <td class="variant-item__price small-hide medium-hide">
+  <td class="variant-item__price small-hide medium-hide center">
     {%- if item.compare_at_price -%}
       <dl class="variant-item__discounted-prices">
         <dt class="visually-hidden">

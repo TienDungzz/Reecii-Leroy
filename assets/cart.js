@@ -150,6 +150,7 @@ class CartItemsComponent extends HTMLElement {
       fetch(`${routes.cart_url}?section_id=cart-drawer`)
         .then((response) => response.text())
         .then((responseText) => {
+
           const html = new DOMParser().parseFromString(responseText, 'text/html');
           const selectors = ['cart-drawer-items', '.cart-drawer__footer'];
           for (const selector of selectors) {
@@ -343,10 +344,14 @@ class CartItemsComponent extends HTMLElement {
       mainCartItems.classList.add('cart__items--disabled');
     }
 
+    const loadingSpinner = this.querySelector(`.cart-drawer__loading-spinner`);
     const cartItemElements = this.querySelectorAll(`#CartItem-${line} .loading__spinner`);
     const cartDrawerItemElements = this.querySelectorAll(`#CartDrawer-Item-${line} .loading__spinner`);
 
+    this.classList.add('loading');
     [...cartItemElements, ...cartDrawerItemElements].forEach((overlay) => overlay.classList.remove('hidden'));
+
+    loadingSpinner.classList.remove('hidden');
 
     document.activeElement.blur();
     if (this.lineItemStatusElement) {
@@ -360,11 +365,15 @@ class CartItemsComponent extends HTMLElement {
       mainCartItems.classList.remove('cart__items--disabled');
     }
 
+    const loadingSpinner = this.querySelector(`.cart-drawer__loading-spinner`);
     const cartItemElements = this.querySelectorAll(`#CartItem-${line} .loading__spinner`);
     const cartDrawerItemElements = this.querySelectorAll(`#CartDrawer-Item-${line} .loading__spinner`);
 
+    this.classList.remove('loading');
     cartItemElements.forEach((overlay) => overlay.classList.add('hidden'));
     cartDrawerItemElements.forEach((overlay) => overlay.classList.add('hidden'));
+
+    loadingSpinner.classList.add('hidden');
   }
 }
 if (!customElements.get('cart-items-component')) customElements.define('cart-items-component', CartItemsComponent);
@@ -712,7 +721,7 @@ class ShippingCalculator extends HTMLFormElement {
       const body = JSON.stringify({
         shipping_address: shippingAddress
       });
-      
+
       let sectionUrl = `${routes.cart_url}/shipping_rates.json`;
       sectionUrl = sectionUrl.replace('//', '/');
 
@@ -772,7 +781,7 @@ class ShippingCalculator extends HTMLFormElement {
     if (variantFromUrl) {
       return variantFromUrl;
     }
-    
+
     return null;
   }
 

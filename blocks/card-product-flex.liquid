@@ -25,7 +25,10 @@
   assign card_product = block.settings.product
 -%}
 
-<div class="card--block card-wrapper product-card-wrapper underline-links-hover color-{{ block.settings.color_scheme }}">
+<div
+  class="card--block card-wrapper product-card-wrapper underline-links-hover color-{{ block.settings.color_scheme }} size-style"
+  style="{%  render 'size-style', settings: block.settings %}"
+>
   <div
     class="
       card
@@ -77,7 +80,7 @@
     },
     {
       "type": "header",
-      "content": "Layout"
+      "content": "t:content.layout"
     },
     {
       "type": "select",
@@ -121,15 +124,15 @@
         },
         {
           "value": "start",
-          "label": "⤒"
+          "label": "t:options.top"
         },
         {
           "value": "center",
-          "label": "⮃"
+          "label": "t:options.center"
         },
         {
           "value": "end",
-          "label": "⤓"
+          "label": "t:options.bottom"
         }
       ],
       "default": "stretch",
@@ -176,6 +179,41 @@
       "step": 1,
       "unit": "px",
       "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
     }
   ],
   "presets": [

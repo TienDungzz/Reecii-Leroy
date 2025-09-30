@@ -1,4 +1,4 @@
-.media > *:not(.zoom, .deferred-media__poster-icon, template, .product-media) {
+.media > *:not(.zoom, .deferred-media__poster-icon, template) {
   display: block;
   max-width: 100%;
   position: absolute;
@@ -9,6 +9,10 @@
 }
 
 /* swiper-component */
+.group-block:has(.product-grid--block .swiper-component-product-grid) {
+  overflow: hidden;
+}
+
 .swiper {
   --swiper-navigation-sides-offset: 0;
   --swiper-navigation-size: 3.6rem;
@@ -28,6 +32,31 @@
 
   .swiper-pagination-fraction {
     --swiper-pagination-fraction-color: var(--pagination-color);
+  }
+}
+
+.swiper:not(.swiper-initialized) .grid-layout-no-js {
+  --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-mobile));
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar{ height: 8px; }
+
+  > .swiper-slide {
+    scroll-snap-align: center;
+  }
+
+  @media screen and (min-width: 750px){
+    --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-tablet));
+  }
+  @media screen and (min-width: 1024px){
+    --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-tablet));
+  }
+  @media screen and (min-width: 1400px){
+    --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-desktop));
   }
 }
 
@@ -120,7 +149,7 @@ ul.swiper-wrapper {
 
   .icon {
     width: var(--button-icon-size);
-    height: var(--button-icon-size);
+    /* height: var(--button-icon-size); */
   }
 
   @media screen and (min-width: 1025px) {
@@ -149,32 +178,59 @@ ul.swiper-wrapper {
     }
   }
 }
+
+
+/* swiper buttons posistion */
+.swiper-btns-wrap--bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--gap-lg);
+}
+
+.swiper-pagination-progressbar + .swiper-btns-wrap--bottom {
+  margin-top: calc(var(--margin-6xl) * 0.5);
+}
+
+.swiper-btns-wrap--bottom .swiper-button {
+  position: relative;
+  left: 0;
+  margin: 0;
+  transform: none;
+  opacity: var(--opacity-100);
+
+  &.swiper-button-disabled {
+    opacity: var(--opacity-50);
+  }
+}
+/* end swiper buttons posistion */
+
 /* spacing-style */
 .spacing-style,
 .inherit-spacing {
   padding-block: calc(
-      var(--padding-block-start) + var(--section-top-offset, 0px)
+      (var(--padding-block-start) * var(--spacing-scale)) + var(--section-top-offset, 0px)
     )
-    var(--padding-block-end);
-  padding-inline: var(--padding-inline-start) var(--padding-inline-end);
-  margin-block: var(--margin-block-start) var(--margin-block-end);
-  margin-inline: var(--margin-inline-start) var(--margin-inline-end);
+    calc(var(--padding-block-end) * var(--spacing-scale));
+  padding-inline: calc(var(--padding-inline-start) * var(--spacing-scale)) calc(var(--padding-inline-end) * var(--spacing-scale));
+  margin-block: calc(var(--margin-block-start) * var(--spacing-scale)) calc(var(--margin-block-end) * var(--spacing-scale));
+  margin-inline: calc(var(--margin-inline-start) * var(--spacing-scale)) calc(var(--margin-inline-end) * var(--spacing-scale));
 
   @media (max-width: 749px) {
     padding-block: calc(
-        var(--padding-block-start-mobile, var(--padding-block-start)) +
+        var(--padding-block-start-mobile, calc(var(--padding-block-start) * var(--spacing-scale))) +
           var(--section-top-offset, 0px)
       )
-      var(--padding-block-end-mobile, var(--padding-block-end));
+      var(--padding-block-end-mobile, calc(var(--padding-block-end) * var(--spacing-scale)));
     padding-inline: var(
         --padding-inline-start-mobile,
-        var(--padding-inline-start)
+        calc(var(--padding-inline-start) * var(--spacing-scale))
       )
-      var(--padding-inline-end-mobile, var(--padding-inline-end));
-    margin-block: var(--margin-block-start-mobile, var(--margin-block-start))
-      var(--margin-block-end-mobile, var(--margin-block-end));
-    margin-inline: var(--margin-inline-start-mobile, var(--margin-inline-start))
-      var(--margin-inline-end-mobile, var(--margin-inline-end));
+      var(--padding-inline-end-mobile, calc(var(--padding-inline-end) * var(--spacing-scale)));
+    margin-block: var(--margin-block-start-mobile, calc(var(--margin-block-start) * var(--spacing-scale)))
+      var(--margin-block-end-mobile, calc(var(--margin-block-end) * var(--spacing-scale)));
+    margin-inline: var(--margin-inline-start-mobile, calc(var(--margin-inline-start) * var(--spacing-scale)))
+      var(--margin-inline-end-mobile, calc(var(--margin-inline-end) * var(--spacing-scale)));
   }
 }
 
@@ -384,7 +440,7 @@ h6,
 
   > .group-block-content {
     position: absolute;
-    z-index: 1;
+    z-index: var(--layer-flat);
     top: 0;
     left: 0;
   }
@@ -721,8 +777,8 @@ Otherwise, it should be a block to rely on its own size */
   }
 
   @media screen and (min-width: 750px) {
-    width: 4rem;
-    height: 4rem;
+    width: var(--size-40);
+    height: var(--size-40);
   }
 }
 
@@ -771,7 +827,7 @@ summary {
 
 /* checkbox input */
 .checkbox {
-  --checkbox-size: 2.2rem;
+  --checkbox-size: var(--size-22);
   --checkbox-top: 50%;
   --checkbox-left: 1.5px;
   --checkbox-offset: 3px;
@@ -912,8 +968,8 @@ summary {
 /* summary */
 @media screen and (min-width: 750px) {
   .facets .disclosure-has-popup[open] > summary + * {
-    z-index: 2;
-    opacity: 1;
+    z-index: var(--layer-raised);
+    opacity: var(--opacity-100);
     visibility: visible;
   }
 
@@ -934,7 +990,7 @@ summary {
   height: calc(var(--variant-picker-swatch-height) / 1.5);
   font-size: var(--font-size--xs);
   border-radius: 20px;
-  min-width: 20px;
+  min-width: var(--size-20);
   padding: 0 6px;
   background-color: rgb(from var(--color-foreground) r g b / 10%);
   color: var(--color-foreground);
@@ -944,15 +1000,15 @@ summary {
 /* drawer */
 .drawer__container:not(.blog-posts__sidebar-drawer) {
   [data-drawer-content] {
-    width: min(90%, 35rem);
+    width: min(90%, var(--drawer-max-width,var(--narrow-content-width)));
     height: 100%;
     background-color: var(--color-background);
-    z-index: 2;
+    z-index: var(--layer-raised);
     position: relative;
   }
 
   &[data-drawer-direction="right"] [data-drawer-content] {
-    margin-left: auto;
+    margin-inline-start: auto;
   }
 
   &[data-drawer-direction="left"] .drawer__close {
@@ -966,12 +1022,12 @@ summary {
 
 .drawer__close {
   top: 0;
-  z-index: 2;
+  z-index: var(--layer-raised);
   width: var(--size-40);
   height: var(--size-40);
   color: var(--color-background);
   background-color: var(--color-foreground);
-  padding: 0;
+  padding: var(--padding-sm);
 
   > button {
     height: 100%;
@@ -994,11 +1050,11 @@ summary {
   left: var(--swiper-pagination-left, auto);
   top: 50%;
   transform: translate3d(0px, -50%, 0);
-  z-index: 1;
+  z-index: var(--layer-flat);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: var(--gap-2xl);
 
   .swiper-button-prev,
   .swiper-button-next,
@@ -1028,6 +1084,15 @@ summary {
 .swiper-vertical
   .swiper-pagination-vertical.swiper-pagination-bullets.swiper-pagination-bullets-dynamic {
   width: var(--swiper-pagination-bullet-size);
+}
+
+.swiper .swiper-pagination-progressbar {
+  position: relative;
+  margin-top: 4rem;
+}
+
+.swiper:has(.swiper-pagination.swiper-pagination-progressbar) {
+  padding-bottom: 0;
 }
 
 .swiper-vertical
@@ -1068,21 +1133,27 @@ summary {
   }
 
   .svg-wrapper {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: var(--size-15);
+    height: var(--size-15);
   }
 }
 
 /* field */
+.field:after {
+  box-shadow: 0 0 0 var(--inputs-border-width) var(--color-input-border);
+}
+.field:hover.field:after, .select:hover.select:after, .select__select:hover.select__select:after, .customer .field:hover.field:after, .customer select:hover.select:after {
+  box-shadow: 0 0 0 calc(0.1rem + var(--inputs-border-width)) var(--color-foreground);
+}
 .field__label.field__label--static {
   position: static;
   pointer-events: visible;
-  margin-bottom: 1rem;
+  margin-bottom: var(--margin-sm);
 }
 
 .field:has(.field__label--static) {
   flex-direction: column;
-  padding-inline: 2px;
+  padding-inline: var(--padding-3xs);
   &::before,
   &::after {
     display: none;
@@ -1103,11 +1174,11 @@ summary {
   input[type="checkbox"] {
     position: absolute;
     opacity: var(--opacity-100);
-    width: 1.6rem;
-    height: 1.6rem;
+    width: var(--size-16);
+    height: var(--size-16);
     top: 0.7rem;
     left: -0.4rem;
-    z-index: -1;
+    z-index: var(--layer-layout-background);
     appearance: none;
     -webkit-appearance: none;
   }
@@ -1196,5 +1267,38 @@ summary {
       opacity: 0;
       transform: translateY(-100%);
     }
+  }
+}
+
+/* popup */
+.popup__close {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: var(--layer-raised);
+  width: var(--size-32);
+  height: var(--size-32);
+  color: var(--color-foreground);
+  background-color: transparent;
+  border: none;
+  padding: 0.6rem;
+  cursor: pointer;
+
+  @media (hover: hover) {
+    transition: transform var(--animation-speed) var(--animation-easing);
+    will-change: transform;
+    &:hover {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+/* disabled */
+.disabled {
+  opacity: var(--opacity-50);
+  cursor: not-allowed;
+
+  button {
+    cursor: not-allowed;
   }
 }

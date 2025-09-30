@@ -217,8 +217,8 @@ if (!customElements.get('product-info')) {
 
       updateVariantInputs(variantId) {
         this.querySelectorAll(
-          `#product-form-${this.dataset.section}, #product-form-installment-${this.dataset.section}`
-        ).forEach((productForm) => {
+          `#product-form-${this.dataset.section}, #product-form-installment-${this.dataset.section}, #product-form-edit-${this.dataset.section}`
+        )?.forEach((productForm) => {
           const input = productForm.querySelector('input[name="id"]');
           input.value = variantId ?? '';
           input.dispatchEvent(new Event('change', { bubbles: true }));
@@ -360,7 +360,7 @@ if (!customElements.get('product-info')) {
 
         const quantityFormUpdated = html.getElementById(`Quantity-Form-${sectionId}`);
         if (!quantityFormUpdated) return;
-        
+
         const selectors = ['.quantity__input', '.quantity__rules', '.quantity__label'];
         for (let selector of selectors) {
           const current = this.quantityForm.querySelector(selector);
@@ -399,7 +399,7 @@ if (!customElements.get('product-info')) {
         const inventoryMapKey = `product_inventory_array_${productId}`;
         const inventoryMap = window[inventoryMapKey] || {};
         const inventoryQuantity = variantId ? Number(inventoryMap[variantId]) || 0 : 0;
-        
+
         const hotStock = document.querySelector('.productView-hotStock');
         if (!hotStock) return;
 
@@ -427,7 +427,7 @@ if (!customElements.get('product-info')) {
         const productForm = data.productForm;
 
         const backInStockAlert = document.querySelector('.back-in-stock-alert');
-        
+
         if (!backInStockAlert || !productForm) return;
 
         setTimeout(() => {

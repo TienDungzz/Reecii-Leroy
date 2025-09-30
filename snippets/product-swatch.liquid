@@ -17,7 +17,7 @@
 {%- endcapture -%}
 
 {%- capture class_tooltip -%}
-    tooltip center absolute bottom-full left-50 z-1 whitespace-nowrap capitalize text-sm
+    tooltip center absolute bottom-full  left-0  z-1 whitespace-nowrap capitalize text-sm
 {%- endcapture -%}
 
 {%- if variant_count > 0 and product.variants.first.title != 'Default Title' -%}
@@ -63,7 +63,7 @@
                         endcase
                         -%}
                         {%- if count < number_limit -%}
-                            <li class="swatch-item relative">
+                            <li class="swatch-item relative{% if forloop.first %} active{% endif %}">
                                 <div class="swatch-wrapper">
                                     <span
                                         {% if enable_variant_image %}
@@ -74,7 +74,7 @@
                                             {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}"
                                             data-title="{{ color | handle }}"
                                             data-variant-id="{{ variant.id }}"
-                                            data-variant-img="{{ variant.image.src | image_url: '800x' }}"
+                                            data-variant-img="{{ variant.image.src | image_url: width: '800x' }}"
                                         {% else %}
                                           class="{{ class_swatch }} color-swacth-color--{{ color | handle }} swatch--unavailable"
                                         {% endif %}
@@ -96,7 +96,7 @@
                                                 {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}"
                                                 data-title="{{ color | handle }}"
                                                 data-variant-id="{{ variant.id }}"
-                                                data-variant-img="{{ variant.image.src | image_url: '800x' }}"
+                                                data-variant-img="{{ variant.image.src | image_url: width: '800x' }}"
                                             {% else %}
                                             class="{{ class_swatch }} color-swacth-color--{{ color | handle }} swatch--unavailable"
                                             {% endif %}

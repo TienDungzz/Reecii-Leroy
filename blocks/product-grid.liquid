@@ -1,12 +1,17 @@
 {%- liquid
   assign bl_id = block.id
   assign bl_stts = block.settings
-  assign products = bl_stts.collection.products | default: (1..bl_stts.columns_desktop)
+  assign product_grid_type = bl_stts.product_grid_type
+  if product_grid_type == 'carousel'
+    assign columns_desktop = bl_stts.columns_desktop_carousel
+  else
+    assign columns_desktop = bl_stts.columns_desktop
+  endif
+
+  assign products = bl_stts.collection.products | default: (1..columns_desktop)
 
   assign products_to_display = bl_stts.collection.all_products_count
   assign max_tiems = bl_stts.products_to_show
-
-  assign columns_desktop = bl_stts.columns_desktop
 
   if bl_stts.collection.all_products_count > max_tiems
     assign products_to_display = max_tiems
@@ -14,15 +19,6 @@
   endif
 
   assign columns_mobile_int = bl_stts.columns_mobile | plus: 0
-  assign show_mobile_slider = false
-  if bl_stts.swipe_on_mobile and products_to_display > columns_mobile_int
-    assign show_mobile_slider = true
-  endif
-
-  assign show_desktop_slider = false
-  if bl_stts.enable_desktop_slider and products_to_display > columns_desktop
-    assign show_desktop_slider = true
-  endif
 
   assign columns_tablet = 2
   if columns_desktop == 1
@@ -35,7 +31,7 @@
   assign rows_gap = bl_stts.rows_gap | append: 'px'
 
   assign is_carousel = false
-  if bl_stts.product_grid_type == 'carousel'
+  if product_grid_type == 'carousel'
     assign is_carousel = true
 
     assign enable_navigation = false
@@ -50,20 +46,37 @@
   endif
 -%}
 
-<div class="product-grid-{{ bl_id }} max-w-full size-style spacing-style" {{ block.shopify_attributes }} style="{% render 'size-style', settings: block.settings %} {% render 'spacing-style', settings: block.settings %}">
+<div
+  class="product-grid--block product-grid-{{ bl_id }} max-w-full size-style spacing-style"
+  {{ block.shopify_attributes }}
+  style="
+    {% render 'size-style', settings: block.settings %}
+    {% render 'spacing-style', settings: block.settings %}
+  "
+>
   {%- if is_carousel -%}
+    {%- capture breakpoints -%}
+      {
+        "768": { "slidesPerView": {{ columns_tablet }} },
+        "1024": { "slidesPerView": {{ columns_tablet }} },
+        "1400": { "slidesPerView": {{ columns_desktop }} }
+      }
+    {%- endcapture -%}
     <swiper-component
       class="swiper-component-product-grid{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-      data-loop="false"
-      data-slides-per-view="{{ columns_mobile_int }}"
-      data-space-between="10"
-      data-breakpoints='
-        {
-          "768": { "slidesPerView": {{ columns_tablet }} },
-          "1024": { "slidesPerView": {{ columns_tablet }} },
-          "1400": { "slidesPerView": {{ columns_desktop }} }
-        }
-      '
+      {%- render 'swiper-data',
+        settings: bl_stts,
+        slides_per_view: columns_mobile_int,
+        space_between: columns_gap,
+        breakpoints: breakpoints
+      -%}
+      style="
+      {% render 'swiper-style',
+        columns_mobile: columns_mobile_int,
+        columns_tablet: columns_tablet,
+        columns_desktop: columns_desktop,
+        columns_gap: columns_gap,
+      %}"
     >
       <div class="swiper">
   {%- endif -%}
@@ -87,19 +100,20 @@
       </li>
     {% endfor %}
   </ul>
-  {%- if enable_navigation -%}
-    <div class="swiper-btns-wrap small-hide">
-      {%- render 'swiper-button' -%}
-    </div>
-  {%- endif -%}
   {%- if enable_pagination -%}
     <div class="swiper-pagination"></div>
+  {%- endif -%}
+  {%- if enable_navigation -%}
+    <div class="swiper-btns-wrap small-hide swiper-btns-wrap--{{ bl_stts.arrows_position }}">
+      {%- render 'swiper-button' -%}
+    </div>
   {%- endif -%}
   {%- if is_carousel -%}
     </div>
     </swiper-component>
   {%- endif -%}
 </div>
+
 
 {% schema %}
 {
@@ -135,7 +149,7 @@
         },
         {
           "value": "custom",
-          "label": "Custom"
+          "label": "t:options.custom"
         }
       ],
       "default": "fit-content"
@@ -166,7 +180,7 @@
         },
         {
           "value": "custom",
-          "label": "Custom"
+          "label": "t:options.custom"
         }
       ],
       "default": "fit-content"
@@ -197,7 +211,7 @@
         },
         {
           "value": "custom",
-          "label": "Custom"
+          "label": "t:options.custom"
         }
       ],
       "default": "fit-content"
@@ -238,7 +252,18 @@
       "max": 5,
       "step": 1,
       "default": 4,
-      "label": "t:sections.featured-collection.settings.columns_desktop.label"
+      "label": "t:sections.featured-collection.settings.columns_desktop.label",
+      "visible_if": "{{ block.settings.product_grid_type == 'grid' }}"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop_carousel",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 4,
+      "label": "t:sections.featured-collection.settings.columns_desktop.label",
+      "visible_if": "{{ block.settings.product_grid_type == 'carousel' }}"
     },
     {
       "type": "select",
@@ -328,13 +353,30 @@
     },
     {
       "type": "select",
+      "id": "arrows_position",
+      "label": "Arrows position",
+      "options": [
+        {
+          "value": "inside",
+          "label": "Inside slide"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom slide"
+        }
+      ],
+      "default": "inside",
+      "visible_if": "{{ block.settings.navigation == 'arrows' or block.settings.navigation == 'arrows-pagination' and block.settings.product_grid_type == 'carousel' }}"
+    },
+    {
+      "type": "select",
       "id": "pagination_type",
       "label": "Pagination type",
       "visible_if": "{{ block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' }}",
       "options": [
         {
           "value": "bullets",
-          "label": "t:options.dots"
+          "label": "Dots"
         },
         {
           "value": "dynamic",
@@ -346,10 +388,54 @@
         },
         {
           "value": "fraction",
-          "label": "t:options.counter"
+          "label": "Fraction"
         }
       ],
       "default": "bullets"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     }
   ],
   "presets": [
@@ -381,28 +467,33 @@
               }
             },
             {
-              "type": "_card-product-vendor-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            {
-              "type": "_card-product-title-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            {
-              "type": "_card-product-price-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
-            },
-            {
-              "type": "_card-product-variant-flex",
-              "settings": {
-                "product": "{{ closest.product }}"
-              }
+              "type": "_card-product-information",
+              "blocks": [
+                {
+                  "type": "_card-product-vendor-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                {
+                  "type": "_card-product-title-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                {
+                  "type": "_card-product-price-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                },
+                {
+                  "type": "_card-product-variant-flex",
+                  "settings": {
+                    "product": "{{ closest.product }}"
+                  }
+                }
+              ]
             }
           ]
         }

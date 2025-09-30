@@ -16,6 +16,10 @@
     <script src="{{ 'free-shipping-message.js' | asset_url }}" defer="defer"></script>
 {% endif %}
 
+{%- if settings.show_cart_quick_edit -%}
+  <script src="{{ 'edit-cart.js' | asset_url }}" defer="defer"></script>
+{% endif %}
+
 <script>
     window.shopUrl = '{{ request.origin }}';
     window.routes = {
@@ -26,6 +30,10 @@
         cart_url: '{{ routes.cart_url }}',
         predictive_search_url: '{{ routes.predictive_search_url }}',
         search_url: '{{ routes.search_url }}',
+    };
+
+    window.inventory_text = {
+        warningQuantity: `{{ 'products.product.quantity.warning_quantity' | t : inventory: '[inventory]' }}`,
     };
 
     window.button_load_more = {

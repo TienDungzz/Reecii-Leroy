@@ -14,16 +14,28 @@
     assign padding_block = block.settings.padding_block | times: 0.1 | append: 'rem'
     assign padding_inline = block.settings.padding_inline | times: 0.1 | append: 'rem'
   endif
+
+  assign style_class = block.settings.style_class
+  assign link_underline = block.settings.link_underline
 -%}
 
 {%- if card_product and card_product != empty and block.settings.quick_add != 'none' -%}
   <div
-    class="card--block-button {{ block.settings.quick_add }} relative z-2 w-full"
-    style="{% if quick_add_type_icon %}--pl: 0; --pr: 0;--md-pl: 1rem; --md-pr: 1rem;--lg-pl: 1.6rem; --lg-pr: 1.6rem;{% else %}--p: {{ padding_block }} {{ padding_inline }};{% if block.settings.background %}--bg-color: {{ block.settings.background_color }}; --corner-radius: {{ block.settings.corner_radius }}px;{% endif %}{% endif %}"
+    class="card--block-button {{ block.settings.quick_add }} relative z-2 w-full size-style"
+    style="
+      {% if quick_add_type_icon %}
+      --pl: 0; --pr: 0;--md-pl: 1rem; --md-pr: 1rem;--lg-pl: 1.6rem; --lg-pr: 1.6rem;
+      {% else %}
+        --p: {{ padding_block }} {{ padding_inline }};
+        {% if block.settings.background %}
+        --bg-color: {{ block.settings.background_color }};--corner-radius: {{ block.settings.corner_radius }}px;{% endif %}
+      {% endif %}
+      {% render 'size-style', settings: block.settings %}
+    "
   >
     {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id | append: block_id %}
     {% if quick_add == 'standard' %}
-      <div class="quick-add">
+      <div class="quick-add w-full">
         {%- liquid
           assign qty_rules = false
           if card_product.selected_or_first_available_variant.quantity_rule.min > 1 or card_product.selected_or_first_available_variant.quantity_rule.max != null or card_product.selected_or_first_available_variant.quantity_rule.increment > 1
@@ -36,28 +48,40 @@
               id="{{ product_form_id }}-submit"
               type="submit"
               name="add"
-              class="quick-add__submit quick-add__submit--{{ settings.quick_add_type }} button button--full-width {% if horizontal_quick_add %} card--horizontal__quick-add animate-arrow{% endif %} {{ class_button }}"
+              class="quick-add__submit quick-add__submit--{{ settings.quick_add_type }} {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class == 'button' %} button--full-width{% endif %} {{ class_button }}"
               aria-haspopup="dialog"
               aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
               data-product-url="{{ card_product.url }}?view=quick_add"
             >
-              {%- if quick_add_type_icon == false -%}
-                {{ 'products.product.choose_options' | t }}
-              {%- else -%}
-                <span class="text-in-mb md:hidden">
+              {% if style_class == 'link' %}
+                <span>
+              {% endif %}
+                {%- if quick_add_type_icon == false -%}
                   {{ 'products.product.choose_options' | t }}
+                {%- else -%}
+                  <span class="text-in-mb md:hidden">
+                    {{ 'products.product.choose_options' | t }}
+                  </span>
+                  <span class="{{ class_text }}">
+                    <span class="{{ class_text_inner }}">{{ 'products.product.choose_options' | t }}</span>
+                  </span>
+                  <svg
+                    class="icon-cart"
+                    aria-hidden="true"
+                    focusable="false"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 20 22"
+                    stroke="currentColor"
+                    fill="none"
+                  >
+                    {%- render 'icon', icon: 'cart', class: 'max-sm:hidden' -%}
+                  </svg>
+                {%- endif -%}
+              {% if style_class == 'link' %}
                 </span>
-                <span class="{{ class_text }}">
-                  <span class="{{ class_text_inner }}">{{ 'products.product.choose_options' | t }}</span>
-                </span>
-                {%- render 'icon', icon: 'cart', class: 'max-sm:hidden' -%}
-              {%- endif -%}
-
-              {%- if horizontal_quick_add -%}
-                <span class="icon-wrap">
-                  {{- 'icon-arrow.svg' | inline_asset_content -}}
-                </span>
-              {%- endif -%}
+              {% endif %}
               {%- render 'loading-spinner' -%}
             </button>
           </modal-opener>
@@ -83,7 +107,7 @@
                 id="{{ product_form_id }}-submit"
                 type="submit"
                 name="add"
-                class="quick-add__submit button button--full-width button-secondary{% if horizontal_quick_add %} card--horizontal__quick-add{% endif %}"
+                class="quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class == 'button' %} button--full-width{% endif %}"
                 aria-haspopup="dialog"
                 aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                 aria-live="polite"
@@ -102,11 +126,6 @@
                 <span class="sold-out-message hidden">
                   {{ 'products.product.sold_out' | t }}
                 </span>
-                {%- if horizontal_quick_add -%}
-                  <span class="icon-wrap">
-                    {{- 'icon-plus.svg' | inline_asset_content -}}
-                  </span>
-                {%- endif -%}
                 {%- render 'loading-spinner' -%}
               </button>
             {%- endform -%}
@@ -114,14 +133,14 @@
         {%- endif -%}
       </div>
     {% elsif quick_add == 'bulk' %}
-      <div class="quick-add">
+      <div class="quick-add w-full">
         {%- if card_product.variants.size > 1 -%}
           <modal-opener data-modal="#QuickAddBulk">
             <button
               id="{{ product_form_id }}-submit"
               type="submit"
               name="add"
-              class="quick-add__submit button button--full-width button-secondary"
+              class="quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class == 'button' %} button--full-width{% endif %}"
               aria-haspopup="dialog"
               aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
               data-product-url="{{ card_product.url }}"
@@ -129,7 +148,19 @@
               {%- if settings.quick_add_type == 'text' -%}
                 {{ 'products.product.choose_options' | t }}
               {%- else -%}
-                {%- render 'icon', icon: 'cart' -%}
+                <svg
+                  class="icon-cart"
+                  aria-hidden="true"
+                  focusable="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 20 22"
+                  stroke="currentColor"
+                  fill="none"
+                >
+                  {%- render 'icon', icon: 'cart' -%}
+                </svg>
               {%- endif -%}
 
               {%- render 'loading-spinner' -%}
@@ -147,7 +178,7 @@
                 id="{{ product_form_id }}-submit"
                 type="submit"
                 name="add"
-                class="quick-add__submit button button--full-width button-secondary"
+                class="quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class == 'button' %} button--full-width{% endif %}"
                 aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                 data-sold-out-message="true"
                 disabled
@@ -183,7 +214,7 @@
                   id="{{ product_form_id }}-submit"
                   type="submit"
                   name="add"
-                  class="quick-add__submit button button--full-width button-secondary{% if horizontal_quick_add %} card--horizontal__quick-add{% endif %}"
+                  class="quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class == 'button' %} button--full-width{% endif %}"
                   aria-haspopup="dialog"
                   aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                   aria-live="polite"
@@ -202,11 +233,6 @@
                   <span class="sold-out-message hidden">
                     {{ 'products.product.sold_out' | t }}
                   </span>
-                  {%- if horizontal_quick_add -%}
-                    <span class="icon-wrap">
-                      {{- 'icon-plus.svg' | inline_asset_content -}}
-                    </span>
-                  {%- endif -%}
                   {%- render 'loading-spinner' -%}
                 </button>
               {%- endform -%}
@@ -241,13 +267,14 @@
   grid-row-start: 4;
   margin: 0.5rem 0;
   z-index: 1;
-  @media screen and (min-width: 750px) {
-    margin: 1rem 0;
-  }
-} */
+    @media screen and (min-width: 750px) {
+      margin: 1rem 0;
+    }
+  } */
 
   .section-bulk-quick-order-list-padding {
     padding-block: 2.7rem;
+    display: block;
   }
 
   @media screen and (min-width: 750px) {
@@ -260,11 +287,28 @@
   }
 
   .quick-add__submit {
-    padding: 0.8rem;
-    min-width: 100%;
     box-sizing: border-box;
     line-height: 1;
     text-transform: uppercase;
+    padding: 0;
+
+    &.button {
+      padding: 0.8rem;
+      min-width: 100%;
+    }
+
+    &.link {
+      position: relative;
+      .loading__spinner {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+      }
+    }
+
+    &.link.loading > span {
+      opacity: 0;
+    }
 
     &.card-product__group-btn {
       padding: 0;
@@ -389,6 +433,33 @@
       ]
     },
     {
+      "type": "select",
+      "id": "style_class",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "button",
+          "label": "t:options.primary"
+        },
+        {
+          "value": "button-secondary",
+          "label": "t:options.secondary"
+        },
+        {
+          "value": "link",
+          "label": "t:options.link"
+        }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_underline",
+      "label": "Underline",
+      "default": false,
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
       "type": "header",
       "content": "t:content.appearance",
       "visible_if": "{{ settings.quick_add_type == 'text' }}"
@@ -420,7 +491,73 @@
     },
     {
       "type": "header",
-      "content": "Padding",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "t:settings.width_mobile",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding",
       "visible_if": "{{ settings.quick_add_type == 'text' }}"
     },
     {

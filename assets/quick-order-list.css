@@ -44,11 +44,6 @@ quick-order-list .quantity__button {
     background: var(--color-background);
   }
 
-  .variant-item__quantity-wrapper--no-info,
-  .variant-item__error {
-    padding-left: calc(15px + 3.4rem);
-  }
-
   .variant-item__error {
     margin-left: 0.3rem;
   }
@@ -78,6 +73,13 @@ quick-order-list .quantity__button {
 
 .variant-item__quantity-wrapper {
   display: flex;
+}
+
+@media screen and (min-width: 1025px){
+  .variant-item__quantity-wrapper {
+    justify-content: center;
+    padding-inline: 3.2rem;
+  }
 }
 
 .variant-item__totals,
@@ -123,10 +125,6 @@ quick-order-list .quantity__button {
     display: flex;
     flex-direction: column;
     align-self: center;
-  }
-
-  .variant-item:not(.variant-item--no-media) .variant-item__inner {
-    display: flex;
   }
 
   .variant-item__discounted-prices {
@@ -194,28 +192,16 @@ quick-order-list .quantity__button {
   color: var(--color-foreground);
 }
 
-quick-order-list-remove-button {
-  display: flex;
-  margin: 0 0 0 1.2rem;
-  align-self: center;
-}
-
 .quick-order-list__button-cancel {
   font-size: 1.5rem;
   letter-spacing: 0.06rem;
 }
 
+.quick-order-list-total__column {
+  width: 35%;
+}
+
 @media screen and (min-width: 750px) and (max-width: 1024px) {
-  quick-order-list-remove-button {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-
-  quick-order-list-remove-all-button {
-    margin-left: -1.5rem;
-    margin-top: 1rem;
-  }
-
   .quick-order-list-total__column {
     flex-wrap: wrap;
   }
@@ -231,6 +217,7 @@ quick-order-list-remove-button .button {
   min-height: 1.5rem;
   padding: 0;
   margin: 0 0.1rem 0.1rem 0;
+  border: none;
 }
 
 quick-order-list-remove-button .button:not([disabled]):hover {
@@ -241,6 +228,25 @@ quick-order-list-remove-button .icon-remove {
   height: 1.5rem;
   width: 1.5rem;
   transition: transform var(--duration-default) ease;
+}
+
+@media (min-width: 749px) and (max-width: 1024px) {
+  quick-order-list-remove-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0;
+  }
+}
+
+@media screen and (min-width: 1025px){
+  quick-order-list-remove-button {
+    display: flex;
+    margin: 0;
+    align-self: center;
+    position: absolute;
+    right: 0;
+  }
 }
 
 .variant-item .loading__spinner {
@@ -364,6 +370,7 @@ quick-order-list-remove-button:hover .icon-remove {
   .quick-order-list-total__info {
     flex-direction: column;
     align-items: center;
+    display: flex;
   }
 
   .variant-item__details .loading__spinner {
@@ -381,14 +388,14 @@ quick-order-list-remove-button:hover .icon-remove {
   .quick-order-list__table thead tr {
     display: flex;
     justify-content: space-between;
-    border-bottom: 0.1rem solid rgb(var(--color-foreground-rgb) / var(--opacity-8));
+    border-bottom: 0.1rem solid
+      rgb(var(--color-foreground-rgb) / var(--opacity-8));
     margin-bottom: 4rem;
   }
 
   .variant-item {
     display: grid;
-    grid-template-columns: 4.5rem 1fr;
-    grid-template-rows: repeat(2, auto);
+    grid-template-columns: 4.5rem 1fr 22rem 11rem;
     gap: 1.5rem;
     margin-bottom: 3.5rem;
   }
@@ -402,7 +409,7 @@ quick-order-list-remove-button:hover .icon-remove {
   }
 
   .variant-item__totals {
-    grid-column: 5 / 3;
+    grid-column: 4 / 5;
   }
 
   .variant-item--no-media .variant-item__inner ~ .variant-item__quantity {
@@ -410,11 +417,14 @@ quick-order-list-remove-button:hover .icon-remove {
   }
 
   .variant-item__quantity {
-    grid-column: 2 / 5;
+    grid-column: 3 / 4;
+    grid-row: 1/1;
+    justify-content: center;
   }
 
   .variant-item__quantity-wrapper {
     flex-wrap: wrap;
+    justify-content: center;
   }
 
   .variant-item--no-media .variant-item__inner {
@@ -422,7 +432,6 @@ quick-order-list-remove-button:hover .icon-remove {
   }
 
   .variant-remove-total {
-    margin-top: 1rem;
     text-align: center;
   }
 
@@ -430,16 +439,46 @@ quick-order-list-remove-button:hover .icon-remove {
     text-align: center;
   }
 
-  .quick-order-list-total__column,
-  .quick-order-list-buttons {
+  .quick-order-list-total__column {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
   }
 
+  .quick-order-list-buttons {
+    display: flex;
+    gap: var(--gap-lg);
+  }
+
   .quick-order-list__button {
-    max-width: 36rem;
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 749px){
+  .variant-item {
+    grid-template-columns: 4.5rem 1fr max-content;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .variant-item__quantity {
+    grid-column: 2 / 4;
+    grid-row: 2 / 2;
+
+    quantity-popover {
+      align-items: flex-start;
+    }
+  }
+
+  .variant-item__quantity-wrapper {
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .variant-item__discounted-prices dd {
+    font-size: 1.2rem;
   }
 }
 
@@ -454,7 +493,13 @@ quick-order-list-remove-button:hover .icon-remove {
   margin-top: -2rem;
 }
 
+.quick-order-list__table thead th:first-child {
+  text-align-last: left;
+  width: 35%;
+}
+
 @media screen and (min-width: 1025px) {
+
   .quick-order-list__table {
     border-spacing: 0;
     border-collapse: separate;
@@ -464,14 +509,17 @@ quick-order-list-remove-button:hover .icon-remove {
   }
 
   .quick-order-list__table th {
-    border-bottom: 0.1rem solid rgb(var(--color-foreground-rgb) / var(--opacity-8));
+    border-bottom: 0.1rem solid
+      rgb(var(--color-foreground-rgb) / var(--opacity-8));
   }
 
   .quick-order-list__table th + th {
-    padding-left: 5rem;
+    text-align: center;
   }
 
-  .quick-order-list__table .quick-order-list__table-heading--wide + .quick-order-list__table-heading--wide {
+  .quick-order-list__table
+    .quick-order-list__table-heading--wide
+    + .quick-order-list__table-heading--wide {
     padding-left: 10rem;
     text-align: right;
   }
@@ -509,20 +557,9 @@ quick-order-list-remove-button:hover .icon-remove {
   .quick-order-list-total__confirmation span {
     margin-right: 3rem;
   }
-
-  .quick-order-list__total-items {
-    width: calc(11rem + var(--quantity-border-width) * 2);
-    margin-left: calc(15px + 3.4rem);
-    flex-direction: column;
-  }
 }
 
 @media screen and (min-width: 1025px) {
-  .quick-order-list__table thead th:first-child,
-  .quick-order-list-total__column {
-    width: 37%;
-  }
-
   .quick-order-list-buttons {
     display: flex;
   }
@@ -533,8 +570,10 @@ quick-order-list-remove-button:hover .icon-remove {
 }
 
 .quick-order-list__total-items {
-  display: flex;
-  align-items: center;
+  text-align: center;
+  @media screen and (min-width: 1025px) {
+    width: 22rem;
+  }
 }
 
 .quick-order-list__total-items span,
@@ -555,22 +594,14 @@ quick-order-list-remove-button:hover .icon-remove {
   text-align: center;
 }
 
-.quick-order-list-total__info {
-  display: flex;
-}
-
 .quick-order-list-total__info,
 .quick-order-list-total__confirmation {
   min-height: 10rem;
+  vertical-align: top;
 }
 
 .quick-order-list-total__price {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  flex-grow: 1;
   text-align: right;
-  width: min-content;
 }
 
 .quick-order-list-total__price .button {
@@ -589,7 +620,7 @@ quick-order-list-remove-button:hover .icon-remove {
     justify-content: center;
     width: 100%;
     align-items: center;
-    padding-bottom: 2rem;
+    padding-bottom: var(--padding-sm);
   }
 
   .totals__subtotal-value,
@@ -598,15 +629,16 @@ quick-order-list-remove-button:hover .icon-remove {
   }
 
   .quick-order-list__total-items {
-    margin-top: 1rem;
-    margin-bottom: 1.3rem;
+    margin-block: var(--margin-sm);
   }
 
   .quick-order-list-total__price .button {
     margin-bottom: 2rem;
   }
 
-  .quick-order-list-total__confirmation quick-order-list-remove-all-button button {
+  .quick-order-list-total__confirmation
+    quick-order-list-remove-all-button
+    button {
     margin-top: 1rem;
   }
 
@@ -626,7 +658,10 @@ quick-order-list-remove-button:hover .icon-remove {
 }
 
 quick-order-list .tax-note {
-  margin: 0 0 2rem;
+  margin: 0 0 var(--margin-sm);
   display: block;
   width: 100%;
+  @media screen and (min-width: 1025px) {
+    margin: 0 0 var(--margin-xl);
+  }
 }

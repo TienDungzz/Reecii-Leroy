@@ -8,7 +8,7 @@ class SideDrawerOpener extends HTMLElement {
     button.addEventListener('click', () => {
       const drawer = document.querySelector(this.getAttribute('data-side-drawer'));
       console.log("drawer", drawer);
-      
+
       if (isFirstLoad && this.hasAttribute('drawer-has-url')) {
         isFirstLoad = false;
         const urlStyle = drawer?.dataset.urlStyleSheet;
@@ -209,7 +209,7 @@ class ModalDialog extends HTMLElement {
       const focusElement = this.querySelector('[role="dialog"], .popup__inner');
       trapFocus(containerToTrapFocusOn, focusElement);
     }, { once: true });
-  }  
+  }
 }
 if (!customElements.get('modal-dialog')) customElements.define('modal-dialog', ModalDialog);
 

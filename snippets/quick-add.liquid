@@ -8,10 +8,6 @@
       margin-top: 1rem;
     }
 
-    &[open] {
-      z-index: 101;
-    }
-
     .scroll-trigger.scroll-trigger {
       animation: none;
       opacity: var(--opacity-100);
@@ -31,6 +27,11 @@
       margin-top: 0;
     }
 
+    button[type="submit"] {
+      overflow: hidden;
+      position: relative;
+    }
+
     @media screen and (min-width: 990px) {
       .shopify-payment-button {
         width: 100%;
@@ -38,24 +39,46 @@
     }
   }
 
-  .quick-add-modal__content.quick-add-modal__content--bulk {
-    width: 90%;
-  }
-
   .quick-add-modal__content {
     --modal-height-offset: 3.2rem;
     padding: 1rem 0.5rem;
-    max-width: 47.5rem;
-    width: calc(100% - 3rem);
     min-height: 35rem;
-
-    @media screen and (min-width: 750px) {
-      width: 80%;
-    }
   }
 
   .quick-add-modal__content img {
     max-width: 100%;
+  }
+
+  .quick-add-modal__content:not(.quick-add-modal__content--bulk) {
+    max-width: 47.5rem;
+    height: auto;
+    max-height: max-content;
+    width: calc(100% - 3rem);
+    @media screen and (min-width: 750px) {
+      width: 80%;
+    }
+
+    @media screen and (min-width: 990px) {
+      width: 70%;
+    }
+  }
+
+  /* Quick add bulk */
+  .quick-add-modal--bulk .popup__inner {
+    overflow: initial;
+    @media screen and (max-width: 1279px){
+      width: 100%;
+    }
+    @media screen and (min-width: 1280px) {
+      min-width: var(--popup-max-width);
+    }
+  }
+
+  .quick-add-modal--bulk .variant-item__image-container {
+    display: inline-flex;
+    align-items: flex-start;
+    height: 4.5rem;
+    width: 4.5rem;
   }
 
   .quick-add-modal__content-info.quick-add-modal__content-info--bulk {
@@ -72,7 +95,6 @@
 
   .quick-add-modal__content-info--bulk :is(.quick-add__product-media, .quick-add__product-container, .quick-add__info) {
     width: 4.8rem;
-    height: 7rem;
   }
 
   .quick-add-modal__content-info--bulk-details {
@@ -86,17 +108,12 @@
 
   .quick-add-modal__content-info--bulk :is(.quick-add__product-media, .quick-add__product-container, .quick-add__info) {
     width: 4.8rem;
-    height: 7rem;
   }
 
   .quick-add-modal__content-info--bulk .quick-add__product-container img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
-
-  .quick-add-modal__content-info--bulk .quick-add__info {
-    display: flex;
   }
 
   .quick-add-modal__content-info--bulk .quick-add__content-info__media {
@@ -120,11 +137,16 @@
     width: 100%;
   }
 
+  .quick-add-modal__content-info > .quick-add-modal__content-info {
+    padding-top: 0;
+    margin-top: 2.5rem;
+  }
+
   .quick-add-modal__content-info > product-info {
     padding: 0;
   }
 
-  .quick-add-modal__toggle {
+  .quick-add-modal--bulk .quick-add-modal__toggle {
     background: var(--color-background);
     border: 0.1rem solid rgb(var(--color-foreground-rgb) / var(--opacity-10));
     border-radius: var(--style-border-radius-50);
@@ -135,7 +157,6 @@
     cursor: pointer;
     padding: 1.2rem;
     z-index: 5;
-    width: 4.4rem;
     position: fixed;
     top: 1.5rem;
     right: 1.5rem;
@@ -157,6 +178,7 @@
 
   .quick-add-modal__content--bulk .product__view-details .icon {
     margin-left: 1.2rem;
+    display: inline-block;
   }
 
   quick-add-modal
@@ -211,10 +233,16 @@
   }
 
   quick-add-modal .product-media-container.constrain-height {
-    --viewport-offset: calc((var(--modal-height-offset) + var(--modal-padding) + var(--style-border-width-popover)) * 2);
+    --viewport-offset: calc(
+      (var(--modal-height-offset) + var(--modal-padding) + var(--style-border-width-popover)) * 2
+    );
   }
 
-  @media screen and (max-width: 989px) {
+  .quick-add-modal__content-info--bulk .quick-order-list__table .quick-order-list__table-heading--price {
+    width: 22rem;
+  }
+
+  @media screen and (max-width: 1024px) {
     .quick-add-modal__content-info--bulk .quick-add__content-info__media {
       display: flex;
       margin: 0;
@@ -279,9 +307,6 @@
   }
 
   @media screen and (min-width: 990px) {
-    .quick-add-modal__content {
-      width: 70%;
-    }
     .quick-add-modal__content-info.quick-add-modal__content-info--bulk {
       overflow-y: initial;
     }
@@ -293,13 +318,12 @@
     .quick-add-modal__content-info--bulk thead {
       position: sticky;
       z-index: 3;
-      top: 0;
+      top: -.2rem;
       background: var(--color-background);
     }
     .quick-add-modal__content-info--bulk
       :is(.quick-add__product-media, .quick-add__product-container, .quick-add__info) {
       width: 17rem;
-      height: 22rem;
     }
 
     .quick-add-modal__content-info--bulk-details,
@@ -307,7 +331,6 @@
       padding: 0 2.5rem;
     }
     .quick-add-modal__content-info--bulk .quick-add__info {
-      flex-direction: column;
       position: sticky;
       top: 0;
       margin-block-start: -2.5rem;
@@ -315,6 +338,10 @@
     }
   }
 {%- endstylesheet -%}
+
+{{ 'quick-order-list.css' | asset_url | stylesheet_tag }}
+{{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
+
 <quick-add-modal
   class="quick-add-modal modal--popup fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
   element-s-popup
@@ -343,7 +370,7 @@
 </quick-add-modal>
 
 <bulk-modal
-  class="quick-add-modal modal--popup fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
+  class="quick-add-modal quick-add-modal--bulk modal--popup fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
   element-s-popup
   id="QuickAddBulk"
 >
@@ -354,7 +381,7 @@
     aria-modal="true"
     aria-label="{{ 'products.product.choose_product_options' | t: product_name: product.title | escape }}"
     tabindex="-1"
-    style="--modal-max-height: 85dvh;"
+    style="--modal-max-height: 85dvh;--popup-max-width: var(--normal-page-width);"
   >
     <button
       class="quick-add-modal__toggle drawer__close block t-button bor-none rounded-full cursor-pointer"

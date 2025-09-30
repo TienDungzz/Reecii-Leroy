@@ -169,7 +169,7 @@
   class="link link--effect-unnderline link--text"
 {%- endcapture -%}
 
-<nav class="breadcrumbs element-margin-bottom" role="navigation" aria-label="{{ 'blocks.breadcrumb.title' | t }}">
+<nav class="breadcrumbs element-margin-bottom custom-font-size" role="navigation" aria-label="{{ 'blocks.breadcrumb.title' | t }}" style="--font-size: {{ settings.font_size }};">
   <ol
     class="breadcrumbs__list list-unstyled flex justify-{{ settings.horizontal_alignment }} items-center gap-style"
     style="{% render 'gap-style', value: settings.gap %}"
@@ -316,18 +316,14 @@
 </nav>
 
 {% stylesheet %}
-  .breadcrumbs__separator .svg-wrapper {
-    width: 16px;
-    height: 16px;
-  }
-  .breadcrumbs__separator:has(.icon-caret) .svg-wrapper {
-    width: 12px;
-    height: 12px;
-  }
-
   .breadcrumbs__separator .icon-caret {
     transform: rotate(-90deg);
     position: relative;
-    top: 1px;
+  }
+
+  .breadcrumbs__separator .svg-wrapper {
+    width: var(--font-size);
+    height: var(--font-size);
+    display: block;
   }
 {% endstylesheet %}
