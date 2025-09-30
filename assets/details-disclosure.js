@@ -45,8 +45,6 @@ class SideDrawer extends HTMLElement {
 
   connectedCallback() {
     if (!this.dataset.moved) {
-      console.log(this);
-
       this.dataset.moved = true;
       document.body.appendChild(this);
     }

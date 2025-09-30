@@ -1,0 +1,62 @@
+{% assign bl_stts = block.settings %}
+{%- capture cart_product_inner_class -%}
+  cart__products-inner cart__products
+  {% if bl_stts.extend_summary == false and bl_stts.inherit_color_scheme == false -%}
+    color-{{ bl_stts.color_scheme }}
+  {%- endif %}
+  {% if bl_stts.extend_summary == false and bl_stts.border_radius > 0 -%}
+    has-border-radius
+  {%- endif -%}
+{%- endcapture -%}
+
+{% if bl_stts.extend_summary %}
+  <div
+    class="section-background {% if bl_stts.inherit_color_scheme == false %} color-{{ bl_stts.color_scheme }}{% endif %}"
+  ></div>
+{% endif %}
+<div
+  id="main-cart-products"
+  class="cart__products-container border-style{% if bl_stts.extend_summary == true %} cart__container--extend {% if bl_stts.inherit_color_scheme == false %} {{ bl_stts.inherit_color_scheme }} color-{{ bl_stts.color_scheme }}{% endif %}{% endif %}{% if bl_stts.border_radius > 0 %} has-border-radius{% endif %}{% if cart.empty? %} is-empty{% endif %}"
+  data-id="{{ section.id }}"
+  style="{% render 'border-override', settings: bl_stts %}"
+  {{ block.shopify_attributes }}
+>
+  <div class="{{ cart_product_inner_class }}">
+    {% content_for 'block', id: 'cart-product', type: '_cart-product' %}
+    {% content_for 'block', id: 'cart-gift-card', type: '_cart-gift-card' %}
+    {% content_for 'block', id: 'cart-note', type: '_cart-note' %}
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:names.cart_items",
+  "tag": null,
+  "blocks": [
+    { "type": "@app" },
+    { "type": "@theme" },
+    { "type": "image-with-content" }
+  ],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-3",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.cart_items"
+    }
+  ]
+}
+{% endschema %}

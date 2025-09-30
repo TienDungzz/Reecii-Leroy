@@ -2191,6 +2191,56 @@ class BulkAdd extends HTMLElement {
 }
 if (!customElements.get("bulk-add")) customElements.define("bulk-add", BulkAdd);
 
+class CartPerformance {
+  static #metric_prefix = "cart-performance"
+
+  static createStartingMarker(benchmarkName) {
+    const metricName = `${CartPerformance.#metric_prefix}:${benchmarkName}`
+    return performance.mark(`${metricName}:start`);
+  }
+
+  static measureFromEvent(benchmarkName, event) {
+    const metricName = `${CartPerformance.#metric_prefix}:${benchmarkName}`
+    const startMarker = performance.mark(`${metricName}:start`, {
+      startTime: event.timeStamp
+    });
+
+    const endMarker = performance.mark(`${metricName}:end`);
+
+    performance.measure(
+      metricName,
+      `${metricName}:start`,
+      `${metricName}:end`
+    );
+  }
+
+  static measureFromMarker(benchmarkName, startMarker) {
+    const metricName = `${CartPerformance.#metric_prefix}:${benchmarkName}`
+    const endMarker = performance.mark(`${metricName}:end`);
+
+    performance.measure(
+      metricName,
+      startMarker.name,
+      `${metricName}:end`
+    );
+  }
+
+  static measure(benchmarkName, callback) {
+    const metricName = `${CartPerformance.#metric_prefix}:${benchmarkName}`
+    const startMarker = performance.mark(`${metricName}:start`);
+
+    callback();
+
+    const endMarker = performance.mark(`${metricName}:end`);
+
+    performance.measure(
+      metricName,
+      `${metricName}:start`,
+      `${metricName}:end`
+    );
+  }
+}
+
 // *** Function
 class GridView extends HTMLElement {
   constructor() {
@@ -2585,7 +2635,7 @@ class Wishlist extends HTMLElement {
         } else {
           wishlistContainer.classList.add("is-empty");
           wishlistContainer.innerHTML = `
-            <div class="wishlist-content-empty text-center">
+            <div class="wishlist-content-empty center">
               <span class="wishlist-content-text">${window.wishlist.empty}</span>
               <div class="wishlist-content-actions">
                 <a class="button button-2 button-continue" href="${window.routes.collection_all}">

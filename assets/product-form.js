@@ -9,7 +9,7 @@ if (!customElements.get('product-form-component')) {
         this.variantIdInput.disabled = false;
         this.form.addEventListener('submit', this.onSubmitHandler.bind(this));
         this.cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
-        this.submitButton = this.form?.querySelector('[type="submit"]');
+        this.submitButton = this.form?.querySelector('.add-to-cart-button');
         this.submitButtonText = this.submitButton.querySelector('span');
         this.checkbox = this.form?.querySelector('[id^="agree_condition-"]');
         this.buyItNowButton = this.form?.querySelector('shopify-buy-it-now-button button');
@@ -52,6 +52,8 @@ if (!customElements.get('product-form-component')) {
         delete config.headers['Content-Type'];
 
         const formData = new FormData(this.form);
+
+        console.log(this.cart);
         if (this.cart) {
           formData.append('sections', this.cart.getSectionsToRender().map((section) => section.id));
           formData.append('sections_url', window.location.pathname);
@@ -106,12 +108,16 @@ if (!customElements.get('product-form-component')) {
             if (quickAddModal) {
               document.body.addEventListener('modalClosed', () => {
                 setTimeout(() => {
-                  this.cart.renderContents(response);
+                  if (this.cart && typeof this.cart.renderContents === 'function') {
+                    this.cart.renderContents(response);
+                  }
                 });
               },{ once: true });
               quickAddModal.hide(true);
             } else {
-              this.cart.renderContents(response);
+              if (this.cart && typeof this.cart.renderContents === 'function') {
+                this.cart.renderContents(response);
+              }
             }
           })
           .catch((e) => {
