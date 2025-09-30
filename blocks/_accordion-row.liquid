@@ -1,11 +1,16 @@
 <accordion-custom
+  class="block spacing-style"
+  style="{% render 'spacing-style', settings: block.settings, suffix: 'row' %}"
   {% if block.settings.open_by_default %}
     open-by-default-on-desktop
     open-by-default-on-mobile
   {% endif %}
 >
   <details
-    class="details"
+    class="
+      details
+      {% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}
+    "
     {{ block.shopify_attributes }}
     {% if block.settings.open_by_default %}
       open
@@ -24,14 +29,14 @@
       </span>
     </summary>
 
-    <div class="details-content">
+    <div
+      class="details-content spacing-style"
+      style="{% render 'spacing-style', settings: block.settings %}"
+    >
       {% content_for 'blocks' %}
     </div>
   </details>
 </accordion-custom>
-
-{%- stylesheet -%}
-{%- endstylesheet -%}
 
 {% schema %}
 {
@@ -60,6 +65,107 @@
     },
     {
       "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.margin"
+    },
+    {
+      "type": "range",
+      "id": "margin-block-start-row",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:sections.all.margin.margin_top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-block-start-mobile-row",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Top margin mobile",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-block-end-row",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:sections.all.margin.margin_bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-block-end-mobile-row",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Bottom margin mobile",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-inline-start-row",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label":"t:sections.all.margin.margin_left",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-inline-start-mobile-row",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label":"Left margin mobile",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-inline-end-row",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:sections.all.margin.margin_right",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin-inline-end-mobile-row",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Right margin mobile",
+      "default": 0
+    },
+    {
+      "type": "header",
       "content": "t:content.padding"
     },
     {
@@ -70,7 +176,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 0
+      "default": 15
     },
     {
       "type": "range",
@@ -80,7 +186,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 0
+      "default": 15
     },
     {
       "type": "range",
@@ -90,7 +196,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 0
+      "default": 15
     },
     {
       "type": "range",
@@ -100,7 +206,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 0
+      "default": 50
     }
   ],
   "presets": [

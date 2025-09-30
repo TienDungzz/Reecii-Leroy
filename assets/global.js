@@ -3155,8 +3155,7 @@ class StrokeText extends HTMLElement {
     this.style.backgroundPosition = `${xPercent}% 50%`;
   }
 }
-if (!customElements.get("stroke-text"))
-  customElements.define("stroke-text", StrokeText);
+if (!customElements.get("stroke-text")) customElements.define("stroke-text", StrokeText);
 
 // Infinite Scrolling Function
 class InfiniteScrolling extends HTMLElement {
@@ -3471,3 +3470,128 @@ document.addEventListener(
   },
   { capture: true }
 );
+
+class FilterFAQs extends HTMLElement {
+  constructor() {
+    super();
+    this.faqsPopup = document.getElementById('halo-faqs-popup');
+    this.filterToggle = this.querySelector('[data-faqs-filter]');
+    this.filterDropdown = this.querySelector('.faqs-filterDropdown-menu');
+    this.filterDropdownArrow = this.filterToggle?.querySelector('[data-dropdown-arrow]');
+    this.hasInitializedDropdown = false;
+
+    this.init();
+  }
+
+  init() {
+    this.initDropdownItems();
+
+    if (this.filterToggle) {
+      this.filterToggle.addEventListener('click', this.onClickFilterHandler.bind(this));
+    }
+
+    if (this.filterDropdown.querySelector('.text')) {
+      this.filterDropdown.querySelectorAll('.text').forEach((filterButton) => {
+        filterButton.addEventListener('click', this.onClickFilterButtonHandler.bind(this));
+      });
+    }
+
+    if (this.querySelector('.faqs')) {
+      this.querySelectorAll('.card-header').forEach((headerButton) => {
+        headerButton.addEventListener('click', this.onClickHeaderButtonHandler.bind(this));
+      });
+    }
+
+    if (!document.body.classList.contains('template-index')) {
+      document.body.addEventListener('click', this.onBodyClickEvent.bind(this));
+    }
+  }
+
+  initDropdownItems() {
+    if (this.hasInitializedDropdown) return;
+
+    const existingKeys = [...this.filterDropdown.querySelectorAll("li[data-value]")]
+      .map(li => li.getAttribute("data-value"));
+
+    const handles = [...this.querySelectorAll("[data-title-handle]")]
+      .map(el => el.getAttribute("data-title-handle"))
+      .filter(Boolean);
+
+    if (JSON.stringify(existingKeys) === JSON.stringify(handles)) {
+      this.hasInitializedDropdown = true;
+      return;
+    }
+
+    handles.forEach(handle => {
+      if (!existingKeys.includes(handle)) {
+        const li = document.createElement("li");
+        li.setAttribute("data-value", handle);
+        li.setAttribute("tabindex", "-1");
+        li.innerHTML = `<span class="text">${handle.replace(/-/g, " ")}</span>`;
+        this.filterDropdown.appendChild(li);
+      }
+    });
+
+    this.hasInitializedDropdown = true;
+  }
+
+  onClickFilterHandler() {
+    this.filterDropdown.classList.toggle('is-show');
+    this.filterDropdownArrow?.classList.toggle('active');
+  }
+
+  onClickFilterButtonHandler(event) {
+    const btn = event.target.closest('li');
+    if (!btn || btn.classList.contains('active')) return;
+
+    const filterValue = btn.getAttribute('data-value');
+    const filterText = event.target.innerText;
+
+    this.filterToggle.querySelector('.text').innerText = filterText;
+
+    this.filterDropdown.querySelectorAll('li').forEach((el) => el.classList.remove('active'));
+    btn.classList.add('active');
+
+    if (filterValue) {
+      this.querySelectorAll('.filter-faqs-item').forEach((el) => {
+        const id = el.getAttribute('data-title-handle');
+        if (id === filterValue) {
+          el.classList.remove('hidden');
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+          el.classList.add('hidden');
+        }
+      });
+    } else {
+      this.querySelectorAll('.filter-faqs-item').forEach((el) => {
+        el.classList.remove('hidden', 'active');
+      });
+    }
+
+    this.filterDropdown.classList.remove('is-show');
+    this.filterDropdownArrow?.classList.remove('active');
+  }
+
+  onClickHeaderButtonHandler(event) {
+    const btn = event.currentTarget;
+    const content = btn.nextElementSibling;
+
+    btn.classList.toggle('collapsed');
+    if (content.style.maxHeight) {
+      content.style.maxHeight = null;
+    } else {
+      content.style.maxHeight = content.scrollHeight + 'px';
+    }
+  }
+
+  onBodyClickEvent(event) {
+    if (event.target.closest('[data-faqs-filter]')) return;
+    if (this.filterDropdown.classList.contains('is-show')) {
+      this.filterDropdown.classList.remove('is-show');
+      this.filterDropdownArrow?.classList.remove('active');
+    }
+  }
+}
+
+if (!customElements.get("filter-faqs")) customElements.define('filter-faqs', FilterFAQs);
