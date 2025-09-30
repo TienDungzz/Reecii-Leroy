@@ -4,6 +4,9 @@ if (!customElements.get('product-info')) {
     class ProductInfo extends HTMLElement {
       quantityInput = undefined;
       quantityForm = undefined;
+      stickyQuantityContainer = undefined;
+      stickyQuantityInput = undefined;
+      isSyncingQuantity = false;
       onVariantChangeUnsubscriber = undefined;
       cartUpdateUnsubscriber = undefined;
       abortController = undefined;
@@ -15,6 +18,8 @@ if (!customElements.get('product-info')) {
         super();
 
         this.quantityInput = this.querySelector('.quantity__input');
+        this.stickyQuantityContainer = document.querySelector('.sticky-cart__quantity');
+        this.stickyQuantityInput = this.stickyQuantityContainer?.querySelector('.quantity__input') || undefined;
         this.setRecentlyViewed();
       }
 
@@ -27,11 +32,17 @@ if (!customElements.get('product-info')) {
         );
 
         this.initQuantityHandlers();
+        this.initStickyQuantityHandlers();
+        this.initVariantSyncHandlers();
         this.dispatchEvent(new CustomEvent('product-info:loaded', { bubbles: true }));
       }
 
       addPreProcessCallback(callback) {
         this.preProcessHtmlCallbacks.push(callback);
+      }
+
+      initVariantSyncHandlers() {
+        console.log("initVariantSyncHandlers");
       }
 
       initQuantityHandlers() {
@@ -44,6 +55,67 @@ if (!customElements.get('product-info')) {
         if (!this.dataset.originalSection) {
           this.cartUpdateUnsubscriber = subscribe(PUB_SUB_EVENTS.cartUpdate, this.fetchQuantityRules.bind(this));
         }
+      }
+
+      initStickyQuantityHandlers() {
+        if (!this.stickyQuantityInput || !this.quantityInput) return;
+
+        // Initialize sticky value to match main
+        this.syncStickyFromMain();
+
+        // Listen to sticky input changes → update main
+        const onStickyChange = () => this.syncMainFromSticky();
+        this.stickyQuantityInput.addEventListener('input', onStickyChange);
+        this.stickyQuantityInput.addEventListener('change', onStickyChange);
+
+        // Listen to main input changes → update sticky
+        const onMainChange = () => this.syncStickyFromMain();
+        this.quantityInput.addEventListener('input', onMainChange);
+        this.quantityInput.addEventListener('change', onMainChange);
+
+        // Ensure sticky constraints mirror main
+        this.syncStickyConstraintsFromMain();
+      }
+
+      syncMainFromSticky() {
+        if (!this.stickyQuantityInput || !this.quantityInput) return;
+        if (this.isSyncingQuantity) return;
+        this.isSyncingQuantity = true;
+        try {
+          // Mirror value
+          this.quantityInput.value = this.stickyQuantityInput.value;
+          // Dispatch change so existing listeners react
+          this.quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
+          publish?.(PUB_SUB_EVENTS.quantityUpdate, undefined);
+        } finally {
+          this.isSyncingQuantity = false;
+        }
+      }
+
+      syncStickyFromMain() {
+        if (!this.stickyQuantityInput || !this.quantityInput) return;
+        if (this.isSyncingQuantity) return;
+        this.isSyncingQuantity = true;
+        try {
+          this.stickyQuantityInput.value = this.quantityInput.value;
+          // Keep constraints in sync as well
+          this.syncStickyConstraintsFromMain();
+        } finally {
+          this.isSyncingQuantity = false;
+        }
+      }
+
+      syncStickyConstraintsFromMain() {
+        if (!this.stickyQuantityInput || !this.quantityInput) return;
+        const attrs = ['data-cart-quantity', 'data-min', 'data-max', 'step', 'min', 'max'];
+        attrs.forEach((attr) => {
+          const val = this.quantityInput.getAttribute(attr);
+          if (val !== null) {
+            this.stickyQuantityInput.setAttribute(attr, val);
+          } else {
+            this.stickyQuantityInput.removeAttribute(attr);
+          }
+        });
       }
 
       disconnectedCallback() {
@@ -78,6 +150,7 @@ if (!customElements.get('product-info')) {
             ? this.handleSwapProduct(productUrl, shouldFetchFullPage)
             : this.handleUpdateProductInfo(productUrl, event.target),
         });
+
       }
 
       resetProductFormState() {
@@ -275,9 +348,13 @@ if (!customElements.get('product-info')) {
 
       updateVariantInputs(variantId) {
         this.querySelectorAll(
-          `#product-form-${this.dataset.section}, #product-form-installment-${this.dataset.section}, #product-form-edit-${this.dataset.section}`
-        )?.forEach((productForm) => {
+          `#product-form-${this.dataset.section},
+           #product-form-installment-${this.dataset.section},
+           #product-form-sticky-${this.dataset.section},
+           #product-form-edit-${this.dataset.section}`
+        ).forEach((productForm) => {
           const input = productForm.querySelector('input[name="id"]');
+          
           input.value = variantId ?? '';
           input.dispatchEvent(new Event('change', { bubbles: true }));
         });
@@ -434,6 +511,10 @@ if (!customElements.get('product-info')) {
                 current.removeAttribute(attribute);
               }
             }
+            // Keep sticky input attributes in sync with main
+            this.syncStickyConstraintsFromMain();
+            // Also mirror current value
+            this.syncStickyFromMain();
           } else {
             current.innerHTML = updated.innerHTML;
           }
@@ -482,26 +563,47 @@ if (!customElements.get('product-info')) {
       }
 
       handleBackInStockAlert(data) {
-        const productForm = data.productForm;
+        const productForm = data?.productForm;
+        if (!productForm) return;
 
         const backInStockAlert = document.querySelector('.back-in-stock-alert');
+        const backInStockSelect = document.querySelector('.back-instock-select');
+        const backInStockVariant = document.querySelector('[data-back-instock-variant]');
 
-        if (!backInStockAlert || !productForm) return;
+        const updateAlert = () => {
+          if (!backInStockAlert) return;
 
-        setTimeout(() => {
           const quantityInput = productForm.querySelector('.quantity__input');
-          const currentVariantStock = quantityInput.getAttribute('data-inventory-quantity');
-          const inventoryPolicy = quantityInput.getAttribute('data-inventory-policy');
+          if (!quantityInput) return;
 
-          if (!currentVariantStock) return;
+          const qtyAttr = quantityInput.getAttribute('data-inventory-quantity');
+          const policy = quantityInput.getAttribute('data-inventory-policy') || 'deny';
+          const qty = qtyAttr !== null ? Number(qtyAttr) : null;
 
-          backInStockAlert.classList.toggle('hidden', currentVariantStock > 0);
-
-          if (inventoryPolicy === 'continue') {
+          if (policy === 'continue' || (qty !== null && qty > 0)) {
             backInStockAlert.classList.add('hidden');
+          } else if (qty !== null) {
+            backInStockAlert.classList.remove('hidden');
           }
-        }, 100);
+        };
 
+        // Try immediately (in case attributes are already present), then again after a short delay.
+        updateAlert();
+        setTimeout(updateAlert, 100);
+
+        if (backInStockSelect) {
+          const currentVariantId = productForm.querySelector('input[name="id"]')?.value;
+          if (currentVariantId) {
+            const options = backInStockSelect.querySelectorAll('option');
+            options.forEach((option) => {
+              const isSelected = option.value === currentVariantId;
+              option.selected = isSelected;
+              if (isSelected && backInStockVariant) {
+                backInStockVariant.innerHTML = option.innerHTML;
+              }
+            });
+          }
+        }
       }
 
       updateAddButtonText(data) {
@@ -526,6 +628,12 @@ if (!customElements.get('product-info')) {
 
           quantityInput.setAttribute('data-inventory-quantity', inventoryQuantity);
           quantityInput.setAttribute('data-inventory-policy', inventoryPolicy);
+
+          // Mirror to sticky input as well
+          if (this.stickyQuantityInput) {
+            this.stickyQuantityInput.setAttribute('data-inventory-quantity', inventoryQuantity);
+            this.stickyQuantityInput.setAttribute('data-inventory-policy', inventoryPolicy);
+          }
 
           const addButton = productForm.querySelector('[name="add"]');
           const addButtonText = productForm.querySelector('[name="add"] > .add-to-cart-text');

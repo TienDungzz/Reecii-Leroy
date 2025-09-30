@@ -8,6 +8,8 @@
   @param {object} [block] - The block object
   @param {boolean} is_color - Whether the option is a color.
   @param {number} index - The index of the option.
+  @param {string} section_name - The section name.
+  @param {boolean} sbs_variant_picker - Whether the variant picker is a sbs variant picker.
 {%- enddoc -%}
 
 {%- liquid
@@ -27,7 +29,11 @@
       -%}
 
       {%- capture input_id -%}
-        {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- if block.id -%}
+          {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- else -%}
+          StickyCart-{{ option.name | handle }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- endif -%}
       {%- endcapture -%}
 
       {%- capture input_name -%}
@@ -194,7 +200,7 @@
     {% if section_name == '-bundle' %}</div>{% else %}</color-swatch>{% endif %}
   {%- elsif variant_style == 'dropdowns' -%}
     <select
-      id="Option-{{ block.id }}-{{ index }}"
+      id="{%- if block.id -%}Option-{{ block.id }}-{{ index }}{%- else -%}StickyCart-Option-{{ option.name | handle }}-{{ index }}{%- endif -%}"
       class="select__select variant-option__select variant-option__select--has-swatch"
       name="options[{{ option.name | escape }}]"
       form="{{ product_form_id }}"
@@ -223,7 +229,11 @@
       -%}
 
       {%- capture input_id -%}
-        {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- if block.id -%}
+          {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- else -%}
+          StickyCart-{{ option.name | handle }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- endif -%}
       {%- endcapture -%}
 
       {%- capture input_name -%}
@@ -285,7 +295,7 @@
     {{ product_variants }}
   {%- elsif variant_style == 'dropdowns' -%}
     <select
-      id="Option-{{ block.id }}-{{ index }}"
+      id="{%- if block.id -%}Option-{{ block.id }}-{{ index }}{%- else -%}StickyCart-Option-{{ option.name | handle }}-{{ index }}{%- endif -%}"
       class="select__select variant-option__select"
       name="options[{{ option.name | escape }}]"
       form="{{ product_form_id }}"
