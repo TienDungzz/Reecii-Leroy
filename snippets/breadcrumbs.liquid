@@ -6,7 +6,7 @@
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "{{ 'blocks.breadcrumb.home' | t | escape }}",
+      "name": "{{ 'content.breadcrumb.home' | t | escape }}",
       "item": "{{ routes.root_url | prepend: request.host | prepend: 'https://' }}"
     }
     {%- assign position = 2 -%}
@@ -14,7 +14,7 @@
       ,{
         "@type": "ListItem",
         "position": {{ position }},
-        "name": "{{ 'blocks.breadcrumb.collections' | t | escape }}",
+        "name": "{{ 'content.breadcrumb.collections' | t | escape }}",
         "item": "{{ routes.collections_url | prepend: request.host | prepend: 'https://' }}"
       }
       {%- assign position = position | plus: 1 -%}
@@ -36,7 +36,7 @@
         ,{
           "@type": "ListItem",
           "position": {{ position }},
-          "name": "{{ 'blocks.breadcrumb.collections' | t | escape }}",
+          "name": "{{ 'content.breadcrumb.collections' | t | escape }}",
           "item": "{{ routes.collections_url | prepend: request.host | prepend: 'https://' }}"
         }
         {%- assign position = position | plus: 1 -%}
@@ -58,7 +58,7 @@
       ,{
         "@type": "ListItem",
         "position": {{ position }},
-        "name": "{{ 'blocks.breadcrumb.blogs' | t | escape }}",
+        "name": "{{ 'content.breadcrumb.blogs' | t | escape }}",
         "item": "{{ routes.blogs_url | prepend: request.host | prepend: 'https://' }}"
       }
       {%- assign position = position | plus: 1 -%}
@@ -81,14 +81,14 @@
       ,{
         "@type": "ListItem",
         "position": {{ position }},
-        "name": "{{ 'blocks.breadcrumb.search' | t | escape }}",
+        "name": "{{ 'content.breadcrumb.search' | t | escape }}",
         "item": "{{ request.url }}"
       }
     {%- elsif template.name == 'cart' -%}
       ,{
         "@type": "ListItem",
         "position": {{ position }},
-        "name": "{{ 'blocks.breadcrumb.cart' | t | escape }}",
+        "name": "{{ 'content.breadcrumb.cart' | t | escape }}",
         "item": "{{ request.url }}"
       }
     {%- elsif template.name contains 'page' and page -%}
@@ -152,7 +152,7 @@
 {% capture separator %}
   {%- case settings.separator %}
     {% when 'slash' %}
-      {{ 'blocks.breadcrumb.separator' | t }}
+      {{ 'content.breadcrumb.separator' | t }}
     {% when 'caret' %}
     <span class="svg-wrapper">
       {{- 'icon-caret.svg' | inline_asset_content -}}
@@ -169,7 +169,7 @@
   class="link link--effect-unnderline link--text"
 {%- endcapture -%}
 
-<nav class="breadcrumbs element-margin-bottom custom-font-size" role="navigation" aria-label="{{ 'blocks.breadcrumb.title' | t }}" style="--font-size: {{ settings.font_size }};">
+<nav class="breadcrumbs element-margin-bottom custom-font-size" role="navigation" aria-label="{{ 'content.breadcrumb.title' | t }}" style="--font-size: {{ settings.font_size }};">
   <ol
     class="breadcrumbs__list list-unstyled flex justify-{{ settings.horizontal_alignment }} items-center gap-style"
     style="{% render 'gap-style', value: settings.gap %}"
@@ -177,10 +177,10 @@
     <li {{ attr_item }}>
       <a
         href="{{ routes.root_url }}"
-        title="{{ 'blocks.breadcrumb.home_link_title' | t }}"
+        title="{{ 'content.breadcrumb.home_link_title' | t }}"
         {{ class_link }}
       >
-        <span>{{ 'blocks.breadcrumb.home' | t }}</span>
+        <span>{{ 'content.breadcrumb.home' | t }}</span>
       </a>
 
       <span class="breadcrumbs__separator">
@@ -193,10 +193,10 @@
       <li {{ attr_item }}>
         <a
           href="{{ routes.collections_url }}"
-          title="{{ 'blocks.breadcrumb.collections' | t }}"
+          title="{{ 'content.breadcrumb.collections' | t }}"
           {{ class_link }}
         >
-          <span>{{ 'blocks.breadcrumb.collections' | t }}</span>
+          <span>{{ 'content.breadcrumb.collections' | t }}</span>
         </a>
         <span class="breadcrumbs__separator">
           {{ separator }}
@@ -218,10 +218,10 @@
         <li {{ attr_item }}>
           <a
             href="{{ routes.collections_url }}"
-            title="{{ 'blocks.breadcrumb.collections' | t }}"
+            title="{{ 'content.breadcrumb.collections' | t }}"
             {{ class_link }}
           >
-            <span>{{ 'blocks.breadcrumb.collections' | t }}</span>
+            <span>{{ 'content.breadcrumb.collections' | t }}</span>
           </a>
           <span class="breadcrumbs__separator">
             {{ separator }}
@@ -249,10 +249,10 @@
       <li {{ attr_item }}>
         <a
           href="{{ routes.blogs_url }}"
-          title="{{ 'blocks.breadcrumb.blogs' | t }}"
+          title="{{ 'content.breadcrumb.blogs' | t }}"
           {{ class_link }}
         >
-          <span>{{ 'blocks.breadcrumb.blogs' | t }}</span>
+          <span>{{ 'content.breadcrumb.blogs' | t }}</span>
         </a>
         <span class="breadcrumbs__separator">
           {{ separator }}
@@ -277,11 +277,11 @@
       {% endif %}
     {% elsif template.name == 'search' %}
       <li {{ attr_item }}>
-        <span>{{ 'blocks.breadcrumb.search' | t }}</span>
+        <span>{{ 'content.breadcrumb.search' | t }}</span>
       </li>
     {% elsif template.name == 'cart' %}
       <li {{ attr_item }}>
-        <span>{{ 'blocks.breadcrumb.cart' | t }}</span>
+        <span>{{ 'content.breadcrumb.cart' | t }}</span>
       </li>
     {% elsif template.name contains 'page' and page %}
       <li {{ attr_item }}>

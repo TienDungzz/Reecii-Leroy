@@ -33,7 +33,7 @@
         <{{ details_summary }}
           class="header__icon header__icon--search header__icon--summary link focus-inset modal__toggle"
           aria-haspopup="dialog"
-          aria-label="{{ 'general.search.search' | t }}"
+          aria-label="{{ 'content.search' | t }}"
         >
           <span class="svg-wrapper">
             {{- 'icon-search.svg' | inline_asset_content -}}
@@ -47,7 +47,7 @@
           class="search-modal search-modal--{{ search_type }} modal__content"
           role="dialog"
           aria-modal="true"
-          aria-label="{{ 'general.search.search' | t }}"
+          aria-label="{{ 'content.search' | t }}"
         >
           <div class="modal-overlay"></div>
           <div
@@ -62,7 +62,7 @@
             <form action="{{ routes.search_url }}" method="get" role="search" class="search search-modal__form">
               <div class="predictive-search--center">
                 <div class="field">
-                  <button class="search__button field__button" aria-label="{{ 'general.search.search' | t }}">
+                  <button class="search__button field__button" aria-label="{{ 'content.search' | t }}">
                     <span class="svg-wrapper">
                       {{- 'icon-search.svg' | inline_asset_content -}}
                     </span>
@@ -73,7 +73,7 @@
                     type="search"
                     name="q"
                     value="{{ search.terms | escape }}"
-                    placeholder="{{ 'general.search.search' | t }}"
+                    placeholder="{{ 'content.search' | t }}"
                     {%- if settings.predictive_search_enabled -%}
                       role="combobox"
                       aria-expanded="false"
@@ -87,12 +87,12 @@
                       spellcheck="false"
                     {%- endif -%}
                   >
-                  <label class="field__label" for="{{ input_id }}">{{ 'general.search.search' | t }}</label>
+                  <label class="field__label" for="{{ input_id }}">{{ 'content.search' | t }}</label>
                   <input type="hidden" name="options[prefix]" value="last">
                   <button
                     type="reset"
                     class="reset__button field__button{% if search.terms == blank %} hidden{% endif %}"
-                    aria-label="{{ 'general.search.reset' | t }}"
+                    aria-label="{{ 'content.clear_search_term' | t }}"
                   >
                     <span class="svg-wrapper">
                       {{- 'icon-close.svg' | inline_asset_content -}}

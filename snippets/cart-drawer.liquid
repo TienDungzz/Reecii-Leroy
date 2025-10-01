@@ -22,7 +22,7 @@
       class="drawer__inner color-{{ section.settings.color_scheme }} cus-scrollbar"
       role="dialog"
       aria-modal="true"
-      aria-label="{{ 'sections.cart.title' | t }}"
+      aria-label="{{ 'content.your_cart' | t }}"
       tabindex="-1"
     >
       {%- if cart == empty -%}
@@ -40,15 +40,15 @@
           </div>
           <div class="cart-drawer__warnings flex flex-column flex-1 justify-center center{% if section.settings.cart_drawer_collection != blank %} cart-drawer__warnings--has-collection{% endif %}">
             <div class="cart-drawer__empty-content">
-              <h2 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h2>
+              <h2 class="cart__empty-text">{{ 'content.empty' | t }}</h2>
               <a href="{{ routes.all_products_collection_url }}" class="button">
-                {{ 'general.continue_shopping' | t }}
+                {{ 'content.continue_shopping' | t }}
               </a>
 
               {%- if shop.customer_accounts_enabled and customer == null -%}
-                <p class="cart__login-title h3">{{ 'sections.cart.login.title' | t }}</p>
+                <p class="cart__login-title h3">{{ 'content.login.title' | t }}</p>
                 <p class="cart__login-paragraph">
-                  {{ 'sections.cart.login.paragraph_html' | t: link: routes.account_login_url }}
+                  {{ 'content.login.paragraph_html' | t: link: routes.account_login_url }}
                 </p>
               {%- endif -%}
             </div>
@@ -61,7 +61,7 @@
         </div>
       {%- else -%}
         <div class="drawer__header flex justify-between items-center relative" style="--p: 1.5rem 0;">
-          <h2 class="drawer__heading break m-0 h6">{{ 'sections.cart.title' | t }}</h2>
+          <h2 class="drawer__heading break m-0 h6">{{ 'content.your_cart' | t }}</h2>
           <button
             class="drawer__close block t-button bor-none rounded-full cursor-pointer"
             type="button"
@@ -103,7 +103,7 @@
                   <thead role="rowgroup" class="hidden">
                     <tr role="row">
                       <th id="CartDrawer-ColumnProductImage" role="columnheader">
-                        <span class="visually-hidden">{{ 'sections.cart.headings.image' | t }}</span>
+                        <span class="visually-hidden">{{ 'content.headings.image' | t }}</span>
                       </th>
                       <th
                         id="CartDrawer-ColumnProduct"
@@ -111,7 +111,7 @@
                         scope="col"
                         role="columnheader"
                       >
-                        {{ 'sections.cart.headings.product' | t }}
+                        {{ 'content.headings.product' | t }}
                       </th>
                       <th
                         id="CartDrawer-ColumnTotal"
@@ -119,10 +119,10 @@
                         scope="col"
                         role="columnheader"
                       >
-                        {{ 'sections.cart.headings.total' | t }}
+                        {{ 'content.headings.total' | t }}
                       </th>
                       <th id="CartDrawer-ColumnQuantity" role="columnheader">
-                        <span class="visually-hidden">{{ 'sections.cart.headings.quantity' | t }}</span>
+                        <span class="visually-hidden">{{ 'content.headings.quantity' | t }}</span>
                       </th>
                     </tr>
                   </thead>
@@ -175,7 +175,7 @@
                                       data-edit-cart-quantity="{{ item.quantity }}"
                                       data-line="{{ item.key }}"
                                       data-index="{{ item.index | plus: 1 }}"
-                                      title="{{ 'general.cart.edit_title' | t: title: item.variant.title }}"
+                                      title="{{ 'content.cart.edit_title' | t: title: item.variant.title }}"
                                     >
                                       <span class="svg-wrapper">
                                         {% render 'icon-edit' %}
@@ -379,7 +379,7 @@
                                 <button
                                   type="button"
                                   class="button button--tertiary cart-remove-button"
-                                  aria-label="{{ 'sections.cart.remove_title' | t: title: item.title | escape }}"
+                                  aria-label="{{ 'content.remove_title' | t: title: item.title | escape }}"
                                   data-variant-id="{{ item.variant.id }}"
                                 >
                                   <span class="svg-wrapper">
@@ -505,19 +505,19 @@
           <details id="Details-CartDrawer" is="collapsible-details">
             <summary class="cart__note-summary">
               <span class="cart__note-label">
-                {{ 'sections.cart.note' | t }}
+                {{ 'content.note' | t }}
               </span>
               <span class="svg-wrapper">
                 {{- 'icon-caret.svg' | inline_asset_content -}}
               </span>
             </summary>
             <cart-note class="cart__note field" style="--inputs-radius: 0.5rem;">
-              <label class="visually-hidden" for="CartDrawer-Note">{{ 'sections.cart.note' | t }}</label>
+              <label class="visually-hidden" for="CartDrawer-Note">{{ 'content.note' | t }}</label>
               <textarea
                 id="CartDrawer-Note"
                 class="text-area text-area--resize-vertical field__input"
                 name="note"
-                placeholder="{{ 'sections.cart.note' | t }}"
+                placeholder="{{ 'content.note' | t }}"
               >{{ cart.note }}</textarea>
             </cart-note>
           </details>
@@ -542,44 +542,44 @@
           </div>
 
           <div class="totals" role="status">
-            <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>
+            <h2 class="totals__total">{{ 'content.estimated_total' | t }}</h2>
             <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>
           </div>
 
           <small class="tax-note caption-large rte">
             {%- if cart.duties_included and cart.taxes_included -%}
               {%- if shop.shipping_policy.body == blank -%}
-                {{ 'sections.cart.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
+                {{ 'content.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
               {%- else -%}
                 {{
-                  'sections.cart.duties_and_taxes_included_shipping_at_checkout_with_policy_html'
+                  'content.duties_and_taxes_included_shipping_at_checkout_with_policy_html'
                   | t: link: shop.shipping_policy.url
                 }}
               {%- endif -%}
             {%- elsif cart.duties_included == false and cart.taxes_included -%}
               {%- if shop.shipping_policy.body == blank -%}
-                {{ 'sections.cart.taxes_included_shipping_at_checkout_without_policy' | t }}
+                {{ 'content.taxes_included_shipping_at_checkout_without_policy' | t }}
               {%- else -%}
                 {{
-                  'sections.cart.taxes_included_shipping_at_checkout_with_policy_html'
+                  'content.taxes_included_shipping_at_checkout_with_policy_html'
                   | t: link: shop.shipping_policy.url
                 }}
               {%- endif -%}
             {%- elsif cart.duties_included and cart.taxes_included == false -%}
               {%- if shop.shipping_policy.body == blank -%}
-                {{ 'sections.cart.duties_included_taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+                {{ 'content.duties_included_taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
               {%- else -%}
                 {{
-                  'sections.cart.duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_html'
+                  'content.duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_html'
                   | t: link: shop.shipping_policy.url
                 }}
               {%- endif -%}
             {%- elsif cart.duties_included == false and cart.taxes_included == false -%}
               {%- if shop.shipping_policy.body == blank -%}
-                {{ 'sections.cart.taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+                {{ 'content.taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
               {%- else -%}
                 {{
-                  'sections.cart.taxes_at_checkout_shipping_at_checkout_with_policy_html'
+                  'content.taxes_at_checkout_shipping_at_checkout_with_policy_html'
                   | t: link: shop.shipping_policy.url
                 }}
               {%- endif -%}
@@ -595,7 +595,7 @@
             id="CartDrawer-Viewcart"
             class="cart__viewcart-button button button-secondary button--full-width"
           >
-            {{- 'general.cart.view_empty_cart' | t -}}
+            {{- 'content.cart.view_empty_cart' | t -}}
           </a>
           <button
             type="submit"
@@ -607,7 +607,7 @@
               disabled
             {% endif %}
           >
-            {{ 'sections.cart.checkout' | t }}
+            {{ 'content.checkout' | t }}
           </button>
         </div>
       </div>

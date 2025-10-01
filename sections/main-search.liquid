@@ -71,9 +71,9 @@
         <div class="template-search__header{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
           <h1 class="h2 center">
             {%- if search.performed -%}
-              {{- 'templates.search.title' | t -}}
+              {{- 'content.search_results' | t -}}
             {%- else -%}
-              {{- 'general.search.search' | t -}}
+              {{- 'content.search' | t -}}
             {%- endif -%}
           </h1>
           <div class="template-search__search">
@@ -89,7 +89,7 @@
                     type="search"
                     name="q"
                     value="{{ search.terms | escape }}"
-                    placeholder="{{ 'general.search.search' | t }}"
+                    placeholder="{{ 'content.search' | t }}"
                     {%- if settings.predictive_search_enabled -%}
                       role="combobox"
                       aria-expanded="false"
@@ -103,7 +103,7 @@
                       spellcheck="false"
                     {%- endif -%}
                   >
-                  <label class="field__label" for="Search-In-Template">{{ 'general.search.search' | t }}</label>
+                  <label class="field__label" for="Search-In-Template">{{ 'content.search' | t }}</label>
                   <input name="options[prefix]" type="hidden" value="last">
 
                   {%- if settings.predictive_search_enabled -%}
@@ -121,7 +121,7 @@
                   <button
                     type="reset"
                     class="reset__button field__button{% if search.terms == blank %} hidden{% endif %}"
-                    aria-label="{{ 'general.search.reset' | t }}"
+                    aria-label="{{ 'content.clear_search_term' | t }}"
                   >
                     <span class="svg-wrapper">
                       {{- 'icon-reset.svg' | inline_asset_content -}}
@@ -130,7 +130,7 @@
                   <button
                     type="submit"
                     class="search__button field__button"
-                    aria-label="{{ 'general.search.search' | t }}"
+                    aria-label="{{ 'content.search' | t }}"
                   >
                     <span class="svg-wrapper">
                       {{- 'icon-search.svg' | inline_asset_content -}}
@@ -148,14 +148,14 @@
               {%- if search.results_count > 0 -%}
                 <p role="status">
                   {{
-                    'templates.search.results_with_count_and_term'
+                    'content.results_with_count_and_term'
                     | t: terms: search.terms, count: search.results_count
                   }}
                 </p>
               {%- endif -%}
             {%- endunless -%}
             {%- if search.results_count == 0 and search.filters == empty -%}
-              <p role="status">{{ 'templates.search.no_results' | t: terms: search.terms }}</p>
+              <p role="status">{{ 'content.no_results' | t: terms: search.terms }}</p>
             {%- endif -%}
           {%- endif -%}
         </div>
@@ -212,10 +212,10 @@
                   <div class="loading-overlay"></div>
                   <div class="title-wrapper center">
                     <h2 class="title title--primary">
-                      {{ 'sections.collection_template.empty' | t -}}
+                      {{ 'content.no_products_found' | t -}}
                       <br>
                       {{
-                        'sections.collection_template.use_fewer_filters_html'
+                        'content.use_fewer_filters_html'
                         | t: link: search_url, class: 'underlined-link link'
                       }}
                     </h2>
@@ -322,7 +322,7 @@
                                 </div>
                                 <div class="card__badge relative {{ settings.badge_position }}">
                                   <span class="badge color-{{ settings.color_schemes | first }}">
-                                    {{- 'templates.search.page' | t -}}
+                                    {{- 'content.page' | t -}}
                                   </span>
                                 </div>
                               </div>
@@ -395,7 +395,7 @@
                                     </div>
                                     <div class="card__badge relative {{ settings.badge_position }}">
                                       <span class="badge color-{{ settings.color_schemes | first }}">
-                                        {{- 'templates.search.page' | t -}}
+                                        {{- 'content.page' | t -}}
                                       </span>
                                     </div>
                                   </div>
@@ -413,7 +413,7 @@
                         <span id="ProductCount">
                           {%- if search.results_count -%}
                             {{
-                              'templates.search.results_with_count'
+                              'content.results_with_count'
                               | t: terms: search.terms, count: search.results_count
                             }}
                           {%- elsif search.products_count == search.all_products_count -%}

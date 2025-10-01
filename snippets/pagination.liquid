@@ -47,7 +47,7 @@
     <nav
       class="pagination{% if pagination_type == 'infinite' %} hidden{% endif %}"
       role="navigation"
-      aria-label="{{ 'general.pagination.label' | t }}"
+      aria-label="{{ 'content.pagination.label' | t }}"
     >
       <ul class="{{ list_class }}" role="list">
         {%- if paginate.previous -%}
@@ -55,9 +55,9 @@
             <a
               href="{{ paginate.previous.url }}{{ anchor }}"
               class="{{ item_class }} pagination__item--prev pagination__item-arrow link motion-reduce"
-              aria-label="{{ 'general.pagination.previous' | t }}"
+              aria-label="{{ 'content.pagination.previous' | t }}"
             >
-              <span class="visually-hidden">{{ 'general.pagination.button_previous' | t }}</span>
+              <span class="visually-hidden">{{ 'content.pagination.button_previous' | t }}</span>
               <span class="svg-wrapper">
                 {{ icons_style }}
               </span>
@@ -71,7 +71,7 @@
               <a
                 href="{{ part.url }}{{ anchor }}"
                 class="{{ item_class }} link"
-                aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+                aria-label="{{ 'content.pagination.page' | t: number: part.title }}"
               >
                 {{- part.title -}}
               </a>
@@ -82,7 +82,7 @@
                   aria-disabled="true"
                   class="{{ item_class }} pagination__item--current light"
                   aria-current="page"
-                  aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+                  aria-label="{{ 'content.pagination.page' | t: number: part.title }}"
                 >
                   {{- part.title -}}
                 </a>
@@ -98,9 +98,9 @@
             <a
               href="{{ paginate.next.url }}{{ anchor }}"
               class="{{ item_class }} pagination__item--next pagination__item-arrow link motion-reduce"
-              aria-label="{{ 'general.pagination.next' | t }}"
+              aria-label="{{ 'content.pagination.next' | t }}"
             >
-              <span class="visually-hidden">{{ 'general.pagination.button_next' | t }}</span>
+              <span class="visually-hidden">{{ 'content.pagination.button_next' | t }}</span>
               <span class="svg-wrapper">
                 {{ icons_style }}
               </span>
@@ -114,7 +114,7 @@
       <!-- Infinite Scrolling Button -->
       <infinite-scrolling class="infinite-scrolling-wrapper block center">
         <div class="pagination-page-item pagination-page-total flex-center flex-wrap gap-2xs">
-          <span>{{ 'sections.collection_template.start_count' | t }}</span>
+          <span>{{ 'content.start_count' | t }}</span>
           <span data-total-start>{{ paginate.current_offset | plus: 1 }}</span>
           <span>-</span>
           {%- if paginate.next -%}
@@ -122,7 +122,7 @@
           {%- else -%}
             <span data-total-end>{{ paginate.items }}</span>
           {%- endif -%}
-          <span>{{ 'sections.collection_template.end_count' | t: count: paginate.items }}</span>
+          <span>{{ 'content.end_count' | t: count: paginate.items }}</span>
           {%- if paginate.next -%}
             {% liquid
               assign pg_current = paginate.current_offset | plus: paginate.page_size
@@ -143,13 +143,13 @@
           type="button"
           class="button button--primary infinite-scrolling-btn"
           data-infinite-scrolling
-          aria-label="{{ 'sections.collection_template.show_more' | t }}"
+          aria-label="{{ 'content.show_more' | t }}"
         >
           <span class="text">
             {%- if paginate.next -%}
-              {{ 'sections.collection_template.show_more' | t }}
+              {{ 'content.show_more' | t }}
             {%- else -%}
-              {{ 'sections.collection_template.no_more' | t }}
+              {{ 'content.no_more' | t }}
             {%- endif -%}
           </span>
           {% render 'loading-spinner' %}
