@@ -31,7 +31,6 @@ if (!customElements.get('quick-add-modal')) {
 
           this.preprocessHTML(productElement);
           HTMLUpdateUtility.setInnerHTML(this.modalContent, productElement.outerHTML);
-
           if (window.Shopify && Shopify.PaymentButton) Shopify.PaymentButton.init();
           if (window.ProductModel) window.ProductModel.loadShopifyXR();
 
@@ -42,6 +41,7 @@ if (!customElements.get('quick-add-modal')) {
           opener.classList.remove('loading');
           opener.querySelector('.loading__spinner').classList.add('hidden');
         });
+
     }
 
     preprocessHTML(productElement) {
@@ -76,14 +76,14 @@ if (!customElements.get('quick-add-modal')) {
       const sideDrawerOpener = productElement.querySelectorAll('side-drawer-opener');
       if (sideDrawerOpener) {
         sideDrawerOpener.forEach((button) => {
-          if (!button.classList.contains('product-sizechar-popup-modal__opener')) button.remove()
+          if (!button.classList.contains('product-popup-modal__opener--keep')) button.remove()
         })
       };
 
       const sideDrawer = productElement.querySelectorAll('side-drawer');
       if (sideDrawer) {
         sideDrawer.forEach((drawer) => {
-           if (!drawer.classList.contains('size-chart-popup-modal')) drawer.remove()
+           if (!drawer.classList.contains('product-popup-modal__drawer--keep')) drawer.remove()
         })
       };
     }

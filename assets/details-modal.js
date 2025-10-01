@@ -4,11 +4,19 @@ class DetailsModal extends HTMLElement {
     this.detailsContainer = this.querySelector('details');
     this.summaryToggle = this.querySelector('summary');
 
-    this.detailsContainer.addEventListener('keyup', (event) => event.code === 'Escape' && this.close());
-    this.summaryToggle.addEventListener('click', this.onSummaryClick.bind(this));
-    this.querySelector('button[type="button"]').addEventListener('click', this.close.bind(this));
+    if (this.detailsContainer) {
+      this.detailsContainer.addEventListener('keyup', (event) => event.code === 'Escape' && this.close());
+    }
+    
+    if (this.summaryToggle) {
+      this.summaryToggle.addEventListener('click', this.onSummaryClick.bind(this));
+      this.summaryToggle.setAttribute('role', 'button');
+    }
 
-    this.summaryToggle.setAttribute('role', 'button');
+    const closeButton = this.querySelector('button[type="button"]');
+    if (closeButton) {
+      closeButton.addEventListener('click', this.close.bind(this));
+    }
   }
 
   isOpen() {
@@ -30,15 +38,19 @@ class DetailsModal extends HTMLElement {
     document.body.addEventListener('click', this.onBodyClickEvent);
     document.body.classList.add('overflow-hidden');
 
-    trapFocus(
-      this.detailsContainer.querySelector('[tabindex="-1"]'),
-      this.detailsContainer.querySelector('input:not([type="hidden"])')
-    );
+    if (this.detailsContainer) {
+      trapFocus(
+        this.detailsContainer.querySelector('[tabindex="-1"]'),
+        this.detailsContainer.querySelector('input:not([type="hidden"])')
+      );
+    }
   }
 
   close(focusToggle = true) {
     removeTrapFocus(focusToggle ? this.summaryToggle : null);
-    this.detailsContainer.removeAttribute('open');
+    if (this.detailsContainer) {
+      this.detailsContainer.removeAttribute('open');
+    }
     document.body.removeEventListener('click', this.onBodyClickEvent);
     document.body.classList.remove('overflow-hidden');
   }

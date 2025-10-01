@@ -8,6 +8,8 @@
   @param {object} [block] - The block object
   @param {boolean} is_color - Whether the option is a color.
   @param {number} index - The index of the option.
+  @param {string} section_name - The section name.
+  @param {boolean} sbs_variant_picker - Whether the variant picker is a sbs variant picker.
 {%- enddoc -%}
 
 {%- liquid
@@ -27,7 +29,11 @@
       -%}
 
       {%- capture input_id -%}
-        {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- if block.id -%}
+          {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- else -%}
+          StickyCart-{{ option.name | handle }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- endif -%}
       {%- endcapture -%}
 
       {%- capture input_name -%}
@@ -55,7 +61,7 @@
               assign variant_option_disabled = false
             endif
           -%}
-          
+
           {%- if color == value -%}
             {%- unless color_list contains color_check -%}
               {%- liquid
@@ -63,7 +69,7 @@
                 assign background_image = ''
                 assign background_color = ''
                 assign has_metaobject = false
-                
+
                 case swatch_type
                 when 'variant_image'
                   assign background_image = variant.image.src | image_url: width: '200x'
@@ -96,7 +102,7 @@
                   endif
                 endcase
               -%}
-              
+
               {%- capture class_swatch -%}
                 swatch cursor-pointer block max-w-full color-swacth-color--{{ color | handle }}
               {%- endcapture -%}
@@ -194,7 +200,7 @@
     {% if section_name == '-bundle' %}</div>{% else %}</color-swatch>{% endif %}
   {%- elsif variant_style == 'dropdowns' -%}
     <select
-      id="Option-{{ block.id }}-{{ index }}"
+      id="{%- if block.id -%}Option-{{ block.id }}-{{ index }}{%- else -%}StickyCart-Option-{{ option.name | handle }}-{{ index }}{%- endif -%}"
       class="select__select variant-option__select variant-option__select--has-swatch"
       name="options[{{ option.name | escape }}]"
       form="{{ product_form_id }}"
@@ -223,7 +229,11 @@
       -%}
 
       {%- capture input_id -%}
-        {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- if block.id -%}
+          {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- else -%}
+          StickyCart-{{ option.name | handle }}-{{ option.position }}-{{ forloop.index0 -}}
+        {%- endif -%}
       {%- endcapture -%}
 
       {%- capture input_name -%}
@@ -280,12 +290,12 @@
       {%- endif -%}
     {%- endfor -%}
   {%- endcapture -%}
-  
+
   {%- if variant_style == 'pills' or variant_style == 'swatch'-%}
     {{ product_variants }}
   {%- elsif variant_style == 'dropdowns' -%}
     <select
-      id="Option-{{ block.id }}-{{ index }}"
+      id="{%- if block.id -%}Option-{{ block.id }}-{{ index }}{%- else -%}StickyCart-Option-{{ option.name | handle }}-{{ index }}{%- endif -%}"
       class="select__select variant-option__select"
       name="options[{{ option.name | escape }}]"
       form="{{ product_form_id }}"

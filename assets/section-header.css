@@ -235,8 +235,12 @@ details[open] > .header__icon--menu .icon-hamburger {
 .header__menu-item:hover {
   color: var(--color-foreground);
 }
-.header__menu-item span {
+.header__menu-item span:not(.svg-wrapper) {
   transition: text-decoration var(--duration-short) ease;
+
+  &.svg-wrapper {
+    margin-right: 0;
+  }
 }
 .menu__link--level-1:hover:before {
   content: "";
@@ -296,9 +300,6 @@ details[open='true'] > .header__menu-item .icon-caret,
 .header__mega-submenu .header__menu-item:hover {
   text-decoration-line: underline;
 }
-.header__menu-item .icon-caret {
-  right: -0.5rem;
-}
 .header__submenu .icon-caret {
   flex-shrink: 0;
   margin-left: 1rem;
@@ -323,9 +324,6 @@ details-disclosure > details {
 .list-menu--inline {
   display: inline-flex;
   flex-wrap: wrap;
-}
-summary.list-menu__item {
-  padding-right: 2.7rem;
 }
 .list-menu__item {
   display: flex;

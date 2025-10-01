@@ -3,27 +3,78 @@
 
 {{ 'section-header.css' | asset_url | stylesheet_tag }}
 
-{%- style -%}
-  .header {
-    padding-block: {{ section.settings.padding_top | times: 0.5 | round: 0 }}px {{ section.settings.padding_bottom | times: 0.5 | round: 0 }}px;
-  }
-  .section-header-main {
-    position: sticky; /* This is for fixing a Safari z-index issue. PR #2147 */
-    margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 }}px;
-  }
-  @media screen and (min-width: 750px) {
-    .section-header-main {
-      margin-bottom: {{ section.settings.margin_bottom }}px;
-    }
-  }
-  @media screen and (min-width: 1025px) {
-    .header {
-      padding-block: {{ section.settings.padding_top }}px {{ section.settings.padding_bottom }}px;
-    }
-  }
-{%- endstyle -%}
-
 {%- liquid
+  assign sec_stts = section.settings
+
+  assign order = 'logo,menu,account,search,mobile_search,actions'
+
+  if shop.customer_accounts_enabled
+    assign order = 'mobile_search,logo,menu,account,search,actions'
+  endif
+
+  assign rows = 'top,bottom' | split: ','
+  assign search_style = settings.search_style
+
+  capture logo
+    render 'header-logo', header_settings: sec_stts, blocks: section.blocks
+  endcapture
+
+  capture menu
+    render 'header-menu', header_settings: sec_stts, blocks: section.blocks
+  endcapture
+
+  capture account
+    render 'header-account', settings: sec_stts, enable_account: sec_stts.show_account
+  endcapture
+
+  capture actions
+    render 'header-functions', settings: sec_stts, blocks: section.blocks, enable_menu_drawer: true, enable_localization: true, enable_search: true, enable_account: true, enable_cart: true
+  endcapture
+
+  capture search
+    render 'header-search', input_id: 'Search-In-Modal', search_type: search_type
+  endcapture
+
+  # Skip mobile search under specific conditions:
+  # Always render if search_row is bottom
+  # Don't render when shop.customer_accounts_enabled is false and search_position is left and search_style is not none
+  assign skip_mobile_search = false
+  if shop.customer_accounts_enabled == false and sec_stts.search_position == 'left' and search_style != 'none'
+    assign skip_mobile_search = true
+  endif
+
+  if sec_stts.search_row == 'bottom' or search_style != 'none' and skip_mobile_search == false
+    # Mobile search duplicate for when search is not in the right order for mobile layout
+    capture mobile_search
+      render 'header-search', class: 'md:hidden', style: search_style
+    endcapture
+  endif
+
+  if sec_stts.sticky_header_type != 'none'
+    assign is_sticky_header = true
+    assign header_wrapper = 'sticky-header'
+  else
+    assign header_wrapper = 'div'
+  endif
+
+  assign class = 'header'
+
+  if transparent_color_scheme
+    assign class = class | append: ' ' | append: transparent_color_scheme
+  endif
+
+  if section.settings.color_scheme_top.settings.background.alpha != 1
+    assign class = class | append: ' ' | append: 'header--inherit-color-scheme-on-menu-open'
+  endif
+
+  if header_height_class
+    assign class = class | append: ' ' | append: header_height_class
+  endif
+
+  if collapse_header_paddings_class
+    assign class = class | append: ' ' | append: collapse_header_paddings_class
+  endif
+
   for block in section.blocks
     if section.type == '@app'
       assign has_app_block = true
@@ -31,25 +82,240 @@
   endfor
 -%}
 
-<{% if section.settings.sticky_header_type != 'none' %}sticky-header data-sticky-type="{{ section.settings.sticky_header_type }}"{% else %}div{% endif %} class="header-wrapper color-{{ section.settings.color_scheme }}{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}">
-  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}">
-    <div
-      class="group-block group-block--{{ section.id }} flex-section w-full flex flex-{{ section.settings.content_direction }} flex-{{ section.settings.wrap }} items-{{ section.settings.align_items}} justify-{{ section.settings.justify_content }} color-{{ section.settings.color_scheme }}"
-      style="--pl:{{ section.settings.padding_left }}px; --pr:{{ section.settings.padding_right }}px; --pt:{{ section.settings.padding_top }}px; --pb:{{ section.settings.padding_bottom }}px; --gap-x: {{ section.settings.gap_x }}px; --gap-y: {{ section.settings.gap_y }}px;"
-    >
-      {%- case section.settings.logo_position -%}
-        {%- when 'style1' -%}
-          {% render 'header-style-1', blocks: section.blocks, header_settings: section.settings %}
-        {%- when 'style2' -%}
-          {% render 'header-style-2', blocks: section.blocks, header_settings: section.settings %}
-      {%- endcase -%}
+{%- style -%}
+  .header {
+    padding-block: {{ sec_stts.padding_top | times: 0.5 | round: 0 }}px {{ sec_stts.padding_bottom | times: 0.5 | round: 0 }}px;
+  }
+  .section-header-main {
+    position: sticky; /* This is for fixing a Safari z-index issue. PR #2147 */
+    margin-bottom: {{ sec_stts.margin_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-header-main {
+      margin-bottom: {{ sec_stts.margin_bottom }}px;
+    }
+  }
+  @media screen and (min-width: 1025px) {
+    .header {
+      padding-block: {{ sec_stts.padding_top }}px {{ sec_stts.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<{{ header_wrapper }}
+  class="
+    header-wrapper
+    {% if sec_stts.show_line_separator %} header-wrapper--border-bottom{% endif %}
+  "
+  {% if is_sticky_header %}
+    data-sticky-type="{{ sec_stts.sticky_header_type }}"
+  {% endif %}
+>
+  <header
+    class="
+      header
+      header--{{ sec_stts.logo_position }}
+      header--mobile-{{ sec_stts.mobile_logo_position }}
+      {% if sec_stts.menu != blank %} header--has-menu{% endif %}
+      {% if has_app_block %} header--has-app{% endif %}
+      {% if shop.customer_accounts_enabled %} header--has-account{% endif %}
+    "
+  >
+    <div class="group-block group-block--{{ section.id }}">
+      {% comment %}
+        {%- case sec_stts.logo_position -%}
+          {%- when 'style1' -%}
+            {% render 'header-style-1', blocks: section.blocks, header_settings: sec_stts %}
+          {%- when 'style2' -%}
+            {% render 'header-style-2', blocks: section.blocks, header_settings: sec_stts %}
+        {%- endcase -%}
+      {% endcomment %}
+      {% for row in rows %}
+        {% liquid
+          assign scheme = 'color_scheme_' | append: row
+          assign class = 'header__row header__row--[row] color-[row_scheme] section section--full-width-margin section--[section-width]' | replace: '[row]', row | replace: '[row_scheme]', sec_stts[scheme] | replace: '[section-width]', sec_stts.section_width
+
+          case row
+            when 'top'
+              assign first = mobile_menu
+
+              if bottom_row_blocks.size > 0 and section.settings.divider_size == 'page-width'
+                assign class = class | append: ' divider--page-width'
+              endif
+
+              if bottom_row_blocks.size > 0
+                assign border_bottom_setting_id = 'divider_width'
+              else
+                assign border_bottom_setting_id = 'border_width'
+              endif
+            when 'bottom'
+              assign first = ''
+              assign class = class | append: ' mobile:hidden'
+
+              assign border_bottom_setting_id = 'border_width'
+          endcase
+
+          assign style = '--border-bottom-width: [width]px; ' | replace: '[width]', section.settings[border_bottom_setting_id]
+
+          if row == 'top'
+            assign style = style | append: '--border-bottom-width-mobile: [width]px; ' | replace: '[width]', section.settings.border_width
+          endif
+        %}
+
+        {% capture content %}
+          {% render 'header-row',
+            row: row,
+            order: order,
+            settings: sec_stts,
+            first: first,
+            logo: logo,
+            menu: menu,
+            actions: actions,
+            account: account,
+            search: search,
+            mobile_search: mobile_search
+          %}
+        {% endcapture %}
+
+        {% assign content = content | strip %}
+        {% if content != blank %}
+          <div
+            class="{{ class | strip }} {{ order }}"
+            {%- if style != blank -%}
+              style="{{ style | strip }}"
+            {%- endif -%}
+          >
+            <div class="header__columns spacing-style">
+              {{ content }}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
     </div>
   </header>
-</{% if section.settings.sticky_header_type != 'none' %}sticky-header{% else %}div{% endif %}>
+</{{ header_wrapper }}>
 
-{%- if settings.cart_type == "notification" -%}
-  {%- render 'cart-notification', color_scheme: section.settings.color_scheme -%}
+{%- if settings.cart_type == 'notification' -%}
+  {%- render 'cart-notification', color_scheme: sec_stts.color_scheme -%}
 {%- endif -%}
+
+{%- stylesheet -%}
+  .header__column {
+    display: flex;
+    align-items: center;
+
+    /* on mobile, header__column nodes are ignored to create a new grid-template-area based on all visible content */
+    @media screen and (max-width: 749px) {
+      display: contents;
+    }
+  }
+
+  .header__column--left,
+  .header__column--center {
+    gap: var(--gap-xl);
+    grid-area: left;
+  }
+
+  .header__column--center {
+    justify-content: center;
+    grid-area: center;
+
+    header-menu:only-child .overflow-menu::part(list) {
+      justify-content: center;
+    }
+  }
+
+  .header__column--right {
+    gap: var(--gap-xl);
+    justify-content: flex-end;
+    grid-area: right;
+
+    .overflow-menu::part(list) {
+      justify-content: flex-end;
+    }
+  }
+
+  .header__columns {
+    /* Three column layout */
+    --header-left: 1fr;
+    --header-center: auto;
+    --header-right: 1fr;
+    --header-template-columns: var(--header-left) var(--header-center) var(--header-right);
+
+    /* Mobile layout */
+    --header-mobile-bookend: 44px;
+
+    display: grid;
+    grid-template-areas: 'left center right';
+    grid-gap: var(--gap-xl);
+    grid-template-columns: var(--header-template-columns);
+
+    /* If menu is in center column */
+    &:has(.header__column--center header-menu) {
+      --header-center: auto;
+      --header-left: minmax(max-content, 1fr);
+      --header-right: minmax(max-content, 1fr);
+    }
+
+    /* If there is no center column, make the column the menu is in grow eagerly */
+    &:where(:not(:has(.header__column--center))) {
+      @media screen and (min-width: 750px) {
+        --header-template-columns: var(--header-left) var(--header-right);
+
+        grid-template-areas: 'left right';
+      }
+
+      /* If the header-menu is in the right column */
+      &:has(.header__column--right header-menu) {
+        --header-right: auto;
+        --header-left: minmax(max-content, 1fr);
+      }
+
+      /* If the header-menu is in the left column */
+      &:has(.header__column--left header-menu) {
+        --header-left: auto;
+        --header-right: minmax(max-content, 1fr);
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      --header-template-columns: var(--header-mobile-bookend) var(--header-mobile-bookend) 1fr
+        var(--header-mobile-bookend) var(--header-mobile-bookend);
+
+      grid-template-areas: 'leftA leftB center rightA rightB';
+      grid-column: span 3;
+      column-gap: 0;
+      align-items: center;
+      padding-block: 0;
+      padding-inline: 0 var(--padding-3xs);
+
+      .header-logo {
+        grid-area: center;
+      }
+
+      &:not(:has(header-actions)) .search-action {
+        grid-area: leftB;
+      }
+
+      &:not(:has(.account-actions)) .search-action {
+        grid-area: rightA;
+      }
+
+      .search-action {
+        grid-area: leftB;
+      }
+
+      header-actions {
+        grid-area: rightB;
+      }
+    }
+  }
+
+  /* Single column layout if there are no columns within */
+  .header__columns:not(:has(.header__column)) {
+    grid-template-columns: 1fr;
+  }
+{%- endstylesheet -%}
 
 <script type="application/ld+json">
   {
@@ -75,7 +341,7 @@
 </script>
 
 {%- if request.page_type == 'index' -%}
-  {% assign potential_action_target = request.origin | append: routes.search_url | append: "?q={search_term_string}" %}
+  {% assign potential_action_target = request.origin | append: routes.search_url | append: '?q={search_term_string}' %}
   <script type="application/ld+json">
     {
       "@context": "http://schema.org",
@@ -108,14 +374,14 @@
 
       if (this.headerIsAlwaysSticky) {
         this.header.classList.add('shopify-section-header-sticky');
-      };
+      }
 
       this.currentScrollTop = 0;
       this.preventReveal = false;
       this.predictiveSearch = this.querySelector('predictive-search');
 
       this.onScrollHandler = this.onScroll.bind(this);
-      this.hideHeaderOnScrollUp = () => this.preventReveal = true;
+      this.hideHeaderOnScrollUp = () => (this.preventReveal = true);
 
       this.addEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
       window.addEventListener('scroll', this.onScrollHandler, false);
@@ -235,14 +501,15 @@
           "type": "select",
           "id": "promotion_banner_layout",
           "options": [
-          {
-            "value": "left",
-            "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__1"
-          },
-          {
-            "value": "right",
-            "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__2"
-          }],
+            {
+              "value": "left",
+              "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__1"
+            },
+            {
+              "value": "right",
+              "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__2"
+            }
+          ],
           "default": "left",
           "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.label"
         },
@@ -349,14 +616,15 @@
           "type": "select",
           "id": "promotion_banner_layout",
           "options": [
-          {
-            "value": "left",
-            "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__1"
-          },
-          {
-            "value": "right",
-            "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__2"
-          }],
+            {
+              "value": "left",
+              "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__1"
+            },
+            {
+              "value": "right",
+              "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__2"
+            }
+          ],
           "default": "left",
           "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.label"
         },
@@ -422,13 +690,13 @@
           "type": "text",
           "id": "brand_title",
           "label": "t:sections.all.title.name",
-          "default" : "All Brands A-Z"
+          "default": "All Brands A-Z"
         },
         {
           "type": "text",
           "id": "brand_text",
           "label": "t:settings_schema.global.settings.button.button_label.label",
-          "default" : "See All Brands"
+          "default": "See All Brands"
         },
         {
           "type": "url",
@@ -484,14 +752,15 @@
           "type": "select",
           "id": "promotion_banner_layout",
           "options": [
-          {
-            "value": "left",
-            "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__1"
-          },
-          {
-            "value": "right",
-            "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__2"
-          }],
+            {
+              "value": "left",
+              "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__1"
+            },
+            {
+              "value": "right",
+              "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__2"
+            }
+          ],
           "default": "left",
           "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.label"
         },
@@ -557,13 +826,13 @@
           "type": "text",
           "id": "brand_title",
           "label": "t:sections.all.title.name",
-          "default" : "All Brands A-Z"
+          "default": "All Brands A-Z"
         },
         {
           "type": "text",
           "id": "brand_text",
           "label": "t:settings_schema.global.settings.button.button_label.label",
-          "default" : "See All Brands"
+          "default": "See All Brands"
         },
         {
           "type": "url",
@@ -611,14 +880,15 @@
           "type": "select",
           "id": "promotion_banner_layout",
           "options": [
-          {
-            "value": "left",
-            "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__1"
-          },
-          {
-            "value": "right",
-            "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__2"
-          }],
+            {
+              "value": "left",
+              "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__1"
+            },
+            {
+              "value": "right",
+              "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__2"
+            }
+          ],
           "default": "left",
           "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.label"
         },
@@ -684,13 +954,13 @@
           "type": "text",
           "id": "brand_title",
           "label": "t:sections.all.title.name",
-          "default" : "All Brands A-Z"
+          "default": "All Brands A-Z"
         },
         {
           "type": "text",
           "id": "brand_text",
           "label": "t:settings_schema.global.settings.button.button_label.label",
-          "default" : "See All Brands"
+          "default": "See All Brands"
         },
         {
           "type": "url",
@@ -738,14 +1008,15 @@
           "type": "select",
           "id": "promotion_banner_layout",
           "options": [
-          {
-            "value": "left",
-            "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__1"
-          },
-          {
-            "value": "right",
-            "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__2"
-          }],
+            {
+              "value": "left",
+              "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__1"
+            },
+            {
+              "value": "right",
+              "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.options__2"
+            }
+          ],
           "default": "left",
           "label": "t:sections.header.blocks.mega_menu.settings.collage_layout.label"
         },
@@ -811,13 +1082,13 @@
           "type": "text",
           "id": "brand_title",
           "label": "t:sections.all.title.name",
-          "default" : "All Brands A-Z"
+          "default": "All Brands A-Z"
         },
         {
           "type": "text",
           "id": "brand_text",
           "label": "t:settings_schema.global.settings.button.button_label.label",
-          "default" : "See All Brands"
+          "default": "See All Brands"
         },
         {
           "type": "url",
@@ -864,234 +1135,195 @@
   ],
   "settings": [
     {
-      "type": "select",
-      "id": "page_width",
-      "label": "t:sections.layout.container.option",
-      "default": "default",
-      "options": [
-        { "value": "default", "label": "t:sections.layout.container.option1" },
-        { "value": "full", "label": "t:sections.layout.container.option2" },
-        { "value": "1880", "label": "t:sections.layout.container.option3" },
-        { "value": "1770", "label": "t:sections.layout.container.option4" },
-        { "value": "1670", "label": "t:sections.layout.container.option5" },
-        { "value": "1570", "label": "t:sections.layout.container.option6" },
-        { "value": "1470", "label": "t:sections.layout.container.option7" },
-        { "value": "1370", "label": "t:sections.layout.container.option8" },
-        { "value": "1270", "label": "t:sections.layout.container.option9" },
-        { "value": "1170", "label": "t:sections.layout.container.option10" },
-        { "value": "1070", "label": "t:sections.layout.container.option11" }
-      ]
+      "type": "header",
+      "content": "t:content.size"
     },
     {
-      "type": "paragraph",
-      "content": "t:sections.header.settings.logo_help.content"
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "t:content.logo"
     },
     {
       "type": "select",
       "id": "logo_position",
-      "label": "t:sections.header.settings.logo_position.label",
-      "default": "style1",
+      "label": "t:settings.position",
       "options": [
-        { "value": "style1", "label": "t:sections.header.settings.logo_position.options__1.label" },
-        { "value": "style2", "label": "t:sections.header.settings.logo_position.options__2.label" }
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
       ],
-      "info": "Position is always center for mobile."
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "t:content.menu"
     },
     {
       "type": "link_list",
       "id": "menu",
-      "default": "main-menu",
-      "label": "t:sections.header.settings.menu.label"
+      "label": "t:settings.menu",
+      "default": "main-menu"
     },
     {
       "type": "select",
-      "id": "sticky_header_type",
-      "options": [
-        { "value": "none", "label": "t:sections.header.settings.sticky_header_type.options__1.label" },
-        { "value": "on-scroll-up", "label": "t:sections.header.settings.sticky_header_type.options__2.label" },
-        { "value": "always", "label": "t:sections.header.settings.sticky_header_type.options__3.label" }
-      ],
-      "default": "on-scroll-up",
-      "label": "t:sections.header.settings.sticky_header_type.label"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_line_separator",
-      "default": true,
-      "label": "t:sections.header.settings.show_line_separator.label"
-    },
-    {
-      "type": "header",
-      "content": "Desktop layout"
-    },
-    {
-      "type": "select",
-      "id": "content_direction",
-      "label": "t:settings.direction",
+      "id": "menu_position",
+      "label": "t:settings.position",
       "options": [
         {
-          "value": "column",
-          "label": "t:options.vertical"
+          "value": "left",
+          "label": "t:options.left"
         },
         {
-          "value": "row",
-          "label": "t:options.horizontal"
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
         }
       ],
-      "default": "row"
+      "default": "left"
     },
     {
       "type": "select",
-      "id": "wrap",
-      "label": "Wrap",
-      "default": "wrap",
+      "id": "menu_row",
+      "label": "t:settings.row",
       "options": [
-        { "value": "no-wrap", "label": "No" },
-        { "value": "wrap", "label": "Yes" }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "align_items",
-      "options": [
-        { "value": "start", "label": "⤒" },
-        { "value": "center", "label": "⮃" },
-        { "value": "end", "label": "⤓" }
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
       ],
-      "default": "start",
-      "label": "Align items"
+      "default": "top"
+    },
+    {
+      "type": "header",
+      "content": "t:content.customer_account"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:content.manage_customer_accounts"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "t:settings.account",
+      "default": true
     },
     {
       "type": "select",
-      "id": "justify_content",
+      "id": "account_row",
+      "label": "t:settings.row",
       "options": [
-        { "value": "start", "label": "Start" },
-        { "value": "center", "label": "Center" },
-        { "value": "end", "label": "End" },
-        { "value": "between", "label": "Space Between" },
-        { "value": "around", "label": "Space Around" },
-        { "value": "evenly", "label": "Space Evenly" }
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
       ],
-      "default": "start",
-      "label": "Justify"
-    },
-    {
-      "type": "range",
-      "id": "gap_x",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "default": 10,
-      "label": "Column Gap"
-    },
-    {
-      "type": "range",
-      "id": "gap_y",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "default": 10,
-      "label": "Row Gap"
+      "default": "top",
+      "visible_if": "{{ section.settings.show_account }}"
     },
     {
       "type": "header",
-      "content": "t:sections.all.colors.name"
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "t:sections.all.colors.label",
-      "default": "scheme-1"
-    },
-      {
-      "type": "color_scheme",
-      "id": "menu_color_scheme",
-      "label": "t:sections.header.settings.menu_color_scheme.label",
-      "default": "scheme-1"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.header.settings.header__3.content",
-      "info": "t:sections.header.settings.header__4.info"
+      "content": "t:content.search"
     },
     {
       "type": "checkbox",
-      "id": "enable_country_selector",
-      "default": false,
-      "label": "t:sections.header.settings.enable_country_selector.label"
+      "id": "show_search",
+      "label": "t:settings.search_icon",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "search_position",
+      "label": "t:settings.search_position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "right",
+      "visible_if": "{{ section.settings.show_search }}"
+    },
+    {
+      "type": "select",
+      "id": "search_row",
+      "label": "t:settings.search_row",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "top",
+      "visible_if": "{{ section.settings.show_search }}"
     },
     {
       "type": "header",
-      "content": "t:sections.header.settings.header__5.content",
-      "info": "t:sections.header.settings.header__6.info"
+      "content": "Actions"
     },
     {
-      "type": "checkbox",
-      "id": "enable_language_selector",
-      "default": false,
-      "label": "t:sections.header.settings.enable_language_selector.label"
+      "type": "select",
+      "id": "actions_row",
+      "label": "t:settings.row",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "top"
     },
-    {
-      "type": "header",
-      "content": "t:sections.header.settings.header__7.content",
-      "info": "t:sections.header.settings.header__7.info"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_customer_avatar",
-      "default": true,
-      "label": "t:sections.header.settings.enable_customer_avatar.label",
-      "info": "t:sections.header.settings.enable_customer_avatar.info"
-    },
-    {
-      "type": "checkbox",
-      "id": "mobile_show_social",
-      "default": true,
-      "label": "t:sections.header.settings.header__8.content",
-      "info": "t:sections.header.settings.header__8.info"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.header.settings.mobile_layout.content"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.all.spacing"
-    },
-    {
-      "type": "range",
-      "id": "margin_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "label": "t:sections.header.settings.margin_bottom.label",
-      "default": 0
-    },
-    {
-      "type": "header",
-      "content": "t:sections.all.padding.name"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 36,
-      "step": 1,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
-      "default": 20
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 36,
-      "step": 1,
-      "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
-      "default": 20
-    }
+
   ]
 }
 {% endschema %}

@@ -10,6 +10,24 @@
 
     assign alignment = section.settings.alignment
     assign alignment_mb = section.settings.alignment_mb
+
+    assign border_bottom_bg = section.settings.border_bottom_bg
+    assign border_bottom_gap = section.settings.border_bottom_gap
+    assign border_active_tab_bg = section.settings.border_active_tab_bg
+    assign separator_color = section.settings.separator_color
+
+    assign accordion_gap = section.settings.accordion_gap
+    assign accordion_bg = section.settings.accordion_bg
+    assign accordion_pl = section.settings.accordion_pl
+    assign accordion_pr = section.settings.accordion_pr
+    assign accordion_pt = section.settings.accordion_pt
+    assign accordion_pb = section.settings.accordion_pb
+    assign accordion_border_style = section.settings.accordion_border_style
+    assign accordion_border_color = section.settings.accordion_border_color
+
+    assign accordion_icon = section.settings.accordion_icon
+
+    assign view_content = section.settings.view_content
 %}
 
 {%- capture attr -%}
@@ -22,6 +40,37 @@ style="
   --gap-y: {{ gap }}px;
   --font-size: {{ font_size }};
 "
+{%- endcapture -%}
+
+{%- capture tabs_controls_attr -%}
+style="
+  --border-bottom-bg: {{ border_bottom_bg }};
+  --border-bottom-gap: {{ border_bottom_gap }}px;
+  --border-active-tab-bg: {{ border_active_tab_bg }};
+  --separator-color: {{ separator_color }};
+"
+{%- endcapture -%}
+
+{%- capture accordion_attr -%}
+style="
+  --accordion-gap: {{ accordion_gap }}px;
+  --accordion-bg: {{ accordion_bg }};
+  --accordion-pl: {{ accordion_pl }}px;
+  --accordion-pr: {{ accordion_pr }}px;
+  --accordion-pt: {{ accordion_pt }}px;
+  --accordion-pb: {{ accordion_pb }}px;
+  --accordion-border-color: {{ accordion_border_color }};
+"
+{%- endcapture -%}
+
+{%- capture icon -%}
+  {% if accordion_icon == 'plus' %}
+    {{- 'icon-plus.svg' | inline_asset_content -}}
+  {% elsif accordion_icon == 'right-arrow' %}
+    {{- 'icon-right-arrow.svg' | inline_asset_content -}}
+  {% else %}
+    {{- 'icon-caret.svg' | inline_asset_content -}}
+  {% endif %}
 {%- endcapture -%}
 
 {{ 'product-tabs.css' | asset_url | stylesheet_tag }}
@@ -39,17 +88,17 @@ style="
       <div class="product-tabs" {{ attr }}>
           <div class="product-tabs-wrapper">
             <div class="product-tabs-tab">
-                <ul class="tabs-list list-unstyled flex flex-wrap justify-{{ alignment }} max-sm:justify-{{ alignment_mb }} show-border-bottom">
+                <ul class="tabs-list list-unstyled flex flex-wrap justify-{{ alignment }} max-sm:justify-{{ alignment_mb }} show-border-bottom" {{ tabs_controls_attr }}>
                   {%- for block in section.blocks -%}
                       {%-liquid
                           assign title = block.settings.title
                           case block.type
-                            when 'description' 
+                            when 'description'
                               if title == blank or product.description == blank
                                   continue
                               endif
                             when 'review'
-                              if title == blank 
+                              if title == blank
                                   continue
                               endif
                             when 'html'
@@ -79,27 +128,28 @@ style="
                     {%- case block.type -%}
                       {%- when 'description' -%}
                       {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
-                        <div class="tab-content{% if forloop.first %} is-active{% endif %}">
-                          <div class="toggle-title">
-                            <a href="#" class="toggle-link">
-                              <span class="text">{{ title }}</span>
-                              <span class="svg-wrapper icon-caret-wrapper">
-                                {{- 'icon-caret.svg' | inline_asset_content -}}
-                              </span>
-                            </a>
-                          </div>
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+                        <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
+                          <button class="toggle-link cursor-pointer">
+                            <span class="text">{{ title }}</span>
+                            <span class="svg-wrapper icon-caret-wrapper">
+                              {{- icon -}}
+                            </span>
+                          </button>
+                        </side-drawer-opener>
+                        
                           <div class="toggle-content">
                             {{ product.description }}
                           </div>
                         </div>
                       {%- when 'review' -%}
                       {%- if title == blank or product.reviews.rating_average == blank -%}{%- continue -%}{%- endif -%}
-                        <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
                           <div class="toggle-title">
                             <a href="#" class="toggle-link">
                               <span class="text">{{ title }}</span>
                               <span class="svg-wrapper icon-caret-wrapper">
-                                {{- 'icon-caret.svg' | inline_asset_content -}}
+                                {{- icon -}}
                               </span>
                             </a>
                           </div>
@@ -111,12 +161,12 @@ style="
                         {%- assign page_title = title | default: block.settings.page.title -%}
                         {%- if page_title == blank or block.settings.content == blank and block.settings.page.content == blank -%}{%- continue -%}{%- endif -%}
 
-                        <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
                           <div class="toggle-title">
                             <a href="#" class="toggle-link">
                               <span class="text">{{ title }}</span>
                               <span class="svg-wrapper icon-caret-wrapper">
-                                {{- 'icon-caret.svg' | inline_asset_content -}}
+                                {{- icon -}}
                               </span>
                             </a>
                           </div>
@@ -128,12 +178,12 @@ style="
                       {% when 'liquid' %}
                         {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
 
-                        <div class="tab-content{% if forloop.first %} is-active{% endif %}">
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
                           <div class="toggle-title">
                             <a href="#" class="toggle-link">
                               <span class="text">{{ title }}</span>
                               <span class="svg-wrapper icon-caret-wrapper">
-                                {{- 'icon-caret.svg' | inline_asset_content -}}
+                                {{- icon -}}
                               </span>
                             </a>
                           </div>
@@ -148,7 +198,7 @@ style="
           </div>
       </div>
     {%- elsif tabs_design == 'accordion' -%}
-      <div class="tabs-content style-accordion" style="font-size: 16px;">
+      <div class="tabs-content style-accordion" {{ accordion_attr }}>
         {%- for block in section.blocks -%}
           {% liquid
             assign title = block.settings.title
@@ -157,30 +207,30 @@ style="
           {%- case block.type -%}
             {%- when 'description' -%}
             {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
-              <div class="tab-content{% if forloop.first %} is-active{% endif %}">
-                <div class="toggle-title">
-                  <a href="#" class="toggle-link">
+              <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+                <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
+                  <button class="toggle-link cursor-pointer">
                     <span class="text">{{ title }}</span>
                     <span class="svg-wrapper icon-caret-wrapper">
-                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                      {{- icon -}}
                     </span>
-                  </a>
-                </div>
+                  </button>
+                </side-drawer-opener>
                 <div class="toggle-content">
                   {{ product.description }}
                 </div>
               </div>
             {%- when 'review' -%}
             {%- if title == blank or product.reviews.rating_average == blank -%}{%- continue -%}{%- endif -%}
-              <div class="tab-content{% if forloop.first %} is-active{% endif %}">
-                <div class="toggle-title">
-                  <a href="#" class="toggle-link">
+              <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+                <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
+                  <button class="toggle-link cursor-pointer">
                     <span class="text">{{ title }}</span>
                     <span class="svg-wrapper icon-caret-wrapper">
-                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                      {{- icon -}}
                     </span>
-                  </a>
-                </div>
+                  </button>
+                </side-drawer-opener>
                 <div class="toggle-content">
                   {{ product.reviews.rating_average }}
                 </div>
@@ -188,16 +238,15 @@ style="
             {% when 'html' %}
               {%- assign page_title = title | default: block.settings.page.title -%}
               {%- if page_title == blank or block.settings.content == blank and block.settings.page.content == blank -%}{%- continue -%}{%- endif -%}
-
-              <div class="tab-content{% if forloop.first %} is-active{% endif %}">
-                <div class="toggle-title">
-                  <a href="#" class="toggle-link">
+              <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+                <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
+                  <button class="toggle-link cursor-pointer">
                     <span class="text">{{ title }}</span>
                     <span class="svg-wrapper icon-caret-wrapper">
-                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                      {{- icon -}}
                     </span>
-                  </a>
-                </div>
+                  </button>
+                </side-drawer-opener>
                 <div class="toggle-content">
                   <div class="rte" style="margin-bottom: 2rem">{{ block.settings.content }}</div>
                   {{ block.settings.page.content }}
@@ -206,15 +255,15 @@ style="
             {% when 'liquid' %}
               {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
 
-              <div class="tab-content{% if forloop.first %} is-active{% endif %}">
-                <div class="toggle-title">
-                  <a href="#" class="toggle-link">
+              <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+                <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
+                  <button class="toggle-link cursor-pointer">
                     <span class="text">{{ title }}</span>
                     <span class="svg-wrapper icon-caret-wrapper">
-                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                      {{- icon -}}
                     </span>
-                  </a>
-                </div>
+                  </button>
+                </side-drawer-opener>
                 <div class="toggle-content">
                   {{ block.settings.custom_liquid }}
                 </div>
@@ -222,49 +271,86 @@ style="
           {%- endcase -%}
         {%- endfor -%}
       </div>
+
+      <side-drawer
+          class="popup__content drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
+          element-s-popup
+          id="PopupModal-{{ section.id }}"
+      >
+        <div id="Drawer-Overlay-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
+        <div class="popup__inner color-{{ settings.popover_color_scheme }} w-auto h-full absolute-c-c flex flex-column global-settings-popup">
+          <div class="popup__inner--content relative w-full h-full overflow-auto cus-scrollbar">
+
+          <div class="popup-content-wrapper"></div>
+            <button
+              onclick="this.closest('side-drawer').close()"
+              class="button button-unstyled close-button popup__close drawer__close block t-button bor-none rounded-full cursor-pointer absolute"
+              type="button"
+              aria-label="{{ 'accessibility.close_dialog' | t }}"
+              style="--top: 0.3rem; --right: 0.3rem;"
+            >
+              {{- 'icon-close.svg' | inline_asset_content -}}
+            </button>
+          </div>
+        </div>
+      </side-drawer>
+
+      {% render 'global-sidebar' %}
     {%- endif -%}
   {%- endif -%}
 </div>
-
-<side-drawer-opener data-side-drawer="#Global-Drawer">
-  <button>Open Global Sidebar</button>
-</side-drawer-opener>
-
-{% render 'global-sidebar' %}
 
 {% javascript %}
   document.addEventListener('DOMContentLoaded', function() {
     const tabTitles = document.querySelectorAll('.tab-title');
     const tabContents = document.querySelectorAll('.tab-content');
 
-    tabTitles.forEach(title => {
-      title.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (e.currentTarget.classList.contains('is-active')) return;
+    if (tabTitles.length > 0) {
+      tabTitles.forEach(title => {
+        title.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (e.currentTarget.classList.contains('is-active')) return;
 
-        const currentIndex = Array.from(tabTitles).indexOf(e.currentTarget);
+          const currentIndex = Array.from(tabTitles).indexOf(e.currentTarget);
 
-        tabTitles.forEach(title => {
-          title.classList.remove('is-active');
-        });
+          tabTitles.forEach(title => {
+            title.classList.remove('is-active');
+          });
 
-        tabContents.forEach(content => {
-          content.classList.remove('is-active');
-        });
+          tabContents.forEach(content => {
+            content.classList.remove('is-active');
+          });
 
-        tabContents[currentIndex].classList.add('is-active');
-        e.currentTarget.classList.add('is-active');
+          tabContents[currentIndex].classList.add('is-active');
+          e.currentTarget.classList.add('is-active');
+          });
       });
-    });
+    }
 
     const toggleLinks = document.querySelectorAll('.toggle-link');
 
-    toggleLinks.forEach(toggleLink => {
-      toggleLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        toggleLink.closest('.toggle-title').classList.toggle('is-open');
+    if (toggleLinks.length > 0) {
+      toggleLinks.forEach(toggleLink => {
+        toggleLink.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          const viewContentType = toggleLink.closest('.toggle-title').dataset.viewContent;
+          const content = toggleLink.closest('.toggle-title').nextElementSibling;
+          const cloneContent = content.cloneNode(true);
+          if (viewContentType === 'sidebar') {
+            const drawerContent = document.querySelector('#Global-Drawer').querySelector('[data-drawer-content]');
+            drawerContent.innerHTML = '';
+            drawerContent.appendChild(cloneContent);
+          } else if (viewContentType === 'popup') {
+            const popupContent = document.querySelector('.popup-content-wrapper');
+            popupContent.innerHTML = '';
+            popupContent.appendChild(cloneContent);
+          } else {
+            toggleLink.closest('.toggle-title').classList.toggle('is-open');
+          }
+        });
       });
-    });
+    }
   });
 {% endjavascript %}
 
@@ -307,6 +393,173 @@ style="
             }
           ],
           "default": "tab"
+      },
+      {
+        "type": "header",
+        "content": "Tabs Settings"
+      },
+      {
+        "type": "color",
+        "id": "border_bottom_bg",
+        "label": "Border bottom background",
+        "default": "#e6e6e6",
+        "visible_if": "{{ section.settings.tabs_design == 'tab' }}"
+      },
+      {
+        "type": "range",
+        "id": "border_bottom_gap",
+        "label": "Border bottom gap",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "default": 10,
+        "visible_if": "{{ section.settings.tabs_design == 'tab' }}"
+      },
+      {
+        "type": "color",
+        "id": "border_active_tab_bg",
+        "label": "Border active tab background",
+        "default": "#000000",
+        "visible_if": "{{ section.settings.tabs_design == 'tab' }}"
+      },
+      {
+        "type": "color",
+        "id": "separator_color",
+        "label": "Separator color",
+        "default": "#000000",
+        "visible_if": "{{ section.settings.tabs_design == 'tab' }}"
+      },
+      {
+        "type": "range",
+        "id": "accordion_gap",
+        "label": "Accordion gap",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "default": 10,
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
+      },
+      {
+        "type": "select",
+        "id": "accordion_icon",
+        "label": "Accordion icon",
+        "options": [
+          { "value": "caret", "label": "Caret" },
+          { "value": "plus", "label": "Plus" },
+          { "value": "right-arrow", "label": "Right arrow" }
+        ],
+        "default": "caret",
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
+      },
+      {
+        "type": "color",
+        "id": "accordion_bg",
+        "label": "Accordion background",
+        "default": "transparent",
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
+      },
+      {
+        "type": "range",
+        "id": "accordion_pl",
+        "label": "Accordion padding left",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "default": 0,
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
+      },
+      {
+        "type": "range",
+        "id": "accordion_pr",
+        "label": "Accordion padding right",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "default": 45,
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
+      },
+      {
+        "type": "range",
+        "id": "accordion_pt",
+        "label": "Accordion padding top",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "default": 15,
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
+      },
+      {
+        "type": "range",
+        "id": "accordion_pb",
+        "label": "Accordion padding bottom",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "default": 15,
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
+      },
+      {
+        "type": "select",
+        "id": "accordion_border_style",
+        "label": "Accordion border style",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "top",
+            "label": "Top"
+          },
+          {
+            "value": "bottom",
+            "label": "Bottom"
+          },
+          {
+            "value": "top-bottom",
+            "label": "Top bottom"
+          },
+          {
+            "value": "full",
+            "label": "Full"
+          }
+        ],
+        "default": "bottom",
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
+      },
+      {
+        "type": "color",
+        "id": "accordion_border_color",
+        "label": "Accordion border color",
+        "default": "#d3d3d3",
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' and section.settings.accordion_border_style != 'none' }}"
+      },
+      {
+        "type": "select",
+        "id": "view_content",
+        "label": "View content",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "sidebar",
+            "label": "Sidebar"
+          },
+          {
+            "value": "popup",
+            "label": "Popup"
+          }
+        ],
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}",
+        "default": "sidebar"
       },
       {
         "type": "checkbox",
@@ -460,7 +713,7 @@ style="
           },
           {
             "value": "custom",
-            "label": "Custom"
+            "label": "t:options.custom"
           }
         ],
         "default": "page-width"

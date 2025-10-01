@@ -1,18 +1,18 @@
 {% liquid
-    assign mapHeight = block.settings.map_height
-    assign mapListWidth = block.settings.map_list_width
-    assign mapGapDekstop = block.settings.map_gap_desktop
-    assign mapGapMobile = block.settings.map_gap_mobile
+    assign map_list_height = block.settings.map_list_height
+    assign map_list_width = block.settings.map_list_width
+    assign map_gap_desktop = block.settings.map_gap_desktop
+    assign map_gap_mobile = block.settings.map_gap_mobile
 
     assign pl = block.settings.padding_left
     assign pr = block.settings.padding_right
     assign pt = block.settings.padding_top
     assign pb = block.settings.padding_bottom
 
-    assign borderColor = block.settings.border_color
-    assign borderWidth = block.settings.border_width
+    assign border_color = block.settings.border_color
+    assign border_width = block.settings.border_width
 
-    assign itemBg = block.settings.item_background
+    assign item_background = block.settings.item_background
 %}
 
 {%- capture attr -%}
@@ -21,19 +21,19 @@ style="
 {% if pt != 0 %}--pt:{{ pt }}px;{% endif %}
 {% if pb != 0 %}--pb:{{ pb }}px;{% endif %}
 {% if pr != 0 %}--pr:{{ pr }}px;{% endif %}
-{% if mapHeight != 0 %}--map-height:{{ mapHeight }}px;{% endif %}
-{% if mapListWidth != 0 %}--map-list-width:{{ mapListWidth }}px;{% endif %}
-{% if mapGapDekstop != 0 %}--map-gap-desktop:{{ mapGapDekstop }}px;{% endif %}
-{% if mapGapMobile != 0 %}--map-gap-mobile:{{ mapGapMobile }}px;{% endif %}
-{% if borderColor != 'none' %}--border-color:{{ borderColor }};{% endif %}
-{% if borderWidth != 0 %}--border-width:{{ borderWidth }}px;{% endif %}
-{% if itemBg != 'none' %}--item-background:{{ itemBg }};{% endif %}
+{% if map_list_height != 0 %}--map-list-height:{{ map_list_height }}px;{% endif %}
+{% if map_list_width != 0 %}--map-list-width:{{ map_list_width }}px;{% endif %}
+{% if map_gap_desktop != 0 %}--map-gap-desktop:{{ map_gap_desktop }}px;{% endif %}
+{% if map_gap_mobile != 0 %}--map-gap-mobile:{{ map_gap_mobile }}px;{% endif %}
+{% if border_color != 'none' %}--border-color:{{ border_color }};{% endif %}
+{% if border_width != 0 %}--border-width:{{ border_width }}px;{% endif %}
+{% if item_background != 'none' %}--item-background:{{ item_background }};{% endif %}
 "
 {%- endcapture -%}
 
 <div class="storeLocator" {{ attr }}>
     <div class="storeLocator__left">
-        <div class="storeLocator__list">
+        <div class="storeLocator__list" style="--pr: {{ map_gap_desktop }}px;">
             {% content_for 'blocks' %}
         </div>
     </div>
@@ -45,7 +45,6 @@ style="
 {% stylesheet %}
     .storeLocator {
         display: flex;
-        height: var(--map-height);
         gap: var(--map-gap-desktop);
     }
 
@@ -67,7 +66,25 @@ style="
 
     .storeLocator__left {
         width: var(--map-list-width);
+        overflow-y: auto;
+        height: var(--map-list-height);
     }
+
+    /* Scrollbar */
+    .storeLocator__left::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .storeLocator__left::-webkit-scrollbar-track {
+        background: #F8F8F8;
+    }
+
+    .storeLocator__left::-webkit-scrollbar-thumb {
+        background: #51565A;
+    }
+    
+    
+    
 
     .shopify-block:has(.storeLocator__right) {
         width: 100%;
@@ -116,7 +133,7 @@ style="
         }
 
         .storeLocator__right {
-            flex: 1;
+            aspect-ratio: 1 / 1;
         }
     }
 
@@ -149,7 +166,7 @@ style="
       var html = item.getAttribute('data-map') || '';
       mapEl.classList.add('is-loading');
       mapEl.innerHTML = html;
-      
+
       setTimeout(function(){
         mapEl.classList.remove('is-loading');
       }, 500);
@@ -178,12 +195,12 @@ style="
     "settings": [
         {
             "type": "header",
-            "content": "Layout"
+            "content": "t:content.layout"
         },
         {
             "type": "range",
-            "id": "map_height",
-            "label": "Map height",
+            "id": "map_list_height",
+            "label": "Map list height",
             "min": 400,
             "max": 1000,
             "step": 100,
@@ -196,9 +213,9 @@ style="
             "label": "Map list width",
             "min": 200,
             "max": 1000,
-            "step": 100,
+            "step": 50,
             "unit": "px",
-            "default": 300
+            "default": 350
         },
         {
             "type": "range",
@@ -208,7 +225,7 @@ style="
             "max": 100,
             "step": 1,
             "unit": "px",
-            "default": 15
+            "default": 14
         },
         {
             "type": "range",

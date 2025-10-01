@@ -90,6 +90,9 @@ class AccordionCustom extends HTMLElement {
 
       this.details.removeAttribute("open");
     }
+
+    console.log(' summary height', this.summaryElement.clientHeight);
+    console.log(' content height', this.contentElement, this.contentElement.scrollHeight, this.contentElement.offsetHeight, this.contentElement.clientHeight);
   }
 
   #controller = new AbortController();

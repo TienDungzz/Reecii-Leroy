@@ -285,6 +285,10 @@ a {
   text-underline-offset: 0.125em;
   transition: text-decoration-color var(--animation-speed) var(--animation-easing),
     color var(--animation-speed) var(--animation-easing);
+
+  &:hover {
+    color: var(--color-primary-hover);
+  }
 }
 
 :is(h1, h2, h3, h4, h5, h6, p) > a:hover {
@@ -469,7 +473,7 @@ zoom-dialog dialog {
   justify-content: center;
 
   /* For the outline radius */
-  border-radius: 50%;
+  border-radius: var(--style-border-radius-50);
 }
 
 /* This triggers iOS < 16.4. The outline bug is not recognized as a lack of @supports */
@@ -490,7 +494,7 @@ zoom-dialog dialog {
     position: absolute;
     inset: calc(-1 * var(--focus-outline-offset));
     border: var(--focus-outline-width) solid currentColor;
-    border-radius: 50%;
+    border-radius: var(--style-border-radius-50);
     display: inherit;
   }
 }
@@ -709,7 +713,7 @@ deferred-media[data-media-loaded] img {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border-radius: 50%;
+  border-radius: var(--style-border-radius-50);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -762,6 +766,38 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
 .button[id^='ProductSubmitButton-'] {
   position: relative;
   overflow: hidden;
+}
+
+/* Cart bubble */
+.cart-bubble {
+  --cart-padding: 0.2em;
+
+  position: relative;
+  width: 20px;
+  aspect-ratio: 1;
+  border-radius: var(--style-border-radius-50);
+  border-width: 0;
+  display: grid;
+  line-height: normal;
+  place-content: center;
+  color: var(--color-primary-button-text);
+  padding-inline: var(--cart-padding);
+}
+
+.cart-bubble__background {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-primary-button-background);
+  border-radius: var(--style-border-radius-50);
+}
+
+.cart-bubble__text {
+  font-size: var(--font-size--2xs);
+  z-index: var(--layer-flat);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Quantity selector */
@@ -1030,4 +1066,9 @@ swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
   [data-thumbnail-position='left'] {
     justify-content: flex-start;
   }
+}
+
+.color-scheme-custom {
+  color: var(--color-foreground);
+  background: var(--color-background);
 }

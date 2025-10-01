@@ -20,7 +20,7 @@
     <button class="t-button bor-none cursor-pointer p-0 w-full h-full color-foreground bg-transparent focus-inset"
       type="button"
       aria-haspopup="dialog"
-      aria-label="{{ 'sections.header.menu' | t }}"
+      aria-label="{{ 'content.menu' | t }}"
     >
       <span>
         {{- 'icon-hamburger.svg' | inline_asset_content -}}
@@ -37,7 +37,7 @@
       <localization-form class="small-hide medium-hide" data-prevent-hide activate-event="hover">
         {%- form 'localization', id: 'HeaderCountryForm', class: 'localization-form' -%}
           <div>
-            <h2 class="visually-hidden" id="HeaderCountryLabel">{{ 'localization.country_label' | t }}</h2>
+            <h2 class="visually-hidden" id="HeaderCountryLabel">{{ 'content.country_label' | t }}</h2>
             {%- render 'country-localization', localPosition: 'HeaderCountry' -%}
           </div>
         {%- endform -%}
@@ -48,7 +48,7 @@
       <localization-form class="small-hide medium-hide" data-prevent-hide activate-event="hover">
         {%- form 'localization', id: 'HeaderLanguageForm', class: 'localization-form' -%}
           <div>
-            <h2 class="visually-hidden" id="HeaderLanguageLabel">{{ 'localization.language_label' | t }}</h2>
+            <h2 class="visually-hidden" id="HeaderLanguageLabel">{{ 'content.language_label' | t }}</h2>
             {%- render 'language-localization', localPosition: 'HeaderLanguage' -%}
           </div>
         {%- endform -%}
@@ -57,11 +57,11 @@
   </div>
 {%- endif -%}
 
-{%- if enable_search -%}
+{% comment %} {%- if enable_search -%}
   {% render 'header-search', input_id: 'Search-In-Modal', search_type: search_type %}
-{%- endif -%}
+{%- endif -%} {% endcomment %}
 
-{%- if enable_account and shop.customer_accounts_enabled -%}
+{% comment %} {%- if enable_account and shop.customer_accounts_enabled -%}
   <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__icon header__icon--account link focus-inset">
     {%- if block.settings.enable_customer_avatar -%}
       <account-icon>
@@ -88,7 +88,7 @@
       -%}
     </span>
   </a>
-{%- endif -%}
+{%- endif -%} {% endcomment %}
 
 {%- if enable_cart -%}
   {%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}
@@ -99,7 +99,7 @@
       <button class="t-button bor-none cursor-pointer p-0 color-foreground bg-transparent focus-inset cart-icon--drawer"
         type="button"
         aria-haspopup="dialog"
-        aria-label="{{ 'sections.header.cart_count' | t: count: cart.item_count }}"
+        aria-label="{{ 'content.cart_count' | t: count: cart.item_count }}"
         id="cart-icon-bubble"
       >
         {% if cart == empty %}
@@ -107,17 +107,17 @@
         {% else %}
           <span class="svg-wrapper">{{'icon-cart.svg' | inline_asset_content }}</span>
         {% endif %}
-        <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
+        <span class="visually-hidden">{{ 'accessibility.cart' | t }}</span>
         {%- if cart != empty -%}
           <div class="cart-count-bubble">
             <span aria-hidden="true">
               {%- if cart.item_count < 100 -%}
                 {{ cart.item_count }}
               {%- else -%}
-                {{ 'sections.header.cart_count_max.more' | t }}
+                {{ 'content.cart_count_max.more' | t }}
               {%- endif -%}
             </span>
-            <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+            <span class="visually-hidden">{{ 'content.cart_count' | t: count: cart.item_count }}</span>
           </div>
         {%- endif -%}
       </button>
@@ -129,17 +129,17 @@
         {% else %}
           <span class="svg-wrapper">{{'icon-cart.svg' | inline_asset_content }}</span>
         {% endif %}
-          <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
+          <span class="visually-hidden">{{ 'accessibility.cart' | t }}</span>
         {%- if cart != empty -%}
           <div class="cart-count-bubble">
             <span aria-hidden="true">
               {%- if cart.item_count < 100 -%}
                 {{ cart.item_count }}
               {%- else -%}
-                {{ 'sections.header.cart_count_max.more' | t }}
+                {{ 'content.cart_count_max.more' | t }}
               {%- endif -%}
             </span>
-            <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+            <span class="visually-hidden">{{ 'content.cart_count' | t: count: cart.item_count }}</span>
           </div>
         {%- endif -%}
       </a>
@@ -151,17 +151,17 @@
       {% else %}
         <span class="svg-wrapper">{{'icon-cart.svg' | inline_asset_content }}</span>
       {% endif %}
-        <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
+        <span class="visually-hidden">{{ 'accessibility.cart' | t }}</span>
       {%- if cart != empty -%}
         <div class="cart-count-bubble">
           <span aria-hidden="true">
             {%- if cart.item_count < 100 -%}
               {{ cart.item_count }}
             {%- else -%}
-              {{ 'sections.header.cart_count_max.more' | t }}
+              {{ 'content.cart_count_max.more' | t }}
             {%- endif -%}
           </span>
-          <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+          <span class="visually-hidden">{{ 'content.cart_count' | t: count: cart.item_count }}</span>
         </div>
       {%- endif -%}
     </a>

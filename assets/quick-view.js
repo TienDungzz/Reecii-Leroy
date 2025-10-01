@@ -43,6 +43,11 @@ if (!customElements.get("quick-view-modal")) {
                 productElement.outerHTML
               );
 
+              // Ensure CompareColor component is defined when content is injected
+              if (typeof window.compareColor === 'undefined' && !customElements.get('compare-color')) {
+                try { window.compareColor(); } catch (e) { /* no-op */ }
+              }
+
               if (window.Shopify && Shopify.PaymentButton)
                 Shopify.PaymentButton.init();
               if (window.ProductModel) window.ProductModel.loadShopifyXR();
@@ -158,4 +163,3 @@ if (!customElements.get("quick-view-modal")) {
       }
     );
 }
-

@@ -1,4 +1,41 @@
+{% assign bl_stts = block.settings %}
+{%- capture cart_summary_inner_class -%}
+  cart__summary-inner cart__blocks
+  {% if bl_stts.extend_summary == false and bl_stts.inherit_color_scheme == false -%}
+    color-{{ bl_stts.color_scheme }}
+  {%- endif %}
+  {% if bl_stts.extend_summary == false and bl_stts.border_radius > 0 -%}
+    has-border-radius
+  {%- endif -%}
+{%- endcapture -%}
 
+{% if bl_stts.extend_summary %}
+  <div
+    class="section-background {% if bl_stts.inherit_color_scheme == false %} color-{{ bl_stts.color_scheme }}{% endif %}"
+  ></div>
+{% endif %}
+<div
+  id="main-cart-summary"
+  class="cart__summary-container border-style{% if bl_stts.extend_summary == true %} cart__container--extend {% if bl_stts.inherit_color_scheme == false %} {{ bl_stts.inherit_color_scheme }} color-{{ bl_stts.color_scheme }}{% endif %}{% endif %}{% if bl_stts.border_radius > 0 %} has-border-radius{% endif %}{% if cart.empty? %} is-empty{% endif %}"
+  data-id="{{ section.id }}"
+  style="{% render 'border-override', settings: bl_stts %}"
+  {{ block.shopify_attributes }}
+>
+  <div class="{{ cart_summary_inner_class }}">
+    <div class="cart__summary">
+      {% content_for 'block', id: 'cart-summary-title', type: 'text' %}
+      {% content_for 'block', id: 'cart-summary-divider-1', type: '_divider' %}
+      {% content_for 'block', id: 'cart-shipping-calculator', type: '_cart-shipping-calculator' %}
+      {% content_for 'block', id: 'cart-summary-divider-2', type: '_divider' %}
+      {% content_for 'block', id: 'cart-discounts', type: '_cart-discounts' %}
+      {% content_for 'block', id: 'cart-summary-divider-3', type: '_divider' %}
+      {% content_for 'block', id: 'cart-total', type: '_cart-total' %}
+      {% content_for 'block', id: 'cart-summary-divider-4', type: '_divider' %}
+      {% content_for 'block', id: 'cart-checkout', type: '_cart-checkout' %}
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</div>
 
 {% stylesheet %}
   .cart__summary-item {
@@ -23,7 +60,7 @@
   }
 
   .cart__tax-note {
-    color: var(--color-foreground-rgb);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
   }
 
   .cart__discount-label svg {
@@ -44,7 +81,6 @@
     align-self: start;
 
     @media screen and (min-width: 750px) {
-      padding: var(--padding-5xl);
       grid-row: 1 / -1;
     }
   }
@@ -80,6 +116,29 @@
     }
   }
 
+  .cart-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    border-block: 1px solid var(--color-border);
+    padding-block: var(--padding-sm);
+    margin-block-start: var(--margin-3xs);
+  }
+
+  .cart-actions__divider {
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .cart__summary-totals:not(:has(.cart-actions)) {
+    margin-block-start: var(--margin-3xs);
+    border-block-start: 1px solid var(--color-border);
+    padding-block-start: var(--margin-xl);
+  }
+
+  .cart__installments {
+    color: var(--color-foreground);
+  }
+
   /* If extend is on, only include top and bottom borders when the border radius is 0. */
   .cart__container--extend:not(.has-border-radius) {
     @media screen and (min-width: 750px) {
@@ -94,8 +153,8 @@
 
     @media screen and (min-width: 750px) {
       grid-row: 2 / -1;
-      padding-inline: var(--page-margin);
-      width: var(--sidebar-width);
+      padding-inline: 0 var(--gap-3xl);
+      width: var(--side-cart-width);
     }
   }
 
@@ -103,92 +162,28 @@
   .cart__summary-inner.has-border-radius {
     border-radius: var(--border-radius);
   }
-
-  @media screen and (max-width: 749px) {
-    .inherit-parent-scheme--mobile {
-      --color-background: inherit;
-      --color-background-rgb: inherit;
-      --color-foreground: inherit;
-      --color-foreground-rgb: inherit;
-      --color-primary: inherit;
-      --color-primary-rgb: inherit;
-      --color-primary-hover: inherit;
-      --color-primary-hover-rgb: inherit;
-      --color-border: inherit;
-      --color-border-rgb: inherit;
-      --color-shadow: inherit;
-      --color-shadow-rgb: inherit;
-      --color-foreground-heading: inherit;
-      --color-foreground-heading-rgb: inherit;
-      --color-primary-button-text: inherit;
-      --color-primary-button-background: inherit;
-      --color-primary-button-border: inherit;
-      --color-primary-button-hover-text: inherit;
-      --color-primary-button-hover-background: inherit;
-      --color-primary-button-hover-border: inherit;
-      --color-secondary-button-text: inherit;
-      --color-secondary-button-background: inherit;
-      --color-secondary-button-border: inherit;
-      --color-secondary-button-hover-text: inherit;
-      --color-secondary-button-hover-background: inherit;
-      --color-secondary-button-hover-border: inherit;
-      --color-input-text: inherit;
-      --color-input-text-rgb: inherit;
-      --color-input-border: inherit;
-      --color-input-background: inherit;
-    }
-  }
 {% endstylesheet %}
-
-<style>
-  .cart__summary-inner {
-    --cart-secondary-font-family: var(--font-{{ settings.cart_price_font }}--family);
-    --cart-secondary-font-style: var(--font-{{ settings.cart_price_font }}--style);
-    --cart-secondary-font-weight: var(--font-{{ settings.cart_price_font }}--weight);
-  }
-</style>
-
-{%- capture cart_summary_inner_class -%}
-  cart__summary-inner
-  {% if block.settings.extend_summary == false and block.settings.inherit_color_scheme == false -%}
-    color-{{ block.settings.color_scheme }} inherit-parent-scheme--mobile
-  {%- endif %}
-  {% if block.settings.extend_summary == false and block.settings.border_radius > 0 -%}
-    has-border-radius
-  {%- endif -%}
-{%- endcapture -%}
-
-{% if block.settings.extend_summary %}
-  <div
-    class="section-background {% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }} inherit-parent-scheme--mobile{% endif %}"
-  ></div>
-{% endif %}
-<div
-  class="cart__summary-container border-style{% if block.settings.extend_summary == true %} cart__container--extend {% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }} inherit-parent-scheme--mobile{% endif %}{% endif %}{% if block.settings.border_radius > 0 %} has-border-radius{% endif %}"
-  style="{% render 'border-override', settings: block.settings %}"
-  {{ block.shopify_attributes }}
->
-  <div class="{{ cart_summary_inner_class }}">
-    {% render 'cart-summary' %}
-  </div>
-</div>
 
 {% schema %}
 {
-  "name": "Summary",
+  "name": "t:names.summary",
   "tag": null,
+  "blocks": [
+    { "type": "@app" },
+    { "type": "@theme" }
+  ],
   "settings": [
     {
       "type": "checkbox",
       "id": "extend_summary",
       "label": "t:settings.extend_summary",
-      "default": true
+      "default": false
     },
     {
       "type": "checkbox",
       "id": "inherit_color_scheme",
       "label": "t:settings.inherit_color_scheme",
-      "default": false
+      "default": true
     },
     {
       "type": "color_scheme",
@@ -230,6 +225,17 @@
     },
     {
       "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.opacity",
+      "default": 100,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
       "id": "border_radius",
       "label": "t:settings.border_radius",
       "min": 0,
@@ -241,7 +247,7 @@
   ],
   "presets": [
     {
-      "name": "Summary"
+      "name": "t:names.summary"
     }
   ]
 }

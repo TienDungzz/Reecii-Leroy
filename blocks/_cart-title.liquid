@@ -1,4 +1,19 @@
+{% assign bl_stts = block.settings %}
 
+<div
+  class="title-wrapper-with-link cart-title spacing-style {{ bl_stts.alignment }}"
+  style="{% render 'spacing-style', settings: bl_stts %}"
+  {{ block.shopify_attributes }}
+>
+  <h1 class="title title--primary {{ bl_stts.type_preset | default: 'h2' }}">
+    {%- if cart.empty? -%}
+      {{ 'content.your_cart_is_empty' | t }}
+    {%- else -%}
+      {{ bl_stts.title }}
+      {%- if bl_stts.show_count -%}{% render 'cart-bubble' %}{%- endif -%}
+    {%- endif -%}
+  </h1>
+</div>
 
 {% stylesheet %}
   .cart-title h1 {
@@ -24,34 +39,18 @@
   }
 
   .cart-title .cart-bubble__background {
-    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
   }
 
   .cart-title .cart-bubble__text {
     color: var(--color-foreground);
     font-family: var(--font-paragraph--family);
-    font-size: clamp(var(--cart-font-size--2xs), 0.7lh, var(--cart-font-size--xs));
   }
 {% endstylesheet %}
 
-<div
-  class="cart-title spacing-style text-{{ block.settings.alignment }}"
-  style="{% render 'spacing-style', settings: block.settings %}"
-  {{ block.shopify_attributes }}
->
-  <h1 class="{{ block.settings.type_preset | default: 'h2' }}">
-    {%- if cart.empty? -%}
-      {{ 'content.your_cart_is_empty' | t }}
-    {%- else -%}
-      {{ block.settings.title }}
-      {%- if block.settings.show_count -%}{% render 'cart-bubble' %}{%- endif -%}
-    {%- endif -%}
-  </h1>
-</div>
-
 {% schema %}
 {
-  "name": "Title",
+  "name": "t:names.title",
   "tag": null,
   "settings": [
     {
@@ -164,7 +163,7 @@
   ],
   "presets": [
     {
-      "name": "Title"
+      "name": "t:names.title"
     }
   ]
 }

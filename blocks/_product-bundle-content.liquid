@@ -1,5 +1,5 @@
-{%- liquid 
-    assign scroll_reveal = settings.animations_reveal_on_scroll
+{%- liquid
+  assign scroll_reveal = settings.animations_reveal_on_scroll
 -%}
 
 {% stylesheet %}
@@ -35,74 +35,74 @@
 
 {% capture children %}
   <div class="section-resource-list__header">
-      {%- content_for 'block', type: '_blog-post-header', id: 'static-header' -%}
+    {%- content_for 'block', type: '_blog-post-header', id: 'static-header' -%}
   </div>
   <div class="product-bundle-content w-full"
     {%- if request.visual_preview_mode -%}
-        data-shopify-visual-preview
+      data-shopify-visual-preview
     {%- endif -%}
   >
-    {%- assign spaceBetween = block.settings.items_gap | times: 0.5 -%}
+    {%- assign space_between = block.settings.items_gap | times: 0.5 -%}
     {%- capture breakpoints -%}
-        {
-            "750": { "slidesPerView": 3, "spaceBetween": {{ block.settings.items_gap | times: 0.75 }} },
-            "1024": { "slidesPerView": 4, "spaceBetween": {{ block.settings.items_gap }} }
-        }
+      {
+        "750": { "slidesPerView": 3, "space_between": {{ block.settings.items_gap | times: 0.75 }} },
+        "1024": { "slidesPerView": 4, "space_between": {{ block.settings.items_gap }} }
+      }
     {%- endcapture -%}
     <swiper-component
-        class="product-bundle-carousel-swiper-component size-full block"
-        {%- render 'swiper-data',
-            settings: block.settings,
-            slides_per_view: 2,
-            space_between: spaceBetween,
-            watch_slides_progress: true,
-            breakpoints: breakpoints
-        -%}
-        style="--items-gap: {{ block.settings.items_gap }}px;"
+      class="product-bundle-carousel-swiper-component size-full block"
+      {%- render 'swiper-data',
+        settings: block.settings,
+        slides_per_view: 2,
+        space_between: space_between,
+        watch_slides_progress: true,
+        breakpoints: breakpoints
+      -%}
+      style="--items-gap: {{ block.settings.items_gap }}px;"
     >
-        <div class="swiper size-full" style="--swiper-navigation-top-offset: 50%;">
-            <ul
-                id="Slider-{{ block.id }}"
-                data-id="{{ block.id }}"
-                class="swiper-wrapper grid-layout-no-js list-unstyled{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} grid--{{ mobile_columns }}-col-mobile"
-                style="--card-grid-per-row-desktop: {{ columns_desktop }}; --card-grid-per-row-tablet: {{ columns_tablet }}; --card-grid-per-row-mobile: {{ mobile_columns }};"
+      <div class="swiper size-full" style="--swiper-navigation-top-offset: 50%;">
+        <ul
+          id="Slider-{{ block.id }}"
+          data-id="{{ block.id }}"
+          class="swiper-wrapper grid-layout-no-js list-unstyled{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} grid--{{ mobile_columns }}-col-mobile"
+          style="--card-grid-per-row-desktop: {{ columns_desktop }}; --card-grid-per-row-tablet: {{ columns_tablet }}; --card-grid-per-row-mobile: {{ mobile_columns }};"
+        >
+          <li
+            id="Slide-{{ product.id }}-1"
+            class="bundle-product-item grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %} {% if product.available %} isChecked{% endif %}"
+            {% if scroll_reveal %}
+              style="--animation-order: 1;"
+            {% endif %}
+            data-bundle-product-item-id="{{ product.id }}"
+          >
+            {% content_for 'block',
+              type: '_bundle-card-product',
+              id: 'card-product-bundle',
+              closest.product: product
+            %}
+          </li>
+          {%- for product_item in product.metafields.custom.grouped_sub_product.value -%}
+            <li
+              id="Slide-{{ product_item.id }}-{{ forloop.index | plus: 1 }}"
+              class="bundle-product-item grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %} {% if product_item.available %} isChecked{% endif %}"
+              {% if scroll_reveal %}
+                style="--animation-order: {{ forloop.index | plus: 1 }};"
+              {% endif %}
+              data-bundle-product-item-id="{{ product_item.id }}"
             >
-                <li
-                    id="Slide-{{ product.id }}-1"
-                    class="bundle-product-item grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %} {% if product.available %} isChecked{% endif %}"
-                    {% if scroll_reveal %}
-                    style="--animation-order: 1;"
-                    {% endif %}
-                    data-bundle-product-item-id="{{ product.id }}"
-                >
-                    {% content_for 'block',
-                    type: '_bundle-card-product',
-                    id: 'card-product-bundle',
-                    closest.product: product
-                    %}
-                </li>
-                {%- for product_item in product.metafields.custom.grouped_sub_product.value -%}
-                    <li
-                        id="Slide-{{ product_item.id }}-{{ forloop.index | plus: 1 }}"
-                        class="bundle-product-item grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %} {% if product_item.available %} isChecked{% endif %}"
-                        {% if scroll_reveal %}
-                        style="--animation-order: {{ forloop.index | plus: 1 }};"
-                        {% endif %}
-                        data-bundle-product-item-id="{{ product_item.id }}"
-                    >
-                        {% content_for 'block',
-                        type: '_bundle-card-product',
-                        id: 'card-product-bundle',
-                        closest.product: product_item
-                        %}
-                    </li>
-                {%- endfor -%}
-            </ul>
+              {% content_for 'block',
+                type: '_bundle-card-product',
+                id: 'card-product-bundle',
+                closest.product: product_item
+              %}
+            </li>
+          {%- endfor -%}
+        </ul>
 
-            <div class="swiper-btns-wrap small-hide">
-            {%- render 'swiper-button' -%}
-            </div>
+        <div class="swiper-btns-wrap small-hide">
+          {%- render 'swiper-button' -%}
         </div>
+      </div>
     </swiper-component>
   </div>
 {% endcapture %}
@@ -114,6 +114,84 @@
   "name": "t:names.product_bundle_content",
   "tag": null,
   "settings": [
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "page_width_custom",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "default": 1570,
+      "unit": "px",
+      "label": "t:settings_schema.layout.settings.page_width.label",
+      "visible_if": "{{ block.settings.section_width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.auto"
+        },
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        },
+        {
+          "value": "full-screen",
+          "label": "t:options.full_screen"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "section_height_custom",
+      "label": "t:settings.custom_height",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "unit": "%",
+      "visible_if": "{{ block.settings.section_height == 'custom' }}"
+    },
     {
       "type": "header",
       "content": "t:content.layout"
@@ -305,107 +383,107 @@
       "unit": "px",
       "default": 30
     },
-      {
-        "type": "header",
-        "content": "t:content.size"
-      },
-      {
-        "type": "select",
-        "id": "width",
-        "label": "t:settings.width",
-        "options": [
-          {
-            "value": "fit-content",
-            "label": "t:options.fit_content"
-          },
-          {
-            "value": "fill",
-            "label": "t:options.fill"
-          },
-          {
-            "value": "custom",
-            "label": "t:options.custom"
-          }
-        ],
-        "default": "fill"
-      },
-      {
-        "type": "range",
-        "id": "custom_width",
-        "label": "t:settings.custom_width",
-        "min": 0,
-        "max": 100,
-        "step": 1,
-        "unit": "%",
-        "default": 100,
-        "visible_if": "{{ block.settings.width == 'custom' }}"
-      },
-      {
-        "type": "select",
-        "id": "width_mobile",
-        "label": "t:settings.width_mobile",
-        "options": [
-          {
-            "value": "fit-content",
-            "label": "t:options.fit_content"
-          },
-          {
-            "value": "fill",
-            "label": "t:options.fill"
-          },
-          {
-            "value": "custom",
-            "label": "t:options.custom"
-          }
-        ],
-        "default": "fill"
-      },
-      {
-        "type": "range",
-        "id": "custom_width_mobile",
-        "label": "t:settings.custom_width",
-        "min": 0,
-        "max": 100,
-        "step": 1,
-        "unit": "%",
-        "default": 100,
-        "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
-      },
-      {
-        "type": "select",
-        "id": "height",
-        "label": "t:settings.height",
-        "options": [
-          {
-            "value": "auto",
-            "label": "t:options.auto"
-          },
-          {
-            "value": "fit",
-            "label": "t:options.fit_content"
-          },
-          {
-            "value": "fill",
-            "label": "t:options.fill"
-          },
-          {
-            "value": "custom",
-            "label": "t:options.custom"
-          }
-        ],
-        "default": "fit"
-      },
-      {
-        "type": "range",
-        "id": "custom_height",
-        "label": "t:settings.custom_height",
-        "min": 0,
-        "max": 100,
-        "step": 1,
-        "unit": "%",
-        "default": 100,
-        "visible_if": "{{ block.settings.height == 'custom' }}"
-      },
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "t:settings.width_mobile",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "auto",
+          "label": "t:options.auto"
+        },
+        {
+          "value": "fit",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "custom_height",
+      "label": "t:settings.custom_height",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.height == 'custom' }}"
+    },
     {
       "type": "header",
       "content": "t:content.appearance"

@@ -16,6 +16,10 @@
     <script src="{{ 'free-shipping-message.js' | asset_url }}" defer="defer"></script>
 {% endif %}
 
+{%- if settings.show_cart_quick_edit -%}
+  <script src="{{ 'edit-cart.js' | asset_url }}" defer="defer"></script>
+{% endif %}
+
 <script>
     window.shopUrl = '{{ request.origin }}';
     window.routes = {
@@ -25,24 +29,30 @@
         cart_update_url: '{{ routes.cart_update_url }}',
         cart_url: '{{ routes.cart_url }}',
         predictive_search_url: '{{ routes.predictive_search_url }}',
+        search_url: '{{ routes.search_url }}',
+    };
+
+    window.inventory_text = {
+        warningQuantity: `{{ 'products.product.quantity.warning_quantity' | t : inventory: '[inventory]' }}`,
     };
 
     window.button_load_more = {
-        default: `{{ 'sections.collection_template.show_more' | t }}`,
-        loading: `{{ 'sections.collection_template.loading' | t }}`,
-        view_all: `{{ 'sections.collection_template.view_all' | t }}`,
-        no_more: `{{ 'sections.collection_template.no_more' | t }}`,
-        no_more_collection: `{{ 'sections.collection_template.no_more_collection' | t }}`
+        default: `{{ 'content.show_more' | t }}`,
+        loading: `{{ 'content.loading' | t }}`,
+        view_all: `{{ 'content.view_all' | t }}`,
+        no_more: `{{ 'content.no_more' | t }}`,
+        no_more_collection: `{{ 'content.no_more_collection' | t }}`
     };
 
     window.cartStrings = {
-        error: `{{ 'sections.cart.cart_error' | t }}`,
-        quantityError: `{{ 'sections.cart.cart_quantity_error_html' | t: quantity: '[quantity]' }}`,
+        error: `{{ 'content.cart_error' | t }}`,
+        quantityError: `{{ 'content.cart_quantity_error_html' | t: quantity: '[quantity]' }}`,
     };
 
     window.variantStrings = {
         addToCart: `{{ 'products.product.add_to_cart' | t }}`,
         addingToCart: `{{ 'products.product.adding_to_cart' | t }}`,
+        chooseOptions: `{{ 'products.product.choose_options' | t }}`,
         soldOut: `{{ 'products.product.sold_out' | t }}`,
         preOrder: `{{ 'products.product.pre_order' | t }}`,
         unavailable: `{{ 'products.product.unavailable' | t }}`,
@@ -50,40 +60,40 @@
     };
 
     window.quickOrderListStrings = {
-        itemsAdded: `{{ 'sections.quick_order_list.items_added.other' | t: quantity: '[quantity]' }}`,
-        itemAdded: `{{ 'sections.quick_order_list.items_added.one' | t: quantity: '[quantity]' }}`,
-        itemsRemoved: `{{ 'sections.quick_order_list.items_removed.other' | t: quantity: '[quantity]' }}`,
-        itemRemoved: `{{ 'sections.quick_order_list.items_removed.one' | t: quantity: '[quantity]' }}`,
-        viewCart: `{{- 'sections.quick_order_list.view_cart' | t -}}`,
-        each: `{{- 'sections.quick_order_list.each' | t: money: '[money]' }}`,
-        min_error: `{{- 'sections.quick_order_list.min_error' | t: min: '[min]' }}`,
-        max_error: `{{- 'sections.quick_order_list.max_error' | t: max: '[max]' }}`,
-        step_error: `{{- 'sections.quick_order_list.step_error' | t: step: '[step]' }}`,
+        itemsAdded: `{{ 'content.items_added.other' | t: quantity: '[quantity]' }}`,
+        itemAdded: `{{ 'content.items_added.one' | t: quantity: '[quantity]' }}`,
+        itemsRemoved: `{{ 'content.items_removed.other' | t: quantity: '[quantity]' }}`,
+        itemRemoved: `{{ 'content.items_removed.one' | t: quantity: '[quantity]' }}`,
+        viewCart: `{{- 'content.view_cart' | t -}}`,
+        each: `{{- 'content.each' | t: money: '[money]' }}`,
+        min_error: `{{- 'content.min_error' | t: min: '[min]' }}`,
+        max_error: `{{- 'content.max_error' | t: max: '[max]' }}`,
+        step_error: `{{- 'content.step_error' | t: step: '[step]' }}`,
     };
 
     window.accessibilityStrings = {
         imageAvailable: `{{ 'products.product.media.image_available' | t: index: '[index]' }}`,
-        shareSuccess: `{{ 'general.share.success_message' | t }}`,
-        pauseSlideshow: `{{ 'sections.slideshow.pause_slideshow' | t }}`,
-        playSlideshow: `{{ 'sections.slideshow.play_slideshow' | t }}`,
-        recipientFormExpanded: `{{ 'recipient.form.expanded' | t }}`,
-        recipientFormCollapsed: `{{ 'recipient.form.collapsed' | t }}`,
-        countrySelectorSearchCount: `{{ 'localization.country_results_count' | t: count: '[count]' }}`,
+        shareSuccess: `{{ 'content.share.success_message' | t }}`,
+        pauseSlideshow: `{{ 'content.pause_slideshow' | t }}`,
+        playSlideshow: `{{ 'content.play_slideshow' | t }}`,
+        recipientFormExpanded: `{{ 'gift_cards.expanded' | t }}`,
+        recipientFormCollapsed: `{{ 'gift_cards.collapsed' | t }}`,
+        countrySelectorSearchCount: `{{ 'content.country_results_count' | t: count: '[count]' }}`,
     };
 
     window.countdown = {
-        day: `{{ 'countdown.general.day' | t }}`,
-        hour: `{{ 'countdown.general.hour' | t }}`,
-        min: `{{ 'countdown.general.min' | t }}`,
-        sec: `{{ 'countdown.general.sec' | t }}`,
-        days: `{{ 'countdown.general.days' | t }}`,
-        hours: `{{ 'countdown.general.hours' | t }}`,
-        mins: `{{ 'countdown.general.mins' | t }}`,
-        secs: `{{ 'countdown.general.secs' | t }}`,
-        d: `{{ 'countdown.general.d' | t }}`,
-        h: `{{ 'countdown.general.h' | t }}`,
-        m: `{{ 'countdown.general.m' | t }}`,
-        s: `{{ 'countdown.general.s' | t }}`
+        day: `{{ 'content.day' | t }}`,
+        hour: `{{ 'content.hour' | t }}`,
+        min: `{{ 'content.min' | t }}`,
+        sec: `{{ 'content.sec' | t }}`,
+        days: `{{ 'content.days' | t }}`,
+        hours: `{{ 'content.hours' | t }}`,
+        mins: `{{ 'content.mins' | t }}`,
+        secs: `{{ 'content.secs' | t }}`,
+        d: `{{ 'content.d' | t }}`,
+        h: `{{ 'content.h' | t }}`,
+        m: `{{ 'content.m' | t }}`,
+        s: `{{ 'content.s' | t }}`
     };
 
     {% if settings.show_calculator_free_shipping_message %}
@@ -93,28 +103,28 @@
             window.free_shipping_price = 0;
         {% endif %}
         window.free_shipping_text = {
-            free_shipping_message: `{{ 'calculator_free_shipping_message.general.free_shipping_message' | t }}`,
-            free_shipping_message_1: `{{ 'calculator_free_shipping_message.general.free_shipping_message_1' | t }}`,
-            free_shipping_message_2:`{{ 'calculator_free_shipping_message.general.free_shipping_message_2' | t }}`,
-            free_shipping_message_3: `{{ 'calculator_free_shipping_message.general.free_shipping_message_3' | t }}`,
-            free_shipping_message_4: `{{ 'calculator_free_shipping_message.general.free_shipping_message_4' | t }}`,
-            free_shipping_1: `{{ 'calculator_free_shipping_message.general.free_shipping_1' | t }}`,
-            free_shipping_2: `{{ 'calculator_free_shipping_message.general.free_shipping_2' | t }}`
+            free_shipping_message: `{{ 'content.free_shipping_message' | t }}`,
+            free_shipping_message_1: `{{ 'content.free_shipping_message_1' | t }}`,
+            free_shipping_message_2:`{{ 'content.free_shipping_message_2' | t }}`,
+            free_shipping_message_3: `{{ 'content.free_shipping_message_3' | t }}`,
+            free_shipping_message_4: `{{ 'content.free_shipping_message_4' | t }}`,
+            free_shipping_1: `{{ 'content.free_shipping_1' | t }}`,
+            free_shipping_2: `{{ 'content.free_shipping_2' | t }}`
         };
     {% endif %}
 
     window.wishlist = {
-        add: `{{ 'wishlist.general.add' | t }}`,
-        added: `{{ 'wishlist.general.added' | t }}`,
-        empty: `{{ 'wishlist.general.empty' | t }}`,
-        continue_shopping: `{{ 'wishlist.general.continue_shopping' | t }}`
+        add: `{{ 'content.add' | t }}`,
+        added: `{{ 'content.added' | t }}`,
+        empty: `{{ 'content.no_product_added' | t }}`,
+        continue_shopping: `{{ 'content.continue_shopping' | t }}`
     };
 
     window.compare = {
         show: {{ settings.enable_compare }},
-        add: `{{ 'compare.general.add' | t }}`,
-        added: `{{ 'compare.general.added' | t }}`,
-        message: `{{ 'compare.general.message' | t }}`
+        add: `{{ 'content.compare.add' | t }}`,
+        added: `{{ 'content.compare.added' | t }}`,
+        message: `{{ 'content.compare.message' | t }}`
     };
 
     document.documentElement.className = document.documentElement.className.replace('no-js', 'js');

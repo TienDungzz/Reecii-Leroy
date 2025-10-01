@@ -15,7 +15,7 @@
         {% assign shared_results_index = 0 %}
         {% if predictive_search.resources.queries.size > 0 %}
           <h6 id="predictive-search-queries" class="predictive-search__heading body-m-font-size">
-            {{- 'templates.search.suggestions' | t -}}
+            {{- 'content.suggestions' | t -}}
           </h6>
           {%- render 'predictive-search-queries',
             queries: predictive_search.resources.queries
@@ -32,7 +32,7 @@
       {%- if predictive_search.resources.collections.size > 0 -%}
         <div class="predictive-search__collections-wrapper">
           <h6 id="predictive-search-collections" class="predictive-search__heading body-m-font-size">
-            {{- 'templates.search.collections' | t -}}
+            {{- 'content.collections' | t -}}
           </h6>
           <ul
             id="predictive-search-results-collections-list"
@@ -63,7 +63,7 @@
             id="predictive-search-pages-desktop"
             class="predictive-search__heading body-m-font-size"
           >
-            {{- 'templates.search.pages' | t -}}
+            {{- 'content.pages' | t -}}
           </h6>
           <ul
             id="predictive-search-results-pages-list-desktop"
@@ -94,7 +94,7 @@
             id="predictive-search-articles-desktop"
             class="predictive-search__heading body-m-font-size"
           >
-            {{- 'templates.search.articles' | t -}}
+            {{- 'content.articles' | t -}}
           </h6>
           <ul
             id="predictive-search-results-articles-list-desktop"
@@ -130,7 +130,7 @@
           {%- if predictive_search.resources.products.size > 0 -%}
             {% assign products = predictive_search.resources.products %}
             {% assign products_test_id = 'products-list-results' %}
-            {% assign title = 'templates.search.products' | t %}
+            {% assign title = 'content.products' | t %}
             {% if products.size > 0 %}
               {% render 'predictive-search-products-list',
                 products_test_id: products_test_id,
@@ -150,7 +150,7 @@
                 id="predictive-search-pages-desktop"
                 class="predictive-search__heading body-m-font-size"
               >
-                {{- 'templates.search.pages' | t -}}
+                {{- 'content.pages' | t -}}
               </h6>
               <ul
                 id="predictive-search-results-pages-list-desktop"
@@ -181,7 +181,7 @@
                 id="predictive-search-articles-desktop"
                 class="predictive-search__heading body-m-font-size"
               >
-                {{- 'templates.search.articles' | t -}}
+                {{- 'content.articles' | t -}}
               </h6>
               <ul
                 id="predictive-search-results-articles-list-desktop"
@@ -222,7 +222,7 @@
           aria-selected="false"
         >
           <span data-predictive-search-search-for-text>
-            {{- 'templates.search.search_for' | t: terms: predictive_search.terms -}}
+            {{- 'content.search_for' | t: terms: predictive_search.terms -}}
           </span>
           <span class="svg-wrapper">
             {{- 'icon-arrow.svg' | inline_asset_content -}}
@@ -239,19 +239,19 @@
     {% liquid
       assign total_results = predictive_search.resources.products.size | plus: first_column_results_size
       if total_results == 0
-        echo 'templates.search.no_results' | t: terms: predictive_search.terms
+        echo 'content.no_results' | t: terms: predictive_search.terms
       else
-        echo 'templates.search.results_with_count' | t: count: total_results | append: ': '
+        echo 'content.results_with_count' | t: count: total_results | append: ': '
         if predictive_search.resources.queries.size > 0
           assign count = predictive_search.resources.queries.size | plus: predictive_search.resources.collections.size
-          echo 'templates.search.results_suggestions_with_count' | t: count: count | append: ', '
+          echo 'content.results_suggestions_with_count' | t: count: count | append: ', '
         endif
         if predictive_search.resources.pages.size > 0
           assign count = predictive_search.resources.pages.size | plus: predictive_search.resources.articles.size
-          echo 'templates.search.results_pages_with_count' | t: count: count | append: ', '
+          echo 'content.results_pages_with_count' | t: count: count | append: ', '
         endif
         if predictive_search.resources.products.size > 0
-          echo 'templates.search.results_products_with_count' | t: count: predictive_search.resources.products.size
+          echo 'content.results_products_with_count' | t: count: predictive_search.resources.products.size
         endif
       endif
     %}

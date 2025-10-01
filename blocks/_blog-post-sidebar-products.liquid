@@ -69,7 +69,7 @@
     </h3>
   {%- elsif text == blank and collapse == true -%}
     <h3 class="blog-posts__sidebar-heading blog-posts__sidebar-collapse-button cursor-pointer">
-      {{ 'content.sidebar.collapse' | t }}
+      {{ 'content.collapse_row' | t }}
       {% if collapse_icon != 'none' and collapse %}
         <span class="svg-wrapper icon-caret-wrapper">
           {{- 'icon-caret.svg' | inline_asset_content -}}
@@ -101,6 +101,14 @@
           slides_per_view: 1,
           space_between: columns_gap
         -%}
+        style="
+          {% render 'swiper-style',
+            columns_mobile: 1,
+            columns_tablet: 1,
+            columns_desktop: 1,
+            columns_gap: columns_gap,
+          %}
+        "
       >
         <div class="swiper">
     {%- endif -%}
@@ -110,7 +118,7 @@
       class="grid grid-layout product-grid list-unstyled{% if is_slider %} swiper-wrapper grid-layout-no-js{% else %} grid-layout--1{% endif %}"
       role="list"
       data-products-to-show="{{ limit }}"
-      aria-label="{{ 'general.grid.name' | t }}"
+      aria-label="{{ 'content.grid.name' | t }}"
       style="--grid-desktop-horizontal-spacing: {{ columns_gap }}px; --grid-desktop-vertical-spacing: {{ rows_gap }}px;"
     >
       {{ list_items }}

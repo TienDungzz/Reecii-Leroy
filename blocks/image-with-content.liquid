@@ -1,13 +1,13 @@
-{% assign block_settings = block.settings %}
+{% assign bl_stts = block.settings %}
 
-{% assign icon_block_class = 'icon-block__media icon-block_' | append: block_settings.icon | append: ' icon-block-' | append: block.id %}
+{% assign icon_block_class = 'icon-block__media icon-block_' | append: bl_stts.icon | append: ' icon-block-' | append: block.id %}
 {% capture icon %}
   {%- liquid
     assign ratio = 1
 
-    case block_settings.image_ratio
+    case bl_stts.image_ratio
       when 'adapt'
-        assign ratio = block_settings.image.aspect_ratio
+        assign ratio = bl_stts.image.aspect_ratio
       when 'portrait'
         assign ratio = '4 / 5'
       when 'square'
@@ -21,16 +21,16 @@
   <div class="icon-block border-style"
     style="
       --ratio: {{ ratio }};
-      {% render 'size-style', settings: block_settings %}
-      {% render 'border-override', settings: block_settings %}
+      {% render 'size-style', settings: bl_stts %}
+      {% render 'border-override', settings: bl_stts %}
     "
   >
     {% render 'icon-or-image',
-      icon: block_settings.icon,
-      icon_custom: block_settings.icon_custom,
-      svg_upload: block_settings.svg_upload,
-      image_upload: block_settings.image_upload,
-      width: block_settings.icon_width,
+      icon: bl_stts.icon,
+      icon_custom: bl_stts.icon_custom,
+      svg_upload: bl_stts.svg_upload,
+      image_upload: bl_stts.image_upload,
+      width: bl_stts.icon_width,
       class_name: icon_block_class,
       attributes: block.shopify_attributes
     %}
@@ -38,15 +38,15 @@
 {% endcapture %}
 
 {% capture text %}
-  {% if block_settings.text != blank or block_settings.subtext != blank %}
+  {% if bl_stts.text != blank or bl_stts.subtext != blank %}
     <div class="icon-block__content">
-      {% if block_settings.text != blank %}
+      {% if bl_stts.text != blank %}
         {% render 'text', block: block %}
       {% endif %}
 
-      {% if block_settings.subtext != blank %}
+      {% if bl_stts.subtext != blank %}
         <div class="icon-block__subtext text-block rte">
-          {{ block_settings.subtext }}
+          {{ bl_stts.subtext }}
         </div>
       {% endif %}
     </div>
@@ -59,27 +59,27 @@
     layout-panel-flex
     layout-panel-flex--row
     mobile-row
-    {% if block_settings.width == '100%' %}text-block--align-{{ block_settings.alignment }}{% endif %}
-    {% if block_settings.icon_position == 'icon-left' %}justify-start{% else %}justify-end{% endif %}
+    {% if bl_stts.width == '100%' %}text-block--align-{{ bl_stts.alignment }}{% endif %}
+    {% if bl_stts.icon_position == 'icon-left' %}justify-start{% else %}justify-end{% endif %}
   "
   style="
-    {% render 'spacing-style', settings: block_settings %}
-    --width: {{ block_settings.width }};
-    {% if block_settings.width == "100%" %}
-      --text-align: {{ block_settings.alignment }};
+    {% render 'spacing-style', settings: bl_stts %}
+    --width: {{ bl_stts.width }};
+    {% if bl_stts.width == "100%" %}
+      --text-align: {{ bl_stts.alignment }};
     {% endif %}
-    --gap-x: {{ block_settings.gap }}px;
-    {% render 'layout-panel-style', settings: block_settings, custom_content_direction: 'row', scale_min: 8 %}
+    --gap-x: {{ bl_stts.gap }}px;
+    {% render 'layout-panel-style', settings: bl_stts, custom_content_direction: 'row', scale_min: 8 %}
   "
   {{ block.shopify_attributes }}
 >
-  {% if block_settings.icon_position == 'icon-left' %}
+  {% if bl_stts.icon_position == 'icon-left' %}
     {{ icon }}
   {% endif %}
 
   {{ text }}
 
-  {% if block_settings.icon_position == 'icon-right' %}
+  {% if bl_stts.icon_position == 'icon-right' %}
     {{ icon }}
   {% endif %}
 </div>
