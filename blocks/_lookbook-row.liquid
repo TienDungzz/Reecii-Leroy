@@ -1,0 +1,124 @@
+{% liquid
+  assign column1_width = block.settings.column1_width
+  assign column2_width = block.settings.column2_width
+  assign gap = block.settings.gap
+  assign horizontal_alignment = block.settings.horizontal_alignment
+  assign vertical_alignment = block.settings.vertical_alignment
+%}
+
+{% capture attr %}
+  style="--column1-width: {{ column1_width }}%; --column2-width: {{ column2_width }}%; --gap: {{ gap }}px;"
+{% endcapture %}
+
+<div class="lookbook-row grid md:items-{{ vertical_alignment }} md:justify-{{ horizontal_alignment }}" {{ attr }}>
+  {%- content_for 'blocks' -%}
+</div>
+
+{% stylesheet %}
+  .shopify-block:has(.lookbook-row) {
+    width: 100%;
+  }
+
+  @media (min-width: 750px) {
+    .lookbook-row {
+      grid-template-columns: calc(var(--column1-width) - calc(var(--gap) / 2)) calc(var(--column2-width) - calc(var(--gap) / 2));
+      gap: var(--gap);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Lookbook row",
+  "settings": [
+    {
+      "type": "range",
+      "id": "column1_width",
+      "label": "Column 1 width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "column2_width",
+      "label": "Column 2 width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Horizontal alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Right"
+        },
+        {
+          "value": "between",
+          "label": "Space between"
+        },
+        {
+          "value": "around",
+          "label": "Space around"
+        }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Bottom"
+        }
+      ],
+      "default": "start"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "_lookbook-group"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lookbook row"
+    }
+  ]
+}
+{% endschema %}

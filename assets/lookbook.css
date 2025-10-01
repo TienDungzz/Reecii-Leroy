@@ -53,6 +53,49 @@
     animation: dot-zoom-animation 1.8s ease-in-out infinite;
 }
 
+.lookbook-dot.is-active .lookbook-dot__icon {
+    transform: scale(1);
+    transition: transform 0.3s ease;
+    color: var(--dot-outer-color);
+    background-color: var(--dot-outer-color);
+}
+
+.lookbook-dot.is-active .lookbook-dot__icon::before {
+    opacity: 0.8;
+    background: radial-gradient(circle, var(--dot-outer-color) 0%, var(--dot-inner-color) 50%, var(--dot-inner-color) 100%);
+    animation: active-pulse 2s ease-in-out infinite;
+}
+
+.lookbook-dot.is-active .lookbook-dot__icon::after {
+    opacity: 0.6;
+    background-color: var(--dot-inner-color);
+    animation: active-zoom 1.5s ease-in-out infinite;
+}
+
+@keyframes active-pulse {
+    0%, 100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes active-zoom {
+    0% {
+        transform: scale3d(2.5, 2.5, 1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale3d(3.5, 3.5, 1);
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale3d(2.5, 2.5, 1);
+        opacity: 0.6;
+    }
+}
+
 @keyframes dot-zoom-animation {
     0% {
         transform: scale3d(2, 2, 1);
@@ -77,9 +120,13 @@
     visibility: hidden;
     transform: translate3d(0, 100%, 0);
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-    min-width: 350px;
+    min-width: 800px;
     height: 0;
     overflow: hidden;
+}
+
+.lookbook-popup .card--block-button {
+    display: none;
 }
 
 @media (min-width: 1025px) {
@@ -141,7 +188,7 @@
 }
 
 @media (min-width: 1025px) {
-    .lookbook-section-list.style-popup .lookbook-dot__content.is-open {
+    .lookbook-section-list.style-popup .lookbook-dot.is-active .lookbook-dot__content {
         opacity: 1;
         visibility: visible;
         animation: 0.3s ease 0s 1 normal none running scaleLeftToRight;
@@ -167,9 +214,41 @@
 
 .option-horizontal .product-card-lookbook {
     display: flex;
+    padding: 8px 14px;
+    max-width: 450px;
+    position: relative;
+    border-radius: 5px;
+    box-shadow: 0 0 4px 1px rgba(32,33,36,.28);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
+
+.lookbook-dot.is-active .option-horizontal .product-card-lookbook {
+    opacity: 1;
+    visibility: visible;
+}
+
+.option-horizontal .product-card-lookbook::before {
+    content: "";
+    display: inline-block;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    position: absolute;
+    top: 50%;
+    left: -10px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #fff;
+}
+
 .option-horizontal .product-card-lookbook .product-image {
     max-width: 70px;
+}
+
+.option-horizontal .card--block-variant,
+.option-horizontal .card--block-button {
+    display: none;
 }
 
 .lookbook-close {
