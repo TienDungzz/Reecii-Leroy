@@ -9,22 +9,22 @@
 {%- assign tab_labels = '' -%}
 
 {%- if predictive_search.resources.products.size > 0 -%}
-  {%- assign title = 'templates.search.products' | t -%}
+  {%- assign title = 'content.products' | t -%}
   {%- assign tabs = tabs | append: 'products,' -%}
   {%- assign tab_labels = tab_labels | append: title | append: ',' -%}
 {%- endif -%}
 {%- if predictive_search.resources.collections.size > 0 -%}
-  {%- assign title = 'templates.search.collections' | t -%}
+  {%- assign title = 'content.collections' | t -%}
   {%- assign tabs = tabs | append: 'collections,' -%}
   {%- assign tab_labels = tab_labels | append: title | append: ',' -%}
 {%- endif -%}
 {%- if predictive_search.resources.pages.size > 0 -%}
-  {%- assign title = 'templates.search.pages' | t -%}
+  {%- assign title = 'content.pages' | t -%}
   {%- assign tabs = tabs | append: 'pages,' -%}
   {%- assign tab_labels = tab_labels | append: title | append: ',' -%}
 {%- endif -%}
 {%- if predictive_search.resources.articles.size > 0 -%}
-  {%- assign title = 'templates.search.articles' | t -%}
+  {%- assign title = 'content.articles' | t -%}
   {%- assign tabs = tabs | append: 'articles,' -%}
   {%- assign tab_labels = tab_labels | append: title | append: ',' -%}
 {%- endif -%}
@@ -35,7 +35,7 @@
 {% if predictive_search.resources.queries.size > 0 %}
   {% assign shared_results_index = shared_results_index | plus: predictive_search.resources.collections.size %}
   <h6 id="predictive-search-queries" class="predictive-search__heading body-m-font-size">
-    {{- 'templates.search.suggestions' | t -}}
+    {{- 'content.suggestions' | t -}}
   </h6>
   {%- render 'predictive-search-queries',
     queries: predictive_search.resources.queries
@@ -81,7 +81,7 @@
               {%- when 'products' -%}
                 {% assign products = predictive_search.resources.products %}
                 {% assign products_test_id = 'products-list-results' %}
-                {% assign title = 'templates.search.products' | t %}
+                {% assign title = 'content.products' | t %}
                 {% if products.size > 0 %}
                   {% render 'predictive-search-products-list',
                     products_test_id: products_test_id,

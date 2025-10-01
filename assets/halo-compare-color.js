@@ -5,6 +5,10 @@ if (typeof window.compareColor === 'undefined') {
             constructor() {
                 super();
 
+                this.init();
+            }
+
+            init() {
                 this.imageList = this.querySelector('.halo-compareColors-image');
                 this.textList = this.querySelector('[class*="compare-colors-text"]');
                 this.sortTable = document.getElementById('sortTableList');
@@ -70,7 +74,7 @@ if (typeof window.compareColor === 'undefined') {
                     item.className = `item item-${id} item-compare-color`;
                     item.innerHTML = `
                         <span class="image"><img src="${image}" alt="${title}"></span>
-                        <span class="title text-center">${title}</span>
+                        <span class="title center">${title}</span>
                     `;
                     this.imageList.appendChild(item);
                     itemSwatch.classList.add('active');

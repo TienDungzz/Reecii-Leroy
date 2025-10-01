@@ -15,8 +15,7 @@
     {%- if block.settings.width_option == 'custom' -%}
       --globalGroupWidth: {{ block.settings.custom_width }}%;
     {%- endif -%}
-    {%- render 'gap-style', value: block.settings.gap_x, name: 'gap-x' -%}
-    {%- render 'gap-style', value: block.settings.gap_y, name: 'gap-y' -%}
+    --gap: {{ block.settings.gap_x }}px {{ block.settings.gap_y }}px;
     {% render 'layout-panel-style', settings: block.settings, scale_min: 8 %}
   "
 >
@@ -26,6 +25,10 @@
 {%- stylesheet -%}
   .card-product-information {
     height: auto;
+  }
+
+  .card.flex-column .card-product-information {
+    flex: 1;
   }
 {%- endstylesheet -%}
 
@@ -45,11 +48,11 @@
       "options": [
         {
           "value": "full",
-          "label": "Full width"
+          "label": "t:options.full"
         },
         {
           "value": "custom",
-          "label": "Custom"
+          "label": "t:options.custom"
         }
       ],
       "default": "full"
@@ -67,7 +70,7 @@
     },
     {
       "type": "header",
-      "content": "Padding"
+      "content": "t:content.padding"
     },
     {
       "type": "range",
@@ -107,7 +110,7 @@
     },
     {
       "type": "header",
-      "content": "Layout"
+      "content": "t:content.layout"
     },
     {
       "type": "select",
@@ -280,51 +283,6 @@
       "id": "color_scheme",
       "label": "Color scheme",
       "default": "scheme-1"
-    },
-    {
-      "type": "header",
-      "content": "Text Alignment"
-    },
-    {
-      "type": "select",
-      "id": "alignment",
-      "label": "Text alignment desktop",
-      "default": "left",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "id": "alignment_mb",
-      "label": "Text alignment mobile",
-      "default": "left",
-      "info": "t:sections.footer.settings.alignment.info",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ]
     }
   ],
   "blocks": [

@@ -33,6 +33,8 @@ style="
         const tabTitles = document.querySelectorAll('.tab-title');
         const tabContents = document.querySelectorAll('.tab-content');
 
+        if (tabTitles.length === 0 || tabContents.length === 0) return;
+
         tabContents[0].classList.add('is-active');
 
         tabTitles.forEach(title => {
@@ -42,7 +44,9 @@ style="
                     content.classList.remove('is-active');
                 });
                 const tabContent = this.nextElementSibling;
-                tabContent.classList.add('is-active');
+                if (tabContent) {
+                    tabContent.classList.add('is-active');
+                }
             });
         });
     });

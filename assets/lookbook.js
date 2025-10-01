@@ -275,7 +275,7 @@ function renderDotsNumber() {
 
     dotNumberSections.forEach(function(section){
         const dots = section.querySelectorAll('.lookbook-dot');
-        
+
         for (let i = 0; i < dots.length; i++) {
             const dot = dots[i];
             const number = dot.querySelector('.lookbook-dot__icon');
@@ -311,6 +311,8 @@ function handleLookBookAllItemsLayout() {
 
         dotElements.forEach(function(dot){
             dot.addEventListener('click', function(e){
+                console.log('click');
+
                 const titleEl = dot.querySelector('.product-title');
                 const productName = titleEl ? (titleEl.textContent || '').trim().toLowerCase() : '';
 
@@ -343,6 +345,8 @@ function handleLookBookAllItemsLayout() {
                 }
 
                 if (targetIndex >= 0) {
+                    console.log(targetIndex);
+
                     try {
                         swiperInstance.slideTo(targetIndex, 600);
                     } catch (_) {}

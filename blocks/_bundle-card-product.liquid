@@ -1,0 +1,274 @@
+{% comment %}
+  Renders a product card
+
+  Accepts:
+  - card_product: {Object} Product Liquid object (optional)
+  - media_aspect_ratio: {String} Size of the product image card. Values are "square" and "portrait". Default is "square" (optional)
+  - image_shape: {String} Image mask to apply to the product image card. Values are "arch", "blob", "chevronleft", "chevronright", "diamond", "parallelogram", and "round". (optional)
+  - show_secondary_image: {Boolean} Show the secondary image on hover. Default: false (optional)
+  - show_vendor: {Boolean} Show the product vendor. Default: false
+  - show_rating: {Boolean} Show the product rating. Default: false
+  - extend_height: {Boolean} Card height extends to available container space. Default: true (optional)
+  - lazy_load: {Boolean} Image should be lazy loaded. Default: true (optional)
+  - skip_styles: {Boolean} Don't include component styles. Useful when rendering multiple product cards in a loop. Default: false (optional)
+  - quick_add: {Boolean} Show the quick add button.
+  - section_id: {String} The ID of the section that contains this card.
+  - horizontal_class: {Boolean} Add a card--horizontal class if set to true. Default: false (optional)
+  - horizontal_quick_add: {Boolean} Changes the quick add button styles when set to true. Default: false (optional)
+  - placeholder_image: {String} The placeholder image to use when no product exists. Default: 'product-apparel-2' (optional)
+
+  Usage:
+  {% render 'card-product', show_vendor: section.settings.show_vendor %}
+{% endcomment %}
+
+{%- liquid
+  assign card_product = closest.product
+  assign current_variant = card_product.selected_or_first_available_variant
+  assign variantCount = card_product.variants | size
+-%}
+
+<div class="card--block card-wrapper product-card-wrapper underline-links-hover color-{{ block.settings.color_scheme }}">
+  <div
+    class="
+      card
+      card--bundle
+      card--quickadd-type-{{ settings.quick_add_type }}
+      {% if card_product.featured_media %} card--media{% else %} card--text{% endif %}
+      flex-{{ block.settings.content_direction }}
+      flex-{{ block.settings.wrap }}
+      items-{{ block.settings.align_items}}
+      justify-{{ block.settings.justify_content }}
+      gap-style
+      spacing-style
+    "
+    style="
+      {% render 'gap-style', value: block.settings.gap %}
+      {% render 'spacing-style', settings: block.settings %}
+    "
+  >
+    <template>
+      <div
+        data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'
+      ></div>
+    </template>
+    <script>
+        window.productVariants = window.productVariants || {};
+        window.productVariants[{{ card_product.id }}] = {{ card_product.variants | json }};
+        {% if settings.show_hot_stock %}
+            window.bundle_inven_array_{{ card_product.id }} = {
+                {% for variant in card_product.variants %}
+                    '{{ variant.id }}': '{{ variant.inventory_quantity }}',
+                {%endfor%}
+            };
+        {% endif %}
+    </script>
+    {% content_for 'block', type: '_card-product-media-basic', id: 'card-product-media-basic', closest.product: card_product %}
+    {% content_for 'block', type: '_bundle-card-product-infor', id: 'bundle-card-product-infor', closest.product: card_product %}
+    {%- if variantCount > 1 -%}
+        <select id="product-variants-{{ card_product.id }}" name="group_id" style="display: none;" autocomplete="off">
+            {%- for variant in card_product.variants -%}
+                {%- if variant.available -%}
+                    <option {% if variant == current_variant %} selected="selected" {% endif %} value="{{ variant.id }}" data-price="{{ variant.price }}" {% if variant.image.src != blank %}data-image="{{ variant.image.src | product_img_url: 'master' }}"{% endif %}>
+                        {{ variant.title }} - {{ variant.price | money }}
+                    </option>
+                {%- else -%}
+                    <option disabled="disabled" data-price="{{ variant.price }}">
+                        {{ variant.title }} - {{ variant.price | money }}
+                    </option>
+                {%- endif -%}
+            {%- endfor -%}
+        </select>
+        <div class="bundle-product-options" data-product-option-id="{{ card_product.id }}">
+          <div class="halo-popup-wrapper">
+            <div class="halo-popup-header">
+              <h5 class="bundle-option-title">
+                {{ 'products.product.choose_options' | t }}
+              </h5>
+              <button
+                class="bundle-option-close drawer__close block t-button bor-none rounded-full cursor-pointer"
+                type="button"
+                style="--top: 0.3rem; --right: 0.3rem;"
+              >
+                {{- 'icon-close.svg' | inline_asset_content -}}
+              </button>
+            </div>
+            <div class="bundle-option-content cus-scrollbar">
+              {% render 'product-bundle-swatch',
+                product: card_product
+              %}
+            </div>
+          </div>
+        </div>
+    {%- else -%}
+      <input type="hidden" name="group_id"  value="{{ card_product.variants[0].id }}" data-price="{{ card_product.variants[0].price }}"/>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product card",
+  "tag": null,
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_direction",
+      "label": "t:settings.direction",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "select",
+      "id": "wrap",
+      "label": "Wrap",
+      "default": "no-wrap",
+      "options": [
+        {
+          "value": "no-wrap",
+          "label": "No"
+        },
+        {
+          "value": "wrap",
+          "label": "Yes"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "align_items",
+      "options": [
+        {
+          "value": "stretch",
+          "label": "Default"
+        },
+        {
+          "value": "start",
+          "label": "⤒"
+        },
+        {
+          "value": "center",
+          "label": "⮃"
+        },
+        {
+          "value": "end",
+          "label": "⤓"
+        }
+      ],
+      "default": "stretch",
+      "label": "Align items"
+    },
+    {
+      "type": "select",
+      "id": "justify_content",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "around",
+          "label": "Space Around"
+        },
+        {
+          "value": "evenly",
+          "label": "Space Evenly"
+        }
+      ],
+      "default": "start",
+      "label": "Justify"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product card",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

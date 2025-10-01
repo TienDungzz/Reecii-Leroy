@@ -1,90 +1,89 @@
 {%- liquid
+  assign columns_desktop = section.settings.columns_grid
+  if section.settings.layout_type == 'carousel'
+    assign columns_desktop = section.settings.columns_carousel
+  endif
 
-    assign columns_desktop = section.settings.columns_grid
-    if section.settings.layout_type == 'carousel'
-        assign columns_desktop = section.settings.columns_carousel
-    endif
+  assign columns_tablet = 2
+  if columns_desktop == 1
+    assign columns_tablet = 1
+  elsif columns_desktop >= 4
+    assign columns_tablet = 3
+  endif
 
-    assign columns_tablet = 2
-    if columns_desktop == 1
-      assign columns_tablet = 1
-    elsif columns_desktop >= 4
-      assign columns_tablet = 3
-    endif
+  assign mobile_columns = section.settings.mobile_columns_grid
+  if section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile
+    assign mobile_columns = section.settings.mobile_columns_carousel
+    assign columns_tablet = section.settings.tablet_columns_carousel
+  endif
+  assign mobile_columns_int = mobile_columns | plus: 0
+  assign show_mobile_slider = false
+  if section.settings.carousel_on_mobile and section.blocks.size > mobile_columns_int
+    assign show_mobile_slider = true
+  endif
 
-    assign mobile_columns = section.settings.mobile_columns_grid
-    if section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile
-        assign mobile_columns = section.settings.mobile_columns_carousel
-        assign columns_tablet = section.settings.tablet_columns_carousel
-    endif
-    assign mobile_columns_int = mobile_columns | plus: 0
-    assign show_mobile_slider = false
-    if section.settings.carousel_on_mobile and section.blocks.size > mobile_columns_int
-        assign show_mobile_slider = true
-    endif
+  assign enable_navigation = false
+  if section.settings.navigation == 'arrows-pagination' or section.settings.navigation == 'arrows'
+    assign enable_navigation = true
+  endif
 
-    assign enable_navigation = false
-    if section.settings.navigation == 'arrows-pagination' or section.settings.navigation == 'arrows'
-        assign enable_navigation = true
-    endif
+  assign enable_pagination = false
+  if section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination'
+    assign enable_pagination = true
+  endif
 
-    assign enable_pagination = false
-    if section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination'
-        assign enable_pagination = true
-    endif
-
-    assign blog = section.settings.blog
+  assign blog = section.settings.blog
 -%}
 
 {% stylesheet %}
-  .section-wrapper {
-    --section-height-offset: 0px;
+.section-wrapper {
+  --section-height-offset: 0px;
+}
+
+.section[data-shopify-visual-preview] {
+  min-height: var(--section-preview-height);
+  padding-top: 0;
+}
+
+.section[data-shopify-visual-preview] .custom-section-background {
+  display: none;
+}
+
+body:has(> #header-group > .header-section > #header-component[transparent]):not(
+    :has(> #header-group > .header-section + .shopify-section)
+  )
+  > main
+  > .section-wrapper:first-child {
+  --section-height-offset: var(--header-group-height, 0);
+}
+
+.custom-section-background {
+  grid-column: 1 / -1;
+}
+
+.custom-section-content {
+  z-index: var(--layer-flat);
+}
+
+@media (min-width: 750px) {
+  .blog-posts-section.layout-panel-flex--row .section-resource-list__header {
+    width: calc(var(--header-width) - var(--gap) / 2);
   }
 
-  .section[data-shopify-visual-preview] {
-    min-height: var(--section-preview-height);
-    padding-top: 0;
+  .blog-posts-section.layout-panel-flex--row .blog-posts-block {
+    width: calc(100% - var(--header-width) - var(--gap) / 2);
+  }
+}
+
+@media (max-width: 749px) {
+  .blog-posts-section.mobile-direction--row .section-resource-list__header {
+    width: calc(var(--header-width) - var(--gap) / 2);
   }
 
-  .section[data-shopify-visual-preview] .custom-section-background {
-    display: none;
+  .blog-posts-section.mobile-direction--row .blog-posts-block {
+    width: calc(100% - var(--header-width) - var(--gap) / 2);
   }
-
-  body:has(> #header-group > .header-section > #header-component[transparent]):not(
-      :has(> #header-group > .header-section + .shopify-section)
-    )
-    > main
-    > .section-wrapper:first-child {
-    --section-height-offset: var(--header-group-height, 0);
-  }
-
-  .custom-section-background {
-    grid-column: 1 / -1;
-  }
-
-  .custom-section-content {
-    z-index: var(--layer-flat);
-  }
-
-  @media (min-width: 750px) {
-    .blog-posts-section.layout-panel-flex--row .section-resource-list__header {
-      width: calc(var(--header-width) - var(--gap) / 2);
-    }
-
-    .blog-posts-section.layout-panel-flex--row .blog-posts-block {
-      width: calc(100% - var(--header-width) - var(--gap) / 2);
-    }
-  }
-
-  @media (max-width: 749px) {
-    .blog-posts-section.mobile-direction--row .section-resource-list__header {
-      width: calc(var(--header-width) - var(--gap) / 2);
-    }
-
-    .blog-posts-section.mobile-direction--row .blog-posts-block {
-      width: calc(100% - var(--header-width) - var(--gap) / 2);
-    }
-  }
+}
 {% endstylesheet %}
 
 {% capture header %}
@@ -96,9 +95,9 @@
 {% capture list_items %}
   {%- if section.settings.blog != blank -%}
     {%- for article in blog.articles limit: section.settings.articles_to_show -%}
-        <li class="blog-post-item{% if show_mobile_slider or section.settings.layout_type == 'carousel' %} swiper-slide{% endif %}">
+      <li class="blog-post-item{% if show_mobile_slider or section.settings.layout_type == 'carousel' %} swiper-slide{% endif %}">
         {% content_for 'block', id: 'static-blog-post-block', type: '_blog-post-block', article: article %}
-        </li>
+      </li>
     {%- endfor -%}
   {%- else -%}
     {%- for i in (1..section.settings.articles_to_show) -%}
@@ -112,79 +111,79 @@
 {% capture main %}
   <div class="blog-posts-block w-full"
     {%- if request.visual_preview_mode -%}
-        data-shopify-visual-preview
+      data-shopify-visual-preview
     {%- endif -%}
   >
     {% case section.settings.layout_type %}
-        {% when 'grid' %}
-            <div class="blog-posts--grid-layout size-full block">
-                {%- if show_mobile_slider -%}
-                    <swiper-component
-                        class="swiper-component-mobile"
-                        data-swiper-mobile
-                        {%- render 'swiper-data',
-                            settings: section.settings,
-                            loop: false,
-                            slides_per_view: mobile_columns,
-                            space_between: section.settings.items_gap
-                        -%}
-                    >
-                        <div class="swiper">
-                {%- endif -%}
-                <ul
-                    id="Grid-{{ section.id }}"
-                    data-id="{{ section.id }}"
-                    class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %}{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
-                    role="list"
-                    aria-label="{{ 'general.grid.name' | t }}"
-                    style="--grid-desktop-horizontal-spacing: {{ section.settings.items_gap }}px; --grid-desktop-vertical-spacing: {{ section.settings.items_gap }}px;"
-                >
-                    {{- list_items -}}
-                </ul>
-                {%- if show_mobile_slider -%}
-                    </div>
-                    </swiper-component>
-                {%- endif -%}
-            </div>
-        {% when 'carousel' %}
-            {%- assign slides_per_view = mobile_columns -%}
-            {%- assign spaceBetween = section.settings.items_gap | times: 0.5 -%}
-            {%- capture breakpoints -%}
-                {
-                    "750": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ section.settings.items_gap | times: 0.75 }} },
-                    "1024": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ section.settings.items_gap }} }
-                }
-            {%- endcapture -%}
+      {% when 'grid' %}
+        <div class="blog-posts--grid-layout size-full block">
+          {%- if show_mobile_slider -%}
             <swiper-component
-                class="blog-posts-carousel-swiper-component size-full block"
-                {%- render 'swiper-data',
-                    settings: section.settings,
-                    slides_per_view: slides_per_view,
-                    space_between: spaceBetween,
-                    watch_slides_progress: true,
-                    breakpoints: breakpoints
-                -%}
+              class="swiper-component-mobile"
+              data-swiper-mobile
+              {%- render 'swiper-data',
+                settings: section.settings,
+                loop: false,
+                slides_per_view: mobile_columns,
+                space_between: section.settings.items_gap
+              -%}
             >
-                <div class="swiper size-full" style="--swiper-navigation-top-offset: 50%;">
-                    <ul
-                        id="Slider-{{ section.id }}"
-                        data-id="{{ section.id }}"
-                        class="swiper-wrapper grid-layout-no-js list-unstyled{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} grid--{{ mobile_columns }}-col-mobile"
-                        style="--card-grid-per-row-desktop: {{ columns_desktop }}; --card-grid-per-row-tablet: {{ columns_tablet }}; --card-grid-per-row-mobile: {{ mobile_columns }};"
-                    >
-                        {{ list_items }}
-                    </ul>
-
-                    {%- if enable_navigation -%}
-                        <div class="swiper-btns-wrap small-hide">
-                        {%- render 'swiper-button' -%}
-                        </div>
-                    {%- endif -%}
-                    {%- if enable_pagination -%}
-                        <div class="swiper-pagination"></div>
-                    {%- endif -%}
-                </div>
+              <div class="swiper">
+          {%- endif -%}
+          <ul
+            id="Grid-{{ section.id }}"
+            data-id="{{ section.id }}"
+            class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
+            role="list"
+            aria-label="{{ 'content.grid.name' | t }}"
+            style="--grid-desktop-horizontal-spacing: {{ section.settings.items_gap }}px; --grid-desktop-vertical-spacing: {{ section.settings.items_gap }}px;"
+          >
+            {{- list_items -}}
+          </ul>
+          {%- if show_mobile_slider -%}
+              </div>
             </swiper-component>
+          {%- endif -%}
+        </div>
+      {% when 'carousel' %}
+        {%- assign slides_per_view = mobile_columns -%}
+        {%- assign space_between = section.settings.items_gap | times: 0.5 -%}
+        {%- capture breakpoints -%}
+          {
+            "750": { "slidesPerView": {{ columns_tablet }}, "space_between": {{ section.settings.items_gap | times: 0.75 }} },
+            "1024": { "slidesPerView": {{ columns_desktop }}, "space_between": {{ section.settings.items_gap }} }
+          }
+        {%- endcapture -%}
+        <swiper-component
+          class="blog-posts-carousel-swiper-component size-full block"
+          {%- render 'swiper-data',
+            settings: section.settings,
+            slides_per_view: slides_per_view,
+            space_between: space_between,
+            watch_slides_progress: true,
+            breakpoints: breakpoints
+          -%}
+        >
+          <div class="swiper size-full" style="--swiper-navigation-top-offset: 50%;">
+            <ul
+              id="Slider-{{ section.id }}"
+              data-id="{{ section.id }}"
+              class="swiper-wrapper grid-layout-no-js list-unstyled{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} grid--{{ mobile_columns }}-col-mobile"
+              style="--card-grid-per-row-desktop: {{ columns_desktop }}; --card-grid-per-row-tablet: {{ columns_tablet }}; --card-grid-per-row-mobile: {{ mobile_columns }};"
+            >
+              {{ list_items }}
+            </ul>
+
+            {%- if enable_navigation -%}
+              <div class="swiper-btns-wrap small-hide">
+                {%- render 'swiper-button' -%}
+              </div>
+            {%- endif -%}
+            {%- if enable_pagination -%}
+              <div class="swiper-pagination"></div>
+            {%- endif -%}
+          </div>
+        </swiper-component>
     {% endcase %}
   </div>
 {% endcapture %}
@@ -273,9 +272,9 @@
       "content": "Blog"
     },
     {
-        "id": "blog",
-        "type": "blog",
-        "label": "Blog"
+      "id": "blog",
+      "type": "blog",
+      "label": "Blog"
     },
     {
       "type": "header",
@@ -296,7 +295,7 @@
         },
         {
           "value": "custom",
-          "label": "Custom"
+          "label": "t:options.custom"
         }
       ],
       "default": "page-width"
@@ -356,31 +355,31 @@
       "visible_if": "{{ section.settings.section_height == 'custom' }}"
     },
     {
-        "type": "header",
-        "content": "t:content.layout"
+      "type": "header",
+      "content": "t:content.layout"
     },
     {
-        "type": "select",
-        "id": "layout_type",
-        "label": "t:settings_schema.global.settings.type.label",
-        "options": [
-            {
-                "value": "grid",
-                "label": "Grid"
-            },
-            {
-                "value": "carousel",
-                "label": "Carousel"
-            }
-        ],
-        "default": "grid"
+      "type": "select",
+      "id": "layout_type",
+      "label": "t:settings_schema.global.settings.type.label",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid"
+        },
+        {
+          "value": "carousel",
+          "label": "Carousel"
+        }
+      ],
+      "default": "grid"
     },
     {
-        "type": "checkbox",
-        "id": "carousel_on_mobile",
-        "label": "Carousel on mobile",
-        "default": false,
-        "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+      "type": "checkbox",
+      "id": "carousel_on_mobile",
+      "label": "Carousel on mobile",
+      "default": false,
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
     },
     {
       "type": "range",
@@ -392,131 +391,131 @@
       "label": "Articles to show"
     },
     {
-        "type": "range",
-        "id": "columns_grid",
-        "min": 1,
-        "max": 6,
-        "step": 1,
-        "default": 4,
-        "label": "Columns",
-        "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+      "type": "range",
+      "id": "columns_grid",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "Columns",
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
     },
     {
-        "type": "range",
-        "id": "columns_carousel",
-        "min": 1,
-        "max": 4,
-        "step": 0.1,
-        "default": 4,
-        "label": "Columns",
-        "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
+      "type": "range",
+      "id": "columns_carousel",
+      "min": 1,
+      "max": 4,
+      "step": 0.1,
+      "default": 4,
+      "label": "Columns",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
     },
     {
-        "type": "select",
-        "id": "mobile_columns_grid",
-        "label": "Mobile columns",
-        "options": [
-            {
-                "value": "1",
-                "label": "1"
-            },
-            {
-                "value": "2",
-                "label": "2"
-            }
-        ],
-        "default": "2",
-        "visible_if": "{{ section.settings.layout_type == 'grid' and section.settings.carousel_on_mobile == false }}"
-    },
-    {
-        "type": "range",
-        "id": "tablet_columns_carousel",
-        "min": 1,
-        "max": 3,
-        "step": 0.1,
-        "default": 3,
-        "label": "Tablet columns",
-        "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
-    },
-    {
-        "type": "range",
-        "id": "mobile_columns_carousel",
-        "min": 1,
-        "max": 2,
-        "step": 0.1,
-        "default": 2,
-        "label": "Mobile columns",
-        "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
-    },
-    {
-        "type": "header",
-        "content": "Carousel layout",
-        "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
-    },
-    {
-        "type": "checkbox",
-        "id": "loop",
-        "label": "Loop",
-        "default": false,
-        "visible_if": "{{ section.settings.layout_type == 'carousel'}}"
-    },
-    {
-        "type": "select",
-        "id": "navigation",
-        "label": "Navigation",
-        "visible_if": "{{ section.settings.layout_type == 'carousel' }}",
-        "options": [
-            {
-                "value": "none",
-                "label": "None"
-            },
-            {
-                "value": "arrows",
-                "label": "Arrows"
-            },
-            {
-                "value": "pagination",
-                "label": "Pagination"
-            },
-            {
-                "value": "arrows-pagination",
-                "label": "Arrows & Pagination"
-            }
-        ],
-        "default": "arrows"
-    },
-    {
-        "type": "checkbox",
-        "id": "show_on_header",
-        "label": "Show arrow on header",
-        "default": false,
-        "info": "This option will only work if the header has 'Arrows group' block",
-        "visible_if": "{{ section.settings.navigation == 'arrows' }}"
-    },
-    {
-        "type": "select",
-        "id": "pagination_type",
-        "label": "Pagination type",
-        "visible_if": "{{ section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
-        "options": [
+      "type": "select",
+      "id": "mobile_columns_grid",
+      "label": "Mobile columns",
+      "options": [
         {
-            "value": "bullets",
-            "label": "t:options.dots"
+          "value": "1",
+          "label": "1"
         },
         {
-            "value": "dynamic",
-            "label": "Dynamic"
-        },
-        {
-            "value": "progressbar",
-            "label": "Progress"
-        },
-        {
-            "value": "fraction",
-            "label": "t:options.counter"
+          "value": "2",
+          "label": "2"
         }
-        ],
-        "default": "bullets"
+      ],
+      "default": "2",
+      "visible_if": "{{ section.settings.layout_type == 'grid' and section.settings.carousel_on_mobile == false }}"
+    },
+    {
+      "type": "range",
+      "id": "tablet_columns_carousel",
+      "min": 1,
+      "max": 3,
+      "step": 0.1,
+      "default": 3,
+      "label": "Tablet columns",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_columns_carousel",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 2,
+      "label": "Mobile columns",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Carousel layout",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop",
+      "default": false,
+      "visible_if": "{{ section.settings.layout_type == 'carousel'}}"
+    },
+    {
+      "type": "select",
+      "id": "navigation",
+      "label": "Navigation",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' }}",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "arrows",
+          "label": "Arrows"
+        },
+        {
+          "value": "pagination",
+          "label": "Pagination"
+        },
+        {
+          "value": "arrows-pagination",
+          "label": "Arrows & Pagination"
+        }
+      ],
+      "default": "arrows"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_header",
+      "label": "Show arrow on header",
+      "default": false,
+      "info": "This option will only work if the header has 'Arrows group' block",
+      "visible_if": "{{ section.settings.navigation == 'arrows' }}"
+    },
+    {
+      "type": "select",
+      "id": "pagination_type",
+      "label": "Pagination type",
+      "visible_if": "{{ section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
+      "options": [
+        {
+          "value": "bullets",
+          "label": "t:options.dots"
+        },
+        {
+          "value": "dynamic",
+          "label": "Dynamic"
+        },
+        {
+          "value": "progressbar",
+          "label": "Progress"
+        },
+        {
+          "value": "fraction",
+          "label": "t:options.counter"
+        }
+      ],
+      "default": "bullets"
     },
     {
       "type": "header",
@@ -558,7 +557,7 @@
       "type": "range",
       "id": "header_width",
       "label": "Header width",
-      "min": 20,
+      "min": 10,
       "max": 80,
       "step": 1,
       "unit": "%",

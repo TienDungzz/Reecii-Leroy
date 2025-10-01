@@ -76,7 +76,7 @@
 
   .button {
     transition: color var(--animation-speed) var(--animation-easing), box-shadow var(--animation-speed) var(--animation-easing), background-color var(--animation-speed) var(--animation-easing), transform var(--animation-speed) var(--animation-easing);
-    &:not(.deferred-media__poster):active {
+    &:not(.deferred-media__poster,.prevent-active):active {
       transform: scale(0.9);
     }
   }
@@ -107,6 +107,7 @@
   }
 
   @media (prefers-reduced-motion: no-preference) and (hover: hover) {
+    .instagram-item .link--reveal ,
     .group-block-content .link--reveal {
       position: relative;
       overflow: hidden;
@@ -120,17 +121,19 @@
         top: 0;
         width: 100%;
         height: 100%;
-        color: var(--color-foreground);
+        color: var(--color-primary);
         transition: transform var(--animation-slowest-smooth);
         transform: translateY(100%);
       }
     }
 
-    .group-block-content:hover .link--reveal .text-mask {
+    .group-block-content:hover .link--reveal .text-mask,
+    .instagram-item:hover .link--reveal .text-mask {
       transform: translateY(0);
     }
 
-    .group-block-content .link--reveal.link--underline {
+    .group-block-content .link--reveal.link--underline,
+    .instagram-item .link--reveal.link--underline {
       padding-bottom: var(--offset-underline);
       .text-mask {
         text-decoration: underline;

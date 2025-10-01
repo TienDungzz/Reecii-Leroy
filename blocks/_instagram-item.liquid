@@ -1,7 +1,6 @@
-{% comment %} add liquid code to change position of icon and button  {% endcomment %}
-
 {% liquid
   assign ratio = 1
+  assign image = block.settings.background_image
 
   case block.settings.image_ratio
     when 'landscape'
@@ -9,27 +8,20 @@
     when 'portrait'
       assign ratio = '4 / 5'
     when 'adapt'
-      assign ratio = block.settings.background_image.aspect_ratio
+      assign ratio = image.aspect_ratio
   endcase
 
   if ratio == 0 or ratio == null
     assign ratio = 1
   endif
 
-  assign image = block.settings.background_image
   assign image_height = image.height
-  assign image_height_2x = image_height | times: 2
   assign image_width = image.width
-  assign image_width_2x = image_width | times: 2
-  assign image_aspect_ratio = background_image.aspect_ratio
 
   assign video_classes = 'video-block video-block--' | append: block.settings.video_position
   assign background_media = block.settings.background_media
   assign background_video = block.settings.video
-  assign background_video_position = block.settings.video_position
-  assign background_image = block.settings.background_image
   assign background_image_position = block.settings.background_image_position
-
 %}
 
 {% capture class %}
@@ -59,7 +51,6 @@
   assign show_content_on_img = block.settings.show_content_on_img
   assign content_type = block.settings.content_type
   assign content_alignment = block.settings.content_alignment
-  assign content_position = block.settings.content_position
   assign content_position_top = block.settings.content_position_top | append: 'px'
   assign content_position_right = block.settings.content_position_right | append: 'px'
   assign content_position_bottom = block.settings.content_position_bottom | append: 'px'
@@ -79,7 +70,6 @@
   endif
 %}
 
-
 {%- if block.settings.enable_fancybox -%}
   {%- render 'fancybox_lib' -%}
 {%- endif -%}
@@ -90,7 +80,7 @@
 
 {% capture attributes_fancybox %}
   href="{{ image | image_url: width: 1200 }}"
-  data-fancybox="instagram-gallery"
+  data-fancybox="{{ section.id }}-instagram-gallery"
   data-caption="{{ image.alt | default: 'Instagram Image' }}"
   data-fancybox-width="{{ image_width | default: 1200 }}"
   data-fancybox-height="{{ image_height | default: 800 }}"
@@ -98,7 +88,7 @@
 
 {% capture attributes_fancybox_video %}
   href="{{ background_video.sources.first.url }}"
-  data-fancybox="instagram-gallery"
+  data-fancybox="{{ section.id }}-instagram-gallery"
   data-type="video"
   data-caption="{{ background_video.alt | default: 'Instagram Video' }}"
 {% endcapture %}
@@ -111,9 +101,9 @@
 {% capture attributes %}
   {{ block.shopify_attributes }}
   {% if block.settings.enable_fancybox %}
-    {% if block.settings.background_media == 'image' and image != blank %}
+    {% if background_media == 'image' and image != blank %}
       {{ attributes_fancybox }}
-    {% elsif block.settings.background_media == 'video' and background_video != blank %}
+    {% elsif background_media == 'video' and background_video != blank %}
       {{ attributes_fancybox_video }}
     {% endif %}
   {% endif %}
@@ -123,1310 +113,1304 @@
 {% endcapture %}
 
 {% capture icon %}
-    {% render 'icon-or-image',
-        icon: block.settings.icon,
-        icon_custom: block.settings.icon_custom,
-        svg_upload: block.settings.svg_upload,
-        image_upload: block.settings.image_upload,
-        width: block.settings.icon_width,
-        attributes: block.shopify_attributes
-    %}
+  {% render 'icon-or-image',
+    icon: block.settings.icon,
+    icon_custom: block.settings.icon_custom,
+    svg_upload: block.settings.svg_upload,
+    image_upload: block.settings.image_upload,
+    width: block.settings.icon_width,
+    attributes: block.shopify_attributes
+  %}
 {% endcapture %}
 
-<div class="instagram-item relative {% if block.settings.background_media == 'background_color' %} instagram-item--bg-color{% endif %}" {% if background_video != blank %}data-video-enabled="true"{% endif %}{% if block.settings.enable_typing_content %} data-typing-content="true"{% endif %} style="--icon-button-bg-color: {{ block.settings.icon_button_bg_color }}; --icon-button-color: {{ block.settings.icon_button_color }}; --icon-button-size: {{ block.settings.icon_button_size }}px; --icon-button-position-right: {{ block.settings.icon_button_position_right }}px; --icon-button-position-bottom: {{ block.settings.icon_button_position_bottom }}px; --icon-button-position-left: {{ block.settings.icon_button_position_left }}px; --background-color: {{ block.settings.background_color }}; --ratioBg: {{ ratio }}">
-    <div class="instagram-item__image overflow-hidden relative">
-        <{{ element }}
-            class="{{ class }}"
-            style="{{ style }}"
-            {{ attributes }}
-        >
-        {% if block.settings.background_media == 'image' %}
-            {%- if image != blank -%}
-                {%- render 'image',
-                image: image,
-                class: class_img,
-                height: image.height,
-                sizes: sizes,
-                widths: widths
-                -%}
-                
-            {%- else -%}
-                {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
-            {%- endif -%}
+<div class="instagram-item relative {% if background_media == 'background_color' %} instagram-item--bg-color{% endif %}" {% if background_video != blank %}data-video-enabled="true"{% endif %}{% if block.settings.enable_typing_content %} data-typing-content="true"{% endif %} style="--icon-button-bg-color: {{ block.settings.icon_button_bg_color }}; --icon-button-color: {{ block.settings.icon_button_color }}; --icon-button-size: {{ block.settings.icon_button_size }}px; --icon-button-position-right: {{ block.settings.icon_button_position_right }}px; --icon-button-position-bottom: {{ block.settings.icon_button_position_bottom }}px; --icon-button-position-left: {{ block.settings.icon_button_position_left }}px; --background-color: {{ block.settings.background_color }}; --ratioBg: {{ ratio }}">
+  <div class="instagram-item__image overflow-hidden relative">
+    <{{ element }}
+      class="{{ class }}"
+      style="{{ style }}"
+      {{ attributes }}
+    >
+      {% if background_media == 'image' %}
+        {%- if image != blank -%}
+          {%- render 'image',
+            image: image,
+            class: class_img,
+            height: image.height,
+            sizes: sizes,
+            widths: widths
+          -%}
+        {%- else -%}
+          {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
+        {%- endif -%}
 
-            {% if block.settings.hover_plus_icon == true %}
-                <span class="icon_plus"></span>
-            {% endif %}
-            
-            {% if block.settings.enable_fancybox %}
-                {% if block.settings.icon_link != blank and block.settings.icon != 'none' %}
-                    <a href="{{ block.settings.icon_link }}" class="text-inherit" 
-                    {% if block.settings.icon_open_in_new_tab %}
-                        target="_blank" rel="noopener"
-                    {% endif %}
-                    >
-                        <span class="icon_media icon_media--circle{% if block.settings.icon_button_position == 'left' %} position-left{% endif %}">
-                            <div class="svg-wrapper">
-                                {{ icon }}
-                            </div>
-                        </span>
-                    </a>
-                {% else %}
-                    {% if block.settings.icon != 'none' %}
-                        <span class="icon_media icon_media--circle {% if block.settings.icon_button_position == 'left' %} position-left{% endif %}">
-                            <div class="svg-wrapper">
-                                {{ icon }}
-                            </div>
-                        </span>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-        {% else %}
-            {%- if background_video != blank -%}
-                {% if block.settings.enable_fancybox %}
-                    <a class="tets1212121212121212" href="https://new-ella-demo-07.myshopify.com/cdn/shop/videos/c/vp/72219224600a4aa09afa67296776c69c/72219224600a4aa09afa67296776c69c.HD-1080p-4.8Mbps-50977332.mp4?v=0" data-type="video" data-caption="{{ background_video.alt | default: 'Instagram Video' }}" {{ attributes }}>
-                {% endif %}
-                <video-background-component
-                  class="{{ video_classes }}"
-                  style="{% if ratio %}--ratio: {{ ratio }};{% endif %}"
-                >
-                  <video
-                    playsinline
-                    muted
-                    loop
-                    class="video-block"
-                  >
-                    {%- for sourceElement in background_video.sources -%}
-                      <source
-                        data-video-source="{{ sourceElement.url }}"
-                        type="{{ sourceElement.mime_type }}"
-                        data-video
-                      >
-                    {%- endfor -%}
-                  </video>
-
-                <span class="icon_media">
-                    <div class="svg-wrapper">
-                        {{ icon }}
-                    </div>
-                </span>
-
-                </video-background-component>
-                {% if block.settings.enable_fancybox %}
-                    </a>
-                {% endif %}
-              {%- else -%}
-                <div class="{{ video_classes }}" style="{% if ratio %}--ratio: {{ ratio }};{% endif %}">
-                  {%- assign placeholder_name = placeholder | default: 'hero-apparel-2' -%}
-                  {%- if placeholder_name == blank -%}
-                    {%- assign placeholder_name = 'hero-apparel-2' -%}
-                  {%- endif -%}
-                  {{ placeholder_name | placeholder_svg_tag }}
-                </div>
-              {%- endif -%}
+        {% if block.settings.hover_plus_icon == true %}
+          <span class="icon_plus"></span>
         {% endif %}
-        </{{ element }}>
-    </div>
-    <div class="instagram-item__content{% if block.settings.hover_slide_content == true %} image-content-slide-in{% endif %} text-{{ content_alignment }} {% if content_type == 'absolute-c-x' %} top-0 {% endif %}{% if show_content_on_img != blank %} {{ content_type }}{% endif %}" style="--posTop: {{ content_position_top }}; --posRight: {{ content_position_right }}; --posBottom: {{ content_position_bottom }}; --posLeft: {{ content_position_left }};">
-        {%- content_for 'blocks' -%}
-    </div>
+
+        {% if block.settings.enable_fancybox %}
+          {% if block.settings.icon_link != blank and block.settings.icon != 'none' %}
+            <a href="{{ block.settings.icon_link }}" class="text-inherit"
+              {% if block.settings.icon_open_in_new_tab %}
+                target="_blank" rel="noopener"
+              {% endif %}
+            >
+              <span class="icon_media icon_media--circle{% if block.settings.icon_button_position == 'left' %} position-left{% endif %}">
+                <div class="svg-wrapper">
+                  {{ icon }}
+                </div>
+              </span>
+            </a>
+          {% else %}
+            {% if block.settings.icon != 'none' %}
+              <span class="icon_media icon_media--circle{% if block.settings.icon_button_position == 'left' %} position-left{% endif %}">
+                <div class="svg-wrapper">
+                  {{ icon }}
+                </div>
+              </span>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      {% else %}
+        {%- if background_video != blank -%}
+          {% if block.settings.enable_fancybox %}
+            <a class="tets1212121212121212" href="https://new-ella-demo-07.myshopify.com/cdn/shop/videos/c/vp/72219224600a4aa09afa67296776c69c/72219224600a4aa09afa67296776c69c.HD-1080p-4.8Mbps-50977332.mp4?v=0" data-type="video" data-caption="{{ background_video.alt | default: 'Instagram Video' }}" {{ attributes }}>
+          {% endif %}
+          <video-background-component
+            class="{{ video_classes }}"
+            style="{% if ratio %}--ratio: {{ ratio }};{% endif %}"
+          >
+            <video
+              playsinline
+              muted
+              loop
+              class="video-block"
+            >
+              {%- for sourceElement in background_video.sources -%}
+                <source
+                  data-video-source="{{ sourceElement.url }}"
+                  type="{{ sourceElement.mime_type }}"
+                  data-video
+                >
+              {%- endfor -%}
+            </video>
+
+            <span class="icon_media">
+              <div class="svg-wrapper">
+                {{ icon }}
+              </div>
+            </span>
+
+          </video-background-component>
+          {% if block.settings.enable_fancybox %}
+            </a>
+          {% endif %}
+        {%- else -%}
+          <div class="{{ video_classes }}" style="{% if ratio %}--ratio: {{ ratio }};{% endif %}">
+            {%- assign placeholder_name = placeholder | default: 'hero-apparel-2' -%}
+            {%- if placeholder_name == blank -%}
+              {%- assign placeholder_name = 'hero-apparel-2' -%}
+            {%- endif -%}
+            {{ placeholder_name | placeholder_svg_tag }}
+          </div>
+        {%- endif -%}
+      {% endif %}
+    </{{ element }}>
+  </div>
+  <div class="instagram-item__content{% if block.settings.hover_slide_content == true %} image-content-slide-in{% endif %} text-{{ content_alignment }} {% if content_type == 'absolute-c-x' %} top-0 {% endif %}{% if show_content_on_img != blank %} {{ content_type }}{% endif %}" style="--posTop: {{ content_position_top }}; --posRight: {{ content_position_right }}; --posBottom: {{ content_position_bottom }}; --posLeft: {{ content_position_left }};">
+    {%- content_for 'blocks' -%}
+  </div>
 </div>
 
 {%- if background_video != blank -%}
-    <script>
-        (function() {
-            'use strict';
-            
-            // Use more specific selector to avoid conflicts
-            const instagramItems = document.querySelectorAll('.instagram-item[data-video-enabled="true"]');
-            
-            if (instagramItems.length === 0) return;
-            
-            // Debounce function to prevent rapid play/pause calls
-            function debounce(func, wait) {
-                let timeout;
-                return function executedFunction(...args) {
-                    const later = () => {
-                        clearTimeout(timeout);
-                        func(...args);
-                    };
-                    clearTimeout(timeout);
-                    timeout = setTimeout(later, wait);
-                };
-            }
-            
-            // Optimized event handlers
-            const handleMouseOver = debounce(function(video) {
-                if (video && video.readyState >= 2) { // HAVE_CURRENT_DATA
-                    video.play().catch(e => console.warn('Video play failed:', e));
-                }
-            }, 100);
-            
-            const handleMouseOut = debounce(function(video) {
-                if (video && video.readyState >= 2) {
-                    video.pause();
-                }
-            }, 100);
-            
-            // Add event listeners with proper cleanup
-            instagramItems.forEach(item => {
-                const video = item.querySelector('video');
-                if (!video) return;
-                
-                // Mark item as video-enabled for future reference
-                item.setAttribute('data-video-enabled', 'true');
-                
-                // Use event delegation for better performance
-                const mouseOverHandler = () => handleMouseOver(video);
-                const mouseOutHandler = () => handleMouseOut(video);
-                
-                item.addEventListener('mouseenter', mouseOverHandler, { passive: true });
-                item.addEventListener('mouseleave', mouseOutHandler, { passive: true });
-                
-                // Store handlers for potential cleanup
-                item._videoHandlers = { mouseOver: mouseOverHandler, mouseOut: mouseOutHandler };
-            });
-        })();
-    </script>
+  <script>
+    (function() {
+      'use strict';
+
+      // Use more specific selector to avoid conflicts
+      const instagramItems = document.querySelectorAll('.instagram-item[data-video-enabled="true"]');
+
+      if (instagramItems.length === 0) return;
+
+      // Debounce function to prevent rapid play/pause calls
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // Optimized event handlers
+      const handleMouseOver = debounce(function(video) {
+        if (video && video.readyState >= 2) { // HAVE_CURRENT_DATA
+          video.play().catch(e => console.warn('Video play failed:', e));
+        }
+      }, 100);
+
+      const handleMouseOut = debounce(function(video) {
+        if (video && video.readyState >= 2) {
+          video.pause();
+        }
+      }, 100);
+
+      // Add event listeners with proper cleanup
+      instagramItems.forEach(item => {
+        const video = item.querySelector('video');
+        if (!video) return;
+
+        // Mark item as video-enabled for future reference
+        item.setAttribute('data-video-enabled', 'true');
+
+        // Use event delegation for better performance
+        const mouseOverHandler = () => handleMouseOver(video);
+        const mouseOutHandler = () => handleMouseOut(video);
+
+        item.addEventListener('mouseenter', mouseOverHandler, { passive: true });
+        item.addEventListener('mouseleave', mouseOutHandler, { passive: true });
+
+        // Store handlers for potential cleanup
+        item._videoHandlers = { mouseOver: mouseOverHandler, mouseOut: mouseOutHandler };
+      });
+    })();
+  </script>
 {%- endif -%}
 
 {% if image != blank and block.settings.icon_link != blank %}
-    <script>
-        (function(){
-            const iconMedia = document.querySelector('.instagram-item__image .icon_media');
+  <script>
+    (function(){
+      const iconMedia = document.querySelector('.instagram-item__image .icon_media');
 
-            iconMedia.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        })();
-    </script>
+      iconMedia.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    })();
+  </script>
 {% endif %}
 
 {% if block.settings.enable_typing_content %}
-    <script>
-        (function(){
-            // Add CSS for cursor blinking animation
-            if (!document.querySelector('#typing-cursor-styles')) {
-                const style = document.createElement('style');
-                style.id = 'typing-cursor-styles';
-                style.textContent = `
-                    @keyframes blink {
-                        0%, 50% { opacity: 1; }
-                        51%, 100% { opacity: 0; }
-                    }
-                    .typing-cursor {
-                        color: inherit;
-                        font-weight: bold;
-                    }
-                    .typing-complete {
-                        /* Add any completion styles here */
-                    }
-                `;
-                document.head.appendChild(style);
+  <script>
+    (function(){
+      // Add CSS for cursor blinking animation
+      if (!document.querySelector('#typing-cursor-styles')) {
+        const style = document.createElement('style');
+        style.id = 'typing-cursor-styles';
+        style.textContent = `
+          @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+          }
+          .typing-cursor {
+            color: inherit;
+            font-weight: bold;
+          }
+          .typing-complete {
+            /* Add any completion styles here */
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      // Intersection Observer for triggering typing effect
+      const observerOptions = {
+        threshold: 0.3, // Trigger when 30% of the element is visible
+        rootMargin: '0px 0px -50px 0px' // Trigger slightly before element comes into view
+      };
+
+      const typingObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const item = entry.target;
+            if (item.hasAttribute('data-typing-content') && !item.classList.contains('typing-active')) {
+              startTypingEffect(item);
             }
+          }
+        });
+      }, observerOptions);
 
-            // Intersection Observer for triggering typing effect
-            const observerOptions = {
-                threshold: 0.3, // Trigger when 30% of the element is visible
-                rootMargin: '0px 0px -50px 0px' // Trigger slightly before element comes into view
-            };
+      // Function to start typing effect
+      function startTypingEffect(item) {
+        item.classList.add('typing-active');
+        const content = item.querySelector('.instagram-item__content');
+        const textBlocks = content.querySelectorAll('.text-block');
 
-            const typingObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const item = entry.target;
-                        if (item.hasAttribute('data-typing-content') && !item.classList.contains('typing-active')) {
-                            startTypingEffect(item);
-                        }
-                    }
-                });
-            }, observerOptions);
-
-            // Function to start typing effect
-            function startTypingEffect(item) {
-                item.classList.add('typing-active');
-                const content = item.querySelector('.instagram-item__content');
-                const textBlocks = content.querySelectorAll('.text-block');
-                
-                // Collect all text elements in order for sequential typing
-                const allTextElements = [];
-                textBlocks.forEach((textBlock, blockIndex) => {
-                    const allTexts = textBlock.querySelectorAll('p');
-                    allTexts.forEach((textElement, textIndex) => {
-                        allTextElements.push({
-                            element: textElement,
-                            blockIndex: blockIndex,
-                            textIndex: textIndex
-                        });
-                    });
-                });
-                
-                // Store original text content for infinite loop
-                const originalTexts = allTextElements.map(textData => textData.element.textContent);
-                
-                // Hide all text elements before starting typing
-                allTextElements.forEach((textData) => {
-                    textData.element.style.opacity = '0';
-                    textData.element.style.visibility = 'hidden';
-                });
-                
-                // Type text sequentially from first to last
-                let currentTextIndex = 0;
-                
-                function typeNextText() {
-                    if (currentTextIndex >= allTextElements.length) {
-                        // All text has been typed, start reverse typing effect
-                        setTimeout(() => {
-                            reverseTypeAllTexts();
-                        }, 2000); // 2 second pause before starting reverse effect
-                        return;
-                    }
-                    
-                    const textData = allTextElements[currentTextIndex];
-                    const textElement = textData.element;
-                    const originalText = originalTexts[currentTextIndex];
-                    
-                    // Show the text element and clear the text, then add cursor
-                    textElement.style.opacity = '1';
-                    textElement.style.visibility = 'visible';
-                    textElement.textContent = '';
-                    const cursor = document.createElement('span');
-                    cursor.className = 'typing-cursor';
-                    cursor.textContent = '_';
-                    cursor.style.animation = 'blink 1s infinite';
-                    textElement.appendChild(cursor);
-                    
-                    // Type the text character by character
-                    let charIndex = 0;
-                    const typeInterval = setInterval(() => {
-                        if (charIndex < originalText.length) {
-                            const charSpan = document.createElement('span');
-                            charSpan.textContent = originalText[charIndex];
-                            textElement.insertBefore(charSpan, cursor);
-                            charIndex++;
-                        } else {
-                            clearInterval(typeInterval);
-                            // Remove cursor after typing is complete
-                            setTimeout(() => {
-                                cursor.remove();
-                                // Move to next text after a short delay
-                                setTimeout(() => {
-                                    currentTextIndex++;
-                                    typeNextText();
-                                }, 500);
-                            }, 300);
-                        }
-                    }, 80); // Faster typing speed
-                }
-                
-                function reverseTypeAllTexts() {
-                    // Start reverse typing from the last text element
-                    let currentReverseIndex = allTextElements.length - 1;
-                    
-                    function reverseTypeNextText() {
-                        if (currentReverseIndex < 0) {
-                            // All text has been reversed, start over
-                            setTimeout(() => {
-                                currentTextIndex = 0;
-                                typeNextText();
-                            }, 1000); // 1 second pause before restarting
-                            return;
-                        }
-                        
-                        const textData = allTextElements[currentReverseIndex];
-                        const textElement = textData.element;
-                        const currentText = textElement.textContent;
-                        
-                        if (currentText.length === 0) {
-                            // Text is already empty, move to previous
-                            currentReverseIndex--;
-                            reverseTypeNextText();
-                            return;
-                        }
-                        
-                        // Remove last character
-                        textElement.textContent = currentText.slice(0, -1);
-                        
-                        // If text is now empty, hide the element
-                        if (textElement.textContent.length === 0) {
-                            textElement.style.opacity = '0';
-                            textElement.style.visibility = 'hidden';
-                        }
-                        
-                        // Continue removing characters
-                        setTimeout(() => {
-                            reverseTypeNextText();
-                        }, 50); // Faster reverse typing speed
-                    }
-                    
-                    // Start reverse typing
-                    reverseTypeNextText();
-                }
-                
-                function clearAllTexts() {
-                    // Clear all text elements completely
-                    allTextElements.forEach((textData) => {
-                        textData.element.textContent = '';
-                    });
-                }
-                
-                function resetTexts() {
-                    // Reset all text elements to their original state and hide them
-                    allTextElements.forEach((textData, index) => {
-                        textData.element.textContent = originalTexts[index];
-                        textData.element.style.opacity = '0';
-                        textData.element.style.visibility = 'hidden';
-                    });
-                }
-                
-                // Start the infinite typing loop
-                if (allTextElements.length > 0) {
-                    typeNextText();
-                }
-            }
-
-            // Observe all Instagram items with typing content enabled
-            const instagramItems = document.querySelectorAll('.instagram-item[data-typing-content="true"]');
-            instagramItems.forEach(item => {
-                typingObserver.observe(item);
+        // Collect all text elements in order for sequential typing
+        const allTextElements = [];
+        textBlocks.forEach((textBlock, blockIndex) => {
+          const allTexts = textBlock.querySelectorAll('p');
+          allTexts.forEach((textElement, textIndex) => {
+            allTextElements.push({
+              element: textElement,
+              blockIndex: blockIndex,
+              textIndex: textIndex
             });
+          });
+        });
 
-            // Cleanup function (optional)
-            function cleanup() {
-                typingObserver.disconnect();
+        // Store original text content for infinite loop
+        const originalTexts = allTextElements.map(textData => textData.element.textContent);
+
+        // Hide all text elements before starting typing
+        allTextElements.forEach((textData) => {
+          textData.element.style.opacity = '0';
+          textData.element.style.visibility = 'hidden';
+        });
+
+        // Type text sequentially from first to last
+        let currentTextIndex = 0;
+
+        function typeNextText() {
+          if (currentTextIndex >= allTextElements.length) {
+            // All text has been typed, start reverse typing effect
+            setTimeout(() => {
+              reverseTypeAllTexts();
+            }, 2000); // 2 second pause before starting reverse effect
+            return;
+          }
+
+          const textData = allTextElements[currentTextIndex];
+          const textElement = textData.element;
+          const originalText = originalTexts[currentTextIndex];
+
+          // Show the text element and clear the text, then add cursor
+          textElement.style.opacity = '1';
+          textElement.style.visibility = 'visible';
+          textElement.textContent = '';
+          const cursor = document.createElement('span');
+          cursor.className = 'typing-cursor';
+          cursor.textContent = '_';
+          cursor.style.animation = 'blink 1s infinite';
+          textElement.appendChild(cursor);
+
+          // Type the text character by character
+          let charIndex = 0;
+          const typeInterval = setInterval(() => {
+            if (charIndex < originalText.length) {
+              const charSpan = document.createElement('span');
+              charSpan.textContent = originalText[charIndex];
+              textElement.insertBefore(charSpan, cursor);
+              charIndex++;
+            } else {
+              clearInterval(typeInterval);
+              // Remove cursor after typing is complete
+              setTimeout(() => {
+                cursor.remove();
+                // Move to next text after a short delay
+                setTimeout(() => {
+                  currentTextIndex++;
+                  typeNextText();
+                }, 500);
+              }, 300);
             }
-        })();
-    </script>
+          }, 80); // Faster typing speed
+        }
+
+        function reverseTypeAllTexts() {
+          // Start reverse typing from the last text element
+          let currentReverseIndex = allTextElements.length - 1;
+
+          function reverseTypeNextText() {
+            if (currentReverseIndex < 0) {
+              // All text has been reversed, start over
+              setTimeout(() => {
+                currentTextIndex = 0;
+                typeNextText();
+              }, 1000); // 1 second pause before restarting
+              return;
+            }
+
+            const textData = allTextElements[currentReverseIndex];
+            const textElement = textData.element;
+            const currentText = textElement.textContent;
+
+            if (currentText.length === 0) {
+              // Text is already empty, move to previous
+              currentReverseIndex--;
+              reverseTypeNextText();
+              return;
+            }
+
+            // Remove last character
+            textElement.textContent = currentText.slice(0, -1);
+
+            // If text is now empty, hide the element
+            if (textElement.textContent.length === 0) {
+              textElement.style.opacity = '0';
+              textElement.style.visibility = 'hidden';
+            }
+
+            // Continue removing characters
+            setTimeout(() => {
+              reverseTypeNextText();
+            }, 50); // Faster reverse typing speed
+          }
+
+          // Start reverse typing
+          reverseTypeNextText();
+        }
+
+        function clearAllTexts() {
+          // Clear all text elements completely
+          allTextElements.forEach((textData) => {
+            textData.element.textContent = '';
+          });
+        }
+
+        function resetTexts() {
+          // Reset all text elements to their original state and hide them
+          allTextElements.forEach((textData, index) => {
+            textData.element.textContent = originalTexts[index];
+            textData.element.style.opacity = '0';
+            textData.element.style.visibility = 'hidden';
+          });
+        }
+
+        // Start the infinite typing loop
+        if (allTextElements.length > 0) {
+          typeNextText();
+        }
+      }
+
+      // Observe all Instagram items with typing content enabled
+      const instagramItems = document.querySelectorAll('.instagram-item[data-typing-content="true"]');
+      instagramItems.forEach(item => {
+        typingObserver.observe(item);
+      });
+
+      // Cleanup function (optional)
+      function cleanup() {
+        typingObserver.disconnect();
+      }
+    })();
+  </script>
 {% endif %}
 
 {%- if block.settings.enable_fancybox -%}
   <script>
     (function() {
       'use strict';
-      
+
       // Check if Fancybox is loaded
       if (typeof Fancybox === 'undefined') {
         console.error('Fancybox library not loaded');
         return;
       }
-      
+
       // Initialize Fancybox for Instagram gallery
       if (!window._fancyboxInitialized) {
         window._fancyboxInitialized = true;
-        
+
         // Wait for DOM to be ready
         setTimeout(() => {
-          // Debug: Log all Fancybox elements
-          const fancyboxElements = document.querySelectorAll('[data-fancybox="instagram-gallery"]');
-          
+          const fancyboxElements = document.querySelectorAll('[data-fancybox]');
+
           // Initialize Fancybox with custom options
-          Fancybox.bind('[data-fancybox="instagram-gallery"]', {
-          // Gallery options
-          loop: true,
-          buttons: [
-            "zoom",
-            "slideShow",
-            "fullScreen",
-            "thumbs",
-            "close"
-          ],
-          // Animation settings
-          animated: true,
-          showClass: "fancybox-zoomIn",
-          hideClass: "fancybox-zoomOut",
-          // Thumbnails
-          thumbs: {
-            autoStart: false,
-            axis: "x"
-          },
-          // Image options
-          Image: {
-            zoom: true,
-            click: "close",
-            wheel: "slide"
-          },
-          // Video options
-          Video: {
-            autoplay: false
-          },
-          // Error handling
-          on: {
-            done: (fancybox, slide) => {
-              console.log('Fancybox opened:', slide.src);
+          Fancybox.bind('[data-fancybox]', {
+            // Gallery options
+            loop: true,
+            buttons: [
+              "zoom",
+              "slideShow",
+              "fullScreen",
+              "thumbs",
+              "close"
+            ],
+            // Animation settings
+            animated: true,
+            showClass: "fancybox-zoomIn",
+            hideClass: "fancybox-zoomOut",
+            // Thumbnails
+            thumbs: {
+              autoStart: false,
+              axis: "x"
             },
-            error: (fancybox, slide) => {
-              console.error('Fancybox error:', slide.src, slide.error);
+            // Image options
+            Image: {
+              zoom: true,
+              click: "close",
+              wheel: "slide"
+            },
+            // Video options
+            Video: {
+              autoplay: false
+            },
+            // Error handling
+            on: {
+              done: (fancybox, slide) => {
+                console.log('Fancybox opened:', slide.src);
+              },
+              error: (fancybox, slide) => {
+                console.error('Fancybox error:', slide.src, slide.error);
+              }
             }
-          }
-        });
+          });
         }, 100); // Small delay to ensure DOM is ready
       }
     })();
   </script>
 {%- endif -%}
 
-
 {%- stylesheet -%}
-    .image-block {
-        display: flex;
-        justify-content: var(--horizontal-alignment, 'inline-start');
-    }
-  
-    .image-block--height-fill .image-block__image,
-    .image-block--height-fill .video-block {
-        height: 100%;
+  .image-block {
+    display: flex;
+    justify-content: var(--horizontal-alignment, 'inline-start');
+  }
+
+  .image-block--height-fill .image-block__image,
+  .image-block--height-fill .video-block {
+    height: 100%;
+  }
+
+  .image-block--height-fill .video-block img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .image-block--height-fill .video-block video {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .image-block__image,
+  .video-block {
+    object-fit: cover;
+    aspect-ratio: var(--ratio);
+  }
+
+  .icon_media {
+    display: flex;
+    fill: currentcolor;
+    flex-shrink: 0;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    right: var(--icon-button-position-right);
+    bottom: var(--icon-button-position-bottom);
+  }
+  .icon_media.position-left {
+    right: unset;
+    left: var(--icon-button-position-left);
+  }
+
+  .icon_media.icon_media--circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--icon-button-bg-color);
+    color: var(--icon-button-color);
+    border-radius: var(--style-border-radius-50);
+    width: var(--icon-button-size);
+    height: var(--icon-button-size);
+  }
+
+  .instagram-item__content.custom {
+    position: absolute;
+    top: var(--posTop, 0);
+    right: var(--posRight, 0);
+    bottom: var(--posBottom, 0);
+    left: var(--posLeft, 0);
+    transform: none;
+  }
+
+  .instagram-item__content {
+    display: flex;
+    flex-direction: column;
+    z-index: 3;
+  }
+
+  .instagram-item__content.text-left {
+    align-items: flex-start;
+  }
+  .instagram-item__content.text-center {
+    align-items: center;
+  }
+  .instagram-item__content.text-right {
+    align-items: flex-end;
+  }
+
+  .instagram-item__content.text-left * {
+    text-align: left;
+  }
+  .instagram-item__content.text-center * {
+    text-align: center;
+  }
+  .instagram-item__content.text-right * {
+    text-align: right;
+  }
+
+  .icon_plus {
+    font-size: 0px;
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    z-index: 999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    overflow: hidden;
+    transform: translate(-50%, -50%) scale(.8) rotate(-45deg);
+    transition: opacity .1s ease, transform .3s ease;
+  }
+
+  .icon_plus:before {
+    position: absolute;
+    content: "";
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    width: 2px;
+    height: 100%;
+  }
+
+  .icon_plus:after {
+    position: absolute;
+    content: "";
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    width: 100%;
+    height: 2px;
+  }
+
+  .instagram-item__image:hover .icon_plus {
+    opacity: 1;
+    overflow: visible;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1) rotate(0);
+  }
+
+  .image-overlay:before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    top: 100%;
+    right: 0;
+    left: auto;
+    z-index: 2;
+    transform: none;
+    position: absolute;
+    transition: all .3s ease;
+    background-color: rgba(0, 0, 0, .6);
+    background: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .6) 100%);
+  }
+
+  .instagram-item:hover .image-overlay:before {
+    top: 0;
+  }
+
+  .image-zoomIn img {
+    transition: transform .64s ease;
+  }
+
+  .instagram-item__image:hover .image-zoomIn img {
+    transform: scale(1.05);
+    transition: transform .64s ease;
+  }
+
+  .instagram-item:has(.image-content-slide-in) .text-block:not(.h1):not(.h2):not(.h3):not(.h4):not(.h5):not(.h6):has(p) {
+    opacity: 0;
+    height: 0;
+    transform: translateX(-50%);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .instagram-item:has(.image-content-slide-in):hover .text-block:not(.h1):not(.h2):not(.h3):not(.h4):not(.h5):not(.h6):has(p) {
+    opacity: 1;
+    height: auto;
+    transform: translateX(0);
+  }
+
+  .instagram-item--bg-color {
+    background-color: var(--background-color);
+    width: 100%;
+    height: 100%;
+    aspect-ratio: var(--ratioBg);
+  }
+
+{%- endstylesheet -%}
+
+{%- if block.settings.enable_fancybox -%}
+  <style>
+    /* Fancybox custom styles for Instagram items */
+    .fancybox__container {
+      --fancybox-bg: rgba(0, 0, 0, 0.95);
     }
 
-    .image-block--height-fill .video-block img {
-        height: 100%;
-        object-fit: cover;
+    .fancybox__toolbar {
+      --fancybox-toolbar-bg: rgba(0, 0, 0, 0.8);
     }
 
-    .image-block--height-fill .video-block video {
-        height: 100%;
-        object-fit: cover;
+    .fancybox__nav button {
+      --fancybox-color: #ffffff;
+      --fancybox-bg: rgba(255, 255, 255, 0.1);
     }
 
-    .image-block__image,
-    .video-block {
-      object-fit: cover;
-      aspect-ratio: var(--ratio);
+    .fancybox__nav button:hover {
+      --fancybox-bg: rgba(255, 255, 255, 0.2);
     }
 
-    .icon_media {
-        display: flex;
-        fill: currentcolor;
-        flex-shrink: 0;
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        z-index: 1;
-        right: var(--icon-button-position-right);
-        bottom: var(--icon-button-position-bottom);
-    }
-    .icon_media.position-left {
-        right: unset;
-        left: var(--icon-button-position-left);
+    .fancybox__button {
+      --fancybox-color: #ffffff;
+      --fancybox-bg: rgba(255, 255, 255, 0.1);
     }
 
-    .icon_media.icon_media--circle {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: var(--icon-button-bg-color);
-        color: var(--icon-button-color);
-        border-radius: 50%;
-        width: var(--icon-button-size);
-        height: var(--icon-button-size);
+    .fancybox__button:hover {
+      --fancybox-bg: rgba(255, 255, 255, 0.2);
     }
-
-    .instagram-item__content.custom {
-        position: absolute;
-        top: var(--posTop, 0);
-        right: var(--posRight, 0);
-        bottom: var(--posBottom, 0);
-        left: var(--posLeft, 0);
-        transform: none;
-    }
-
-    .instagram-item__content {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .instagram-item__content.text-left {
-        align-items: flex-start;
-    }
-    .instagram-item__content.text-center {
-        align-items: center;
-    }
-    .instagram-item__content.text-right {
-        align-items: flex-end;
-    }
-
-    .instagram-item__content.text-left * {
-        text-align: left;
-    }
-    .instagram-item__content.text-center * {
-        text-align: center;
-    }
-    .instagram-item__content.text-right * {
-        text-align: right;
-    }
-
-    .icon_plus {
-        font-size: 0px;
-        width: 48px;
-        height: 48px;
-        position: absolute;
-        z-index: 999;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0;
-        overflow: hidden;
-        transform: translate(-50%, -50%) scale(.8) rotate(-45deg);
-        transition: opacity .1s ease, transform .3s ease;
-    }
-
-    .icon_plus:before {
-        position: absolute;
-        content: "";
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #fff;
-        width: 2px;
-        height: 100%;
-    }
-
-    .icon_plus:after {
-        position: absolute;
-        content: "";
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #fff;
-        width: 100%;
-        height: 2px;
-    }
-
-    .instagram-item__image:hover .icon_plus {
-        opacity: 1;
-        overflow: visible;
-        visibility: visible;
-        transform: translate(-50%, -50%) scale(1) rotate(0);
-    }
-
-    .image-overlay:before {
-        content: "";
-        width: 100%;
-        height: 100%;
-        top: 100%;
-        right: 0;
-        left: auto;
-        z-index: 2;
-        transform: none;
-        position: absolute;
-        transition: all .3s ease;
-        background-color: rgba(0, 0, 0, .6);
-        background: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, .6) 100%);
-    }
-
-    .instagram-item__image:hover .image-overlay:before {
-        top: 0;
-    }
-
-    .image-zoomIn img {
-        transition: transform .64s ease;
-    }
-
-    .instagram-item__image:hover .image-zoomIn img {
-        transform: scale(1.05);
-        transition: transform .64s ease;
-    }
-
-    .instagram-item:has(.image-content-slide-in) .text-block:not(.h1):not(.h2):not(.h3):not(.h4):not(.h5):not(.h6):has(p) {
-        opacity: 0;
-        height: 0;
-        transform: translateX(-50%);
-        transition: all 0.3s ease-in-out;
-    }
-
-    .instagram-item:has(.image-content-slide-in):hover .text-block:not(.h1):not(.h2):not(.h3):not(.h4):not(.h5):not(.h6):has(p) {
-        opacity: 1;
-        height: auto;
-        transform: translateX(0);
-    }
-
-    .instagram-item--bg-color {
-        background-color: var(--background-color);
-        width: 100%;
-        height: 100%;
-        aspect-ratio: var(--ratioBg);
-    }
-
-  {%- endstylesheet -%}
-
-  {%- if block.settings.enable_fancybox -%}
-    <style>
-      /* Fancybox custom styles for Instagram items */
-      .fancybox__container {
-        --fancybox-bg: rgba(0, 0, 0, 0.95);
-      }
-      
-      .fancybox__toolbar {
-        --fancybox-toolbar-bg: rgba(0, 0, 0, 0.8);
-      }
-      
-      .fancybox__nav button {
-        --fancybox-color: #ffffff;
-        --fancybox-bg: rgba(255, 255, 255, 0.1);
-      }
-      
-      .fancybox__nav button:hover {
-        --fancybox-bg: rgba(255, 255, 255, 0.2);
-      }
-      
-      .fancybox__button {
-        --fancybox-color: #ffffff;
-        --fancybox-bg: rgba(255, 255, 255, 0.1);
-      }
-      
-      .fancybox__button:hover {
-        --fancybox-bg: rgba(255, 255, 255, 0.2);
-      }
-    </style>
-  {%- endif -%}
+  </style>
+{%- endif -%}
 
 {% schema %}
 {
-    "name": "Instagram item",
-    "settings": [
+  "name": "Instagram item",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Item Media"
+    },
+    {
+      "type": "select",
+      "id": "background_media",
+      "label": "t:settings.background_media",
+      "options": [
         {
-            "type": "header",
-            "content": "Item Media"
+          "value": "image",
+          "label": "t:options.image"
         },
         {
-            "type": "select",
-            "id": "background_media",
-            "label": "t:settings.background_media",
-            "options": [
-                {
-                    "value": "image",
-                    "label": "t:options.image"
-                },
-                {
-                    "value": "video",
-                    "label": "t:options.video"
-                },
-                {
-                    "value": "background_color",
-                    "label": "Background color"
-                }
-            ],
-            "default": "image"
+          "value": "video",
+          "label": "t:options.video"
         },
         {
-            "type": "video",
-            "id": "video",
-            "label": "t:settings.video",
-            "visible_if": "{{ block.settings.background_media == 'video' }}"
-        },
-        {
-            "type": "select",
-            "id": "video_position",
-            "label": "t:settings.video_position",
-            "options": [
-                {
-                "value": "cover",
-                "label": "t:options.cover"
-                },
-                {
-                "value": "contain",
-                "label": "t:options.contain"
-                }
-            ],
-            "default": "cover",
-            "visible_if": "{{ block.settings.background_media == 'video' }}"
-        },
-        {
-            "type": "image_picker",
-            "id": "background_image",
-            "label": "t:settings.image",
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
-        },
-        {
-            "type": "select",
-            "id": "background_image_position",
-            "label": "t:settings.image_position",
-            "options": [
-                {
-                "value": "cover",
-                "label": "t:options.cover"
-                },
-                {
-                "value": "fit",
-                "label": "t:options.fit"
-                }
-            ],
-            "default": "cover",
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
-        },
-        {
-            "type": "url",
-            "id": "link",
-            "label": "Link",
-            "visible_if": "{{ block.settings.enable_fancybox == false }}"
-        },
-        {
-            "type": "color",
-            "id": "background_color",
-            "label": "Background color",
-            "default": "#00312d",
-            "visible_if": "{{ block.settings.background_media == 'background_color' }}"
-        },
-        {
-            "type": "checkbox",
-            "id": "hide_on_mobile",
-            "label": "Hide on mobile",
-            "default": false
-        },
-        {
-            "type": "checkbox",
-            "label": "Enable Typing Content",
-            "id": "enable_typing_content",
-            "default": false
-        },
-        {
-            "type": "header",
-            "content": "Size"
-        },
-        {
-            "type": "select",
-            "id": "image_ratio",
-            "options": [
-                {
-                "value": "adapt",
-                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label"
-                },
-                {
-                "value": "portrait",
-                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
-                },
-                {
-                "value": "square",
-                "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label"
-                }
-            ],
-            "default": "adapt",
-            "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
-        },
-        {
-            "type": "select",
-            "id": "width",
-            "label": "Desktop width",
-            "options": [
-                {
-                "value": "fit-content",
-                "label": "Fit"
-                },
-                {
-                "value": "custom",
-                "label": "Custom"
-                }
-            ],
-            "default": "custom"
-        },
-        {
-            "type": "range",
-            "id": "custom_width",
-            "label": "Custom (%)",
-            "min": 1,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "default": 100,
-            "visible_if": "{{ block.settings.width == 'custom' }}"
-        },
-        {
-            "type": "select",
-            "id": "width_tablet",
-            "label": "Tablet width",
-            "options": [
-                {
-                "value": "fit-content",
-                "label": "Fit"
-                },
-                {
-                "value": "custom",
-                "label": "Custom"
-                }
-            ],
-            "default": "custom"
-        },
-        {
-            "type": "range",
-            "id": "custom_width_tablet",
-            "label": "Custom (%)",
-            "min": 1,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "default": 100,
-            "visible_if": "{{ block.settings.width_tablet == 'custom' }}"
-        },
-        {
-            "type": "select",
-            "id": "width_mobile",
-            "label": "Mobile width",
-            "options": [
-                {
-                "value": "fit-content",
-                "label": "Fit"
-                },
-                {
-                "value": "custom",
-                "label": "Custom"
-                }
-            ],
-            "default": "custom"
-        },
-        {
-            "type": "range",
-            "id": "custom_width_mobile",
-            "label": "Custom (%)",
-            "min": 1,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "default": 100,
-            "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
-        },
-        {
-            "type": "select",
-            "id": "height",
-            "label": "t:settings.height",
-            "options": [
-                {
-                "value": "fit",
-                "label": "t:options.fit_content"
-                },
-                {
-                "value": "fill",
-                "label": "t:options.fill"
-                }
-            ],
-            "default": "fit",
-            "visible_if": "{{ block.settings.image_ratio == 'adapt' }}"
-        },
-        {
-            "type": "header",
-            "content": "t:settings_schema.global.settings.header__border.content"
-            },
-            {
-            "type": "select",
-            "id": "border",
-            "label": "t:settings.style",
-            "options": [
-                {
-                "value": "none",
-                "label": "None"
-                },
-                {
-                "value": "solid",
-                "label": "Solid"
-                }
-            ],
-            "default": "none"
-        },
-        {
-            "type": "range",
-            "id": "border_width",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "label": "t:settings_schema.global.settings.thickness.label",
-            "default": 1,
-            "visible_if": "{{ block.settings.border != 'none' }}"
-        },
-        {
-            "type": "range",
-            "id": "border_opacity",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "%",
-            "label": "t:settings_schema.global.settings.opacity.label",
-            "default": 100,
-            "visible_if": "{{ block.settings.border != 'none' }}"
-        },
-        {
-            "type": "range",
-            "id": "border_radius",
-            "label": "t:settings_schema.global.settings.corner_radius.label",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "default": 0
-        },
-        {
-            "type": "header",
-            "content": "Content"
-        },
-        {
-            "type": "select",
-            "id": "content_alignment",
-            "label": "Content alignment",
-            "options": [
-                {
-                    "value": "left",
-                    "label": "Left"
-                },
-                {
-                    "value": "center",
-                    "label": "Center"
-                },
-                
-                {
-                    "value": "right",
-                    "label": "Right"
-                }
-            ],
-            "default": "center"
-        },
-        {
-            "type": "checkbox",
-            "label": "Show content on image",
-            "id": "show_content_on_img",
-            "default": true
-        },
-        {
-            "type": "select",
-            "id": "content_type",
-            "label": "Content type",
-            "options": [
-                {
-                    "value": "absolute-c-c",
-                    "label": "Center Center"
-                },
-                {
-                    "value": "absolute-c-x",
-                    "label": "Center Horizontal"
-                },
-                {
-                    "value": "absolute-c-y",
-                    "label": "Center Vertical"
-                },
-                {
-                    "value": "custom",
-                    "label": "Custom"
-                }
-            ],
-            "default": "absolute-c-c",
-            "visible_if": "{{ block.settings.show_content_on_img }}"
-        },
-        {
-            "type": "range",
-            "id": "content_position_top",
-            "label": "Top",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "default": 0,
-            "visible_if": "{{ block.settings.content_type == 'custom' }}"
-        },
-        {
-            "type": "range",
-            "id": "content_position_left",
-            "label": "Left",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "default": 20,
-            "visible_if": "{{ block.settings.content_type == 'custom' }}"
-        },
-        {
-            "type": "range",
-            "id": "content_position_right",
-            "label": "Right",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "default": 0,
-            "visible_if": "{{ block.settings.content_type == 'custom' }}"
-        },
-        {
-            "type": "range",
-            "id": "content_position_bottom",
-            "label": "Bottom",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "default": 20,
-            "visible_if": "{{ block.settings.content_type == 'custom' }}"
-        },
-        {
-            "type": "header",
-            "content": "Icon"
-        },
-        {
-            "type": "select",
-            "id": "icon",
-            "label": "Icon",
-            "options": [
-                {
-                    "value": "none",
-                    "label": "None"
-                },
-                {
-                    "value": "instagram-cart",
-                    "label": "Instagram Cart"
-                },
-                {
-                    "value": "custom",
-                    "label": "Custom"
-                }
-            ],
-            "default": "none"
-        },
-        {
-            "type": "select",
-            "id": "icon_custom",
-            "label": "Custom icon",
-            "visible_if": "{{ block.settings.icon == 'custom'}}",
-            "options": [
-                {
-                "value": "svg",
-                "label": "SVG"
-                },
-                {
-                "value": "image",
-                "label": "Image"
-                }
-            ],
-            "default": "svg"
-        },
-        {
-            "type": "liquid",
-            "id": "svg_upload",
-            "label": "SVG icon",
-            "info": "Go to this link [find your icon](https:\/\/fontawesome.com\/v5\/search). Find the icon you want, then copy the SVG code and paste it here.",
-            "visible_if": "{{ block.settings.icon_custom == 'svg' }}"
-        },
-        {
-            "type": "image_picker",
-            "id": "image_upload",
-            "label": "t:settings.image_icon",
-            "visible_if": "{{ block.settings.icon_custom == 'image' }}"
-        },
-        {
-            "type": "range",
-            "id": "icon_width",
-            "label": "t:settings.width",
-            "min": 12,
-            "max": 200,
-            "step": 2,
-            "unit": "px",
-            "default": 40,
-            "visible_if": "{{ block.settings.icon_custom != 'svg' }}"
-        },
-        {
-            "type": "url",
-            "id": "icon_link",
-            "label": "t:settings.link",
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
-        },
-        {
-            "type": "checkbox",
-            "id": "icon_open_in_new_tab",
-            "label": "t:settings.open_new_tab",
-            "default": false,
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
-        },
-        {
-            "type": "color",
-            "id": "icon_button_bg_color",
-            "label": "Icon button background color",
-            "default": "#ffffff",
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
-        },
-        {
-            "type": "color",
-            "id": "icon_button_color",
-            "label": "Icon button color",
-            "default": "#232323",
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
-        },
-        {
-            "type": "range",
-            "id": "icon_button_size",
-            "label": "Icon button size",
-            "min": 20,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "default": 40,
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
-        },
-        {
-            "type": "select",
-            "id": "icon_button_position",
-            "label": "Icon button position",
-            "options": [
-                {
-                    "value": "left",
-                    "label": "Left"
-                },
-                {
-                    "value": "right",
-                    "label": "Right"
-                }
-            ],
-            "default": "right",
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
-        },
-        {
-            "type": "range",
-            "id": "icon_button_position_right",
-            "label": "Icon button position right",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "default": 20,
-            "visible_if": "{{ block.settings.background_media == 'image' and block.settings.icon_button_position == 'right' }}"
-        },
-        {
-            "type": "range",
-            "id": "icon_button_position_left",
-            "label": "Icon button position left",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "default": 20,
-            "visible_if": "{{ block.settings.background_media == 'image' and block.settings.icon_button_position == 'left' }}"
-        },
-        {
-            "type": "range",
-            "id": "icon_button_position_bottom",
-            "label": "Icon button position bottom",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "unit": "px",
-            "default": 20,
-            "visible_if": "{{ block.settings.background_media == 'image' }}"
-        },
-        {
-            "type": "header",
-            "content": "Hover"
-        },
-        {
-            "type": "checkbox",
-            "label": "Hover Zoom",
-            "id": "hover_zoomIn",
-            "default": true
-        },
-        {
-            "type": "checkbox",
-            "label": "Hover Plus Icon",
-            "id": "hover_plus_icon",
-            "default": true
-        },
-        {
-            "type": "checkbox",
-            "id": "hover_overlay",
-            "label": "Hover overlay",
-            "default": false
-        },
-        {
-            "type": "checkbox",
-            "id": "hover_slide_content",
-            "label": "Hover slide content",
-            "default": false
-        },
-        {
-            "type": "header",
-            "content": "Animation"
-        },
-        {
-            "type": "checkbox",
-            "id": "enable_fancybox",
-            "label": "Enable Fancybox Lightbox",
-            "default": true,
-            "info": "Opens images and videos in a beautiful lightbox gallery",
-            "visible_if": "{{ block.settings.enable_parallax == false }}"
-        },
-        {
-            "type": "checkbox",
-            "id": "enable_parallax",
-            "label": "Enable parallax scroll",
-            "default": false,
-            "visible_if": "{{ block.settings.enable_fancybox == false }}"
-        },
-        {
-            "type": "range",
-            "id": "parallax_speed",
-            "label": "Parallax speed",
-            "min": 0,
-            "max": 4,
-            "step": 0.5,
-            "default": 0.5,
-            "visible_if": "{{ block.settings.enable_fancybox == false and block.settings.enable_parallax }}"
-        },
-        {
-            "type": "header",
-            "content": "Padding"
-        },
-        {
-            "type": "range",
-            "id": "padding_top",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "default": 0,
-            "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
-        },
-        {
-            "type": "range",
-            "id": "padding_right",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "default": 0,
-            "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
-        },
-        {
-            "type": "range",
-            "id": "padding_bottom",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "default": 0,
-            "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
-        },
-        {
-            "type": "range",
-            "id": "padding_left",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "default": 0,
-            "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+          "value": "background_color",
+          "label": "Background color"
         }
-    ],
-    "blocks": [
+      ],
+      "default": "image"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:settings.video",
+      "visible_if": "{{ block.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "select",
+      "id": "video_position",
+      "label": "t:settings.video_position",
+      "options": [
         {
-            "type": "_divider"
+          "value": "cover",
+          "label": "t:options.cover"
         },
         {
-            "type": "group"
-        },
-        {
-            "type": "image"
-        },
-        {
-            "type": "text"
-        },
-        {
-            "type": "button"
-        },
-        {
-            "type": "heading"
+          "value": "contain",
+          "label": "t:options.contain"
         }
-    ],
-    "presets": [
+      ],
+      "default": "cover",
+      "visible_if": "{{ block.settings.background_media == 'video' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:settings.image",
+      "visible_if": "{{ block.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "background_image_position",
+      "label": "t:settings.image_position",
+      "options": [
         {
-            "name": "Instagram item"
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "fit",
+          "label": "t:options.fit"
         }
-    ]
+      ],
+      "default": "cover",
+      "visible_if": "{{ block.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "visible_if": "{{ block.settings.enable_fancybox == false }}"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#00312d",
+      "visible_if": "{{ block.settings.background_media == 'background_color' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_on_mobile",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "label": "Enable Typing Content",
+      "id": "enable_typing_content",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label"
+        }
+      ],
+      "default": "adapt",
+      "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Desktop width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "Fit"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "custom"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "Custom (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_tablet",
+      "label": "Tablet width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "Fit"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "custom"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_tablet",
+      "label": "Custom (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_tablet == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "Mobile width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "Fit"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "custom"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "Custom (%)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "fit",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        }
+      ],
+      "default": "fit",
+      "visible_if": "{{ block.settings.image_ratio == 'adapt' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:settings_schema.global.settings.header__border.content"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings_schema.global.settings.thickness.label",
+      "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings_schema.global.settings.opacity.label",
+      "default": 100,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings_schema.global.settings.corner_radius.label",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "label": "Show content on image",
+      "id": "show_content_on_img",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "content_type",
+      "label": "Content type",
+      "options": [
+        {
+          "value": "absolute-c-c",
+          "label": "Center Center"
+        },
+        {
+          "value": "absolute-c-x",
+          "label": "Center Horizontal"
+        },
+        {
+          "value": "absolute-c-y",
+          "label": "Center Vertical"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "absolute-c-c",
+      "visible_if": "{{ block.settings.show_content_on_img }}"
+    },
+    {
+      "type": "range",
+      "id": "content_position_top",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.content_type == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "content_position_left",
+      "label": "Left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.content_type == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "content_position_right",
+      "label": "Right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.content_type == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "content_position_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.content_type == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Icon"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "instagram-cart",
+          "label": "Instagram Cart"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "icon_custom",
+      "label": "Custom icon",
+      "visible_if": "{{ block.settings.icon == 'custom'}}",
+      "options": [
+        {
+          "value": "svg",
+          "label": "SVG"
+        },
+        {
+          "value": "image",
+          "label": "Image"
+        }
+      ],
+      "default": "svg"
+    },
+    {
+      "type": "liquid",
+      "id": "svg_upload",
+      "label": "SVG icon",
+      "info": "Go to this link [find your icon](https:\/\/fontawesome.com\/v5\/search). Find the icon you want, then copy the SVG code and paste it here.",
+      "visible_if": "{{ block.settings.icon_custom == 'svg' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_upload",
+      "label": "t:settings.image_icon",
+      "visible_if": "{{ block.settings.icon_custom == 'image' }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_width",
+      "label": "t:settings.width",
+      "min": 12,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ block.settings.icon_custom != 'svg' }}"
+    },
+    {
+      "type": "url",
+      "id": "icon_link",
+      "label": "t:settings.link",
+      "visible_if": "{{ block.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "icon_open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": false,
+      "visible_if": "{{ block.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_button_bg_color",
+      "label": "Icon button background color",
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_button_color",
+      "label": "Icon button color",
+      "default": "#232323",
+      "visible_if": "{{ block.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_button_size",
+      "label": "Icon button size",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ block.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "icon_button_position",
+      "label": "Icon button position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "right",
+      "visible_if": "{{ block.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_button_position_right",
+      "label": "Icon button position right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.background_media == 'image' and block.settings.icon_button_position == 'right' }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_button_position_left",
+      "label": "Icon button position left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.background_media == 'image' and block.settings.icon_button_position == 'left' }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_button_position_bottom",
+      "label": "Icon button position bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "header",
+      "content": "Hover"
+    },
+    {
+      "type": "checkbox",
+      "label": "Hover Zoom",
+      "id": "hover_zoomIn",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "label": "Hover Plus Icon",
+      "id": "hover_plus_icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_overlay",
+      "label": "Hover overlay",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_slide_content",
+      "label": "Hover slide content",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_fancybox",
+      "label": "Enable Fancybox Lightbox",
+      "default": true,
+      "info": "Opens images and videos in a beautiful lightbox gallery",
+      "visible_if": "{{ block.settings.enable_parallax == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable parallax scroll",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_fancybox == false }}"
+    },
+    {
+      "type": "range",
+      "id": "parallax_speed",
+      "label": "Parallax speed",
+      "min": 0,
+      "max": 4,
+      "step": 0.5,
+      "default": 0.5,
+      "visible_if": "{{ block.settings.enable_fancybox == false and block.settings.enable_parallax }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "_divider"
+    },
+    {
+      "type": "group"
+    },
+    {
+      "type": "image"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "button"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Instagram item"
+    }
+  ]
 }
 {% endschema %}

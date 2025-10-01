@@ -391,7 +391,7 @@
                               | money_with_currency
                             -%}
                             <span data-text="{{ 'products.product.volume_pricing.price_at_each' | t: price: variant_price }}">
-                              {{- 'sections.quick_order_list.each' | t: money: price -}}
+                              {{- 'content.each' | t: money: price -}}
                             </span>
                           </li>
                           {%- for price_break in product.selected_or_first_available_variant.quantity_price_breaks -%}
@@ -402,7 +402,7 @@
                                 <span aria-hidden="true">+</span></span
                               >
                               <span data-text="{{ 'products.product.volume_pricing.price_at_each' | t: price: price_break_price }}">
-                                {{- 'sections.quick_order_list.each' | t: money: price_break_price -}}
+                                {{- 'content.each' | t: money: price_break_price -}}
                               </span>
                             </li>
                           {%- endfor -%}
@@ -524,7 +524,7 @@
                             class="contains-card contains-card--product complementary-slider grid grid--1-col slider slider--everywhere"
                             role="list"
                             {% if number_of_slides > 1 %}
-                              aria-label="{{ 'general.slider.name' | t }}"
+                              aria-label="{{ 'content.slider.name' | t }}"
                             {% endif %}
                           >
                             {% assign skip_card_product_styles = false %}
@@ -535,8 +535,8 @@
                                 tabindex="-1"
                                 role="group"
                                 {% if number_of_slides > 1 %}
-                                  aria-roledescription="{{ 'sections.slideshow.slide' | t }}"
-                                  aria-label="{{ forloop.index }} {{ 'general.slider.of' | t }} {{ forloop.length }}"
+                                  aria-roledescription="{{ 'content.slide' | t }}"
+                                  aria-label="{{ forloop.index }} {{ 'content.slider.of' | t }} {{ forloop.length }}"
                                 {% endif %}
                               >
                                 <ul class="list-unstyled" role="list">
@@ -574,7 +574,7 @@
                                 type="button"
                                 class="slider-button slider-button--prev"
                                 name="previous"
-                                aria-label="{{ 'general.slider.previous_slide' | t }}"
+                                aria-label="{{ 'content.slider.previous_slide' | t }}"
                               >
                                 <span class="svg-wrapper">
                                   {{- 'icon-caret.svg' | inline_asset_content -}}
@@ -584,14 +584,14 @@
                                 {%- if block.settings.pagination_style == 'counter' -%}
                                   <span class="slider-counter--current">1</span>
                                   <span aria-hidden="true"> / </span>
-                                  <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+                                  <span class="visually-hidden">{{ 'content.slider.of' | t }}</span>
                                   <span class="slider-counter--total">{{ number_of_slides }}</span>
                                 {%- else -%}
                                   <div class="slideshow__control-wrapper">
                                     {%- for i in (1..number_of_slides) -%}
                                       <button
                                         class="slider-counter__link slider-counter__link--{{ block.settings.pagination_style }} link"
-                                        aria-label="{{ 'sections.slideshow.load_slide' | t }} {{ forloop.index }} {{ 'general.slider.of' | t }} {{ forloop.length }}"
+                                        aria-label="{{ 'content.load_slide' | t }} {{ forloop.index }} {{ 'content.slider.of' | t }} {{ forloop.length }}"
                                         aria-controls="Slider-{{ block.id }}"
                                       >
                                         {%- if block.settings.pagination_style == 'numbers' -%}
@@ -608,7 +608,7 @@
                                 type="button"
                                 class="slider-button slider-button--next"
                                 name="next"
-                                aria-label="{{ 'general.slider.next_slide' | t }}"
+                                aria-label="{{ 'content.slider.next_slide' | t }}"
                               >
                                 <span class="svg-wrapper">
                                   {{- 'icon-caret.svg' | inline_asset_content -}}

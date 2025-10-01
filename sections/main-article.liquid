@@ -272,9 +272,9 @@
             {%- endif -%}
             {% form 'new_comment', article %}
               {%- liquid
-                assign post_message = 'blogs.article.success'
+                assign post_message = 'blogs.comment_form.success'
                 if blog.moderated? and comment.status == 'unapproved'
-                  assign post_message = 'blogs.article.success_moderated'
+                  assign post_message = 'blogs.comment_form.success_moderated'
                 endif
               -%}
               <h3 class="comments-title">{{ 'blogs.article.comment_form_title' | t }}</h3>
@@ -284,7 +284,7 @@
                     <span class="svg-wrapper">
                       {{- 'icon-error.svg' | inline_asset_content -}}
                     </span>
-                    {{ 'templates.contact.form.error_heading' | t }}
+                    {{ 'content.form.error_heading' | t }}
                   </h3>
                 </div>
                 <ul class="form-status-list caption-large">
@@ -292,9 +292,9 @@
                     <li>
                       <a href="#CommentForm-{{ field }}" class="link">
                         {%- if form.errors.translated_fields[field] contains 'author' -%}
-                          {{ 'blogs.article.name' | t }}
+                          {{ 'blogs.comment_form.name' | t }}
                         {%- elsif form.errors.translated_fields[field] contains 'body' -%}
-                          {{ 'blogs.article.message' | t }}
+                          {{ 'blogs.comment_form.message' | t }}
                         {%- else -%}
                           {{ form.errors.translated_fields[field] }}
                         {%- endif -%}
@@ -322,7 +322,7 @@
                 <div class="article-template__comment-fields">
                   <div class="field field--with-error">
                     <label class="field__label field__label--static" for="CommentForm-author">
-                      {{- 'blogs.article.name' | t }}
+                      {{- 'blogs.comment_form.name' | t }}
                       <span aria-hidden="true">*</span></label
                     >
                     <input
@@ -338,7 +338,7 @@
                         aria-invalid="true"
                         aria-describedby="CommentForm-author-error"
                       {% endif %}
-                      placeholder="{{ 'blogs.article.name' | t }}"
+                      placeholder="{{ 'blogs.comment_form.name' | t }}"
                     >
                     {%- if form.errors contains 'author' -%}
                       <small id="CommentForm-author-error">
@@ -346,7 +346,7 @@
                           <span class="svg-wrapper">
                             {{- 'icon-error.svg' | inline_asset_content -}}
                           </span>
-                          {{- 'blogs.article.name' | t }}
+                          {{- 'blogs.comment_form.name' | t }}
                           {{ form.errors.messages.author }}.</span
                         >
                       </small>
@@ -354,7 +354,7 @@
                   </div>
                   <div class="field field--with-error">
                     <label class="field__label field__label--static" for="CommentForm-email">
-                      {{- 'blogs.article.email' | t }}
+                      {{- 'blogs.comment_form.email' | t }}
                       <span aria-hidden="true">*</span></label
                     >
                     <input
@@ -372,7 +372,7 @@
                         aria-invalid="true"
                         aria-describedby="CommentForm-email-error"
                       {% endif %}
-                      placeholder="{{ 'blogs.article.email' | t }}"
+                      placeholder="{{ 'blogs.comment_form.email' | t }}"
                     >
                     {%- if form.errors contains 'email' -%}
                       <small id="CommentForm-email-error">
@@ -380,7 +380,7 @@
                           <span class="svg-wrapper">
                             {{- 'icon-error.svg' | inline_asset_content -}}
                           </span>
-                          {{- 'blogs.article.email' | t }}
+                          {{- 'blogs.comment_form.email' | t }}
                           {{ form.errors.messages.email }}.</span
                         >
                       </small>
@@ -389,7 +389,7 @@
                 </div>
                 <div class="field field--with-error">
                   <label class="form__label field__label field__label--static" for="CommentForm-body">
-                    {{- 'blogs.article.message' | t }}
+                    {{- 'blogs.comment_form.message' | t }}
                     <span aria-hidden="true">*</span></label
                   >
                   <textarea
@@ -403,7 +403,7 @@
                       aria-invalid="true"
                       aria-describedby="CommentForm-body-error"
                     {% endif %}
-                    placeholder="{{ 'blogs.article.message' | t }}"
+                    placeholder="{{ 'blogs.comment_form.message' | t }}"
                   >{{ form.body }}</textarea>
                 </div>
                 {%- if form.errors contains 'body' -%}
@@ -412,16 +412,16 @@
                       <span class="svg-wrapper">
                         {{- 'icon-error.svg' | inline_asset_content -}}
                       </span>
-                      {{- 'blogs.article.message' | t }}
+                      {{- 'blogs.comment_form.message' | t }}
                       {{ form.errors.messages.body }}.</span
                     >
                   </small>
                 {%- endif -%}
               </div>
               {%- if blog.moderated? -%}
-                <p class="article-template__comment-warning caption">{{ 'blogs.article.moderated' | t }}</p>
+                <p class="article-template__comment-warning caption">{{ 'blogs.comment_form.moderated' | t }}</p>
               {%- endif -%}
-              <input type="submit" class="button button--full-width" value="{{ 'blogs.article.post' | t }}">
+              <input type="submit" class="button button--full-width" value="{{ 'blogs.comment_form.post' | t }}">
             {% endform %}
           </div>
         </div>

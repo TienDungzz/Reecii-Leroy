@@ -44,6 +44,27 @@
     ]
   },
   {
+    "name": "t:content.general",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Hot stock"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_hot_stock",
+        "label": "Show hot stock",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "hot_stock_limit",
+        "label": "The maximum level of inventory",
+        "default": "20"
+      },
+    ]
+  },
+  {
     "name": "t:names.colors",
     "settings": [
       {
@@ -314,6 +335,17 @@
           "on_secondary_button": "secondary_button_text",
           "secondary_button_border": "secondary_button_border"
         }
+      },
+      {
+        "type": "header",
+        "content": "Hot stock"
+      },
+      {
+        "type": "color",
+        "id": "hot_stock_color",
+        "label": "Hot stock color",
+        "default": "#d62828",
+        "alpha": true
       },
       {
         "type": "header",
@@ -2011,6 +2043,10 @@
             "label": "Arrows"
           },
           {
+            "value": "arrows_long",
+            "label": "Arrows long"
+          },
+          {
             "value": "chevron",
             "label": "Chevron"
           }
@@ -2261,22 +2297,6 @@
   {
     "name": "t:settings_schema.cards.name",
     "settings": [
-      {
-        "type": "select",
-        "id": "card_style",
-        "options": [
-          {
-            "value": "standard",
-            "label": "t:settings_schema.cards.settings.style.options__1.label"
-          },
-          {
-            "value": "card",
-            "label": "t:settings_schema.cards.settings.style.options__2.label"
-          }
-        ],
-        "default": "standard",
-        "label": "t:settings_schema.cards.settings.style.label"
-      },
       {
         "type": "range",
         "id": "card_image_padding",
@@ -3081,9 +3101,50 @@
       },
       {
         "type": "checkbox",
+        "id": "show_item_subtotal",
+        "label": "Show item subtotal",
+        "default": false
+      },
+      {
+        "type": "checkbox",
         "id": "show_cart_note",
         "label": "t:settings_schema.cart.settings.show_cart_note.label",
         "default": false
+      },
+      {
+        "type": "header",
+        "content": "t:names.gift_wrapping"
+      },
+      {
+        "type": "header",
+        "content": "Quick edit cart"
+      },
+      {
+        "type": "product",
+        "id": "gift_wrap_product",
+        "label": "t:settings.gift_wrap_product"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cart_quick_edit",
+        "label": "Show quick edit button",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "quick_edit_cart_picker_type",
+        "label": "Type",
+        "options": [
+          {
+            "value": "dropdown",
+            "label": "Square\/Rectangle\/Swatch"
+          },
+          {
+            "value": "pills",
+            "label": "Button\/Swatch"
+          }
+        ],
+        "default": "pills"
       }
     ]
   },
