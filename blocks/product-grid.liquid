@@ -44,7 +44,16 @@
       assign enable_pagination = true
     endif
   endif
+
+  if bl_stts.pagination_type == 'progressbar'
+    assign progressbar_left = bl_stts.progressbar_left | append: 'px'
+    assign progressbar_right = bl_stts.progressbar_right | append: 'px'
+  endif
 -%}
+
+{%- capture progress_style -%}
+style="{% if progressbar_left != blank %}--pl: {{ progressbar_left }};{% endif %}{% if progressbar_right != blank %}--pr: {{ progressbar_right }};{% endif %}"
+{%- endcapture -%}
 
 <div
   class="product-grid--block product-grid-{{ bl_id }} max-w-full size-style spacing-style"
@@ -101,7 +110,13 @@
     {% endfor %}
   </ul>
   {%- if enable_pagination -%}
-    <div class="swiper-pagination"></div>
+    {% if bl_stts.pagination_type == 'progressbar' %}
+      <div {{ progress_style }}>
+    {% endif %}
+      <div class="swiper-pagination"></div>
+    {% if bl_stts.pagination_type == 'progressbar' %}
+    </div>
+    {% endif %}
   {%- endif -%}
   {%- if enable_navigation -%}
     <div class="swiper-btns-wrap small-hide swiper-btns-wrap--{{ bl_stts.arrows_position }}">
@@ -392,6 +407,28 @@
         }
       ],
       "default": "bullets"
+    },
+    {
+      "type": "range",
+      "id": "progressbar_left",
+      "label": "Progressbar left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.pagination_type == 'progressbar' }}"
+    },
+    {
+      "type": "range",
+      "id": "progressbar_right",
+      "label": "Progressbar right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.pagination_type == 'progressbar' }}"
     },
     {
       "type": "header",
