@@ -290,6 +290,7 @@ class PredictiveSearch extends SearchForm {
   getResultsMaxHeight() {
     this.resultsMaxHeight =
       window.innerHeight - document.querySelector('.section-header-main').getBoundingClientRect().bottom;
+
     return this.resultsMaxHeight;
   }
 

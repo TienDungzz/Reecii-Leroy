@@ -132,13 +132,6 @@ predictive-search[loading]
   background-color: rgb(var(--color-foreground-rgb) / var(--opacity-4));
 }
 
-.predictive-search__list-item[aria-selected="true"]
-  .predictive-search__item-heading,
-.predictive-search__list-item:hover .predictive-search__item-heading {
-  text-decoration: underline;
-  text-underline-offset: 0.3rem;
-}
-
 .predictive-search__item {
   display: flex;
   padding: 1.2rem 2rem;
@@ -148,6 +141,8 @@ predictive-search[loading]
 
   &.link {
     padding-inline: 0;
+    display: inline-flex;
+    width: initial;
   }
 }
 
@@ -339,12 +334,14 @@ details[open] > .search-modal.search-modal--full,
   background-color: transparent;
   padding: 6px 8px;
 
-  &:hover {
-    background-color: var(--pills-pill-background-color);
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--pills-pill-background-color);
+    }
   }
 
   mark {
-    background-color: transparent;
+    background-color: var(--color-foreground);
     font-weight: bold;
   }
 }

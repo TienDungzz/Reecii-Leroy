@@ -82,8 +82,8 @@
   }
 
   .link {
-    font-size: var(--button-font-size-link);
-    font-weight: var(--button-font-weight-link);
+    font-size: var(--button-font-size-link, var(--font-size--sm));
+    font-weight: var(--button-font-weight-link, var(--font-body--weight));
     text-decoration: none;
     text-decoration-color: currentcolor;
     &[style*="--button-font-size-link"] {
@@ -94,16 +94,28 @@
       text-decoration-color: transparent;
     }
 
-    &.link--underline {
-      --offset-underline: 0.5rem;
-      text-decoration: underline;
-      text-underline-offset: var(--offset-underline);
-    }
+  }
 
-    &.link--hover-underline:hover {
-      text-decoration: underline;
-      text-decoration-color: currentcolor;
-    }
+  .link--underline,
+  .link--hover-underline .text,
+  .link--hover-underline:not(:has(.text)) {
+    --line-link-gap: min(100%, 1.35em);
+    transition: background-size var(--animation-slowest-smooth);
+    text-decoration: none;
+  }
+
+  .link--underline {
+    background: linear-gradient(to right, currentColor, currentColor) 0 var(--line-link-gap) / 0 1px no-repeat;
+    background-position-y: bottom;
+    background-position-x: left;
+    background-size: 100% 1px;
+  }
+
+  .link--hover-underline .text,
+  .link--hover-underline:not(:has(.text)) {
+    background: linear-gradient(to left, currentColor, currentColor) 0 var(--line-link-gap) / 0 1px no-repeat;
+    background-position-y: bottom;
+    background-position-x: right;
   }
 
   @media (prefers-reduced-motion: no-preference) and (hover: hover) {
@@ -139,6 +151,17 @@
         text-decoration: underline;
         text-underline-offset: var(--offset-underline);
       }
+    }
+
+    .link--hover-underline:hover .text,
+    .link--hover-underline:not(:has(.text)):hover {
+      background-position-x: left;
+      background-size: 100% 1px;
+    }
+
+    .link--underline:hover {
+      background-position-x: right;
+      background-size: 0% 1px;
     }
   }
 {% endstylesheet %}

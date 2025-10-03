@@ -44,20 +44,21 @@ if (!customElements.get('localization-form')) {
         }
 
         this.querySelectorAll('a').forEach((item) => item.addEventListener('click', this.onItemClick.bind(this)));
+
       }
 
       hidePanel() {
-        this.elements.button.setAttribute('aria-expanded', 'false');
-        this.elements.drawer.classList.remove('active');
-        if (this.elements.search) {
-          this.elements.search.value = '';
-          this.filterCountries();
-          this.elements.search.setAttribute('aria-activedescendant', '');
-        }
-        if (!this.mql.matches) removeTrapFocus(this.elements.button);
-        document.body.classList.remove('overflow-hidden-mobile');
-        document.querySelector('.menu-drawer').classList.remove('disclosure-selector-open');
-        this.header.preventHide = false;
+        // this.elements.button.setAttribute('aria-expanded', 'false');
+        // this.elements.drawer.classList.remove('active');
+        // if (this.elements.search) {
+        //   this.elements.search.value = '';
+        //   this.filterCountries();
+        //   this.elements.search.setAttribute('aria-activedescendant', '');
+        // }
+        // if (!this.mql.matches) removeTrapFocus(this.elements.button);
+        // document.body.classList.remove('overflow-hidden-mobile');
+        // document.querySelector('.menu-drawer').classList.remove('disclosure-selector-open');
+        // this.header.preventHide = false;
       }
 
       onContainerKeyDown(event) {

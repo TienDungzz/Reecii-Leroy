@@ -9,7 +9,7 @@
   <details id="Details-HeaderMenu-{{ forloopIndex }}" class="details--dropdown mega-menu mega-menu-style-1" is="dropdown-details" activate-event="hover" check-shopify-design-mode {{ block.shopify_attributes }}>
     <summary
       id="HeaderMenu-{{ link.handle }}"
-      class="details__summary menu__link--level-1 header__menu-item list-menu__item link focus-inset"
+      class="details__summary list-menu__item menu__link--level-1 header__menu-item list-menu__item link focus-inset link--hover-underline"
     >
       <span
         {%- if link.child_active %}
@@ -51,7 +51,7 @@
                     <a
                       id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
                       href="{{ grandchildlink.url }}"
-                      class="header__menu-item mega-menu__link link{% if grandchildlink.current %} list-menu__item--active{% endif %}"
+                      class="header__menu-item mega-menu__link link link--hover-underline{% if grandchildlink.current %} list-menu__item--active{% endif %}"
                       {% if grandchildlink.current %}
                         aria-current="page"
                       {% endif %}
@@ -100,8 +100,8 @@
             -%}
             {%- if image != blank -%}
               {%- assign image_index = image_index | plus: 1 -%}
-              <div class="collage-card collage__item collage__item--{{ image_index }} overflow-hidden">
-                <a class="block relative h-full"
+              <div class="collage__item collage__item--{{ image_index }} overflow-hidden">
+                <a class="block"
                   {% if link_url != blank %}
                     href="{{ link_url }}"
                   {% else %}
@@ -109,13 +109,13 @@
                   {% endif %}
                 >
                   {%- if settings.animations_reveal_on_scroll -%}
-                    <div data-animate="zoom-fade-in" class="theme-animate block overflow-hidden relative h-full">
+                    <div data-animate="zoom-fade-in" class="theme-animate">
                   {%- endif -%}
                   {%- liquid
                     assign ratio = image.aspect_ratio | default: 1
                     assign image_alt = image.alt | default: shop.name | escape
                   -%}
-                  <div class="media media--transparent media--adapt media--zoom relative overflow-hidden h-full"
+                  <div class="media media--transparent media--adapt"
                     style="padding-bottom: {{ 1 | divided_by: ratio | times: 100 }}%;"
                   >
                     {{ image | image_url: width: 600 | image_tag:

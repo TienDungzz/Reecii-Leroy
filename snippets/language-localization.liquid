@@ -5,7 +5,14 @@
     - localPosition: pass in the position in which the form is coming up to create specific IDs
 {%- endcomment -%}
 
-<div class="disclosure">
+{%- liquid
+  assign localization_font = '--menu-localization-font: var(--font-[localization_font]--family); ' | replace: '[localization_font]', section.settings.localization_font
+  assign localization_font_size = '--menu-localization-font-size: [localization_font_size]; ' | replace: '[localization_font_size]', section.settings.localization_font_size
+  assign color_shadow = '--color-shadow: rgb(var(--color-foreground-rgb) / var(--opacity-10-25));'
+  assign form_style = localization_font | append: localization_font_size | append: color_shadow
+-%}
+
+<div class="disclosure" style="{{ form_style }}">
   <button
     type="button"
     class="disclosure__button localization-form__select localization-selector link link--text caption-large"
@@ -13,9 +20,12 @@
     aria-controls="{{ localPosition }}List"
     aria-describedby="{{ localPosition }}Label"
   >
-    <span class="icon-flag icon-flag--{{ localization.language.iso_code }}"></span>
+    {% comment %} <span class="icon-flag icon-flag--{{ localization.language.iso_code }}"></span> {% endcomment %}
+    {% if country_style == true %}
+      <span class="icon-flag icon-flag--{{ localization.language.iso_code }}"></span>
+    {% endif %}
     <span>{{ localization.language.endonym_name | capitalize }}</span>
-    {{ 'icon-caret.svg' | inline_asset_content }}
+    {% comment %} {{ 'icon-caret.svg' | inline_asset_content }} {% endcomment %}
   </button>
   <div class="selector__dropdown" element-s-up>
     <div id="Selector-Overlay" class="slide__overlay--mb"></div>
@@ -32,11 +42,11 @@
           {{- 'icon-close.svg' | inline_asset_content -}}
         </button>
       </div>
-      <ul id="{{ localPosition }}List" role="list" class="disclosure__list language-selector__list list-unstyled cus-scrollbar">
+      <ul id="{{ localPosition }}List" role="list" class="disclosure__list language-selector__list list-unstyled cus-scrollbar" style="{{ localization_font }} {{ localization_font_size }}">
         {%- for language in localization.available_languages -%}
           <li class="disclosure__item" tabindex="-1">
             <a
-              class="link link--text disclosure__link caption-large focus-inset"
+              class="disclosure__link caption-large focus-inset"
               href="#"
               hreflang="{{ language.iso_code }}"
               lang="{{ language.iso_code }}"
@@ -45,7 +55,9 @@
               {% endif %}
               data-value="{{ language.iso_code }}"
             >
-              <span class="icon-flag icon-flag--{{ language.iso_code }}"></span>
+              {% if country_style == true %}
+                <span class="icon-flag icon-flag--{{ language.iso_code }}"></span>
+              {% endif %}
               <span>
                 {{ language.endonym_name | capitalize }}
               </span>

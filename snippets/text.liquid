@@ -196,19 +196,33 @@
 {% if fallback_text != blank and plain_text == blank %}
   <div {{ attributes }}>
     {%- if has_heading_border or is_card_heading -%}
-    <div class="text{% if has_heading_border %} {{ text_class }}{% endif %}">
+      <div class="text{% if has_heading_border %} {{ text_class }}{% endif %}">
     {%- endif -%}
-      {{ fallback_text }}
+    {{ fallback_text }}
     {%- if has_heading_border or is_card_heading -%}
-    </div>
+      </div>
     {%- endif -%}
   </div>
 {% elsif plain_text != blank %}
   <{{ element }} {{ attributes }}>
     {%- if has_heading_border or is_card_heading or text_element -%}
-      <div class="{% if has_heading_border or is_card_heading %}text {{ text_class }}{% endif %}{% if text_element %} text-animation-line{% endif %}">
+      <div
+        class="
+          {% if has_heading_border or is_card_heading %}text {{ text_class }}{% endif %}
+          {% if text_element %} text-animation-line{% endif %}
+        "
+      >
     {%- endif -%}
-      {{ text }}
+
+    {% if is_card_heading or type_block == 'product' %}
+      <span class="link--hover-underline">
+    {% endif %}
+
+    {{ text }}
+    {% if is_card_heading or type_block == 'product' %}
+      </span>
+    {% endif %}
+
     {%- if has_heading_border or is_card_heading or text_element -%}
       </div>
     {%- endif -%}
@@ -477,17 +491,17 @@
 
   .stoke_text--content {
     --fill-color: var(--color-foreground);
-      position: relative;
-      display: inline-block;
-      text-decoration: none;
-      text-transform: uppercase;
-      -webkit-text-stroke: 1px var(--fill-color);
-      background: linear-gradient(var(--fill-color) 0 100%) left / 0 no-repeat;
-      color: transparent;
-      background-clip: text;
-      transition: background-size var(--animation-slowest-smooth);
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+    text-transform: uppercase;
+    -webkit-text-stroke: 1px var(--fill-color);
+    background: linear-gradient(var(--fill-color) 0 100%) left / 0 no-repeat;
+    color: transparent;
+    background-clip: text;
+    transition: background-size var(--animation-slowest-smooth);
 
-      /* &:hover {
+    /* &:hover {
         background-size: 100%;
       } */
   }

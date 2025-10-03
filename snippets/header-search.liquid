@@ -1,13 +1,3 @@
-{% comment %}
-  Renders a header search modal. Should be used with 'header.liquid'
-
-  Accepts:
-  - input_id: {String} Id for the search input element (required)
-
-  Usage:
-  {% render 'header-search', input_id: 'My-Id'%}
-{% endcomment %}
-
 {%- liquid
   assign search_type = settings.search_type
 
@@ -23,7 +13,8 @@
 -%}
 
 <div
-  class="header-block grid__itemblock{% if class != blank %} {{ class }}{% endif %}"
+  class="header-block grid__itemblock search-action
+  {% if class != blank %} {{ class }}{% endif %}"
 >
   <{{ details_wrapper }} class="header__search">
     <{{ details_element }}>
@@ -31,11 +22,12 @@
         <side-drawer-opener data-side-drawer="#Drawer-Search">
       {% endif %}
         <{{ details_summary }}
-          class="header__icon header__icon--search header__icon--summary link focus-inset modal__toggle"
+          class="header__icon header__icon--search header__icon--summary button focus-inset modal__toggle svg-slide-up"
           aria-haspopup="dialog"
           aria-label="{{ 'content.search' | t }}"
         >
           <span class="svg-wrapper">
+            {{- 'icon-search.svg' | inline_asset_content -}}
             {{- 'icon-search.svg' | inline_asset_content -}}
           </span>
         </{{ details_summary }}>
@@ -59,73 +51,60 @@
             {%- else -%}
               <search-form class="search-modal__form">
             {%- endif -%}
-            <form action="{{ routes.search_url }}" method="get" role="search" class="search search-modal__form">
-              <div class="predictive-search--center">
-                <div class="field">
-                  <button class="search__button field__button" aria-label="{{ 'content.search' | t }}">
-                    <span class="svg-wrapper">
-                      {{- 'icon-search.svg' | inline_asset_content -}}
-                    </span>
-                  </button>
-                  <input
-                    class="search__input field__input"
-                    id="{{ input_id }}"
-                    type="search"
-                    name="q"
-                    value="{{ search.terms | escape }}"
-                    placeholder="{{ 'content.search' | t }}"
-                    {%- if settings.predictive_search_enabled -%}
-                      role="combobox"
-                      aria-expanded="false"
-                      aria-owns="predictive-search-results"
-                      aria-controls="predictive-search-results"
-                      aria-haspopup="listbox"
-                      aria-autocomplete="list"
-                      autocorrect="off"
-                      autocomplete="off"
-                      autocapitalize="off"
-                      spellcheck="false"
-                    {%- endif -%}
-                  >
-                  <label class="field__label" for="{{ input_id }}">{{ 'content.search' | t }}</label>
-                  <input type="hidden" name="options[prefix]" value="last">
-                  <button
-                    type="reset"
-                    class="reset__button field__button{% if search.terms == blank %} hidden{% endif %}"
-                    aria-label="{{ 'content.clear_search_term' | t }}"
-                  >
-                    <span class="svg-wrapper">
-                      {{- 'icon-close.svg' | inline_asset_content -}}
-                      {% comment %} {{- 'icon-reset.svg' | inline_asset_content -}} {% endcomment %}
-                    </span>
-                  </button>
-                  {% comment %}
+              <form action="{{ routes.search_url }}" method="get" role="search" class="search search-modal__form">
+                <div class="predictive-search--center">
+                  <div class="field">
+                    <button class="search__button field__button" aria-label="{{ 'content.search' | t }}">
+                      <span class="svg-wrapper">
+                        {{- 'icon-search.svg' | inline_asset_content -}}
+                      </span>
+                    </button>
+                    <input
+                      class="search__input field__input"
+                      id="{{ input_id }}"
+                      type="search"
+                      name="q"
+                      value="{{ search.terms | escape }}"
+                      {%- if settings.predictive_search_enabled -%}
+                        role="combobox"
+                        aria-expanded="false"
+                        aria-owns="predictive-search-results"
+                        aria-controls="predictive-search-results"
+                        aria-haspopup="listbox"
+                        aria-autocomplete="list"
+                        autocorrect="off"
+                        autocomplete="off"
+                        autocapitalize="off"
+                        spellcheck="false"
+                      {%- endif -%}
+                    >
+                    <label class="field__label" for="{{ input_id }}">{{ 'content.search' | t }}</label>
+                    <input type="hidden" name="options[prefix]" value="last">
                     <button
-                      type="button"
-                      class="search-modal__close-button modal__close-button link link--text focus-inset"
-                      aria-label="{{ 'accessibility.close' | t }}"
+                      type="reset"
+                      class="reset__button field__button{% if search.terms == blank %} hidden{% endif %}"
+                      aria-label="{{ 'content.clear_search_term' | t }}"
                     >
                       <span class="svg-wrapper">
                         {{- 'icon-close.svg' | inline_asset_content -}}
                       </span>
                     </button>
-                  {% endcomment %}
-                </div>
-              </div>
-
-              {%- if settings.predictive_search_enabled -%}
-                <div
-                  class="predictive-search predictive-search--header predictive-search--center cus-scrollbar"
-                  tabindex="-1"
-                  data-predictive-search
-                >
-
-                  {% render 'predictive-search-empty-state', shadow_opacity: 0.1, products_test_id: products_test_id %}
+                  </div>
                 </div>
 
-                <span class="predictive-search-status visually-hidden" role="status" aria-hidden="true"></span>
-              {%- endif -%}
-            </form>
+                {%- if settings.predictive_search_enabled -%}
+                  <div
+                    class="predictive-search predictive-search--header predictive-search--center cus-scrollbar"
+                    tabindex="-1"
+                    data-predictive-search
+                  >
+
+                    {% render 'predictive-search-empty-state', shadow_opacity: 0.1, products_test_id: products_test_id %}
+                  </div>
+
+                  <span class="predictive-search-status visually-hidden" role="status" aria-hidden="true"></span>
+                {%- endif -%}
+              </form>
             {%- if settings.predictive_search_enabled -%}
               </predictive-search>
             {%- else -%}
@@ -134,18 +113,8 @@
           </div>
         </div>
       {%- else -%}
-        {%- render 'predictive-search-drawer' -%}
+        {% comment %} {%- render 'predictive-search-drawer' -%} {% endcomment %}
       {%- endif -%}
     </{{ details_element }}>
   </{{ details_wrapper }}>
 </div>
-
-{% comment %}
-  <side-drawer-opener class="toggle-sidebar" data-side-drawer="#Drawer-Blog-Sidebar">
-    <button class="button--drawer focus-inset">
-      <span class="svg-wrapper">
-        {% render 'icon-sidebar' %}
-      </span>
-    </button>
-  </side-drawer-opener>
-{% endcomment %}
