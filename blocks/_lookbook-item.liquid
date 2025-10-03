@@ -25,10 +25,13 @@
   assign banner_link = block.settings.banner_link
   assign banner_link_new_tab = block.settings.banner_link_new_tab
   assign text_align = block.settings.text_align
+  assign show_products_button = block.settings.show_products_button
+  assign products_button_text = block.settings.products_button_text
+  assign products_button_text_hide = block.settings.products_button_text_hide
 %}
 
 {% capture class %}
-  image-block image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hover_overlay == true %} image-overlay{% endif %}{% if block.settings.hover_zoomIn == true %} image-zoomIn{% endif %}{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}
+  image-block image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style border-style{% if block.settings.hover_overlay == true %} image-overlay{% endif %}{% if block.settings.hover_zoomIn == true %} image-zoomIn{% endif %}{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}
 {% endcapture %}
 
 {% capture style %}
@@ -85,21 +88,20 @@
 {% endcapture %}
 
 {% capture icon %}
-    {% render 'icon-or-image',
-        icon: block.settings.icon,
-        icon_custom: block.settings.icon_custom,
-        svg_upload: block.settings.svg_upload,
-        image_upload: block.settings.image_upload,
-        width: block.settings.icon_width,
-        attributes: block.shopify_attributes
-    %}
+  {% render 'icon-or-image',
+    icon: block.settings.icon,
+    icon_custom: block.settings.icon_custom,
+    svg_upload: block.settings.svg_upload,
+    image_upload: block.settings.image_upload,
+    width: block.settings.icon_width,
+    attributes: block.shopify_attributes
+  %}
 {% endcapture %}
 
-<div class="lookbook-item relative{% if dots_style %} dots-style-number{% endif %}">
+<div class="lookbook-item relative size-style{% if dots_style %} dots-style-number{% endif %}" style="{{ style }}">
     <div class="lookbook-item__image relative">
         <{{ element }}
             class="{{ class }}"
-            style="{{ style }}"
             {{ attributes }}
         >
         {%- if image != blank -%}
@@ -120,11 +122,13 @@
         {%- content_for 'blocks' -%}
     </div>
 
-    <div class="lookBook__btnShowProducts">
-        <span class="icon_plus_2">icon</span>
-        <a class="show_products" href="#" aria-label="Show Products" tabindex="0">Show Products</a>
-        <a class="hide_products" href="#" aria-label="Hide Products" tabindex="0">Hide Products</a>
-    </div>
+    {%- if show_products_button -%}
+      <div class="lookBook__btnShowProducts">
+          <span class="icon_plus_2">icon</span>
+          <a class="show_products" href="#" aria-label="Show Products" tabindex="0">{{ products_button_text }}</a>
+          <a class="hide_products" href="#" aria-label="Hide Products" tabindex="0">{{ products_button_text_hide }}</a>
+      </div>
+    {%- endif -%}
 </div>
 <div class="lookbook-item__content flex justify-{{ text_align }}">
     {% if banner_link != blank %}
@@ -260,6 +264,26 @@
       "label": "Show dots as numbers",
       "id": "dots_style",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_products_button",
+      "label": "Show all products button",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "products_button_text",
+      "label": "Products button text",
+      "default": "Show Products",
+      "visible_if": "{{ block.settings.show_products_button }}"
+    },
+    {
+      "type": "text",
+      "id": "products_button_text_hide",
+      "label": "Products button text hide",
+      "default": "Hide Products",
+      "visible_if": "{{ block.settings.show_products_button }}"
     },
     {
       "type": "header",

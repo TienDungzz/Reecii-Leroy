@@ -21,6 +21,7 @@
   assign link = link | default: block.settings.link
   assign style_class = style_class | default: block.settings.style_class
   assign link_underline = link_underline | default: block.settings.link_underline
+  assign case = case | default: block.settings.case
   assign link_reveal = link_reveal | default: block.settings.link_reveal
   assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab
   assign shopify_attributes = shopify_attributes | default: block.shopify_attributes
@@ -39,6 +40,8 @@
     {{ style_class }}
     {% if link_reveal and style_class == 'link' %}link--reveal{% endif %}
     {% if link_underline %}link--underline{% endif %}
+    {% if case == 'uppercase' %}uppercase{% endif %}
+    {% if case == 'capitalize' %}capitalize{% endif %}
     {% if button_style == 'outline' %}button--outline{% endif %}
     {{ style_class }}--{{ block.id }}
   "
