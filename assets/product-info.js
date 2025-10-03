@@ -251,9 +251,10 @@ if (!customElements.get('product-info')) {
 
           this.updateMedia(html, variant?.featured_media?.id);
 
-          this.getVariantData();
-
-          this.updateVariantStatuses(target);
+          if (document.querySelector('.step-by-step-variant-picker')) {
+            this.getVariantData();
+            this.updateVariantStatuses(target);
+          }
 
           const updateSourceFromDestination = (id, shouldHide = (source) => false) => {
             const source = html.getElementById(`${id}-${this.sectionId}`);

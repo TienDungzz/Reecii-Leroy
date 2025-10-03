@@ -52,6 +52,9 @@
   assign style = bl_stts.style
   assign filter_swatch = bl_stts.filter_swatch
   assign filter_position = bl_stts.filter_position
+  assign filter_label_all = bl_stts.filter_label_all
+  assign show_filter_by_tags_sidebar = bl_stts.show_filter_by_tags_sidebar
+  assign number_filters = bl_stts.number_filters
 -%}
 
 {{ 'component-facets.css' | asset_url | stylesheet_tag }}
@@ -108,6 +111,7 @@
     {%- endcapture -%}
 
     {% render 'facets',
+      bl_stts: bl_stts,
       results: results,
       enable_filtering: bl_stts.enable_filtering,
       enable_sorting: enable_sorting,
@@ -127,7 +131,10 @@
       divider_spacing_bottom: divider_spacing_bottom,
       filter_swatch: filter_swatch,
       children: children,
-      sidebar_categories: sidebar_categories
+      sidebar_categories: sidebar_categories,
+      filter_label_all: filter_label_all,
+      show_filter_by_tags_sidebar: show_filter_by_tags_sidebar,
+      number_filters: number_filters
     %}
   </div>
 </div>
@@ -1344,6 +1351,90 @@
       "label": "Input option name to show swatch style",
       "info": "t:sections.main-collection-product-grid.settings.filter_variant_pill.info",
       "visible_if": "{{ block.settings.enable_filtering == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_by_tags_sidebar",
+      "label": "Show filter by tags [Sidebar]",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_filtering == true }}"
+    },
+    {
+      "type": "text",
+      "id": "filter_label_all",
+      "label": "Filter label for all tags",
+      "info": "When using a name other than the label 'more filters', please enter the label name according to the name you've set in this setting.",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true }}"
+    },
+    {
+      "type": "range",
+      "id": "number_filters",
+      "label": "Number of filters",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 1,
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true }}"
+    },
+    {
+      "type": "text",
+      "id": "fbt_heading_1",
+      "label": "Heading 1",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true }}"
+    },
+    {
+      "type": "textarea",
+      "id": "fbt_tags_list_1",
+      "label": "Tags list 1",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true }}"
+    },
+    {
+      "type": "text",
+      "id": "fbt_heading_2",
+      "label": "Heading 2",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters > 1 }}"
+    },
+    {
+      "type": "textarea",
+      "id": "fbt_tags_list_2",
+      "label": "Tags list 2",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters > 1 }}"
+    },
+    {
+      "type": "text",
+      "id": "fbt_heading_3",
+      "label": "Heading 3",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters > 2 }}"
+    },
+    {
+      "type": "textarea",
+      "id": "fbt_tags_list_3",
+      "label": "Tags list 3",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters > 2 }}"
+    },
+    {
+      "type": "text",
+      "id": "fbt_heading_4",
+      "label": "Heading 4",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters > 3 }}"
+    },
+    {
+      "type": "textarea",
+      "id": "fbt_tags_list_4",
+      "label": "Tags list 4",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters > 3 }}"
+    },
+    {
+      "type": "text",
+      "id": "fbt_heading_5",
+      "label": "Heading 5",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters == 5 }}"
+    },
+    {
+      "type": "textarea",
+      "id": "fbt_tags_list_5",
+      "label": "Tags list 5",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters == 5 }}"
     },
     {
       "type": "header",
