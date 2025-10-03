@@ -112,22 +112,24 @@
                   endif
                 endfor
 
+                assign icon_type = section.settings.icon_type
+
                 if check_mega_menu_1 and has_mega_menu_1
-                    render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block
+                    render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type
                 elsif check_mega_menu_2 and has_mega_menu_2
-                    render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block
+                    render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type
                 elsif check_mega_menu_3 and has_mega_menu_3
-                    render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block
+                    render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type
                 elsif check_mega_menu_4 and has_mega_menu_4
-                    render 'header-mega-menu-4', link: link, forloopIndex: forloop.index, block: block
+                    render 'header-mega-menu-4', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type
                 elsif check_mega_menu_5 and has_mega_menu_5
-                    render 'header-mega-menu-5', link: link, forloopIndex: forloop.index, block: block
+                    render 'header-mega-menu-5', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type
                 else
-                  render 'header-dropdown-menu', link: link, forloopIndex: forloop.index
+                  render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type
                 endif
               -%}
             {%- else -%}
-              <a id="HeaderMenu-{{ link.handle }}" href="{{ link.url }}" class="header__menu-item list-menu__item link link--text focus-inset"{% if link.current %} aria-current="page"{% endif %}>
+              <a id="HeaderMenu-{{ link.handle }}" href="{{ link.url }}" class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline"{% if link.current %} aria-current="page"{% endif %}>
                 <span {%- if link.current %}class="header__active-menu-item"{% endif %}>
                   {{- link.title | escape -}}
                 </span>
@@ -139,3 +141,16 @@
     </nav>
   </div>
 </div>
+
+{%- stylesheet -%}
+  .mega-menu__content:has(.mega-menu__collage-wrapper) {
+    padding-bottom: 0;
+
+    .mega-menu__list {
+      padding-bottom: 3rem;
+    }
+  }
+  .mega-menu__collage-wrapper {
+    padding-block: var(--padding-4xl);
+  }
+{%- endstylesheet -%}

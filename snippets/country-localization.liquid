@@ -23,11 +23,15 @@
   if currencies.size > 1
     assign show_currencies = true
   endif
+
+  assign localization_font = '--menu-localization-font: var(--font-[localization_font]--family); ' | replace: '[localization_font]', section.settings.localization_font
+  assign localization_font_size = '--menu-localization-font-size: [localization_font_size]; ' | replace: '[localization_font_size]', section.settings.localization_font_size
+  assign color_shadow = '--color-shadow: rgb(var(--color-foreground-rgb) / var(--opacity-10-25));'
+  assign form_style = localization_font | append: localization_font_size | append: color_shadow
 %}
 
-<link rel="stylesheet" href="{{ 'icon-flag.css' | asset_url }}" media="print" onload="this.media='all'">
 
-<div class="disclosure">
+<div class="disclosure" style="{{ form_style }}">
   <button
     type="button"
     class="disclosure__button localization-form__select localization-selector link link--text caption-large"
@@ -35,7 +39,9 @@
     aria-controls="{{ localPosition }}-country-results"
     aria-describedby="{{ localPosition }}Label"
   >
-    <span class="icon-flag icon-flag--{{ localization.country.iso_code }}"></span>
+    {% if country_style == true %}
+      <span class="icon-flag icon-flag--{{ localization.country.iso_code }}"></span>
+    {% endif %}
     <span>
       {{ localization.country.currency.symbol -}}
       {{ localization.country.currency.iso_code }}
@@ -61,7 +67,7 @@
               type="search"
               name="country_filter"
               value=""
-              placeholder="{{ 'content.search' | t }}"
+              placeholder=""
               role="combobox"
               aria-owns="country-results"
               aria-controls="country-results"
@@ -76,7 +82,7 @@
             <button
               type="reset"
               class="country-filter__reset-button field__button hidden"
-              aria-label="{{ 'content.clear_search_term' | t }}"
+              aria-label="{{ 'actions.reset' | t }}"
             >
               {{- 'icon-reset.svg' | inline_asset_content -}}
             </button>
@@ -93,6 +99,7 @@
       <div
         class="disclosure__list country-selector__list{% if show_currencies %} country-selector__list--with-multiple-currencies{% endif %} cus-scrollbar"
         id="{{ localPosition }}-country-results"
+        style="{{ localization_font }} {{ localization_font_size }}"
       >
         {% if show_popular_countries %}
           <ul
@@ -103,7 +110,7 @@
             {%- for country in popular_countries -%}
               <li class="disclosure__item {{ country.iso_code }}" tabindex="-1">
                 <a
-                  class="link link--text disclosure__link caption-large focus-inset"
+                  class="disclosure__link caption-large focus-inset"
                   href="#"
                   {% if country.iso_code == localization.country.iso_code %}
                     aria-current="true"
@@ -111,7 +118,9 @@
                   data-value="{{ country.iso_code }}"
                   id="{{ country.name }}"
                 >
-                  <span class="icon-flag icon-flag--{{ country.iso_code }}"></span>
+                  {% if country_style == true %}
+                    <span class="icon-flag icon-flag--{{ country.iso_code }}"></span>
+                  {% endif %}
                   <span class="country">{{- country.name }} ({{ country.currency.symbol -}}{{ country.currency.iso_code }})</span>
                 </a>
               </li>
@@ -122,7 +131,7 @@
           {%- for country in localization.available_countries -%}
             <li class="disclosure__item" tabindex="-1">
               <a
-                class="link link--text disclosure__link caption-large focus-inset"
+                class="disclosure__link caption-large focus-inset"
                 href="#"
                 {% if country.iso_code == localization.country.iso_code %}
                   aria-current="true"
@@ -130,7 +139,9 @@
                 data-value="{{ country.iso_code }}"
                 id="{{ country.name }}"
               >
-                <span class="icon-flag icon-flag--{{ country.iso_code }}"></span>
+                {% if country_style == true %}
+                  <span class="icon-flag icon-flag--{{ country.iso_code }}"></span>
+                {% endif %}
                 <span class="country">{{- country.name }} ({{ country.currency.symbol -}}{{ country.currency.iso_code }})</span>
               </a>
             </li>

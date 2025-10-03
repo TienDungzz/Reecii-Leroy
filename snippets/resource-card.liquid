@@ -9,6 +9,9 @@
   @param {string} [image_aspect_ratio] - The aspect ratio to display the image. Defaults to image's natural ratio
   @param {boolean} [image_hover] - Whether to show a secondary image on hover and focus
   @param {string} [image_sizes] - The sizes attribute for responsive images. Defaults to 'auto'
+  @param {string} [resource_direction] - The direction of the card. Can be 'column' or 'row'. Defaults to 'row'
+  @param {string} [horizontal_alignment] - The alignment of the content. Can be 'flex-start', 'center', 'flex-end', 'space-between'. Defaults to 'flex-start'
+  @param {string} [vertical_alignment] - The alignment of the content. Can be 'stretch', 'flex-start', 'center', 'flex-end'. Defaults to 'center'
 {%- enddoc -%}
 
 {% liquid
@@ -33,21 +36,34 @@
   endif
 %}
 
-<div class="product-card-wrapper">
+<div class="resource-card-wrapper product-card-wrapper card-wrapper">
   <div class="card">
     <div
-      class="resource-card{% if style == 'overlay' %} resource-card--overlay{% endif %}"
-      href="{{ resource.url }}"
+      class="
+        resource-card
+        {% if resource_direction == 'column' %} resource-card--column{% endif %}
+        {% if style == 'overlay' %} resource-card--overlay{% endif %}
+        {% if resource_type == 'product' %} resource-card--product{% endif %}
+      "
       data-resource-type="{{ resource_type }}"
     >
-      <a
-        class="resource-card__link"
-        href="{{ resource.url }}"
-      >
-        <span class="visually-hidden">
-          {{ resource.title }}
-        </span>
-      </a>
+      {% if resource_type == 'product' %}
+        <template>
+          <div
+            data-json-product='{"id": {{resource.id}},"handle": "{{resource.handle}}","media": {{resource.media | json | escape}},"variants": {{ resource.variants | json | escape}}}'
+          ></div>
+        </template>
+      {% endif %}
+      {% if resource_type != 'product' %}
+        <a
+          class="resource-card__link"
+          href="{{ resource.url }}"
+        >
+          <span class="visually-hidden">
+            {{ resource.title }}
+          </span>
+        </a>
+      {% endif %}
       <div
         class="resource-card__media-wrapper relative"
         style="--resource-card-aspect-ratio: {{ ratio }};"
@@ -140,16 +156,42 @@
               {%- endif -%}
             {%- endif -%}
           </div>
+          {% if resource_type == 'product' %}
+            <a
+              class="resource-card__link"
+              href="{{ resource.url }}"
+            >
+              <span class="visually-hidden">
+                {{ resource.title }}
+              </span>
+            </a>
+          {% endif %}
         </card-media>
       </div>
-      <div class="resource-card__content">
+      <div class="
+        resource-card__content
+        {% if horizontal_alignment != blank %} {{ horizontal_alignment}}{% endif %}
+        {% if vertical_alignment != blank %} {{ vertical_alignment}}{% endif %}
+      ">
         {% if resource_type == 'product' and settings.predictive_search_show_vendor %}
           <p class="resource-card__subtext paragraph">
             {{- resource.vendor -}}
           </p>
         {% endif %}
-        <p class="resource-card__title{% if style == 'overlay' %} h5{%else %} paragraph{% endif %}">
-          {{- resource.title -}}
+        <p
+          class="
+            resource-card__title
+            {% if style == 'overlay' %} h5{%else %} paragraph{% endif %}
+            {% if resource_type == 'product' %} card__heading{% endif %}
+          "
+        >
+          {% if resource_type == 'product' %}
+            <a href="{{ resource.url }}" class="card-title-change link link--hover-underline">
+          {% endif %}
+          <span class="text">{{- resource.title -}}</span>
+          {% if resource_type == 'product' %}
+            </a>
+          {% endif %}
         </p>
 
         {% if resource_type == 'product' and settings.predictive_search_show_price %}
@@ -163,12 +205,57 @@
             {{- resource.excerpt | default: resource.content | strip_html | truncate: 65 -}}
           </p>
         {% endif %}
+        {% if resource_type == 'product' and show_variant_swatches %}
+          {%- liquid
+            assign product_swatch_option = settings.swatch | downcase
+            assign variant_img = ''
+            for option in resource.options_with_values
+              assign option_name = option.name | downcase
+              if product_swatch_option contains option_name
+                assign index = forloop.index0
+                assign position = forloop.index | minus: 1
+                assign variant_selected = option.selected_value
+                if settings.show_quick_shop
+                  for variant in resource.variants limit: 1
+                    if variant.image != null
+                      assign variant_img = variant.image
+                    endif
+                  endfor
+                endif
+                break
+              else
+                assign position = 0
+                assign variant_selected = null
+              endif
+            endfor
+
+            if horizontal_alignment == 'items-center' or vertical_alignment == 'justify-center'
+              assign alignment = 'center'
+            elsif horizontal_alignment == 'items-end' or vertical_alignment == 'justify-end'
+              assign alignment = 'end'
+            else
+              assign alignment = 'start'
+            endif
+          -%}
+          <div class="resource-card__variant">
+            {%- render 'product-swatch',
+              product: resource,
+              variant_selected: variant_selected,
+              index: index,
+              alignment: alignment
+            -%}
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>
 </div>
 
 {% stylesheet %}
+  .resource-card-wrapper.card-wrapper {
+    height: auto;
+  }
+
   .predictive-search-results__card {
     transition: transform var(--hover-transition-duration) var(--hover-transition-timing),
       box-shadow var(--hover-transition-duration) var(--hover-transition-timing);
@@ -180,7 +267,7 @@
 
     display: grid;
     grid-template-columns: 7.5rem 1fr;
-    column-gap: var(--gap-md);
+    gap: var(--gap-md);
     position: relative;
     text-decoration: none;
     height: 100%;
@@ -189,6 +276,11 @@
 
     @media screen and (max-width: 749px) {
       grid-template-columns: 5rem 1fr;
+    }
+
+    &.resource-card--column {
+      grid-template-columns: 1fr;
+      width: 100%;
     }
   }
 
@@ -203,9 +295,26 @@
     flex-direction: column;
     color: var(--color-foreground);
     gap: var(--padding-3xs);
+    text-align: var(--text-align);
 
     .price {
       font-weight: 500;
+      font-size: var(--font-size--2xs);
+    }
+
+    &.justify-end ,
+    &.items-end {
+      --text-align: right;
+    }
+
+    &.justify-center ,
+    &.items-center {
+      --text-align: center;
+    }
+
+    &.justify-start ,
+    &.items-start {
+      --text-align: left;
     }
   }
 
@@ -247,7 +356,7 @@
     color: var(--color-foreground);
   }
 
-  .resource-card__title {
+  .resource-card__title > *{
     margin-block: 0;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -308,12 +417,13 @@
   }
 
   .resource-card__subtext.paragraph {
-    font-size: var(--font-size--paragraph-sm);
+    font-size: var(--font-size--2xs);
     line-height: var(--line-height--body-tight);
     color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+    margin-block-end: 0;
   }
 
-  .resource-card:has(.resource-card__image--secondary) {
+  .resource-card:not(.resource-card--product):has(.resource-card__image--secondary) {
     &:hover,
     &:focus {
       --resource-card-secondary-image-opacity: 1;

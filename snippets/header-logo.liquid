@@ -1,31 +1,111 @@
+{%- liquid
+  assign sec_stts = section.settings
+
+  assign use_inverse_logo = false
+
+  if sec_stts.enable_transparent_header_home and template.name == 'index' and sec_stts.home_color_scheme == 'inverse'
+    assign use_inverse_logo = true
+  elsif sec_stts.enable_transparent_header_product and template.name == 'product' and sec_stts.product_color_scheme == 'inverse'
+    assign use_inverse_logo = true
+  elsif sec_stts.enable_transparent_header_collection and template.name == 'collection' and sec_stts.collection_color_scheme == 'inverse'
+    assign use_inverse_logo = true
+  endif
+
+  if use_inverse_logo
+    if settings.logo_inverse != blank
+      assign inverse_logo = settings.logo_inverse
+    else
+      assign inverse_logo = settings.logo
+    endif
+  endif
+
+  assign logo_height = sec_stts.logo_width | divided_by: settings.logo.aspect_ratio | ceil
+  assign logo_height_mobile = sec_stts.logo_width_mobile | divided_by: settings.logo.aspect_ratio | ceil
+
+  assign inverse_logo_height = sec_stts.logo_width | divided_by: inverse_logo.aspect_ratio | ceil
+  assign inverse_logo_height_mobile = sec_stts.logo_width_mobile | divided_by: inverse_logo.aspect_ratio | ceil
+
+  assign logo_style = '--header-logo-image-width: ' | append: sec_stts.logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: sec_stts.logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: logo_height_mobile | append: 'px;'
+
+  assign inverse_logo_style = '--header-logo-image-width: ' | append: sec_stts.logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: sec_stts.logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: inverse_logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: inverse_logo_height_mobile | append: 'px;'
+-%}
 <div
-  class="header-block header-logo grid__item block {{ class }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+  class="
+    header-block header-logo grid__item block {{ class }}
+    {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}
+  "
 >
   {%- if request.page_type == 'index' -%}
     <h1 class="header__heading">
   {%- endif -%}
-    <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset" data-logo-page>
-      {%- if settings.logo != blank -%}
-        <div class="header__heading-logo-wrapper w-full inline-block">
-          {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
-          {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
-          {% capture sizes %}(max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px{% endcapture %}
-          {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
-          {{ settings.logo | image_url: width: 600 | image_tag:
+  <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset" data-logo-page>
+    <div class="header__heading-logo-wrapper w-full inline-block">
+      {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
+      {% capture sizes %}(max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ section.settings.logo_width }}px{% endcapture %}
+      {% capture widths %}{{ section.settings.logo_width }}, {{ section.settings.logo_width | times: 1.5 | round }}, {{ section.settings.logo_width | times: 2 }}{% endcapture %}
+
+      {%- capture text_fallback -%}
+        <span class="h2">{{ shop.name }}</span>
+      {%- endcapture -%}
+
+      <span
+        class="header-logo__image-container header-logo__image-container--original"
+        data-testid="header-logo"
+      >
+        {% render 'image',
+          image: settings.logo,
+          class: 'header__heading-logo motion-reduce',
+          widths: widths,
+          height: logo_height,
+          width: section.settings.logo_width,
+          text_fallback: text_fallback,
+          alt: logo_alt,
+          sizes: sizes,
+          style: logo_style,
+          fetch_priority: 'high'
+        %}
+      </span>
+
+      {% if use_inverse_logo %}
+        <span
+          class="header-logo__image-container header-logo__image-container--inverse"
+          data-testid="header-logo-inverse"
+        >
+          {% render 'image',
+            image: inverse_logo,
             class: 'header__heading-logo motion-reduce',
             widths: widths,
             height: logo_height,
-            width: settings.logo_width,
+            width: section.settings.logo_width,
+            text_fallback: text_fallback,
             alt: logo_alt,
             sizes: sizes,
-            preload: true
-          }}
-        </div>
-      {%- else -%}
-        <span class="h2">{{ shop.name }}</span>
-      {%- endif -%}
-    </a>
+            style: inverse_logo_style
+          %}
+        </span>
+      {% endif %}
+    </div>
+  </a>
   {%- if request.page_type == 'index' -%}
     </h1>
   {%- endif -%}
 </div>
+
+{%- stylesheet -%}
+  .header__heading-logo {
+    width: var(--header-logo-image-width);
+    height: var(--header-logo-image-height);
+    @media screen and (max-width: 749px) {
+      width: var(--header-logo-image-width-mobile);
+      height: var(--header-logo-image-height-mobile);
+    }
+  }
+
+  .header-logo:has(.header-logo__image-container--inverse) .header-logo__image-container--original {
+    display: var(--header-logo-display, block);
+  }
+
+  .header-logo__image-container--inverse {
+    display: var(--header-logo-inverse-display, none);
+  }
+{%- endstylesheet -%}

@@ -9,7 +9,7 @@
   <details id="Details-HeaderMenu-{{ forloopIndex }}" class="details--dropdown dropdown-menu" is="dropdown-details" activate-event="hover">
     <summary
       id="HeaderMenu-{{ link.handle }}"
-      class="details__summary header__menu-item list-menu__item link focus-inset"
+      class="details__summary header__menu-item list-menu__item link focus-inset link--hover-underline"
     >
       <span
         {%- if link.child_active %}
@@ -18,9 +18,11 @@
       >
         {{- link.title | escape -}}
       </span>
-      <span class="svg-wrapper">
-        {{- 'icon-caret.svg' | inline_asset_content -}}
-      </span>
+      {% if icon_type == 'caret' %}
+        <span class="svg-wrapper">
+            {{- 'icon-caret.svg' | inline_asset_content -}}
+          </span>
+      {% endif %}
     </summary>
     <ul
       id="HeaderMenu-MenuList-{{ forloopIndex }}"
@@ -34,7 +36,7 @@
             <a
               id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
               href="{{ childlink.url }}"
-              class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if childlink.current %} list-menu__item--active{% endif %}"
+              class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline caption-large{% if childlink.current %} list-menu__item--active{% endif %}"
               {% if childlink.current %}
                 aria-current="page"
               {% endif %}
@@ -48,9 +50,11 @@
                 class="details__summary header__menu-item link link--text list-menu__item focus-inset caption-large"
               >
                 <span>{{ childlink.title | escape }}</span>
-                <span class="svg-wrapper">
-                  {{- 'icon-caret.svg' | inline_asset_content -}}
-                </span>
+                {% if icon_type == 'caret' %}
+                  <span class="svg-wrapper">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                {% endif %}
               </summary>
               <ul
                 id="HeaderMenu-SubMenuList-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
@@ -61,7 +65,7 @@
                     <a
                       id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
                       href="{{ grandchildlink.url }}"
-                      class="header__menu-item list-menu__item link link--text focus-inset caption-large{% if grandchildlink.current %} list-menu__item--active{% endif %}"
+                      class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline caption-large{% if grandchildlink.current %} list-menu__item--active{% endif %}"
                       {% if grandchildlink.current %}
                         aria-current="page"
                       {% endif %}

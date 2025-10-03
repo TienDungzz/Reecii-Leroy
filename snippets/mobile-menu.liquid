@@ -1,0 +1,28 @@
+{% comment %}
+  Renders a mobile menu.
+
+  Accepts:
+  - header_settings: {Object}
+  - blocks: {Array}
+
+  Usage:
+  {% render 'mobile-menu', header_settings: header_settings, blocks: blocks %}
+{% endcomment %}
+
+<side-drawer-opener
+  class="header__icon header__icon--menu header__icon--summary flex items-center justify-center lg:none"
+  data-side-drawer="#Drawer-Menu"
+>
+  <button
+    class="t-button bor-none cursor-pointer p-0 w-full h-full color-foreground bg-transparent focus-inset"
+    type="button"
+    aria-haspopup="dialog"
+    aria-label="{{ 'sections.header.menu' | t }}"
+  >
+    <span>
+      {{- 'icon-hamburger.svg' | inline_asset_content -}}
+    </span>
+  </button>
+</side-drawer-opener>
+
+{% render 'header-drawer' %}

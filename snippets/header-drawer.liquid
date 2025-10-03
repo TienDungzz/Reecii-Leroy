@@ -8,23 +8,30 @@
 <link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
 
 {%- liquid
-    if localization.available_countries.size > 1 and block.settings.enable_country_selector or block.settings.enable_language_selector and localization.available_languages.size > 1
-      assign localization_forms = true
-    endif
+  if localization.available_countries.size > 1 and block.settings.enable_country_selector or block.settings.enable_language_selector and localization.available_languages.size > 1
+    assign localization_forms = true
+  endif
 -%}
 
 <side-drawer
-  class="drawer drawer--menu fixed top-0 left-0 z-9 w-screen h-full flex justify-start"
+  class="drawer__container drawer drawer--menu fixed top-0 left-0 w-screen h-full z-9 flex no-js-hidden"
   id="Drawer-Menu"
+  data-drawer-direction="left"
 >
-  <header-drawer class="side-drawer" data-breakpoint="tablet">
-    <div id="Drawer-Overlay-Menu" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-    <div class="drawer__inner d-flex flex-column h-full" role="dialog" aria-modal="true" aria-label="{{ 'content.menu' | t }}" tabindex="-1">
+  <div id="Drawer-Overlay-Menu" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
+  <header-drawer class="side-drawer" data-drawer-content data-breakpoint="tablet">
+    <div
+      class="drawer__inner d-flex flex-column h-full"
+      role="dialog"
+      aria-modal="true"
+      aria-label="{{ 'sections.header.menu' | t }}"
+      tabindex="-1"
+    >
       <div class="drawer__header flex justify-end items-center relative" style="--p: 1.5rem 0;">
-        <button 
-          class="drawer__close block t-button bor-none rounded-full cursor-pointer" 
-          type="button" 
-          onclick="this.closest('side-drawer').close()" 
+        <button
+          class="drawer__close block t-button bor-none rounded-full cursor-pointer"
+          type="button"
+          onclick="this.closest('side-drawer').close()"
           aria-label="{{ 'accessibility.close_dialog' | t }}"
           style="--top: 0.3rem; --right: 0.3rem;"
         >
@@ -69,9 +76,11 @@
                                 id="Goto-HeaderDrawer-{{ link.handle }}"
                                 href="{{ link.url }}"
                                 class="menu-drawer__menu-item link link--text list-menu__item focus-inset link--go-to"
-                                {% if childlink.current %} aria-current="page"{% endif %}
+                                {% if childlink.current %}
+                                  aria-current="page"
+                                {% endif %}
                               >
-                                {{ 'content.go_to' | t: name: link.title | escape }}
+                                {{ 'sections.header.go_to' | t: name: link.title | escape }}
                               </a>
                             </li>
                             {%- for childlink in link.links -%}
@@ -124,9 +133,11 @@
                                             id="Goto-HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
                                             href="{{ childlink.url }}"
                                             class="menu-drawer__menu-item link link--text list-menu__item focus-inset link--go-to"
-                                            {% if grandchildlink.current %} aria-current="page"{% endif %}
+                                            {% if grandchildlink.current %}
+                                              aria-current="page"
+                                            {% endif %}
                                           >
-                                            {{ 'content.go_to' | t: name: childlink.title | escape }}
+                                            {{ 'sections.header.go_to' | t: name: childlink.title | escape }}
                                           </a>
                                         </li>
                                         {%- for grandchildlink in childlink.links -%}
@@ -207,7 +218,7 @@
                     {%- form 'localization', id: 'HeaderCountryMobileForm', class: 'localization-form' -%}
                       <div>
                         <h2 class="visually-hidden" id="HeaderCountryMobileLabel">
-                          {{ 'content.country_label' | t }}
+                          {{ 'localization.country_label' | t }}
                         </h2>
                         {%- render 'country-localization', localPosition: 'HeaderCountryMobile' -%}
                       </div>
@@ -220,7 +231,7 @@
                     {%- form 'localization', id: 'HeaderLanguageMobileForm', class: 'localization-form' -%}
                       <div>
                         <h2 class="visually-hidden" id="HeaderLanguageMobileLabel">
-                          {{ 'content.language_label' | t }}
+                          {{ 'localization.language_label' | t }}
                         </h2>
                         {%- render 'language-localization', localPosition: 'HeaderLanguageMobile' -%}
                       </div>

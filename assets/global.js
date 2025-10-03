@@ -39,6 +39,33 @@ function headerHeight() {
     //     slide.style.paddingTop = headerHeightSlideshow;
     //   })
     // }
+
+  const stickyHeader = header.closest('sticky-header');
+  if (stickyHeader) {
+
+    header.addEventListener("mouseenter", function () {
+      const newHeight = header.offsetHeight - 1 + "px";
+
+      if (listMenuWrapper && listMenuWrapper.length) {
+        listMenuWrapper.forEach((summary) => {
+          summary.style.setProperty("--top-position", newHeight);
+        });
+      }
+    });
+    header.addEventListener("mouseleave", function () {
+      // Optionally, reset --top-position to its original value if needed
+      const newHeight = header.offsetHeight - 1 + "px";
+      if (sectionHeader > 52) {
+        listMenuWrapper.forEach((summary) => {
+          summary.style.setProperty("--top-position", "auto");
+        });
+      } else {
+        listMenuWrapper.forEach((summary) => {
+          summary.style.setProperty("--top-position", newHeight);
+        });
+      }
+    });
+  }
   }
 }
 
@@ -3526,7 +3553,7 @@ class StickyATC extends HTMLElement {
     const observer = new IntersectionObserver(this.onScroll.bind(this));
     observer.observe(this.form);
     // observer.observe(this.footer);
-    
+
   }
 
   onScroll(entries) {
