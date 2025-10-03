@@ -46,8 +46,14 @@ class CartRemoveButton extends HTMLElement {
       event.preventDefault();
       const cartItemsComponent = this.closest('cart-items-component') || this.closest('cart-drawer-items');
       const lineIndex = this.dataset.index;
+      const tableRow = this.closest('.cart-items__table-row');
 
-      cartItemsComponent.updateQuantity(lineIndex, 0, event);
+      console.log(tableRow);
+
+      setTimeout(() => {
+        if (tableRow) tableRow.classList.add('removing');
+        cartItemsComponent.updateQuantity(lineIndex, 0, event);
+      });
     });
   }
 }
@@ -169,8 +175,24 @@ class CartItemsComponent extends HTMLElement {
         .then((response) => response.text())
         .then((responseText) => {
           const html = new DOMParser().parseFromString(responseText, 'text/html');
-          const sourceQty = html.querySelector('cart-items-component');
-          this.innerHTML = sourceQty.innerHTML;
+          const sourceComponent = html.querySelector('cart-items-component .section--page-width');
+          if (sourceComponent) {
+            Array.from(sourceComponent.children).forEach(child => {
+              console.log(child);
+              if (!child.classList.contains('cart-page__message') && !child.classList.contains('cart-page__shipping')) {
+                let target;
+                if (child.id) {
+                  target = this.querySelector(`#${child.id}`);
+                }
+                if (!target && child.classList.length > 0) {
+                  target = this.querySelector(`.${child.classList[0]}`);
+                }
+                if (target) {
+                  target.replaceWith(child.cloneNode(true));
+                }
+              }
+            });
+          }
         })
         .catch((e) => {
           console.error(e);
@@ -296,6 +318,8 @@ class CartItemsComponent extends HTMLElement {
         CartPerformance.measureFromEvent(`${eventTarget}:user-action`, event);
 
         publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cartData: parsedState, variantId: variantId });
+
+        document.dispatchEvent(new CustomEvent('cart:updated', { detail: state }));
       })
       .catch(() => {
         this.querySelectorAll('.loading__spinner').forEach((overlay) => overlay.classList.add('hidden'));
@@ -344,14 +368,11 @@ class CartItemsComponent extends HTMLElement {
       mainCartItems.classList.add('cart__items--disabled');
     }
 
-    const loadingSpinner = this.querySelector(`.cart-drawer__loading-spinner`);
-    const cartItemElements = this.querySelectorAll(`#CartItem-${line} .loading__spinner`);
+    const loadingSpinner = this.querySelectorAll(`#CartItem-${line} .loading__spinner`);
     const cartDrawerItemElements = this.querySelectorAll(`#CartDrawer-Item-${line} .loading__spinner`);
 
     this.classList.add('loading');
-    [...cartItemElements, ...cartDrawerItemElements].forEach((overlay) => overlay.classList.remove('hidden'));
-
-    loadingSpinner.classList.remove('hidden');
+    [...loadingSpinner, ...cartDrawerItemElements].forEach((overlay) => overlay.classList.remove('hidden'));
 
     document.activeElement.blur();
     if (this.lineItemStatusElement) {
@@ -365,15 +386,12 @@ class CartItemsComponent extends HTMLElement {
       mainCartItems.classList.remove('cart__items--disabled');
     }
 
-    const loadingSpinner = this.querySelector(`.cart-drawer__loading-spinner`);
-    const cartItemElements = this.querySelectorAll(`#CartItem-${line} .loading__spinner`);
+    const loadingSpinner = this.querySelectorAll(`#CartItem-${line} .loading__spinner`);
     const cartDrawerItemElements = this.querySelectorAll(`#CartDrawer-Item-${line} .loading__spinner`);
 
     this.classList.remove('loading');
-    cartItemElements.forEach((overlay) => overlay.classList.add('hidden'));
+    loadingSpinner.forEach((overlay) => overlay.classList.add('hidden'));
     cartDrawerItemElements.forEach((overlay) => overlay.classList.add('hidden'));
-
-    loadingSpinner.classList.add('hidden');
   }
 }
 if (!customElements.get('cart-items-component')) customElements.define('cart-items-component', CartItemsComponent);

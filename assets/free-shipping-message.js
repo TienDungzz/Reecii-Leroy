@@ -1,4 +1,4 @@
-class FreeShippingMeter extends HTMLElement {
+class FreeShippingComponent extends HTMLElement {
     constructor() {
         super();
     }
@@ -11,7 +11,7 @@ class FreeShippingMeter extends HTMLElement {
     static classLabel1 = 'progress-30';
     static classLabel2 = 'progress-60';
     static classLabel3 = 'progress-100';
-    static freeshipPrice = parseInt(window.free_shipping_price);
+    static freeShippingPrice = parseInt(window.free_shipping_price);
 
     connectedCallback() {
         this.freeShippingEligible = 0;
@@ -21,7 +21,9 @@ class FreeShippingMeter extends HTMLElement {
         this.shipVal = window.free_shipping_text.free_shipping_1;
         this.progressMeter = this.querySelector('[ data-free-shipping-progress-meter]');
 
-        this.addEventListener('change', this.onCartChange.bind(this));
+        // this.addEventListener('change', this.onCartChange.bind(this));
+
+        document.addEventListener('cart:updated', () => this.initialize());
 
         this.initialize();
     }
@@ -58,7 +60,7 @@ class FreeShippingMeter extends HTMLElement {
         const cartTotalPriceFormatted = cartTotalPrice.toFixed(2);
         const cartTotalPriceRounded = parseFloat(cartTotalPriceFormatted);
     
-        let freeShipBar = Math.abs((cartTotalPriceRounded * 100) / FreeShippingMeter.freeshipPrice);
+        let freeShipBar = Math.abs((cartTotalPriceRounded * 100) / FreeShippingComponent.freeShippingPrice);
         if (freeShipBar >= 100) {
             freeShipBar = 100;
         }
@@ -74,15 +76,15 @@ class FreeShippingMeter extends HTMLElement {
 
         if (cartTotalPrice == 0) {
             this.progressBar.classList.add('progress-hidden');
-            text = '<span>' + FreeShippingMeter.freeShippingText + ' ' + Shopify.formatMoney(FreeShippingMeter.freeshipPrice * 100, window.money_format) +'!</span>';
-        } else if (cartTotalPrice >= FreeShippingMeter.freeshipPrice) {
+            text = '<span>' + FreeShippingComponent.freeShippingText + ' ' + Shopify.formatMoney(FreeShippingComponent.freeShippingPrice * 100, window.money_format) +'!</span>';
+        } else if (cartTotalPrice >= FreeShippingComponent.freeShippingPrice) {
             this.progressBar.classList.remove('progress-hidden');
             this.freeShippingEligible = 1;
-            text = FreeShippingMeter.freeShippingText1;
+            text = FreeShippingComponent.freeShippingText1;
         } else {
             this.progressBar.classList.remove('progress-hidden');
-            const remainingPrice = Math.abs(FreeShippingMeter.freeshipPrice - cartTotalPrice);
-            text = '<span>' + FreeShippingMeter.freeShippingText2 + ' </span>' + Shopify.formatMoney(remainingPrice * 100, window.money_format) + '<span> ' +  FreeShippingMeter.freeShippingText3 + ' </span><span class="text">' + FreeShippingMeter.freeShippingText4 + '</span>';
+            const remainingPrice = Math.abs(FreeShippingComponent.freeShippingPrice - cartTotalPrice);
+            text = '<span>' + FreeShippingComponent.freeShippingText2 + ' </span>' + Shopify.formatMoney(remainingPrice * 100, window.money_format) + '<span> ' +  FreeShippingComponent.freeShippingText3 + ' </span><span class="text">' + FreeShippingComponent.freeShippingText4 + '</span>';
             this.shipVal = window.free_shipping_text.free_shipping_2;
         }
 
@@ -95,11 +97,11 @@ class FreeShippingMeter extends HTMLElement {
         if (freeShipBar === 0) {
             classLabel = 'none';
         } else if (freeShipBar <= 30) {
-            classLabel = FreeShippingMeter.classLabel1;
+            classLabel = FreeShippingComponent.classLabel1;
         } else  if (freeShipBar <= 60) {
-            classLabel = FreeShippingMeter.classLabel2;
+            classLabel = FreeShippingComponent.classLabel2;
         } else if (freeShipBar < 100) {
-            classLabel = FreeShippingMeter.classLabel3;
+            classLabel = FreeShippingComponent.classLabel3;
         } else {
             classLabel = 'progress-free'
         }
@@ -128,19 +130,11 @@ class FreeShippingMeter extends HTMLElement {
             }
     
             this.messageElement.innerHTML = text;
-    
-            const dropdownItems = document.querySelectorAll('.dropdown-item[data-currency]');
-            if (dropdownItems.length) {
-                const activeCurrencyElement = document.querySelector('#currencies .active');
-                if (activeCurrencyElement && (window.show_multiple_currencies && typeof Currency !== 'undefined' && Currency.currentCurrency !== shopCurrency) || window.show_auto_currency) {
-                    Currency.convertAll(window.shop_currency, activeCurrencyElement.getAttribute('data-currency'), 'span.money', 'money_format');
-                }
-            }
         }, 400);
     }
     
 }
 
 window.addEventListener('load', () => {
-    customElements.define('free-shipping-component', FreeShippingMeter);
+    customElements.define('free-shipping-component', FreeShippingComponent);
 })

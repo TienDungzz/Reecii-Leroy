@@ -3678,25 +3678,9 @@ function updateSidebarCart(cart) {
           cartDropdown.classList.remove(loadingClass);
           cartDropdown.innerHTML = data;
         }
-        if (typeof halo !== 'undefined' && typeof halo.dispatchChangeForShippingMessage === 'function') {
-          halo.dispatchChangeForShippingMessage();
-        }
       })
       .catch(function(error) {
-        if (typeof halo !== 'undefined' && typeof halo.showWarning === 'function') {
-          if (error && error.text) {
-            error.text().then(function(text) {
-              try {
-                var desc = JSON.parse(text).description;
-                halo.showWarning(desc);
-              } catch (e) {
-                halo.showWarning('Error loading cart.');
-              }
-            });
-          } else {
-            halo.showWarning('Error loading cart.');
-          }
-        }
+        console.error(error);
       })
       .finally(function() {
         // Update cart count and text
@@ -3721,24 +3705,6 @@ function updateSidebarCart(cart) {
             el.textContent = window.cartStrings.items;
           }
         });
-
-        if (typeof halo !== 'undefined') {
-          if (typeof halo.productCollectionCartSlider === 'function') {
-            halo.productCollectionCartSlider();
-          }
-          if (typeof halo.updateGiftWrapper === 'function') {
-            halo.updateGiftWrapper();
-          }
-          if (typeof halo.checkNeedToConvertCurrency === 'function' && halo.checkNeedToConvertCurrency()) {
-            if (typeof Currency !== 'undefined' && typeof Currency.convertAll === 'function') {
-              var activeCurrency = document.querySelector('#currencies .active');
-              var currencyCode = activeCurrency ? activeCurrency.getAttribute('data-currency') : null;
-              if (currencyCode) {
-                Currency.convertAll(window.shop_currency, currencyCode, 'span.money', 'money_format');
-              }
-            }
-          }
-        }
 
         document.dispatchEvent(new CustomEvent('cart-update', { detail: cart }));
 

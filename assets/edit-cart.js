@@ -72,28 +72,12 @@ class EditCart extends HTMLElement {
             if (minusBtn) minusBtn.classList.remove('disabled');
           }
         })
-        .catch(err => {
-          if (window.halo && window.halo.showWarning) {
-            window.halo.showWarning('Error loading edit cart.');
-          }
+        .catch((e) => {
+          console.error(e);
         })
         .finally(() => {
           const modal = document.querySelector(openBtn.getAttribute('data-modal'));
           if (modal) modal.show(openBtn);
-
-          if (window.halo && window.halo.checkNeedToConvertCurrency && window.Currency) {
-            if (window.halo.checkNeedToConvertCurrency()) {
-              const activeCurrency = document.querySelector('#currencies .active');
-              if (activeCurrency) {
-                window.Currency.convertAll(
-                  window.shop_currency,
-                  activeCurrency.getAttribute('data-currency'),
-                  'span.money',
-                  'money_format'
-                );
-              }
-            }
-          }
         });
     }
   }

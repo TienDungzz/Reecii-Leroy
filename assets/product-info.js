@@ -293,6 +293,8 @@ if (!customElements.get('product-info')) {
       }
 
       updateVariantStatuses(target) {
+        if (!this.variantData) return;
+
         const selectedOptionOneVariants1 = this.variantData.filter(variant => this.querySelectorAll(':checked')[0]?.value === variant.option1);
         const selectedOptionOneVariants2 = this.variantData.filter(variant => this.querySelectorAll(':checked')[1]?.value === variant.option2);
         const selectedOptionOneVariants3 = this.variantData.filter(variant => this.querySelectorAll(':checked')[2]?.value === variant.option3);
@@ -342,7 +344,10 @@ if (!customElements.get('product-info')) {
       }
 
       getVariantData() {
-        this.variantData = this.variantData || JSON.parse(document.querySelector('.step-by-step-variant-picker [data-all-variants]').textContent);
+        const variantStepByStep = document.querySelector('.step-by-step-variant-picker [data-all-variants]');
+        if (!variantStepByStep) return;
+        
+        this.variantData = this.variantData || JSON.parse(variantStepByStep.textContent);
         return this.variantData;
       }
 
