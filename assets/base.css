@@ -1883,7 +1883,7 @@ summary {
     transition: transform var(--duration-medium) ease-out;
   } */
 
-  .svg-wrapper {
+  & .svg-wrapper {
     margin-inline-start: auto;
     height: var(--icon-size-xs);
     width: var(--icon-size-xs);
@@ -1908,7 +1908,6 @@ details {
 summary {
   display: flex;
   align-items: center;
-  /* gap: 1.5rem; */
   gap: var(--margin-lg);
   position: relative;
   padding-block: 1.5rem;
@@ -1916,20 +1915,39 @@ summary {
   cursor: pointer;
   list-style: none;
 
-  &:hover {
-    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-4));
+  @media screen and (min-width: 1025px) {
+    &:hover {
+      background-color: rgb(var(--color-foreground-rgb) / var(--opacity-4));
+    }
   }
-
-  /* > .svg-wrapper {
-    margin-inline-start: auto;
-    height: 0.6rem;
-    margin-right: 1.5rem;
-  } */
 }
 
 /* details[open]>summary .icon-caret { */ /* khinh fix bug */
 details[open="true"]>summary .icon-caret {
   transform: rotate(180deg);
+}
+
+/* hyun fix bug */
+details[open] > summary .icon-caret-wrapper {
+  transform: rotateX(180deg);
+}
+
+summary .icon-plus-wrapper :is(.horizontal, .vertical) {
+  transition: transform var(--animation-speed) var(--animation-easing);
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+  opacity: 1;
+}
+
+details[open] > summary .icon-plus-wrapper {
+  & .horizontal {
+    transform: rotate(90deg);
+  }
+
+  & .vertical {
+    transform: rotate(90deg);
+    opacity: 0;
+  }
 }
 
 @media screen and (max-width: 749px) {
