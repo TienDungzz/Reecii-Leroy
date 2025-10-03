@@ -17,7 +17,7 @@
 <div
     class="
         accordion accordion--{{ block.id }} accordion--{{ bl_stts.icon }} border-style spacing-style
-        {% if bl_stts.inherit_color_scheme == false %} color-{{ bl_stts.color_scheme }}{% endif %}
+        {% if bl_stts.inherit_color_scheme == false %} color-scheme-custom{% endif %}
         {% if bl_stts.dividers %} accordion--dividers{% endif %}
         {% if fallback_title != blank %} filter-faqs-item{% endif %}
     "
@@ -33,6 +33,9 @@
         --summary-font-case: var(--font-{{ bl_stts.type_preset_heading }}--case);
         {% render 'spacing-style', settings: bl_stts %}
         {% render 'border-override', settings: bl_stts %}
+        {% if bl_stts.inherit_color_scheme == false %}
+            {% render 'color-scheme-style', settings: bl_stts %}
+        {% endif %}
     "
     {{ block.shopify_attributes }}
 >

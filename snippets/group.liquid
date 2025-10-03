@@ -58,8 +58,9 @@
     spacing-style
     size-style
     shadow-style
-    {% if settings.content_overlay %} group-block--content-overlay{% endif %}
-    {% if settings.inherit_color_scheme == false %} color-{{ settings.color_scheme }}{% endif %}
+    {% if settings.content_overlay %}group-block--content-overlay{% endif %}
+    {% if settings.inherit_color_scheme == false %}color-{{ settings.color_scheme }}{% endif %}
+    {% if settings.inherit_color_scheme == false %}color-scheme-custom{% endif %}
     {{ class }}
   "
   style="
@@ -67,6 +68,9 @@
     {% render 'spacing-style', settings: settings %}
     {% render 'size-style', settings: settings %}
     {% render 'shadow-style', settings: settings %}
+    {% if settings.inherit_color_scheme == false %}
+      {% render 'color-scheme-style', settings: settings %}
+    {% endif %}
     {{ style }}
   "
   {{ attributes }}

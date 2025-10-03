@@ -35,12 +35,15 @@
     {% if block_settings.placement == 'on_image' %}collection-card--image-bg{% endif %}
     {% if section.settings.layout_type == 'bento' %}collection-card--image-height-fixed{% endif %}
     {% if section.settings.layout_type == 'editorial' %}collection-card--flexible-aspect-ratio{% endif %}
-    {% if block_settings.inherit_color_scheme == false %} color-{{ block_settings.color_scheme }}{% endif %}
+    {% if block_settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}
   "
   data-block-id="{{ block.id }}"
   style="
     {% render 'spacing-style', settings: block_settings %}
     {% render 'border-override', settings: block_settings %}
+    {% if block_settings.inherit_color_scheme == false %}
+      {% render 'color-scheme-style', settings: block_settings %}
+    {% endif %}
     --horizontal-alignment: {{ block_settings.horizontal_alignment }};
     --vertical-alignment: {{ block_settings.vertical_alignment }};
     --background-overlay-color: {{ block_settings.overlay_color }};
