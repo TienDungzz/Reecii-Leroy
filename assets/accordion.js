@@ -44,6 +44,7 @@ class AccordionCustom extends HTMLElement {
   }
 
   async transition(value) {
+    this.style.overflow = 'hidden';
     if (value) {
       this.details.setAttribute("open", "");
       await Motion.timeline([
@@ -56,7 +57,7 @@ class AccordionCustom extends HTMLElement {
               ? `${this.summaryElement.clientHeight}px`
               : [
               `${this.summaryElement.clientHeight}px`,
-              `${this.summaryElement.clientHeight + this.contentElement.scrollHeight}px`,
+              `${this.scrollHeight}px`,
             ],
           },
           { duration: 0.25, easing: "ease" },
@@ -65,7 +66,6 @@ class AccordionCustom extends HTMLElement {
           this.contentElement,
           {
             opacity: [0, 1],
-            height: [ 0, `${this.contentElement.scrollHeight}px`],
             transform: ["translateY(10px)", "translateY(0)"],
           },
           { duration: 0.15, at: "-0.1" },
@@ -75,12 +75,12 @@ class AccordionCustom extends HTMLElement {
       this.summary.focus();
 
       await Motion.timeline([
-        [this.contentElement, { opacity: 0, height: 0 }, { duration: 0.15 }],
+        [this.contentElement, { opacity: 0 }, { duration: 0.15 }],
         [
           this.details,
           {
             height: [
-              `${this.details.clientHeight}px`,
+              `${this.clientHeight}px`,
               `${this.summaryElement.clientHeight}px`,
             ],
           },
@@ -90,9 +90,8 @@ class AccordionCustom extends HTMLElement {
 
       this.details.removeAttribute("open");
     }
-
-    console.log(' summary height', this.summaryElement.clientHeight);
-    console.log(' content height', this.contentElement, this.contentElement.scrollHeight, this.contentElement.offsetHeight, this.contentElement.clientHeight);
+    this.details.style.height = 'auto';
+    this.details.style.overflow = 'visible';
   }
 
   #controller = new AbortController();
@@ -135,6 +134,8 @@ class AccordionCustom extends HTMLElement {
     // Toggle the accordion with transition
     const isOpen = this.details.hasAttribute('open');
     await this.transition(!isOpen);
+    
+    console.log('test isOpen', isOpen);
   };
 
   /**

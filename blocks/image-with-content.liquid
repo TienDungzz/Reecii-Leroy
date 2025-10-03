@@ -55,21 +55,22 @@
 
 <div
   class="
-    image-with-content-block flex spacing-style
+    image-with-content-block flex
+    spacing-style
     layout-panel-flex
     layout-panel-flex--row
+    section-content-wrapper
     mobile-row
     {% if bl_stts.width == '100%' %}text-block--align-{{ bl_stts.alignment }}{% endif %}
     {% if bl_stts.icon_position == 'icon-left' %}justify-start{% else %}justify-end{% endif %}
   "
   style="
+    {% render 'layout-panel-style', settings: bl_stts, scale_min: 8 %}
     {% render 'spacing-style', settings: bl_stts %}
     --width: {{ bl_stts.width }};
     {% if bl_stts.width == "100%" %}
       --text-align: {{ bl_stts.alignment }};
     {% endif %}
-    --gap-x: {{ bl_stts.gap }}px;
-    {% render 'layout-panel-style', settings: bl_stts, custom_content_direction: 'row', scale_min: 8 %}
   "
   {{ block.shopify_attributes }}
 >
@@ -112,6 +113,137 @@
   "name": "Image with content",
   "tag": null,
   "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+		{
+			"type": "select",
+			"id": "content_direction",
+			"label": "t:settings.direction",
+			"options": [
+				{
+					"value": "row",
+					"label": "t:options.horizontal"
+				}
+			],
+			"default": "row",
+      "visible_if": "{{ block.settings.horizontal_alignment == 'fake-value' }}"
+		},
+		{
+			"type": "select",
+			"id": "content_direction_mobile",
+			"label": "t:settings.direction_on_mobile",
+			"options": [
+				{
+					"value": "row",
+					"label": "t:options.horizontal"
+				}
+			],
+			"default": "row",
+      "visible_if": "{{ block.settings.horizontal_alignment_mobile == 'fake-value' }}"
+		},
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_mobile",
+      "label": "Mobile alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "align_baseline",
+      "label": "t:settings.align_baseline",
+      "default": false,
+      "visible_if": "{{ block.settings.vertical_alignment == 'flex-end' }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "icon_position",
+      "label": "Icon position",
+      "options": [
+        {
+          "value": "icon-left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "icon-right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "icon-left"
+    },
     {
       "type": "header",
       "content": "Icon"
@@ -551,111 +683,6 @@
       "label": "t:settings.alignment",
       "default": "left",
       "visible_if": "{{ block.settings.width == '100%' }}"
-    },
-    {
-      "type": "header",
-      "content": "t:content.layout"
-    },
-    {
-      "type": "select",
-      "id": "horizontal_alignment",
-      "label": "t:settings.alignment",
-      "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.left"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.right"
-        },
-        {
-          "value": "space-between",
-          "label": "t:options.space_between"
-        }
-      ],
-      "default": "flex-start"
-    },
-    {
-      "type": "select",
-      "id": "horizontal_alignment_mobile",
-      "label": "Mobile alignment",
-      "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.left"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.right"
-        },
-        {
-          "value": "space-between",
-          "label": "t:options.space_between"
-        }
-      ],
-      "default": "flex-start"
-    },
-    {
-      "type": "select",
-      "id": "vertical_alignment",
-      "label": "t:settings.position",
-      "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.top"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.bottom"
-        }
-      ],
-      "default": "center"
-    },
-    {
-      "type": "checkbox",
-      "id": "align_baseline",
-      "label": "t:settings.align_baseline",
-      "default": false,
-      "visible_if": "{{ block.settings.vertical_alignment == 'flex-end' }}"
-    },
-    {
-      "type": "range",
-      "id": "gap",
-      "label": "t:settings.gap",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 4
-    },
-    {
-      "type": "select",
-      "id": "icon_position",
-      "label": "Icon position",
-      "options": [
-        {
-          "value": "icon-left",
-          "label": "t:options.left"
-        },
-        {
-          "value": "icon-right",
-          "label": "t:options.right"
-        }
-      ],
-      "default": "icon-left"
     },
     {
       "type": "header",
