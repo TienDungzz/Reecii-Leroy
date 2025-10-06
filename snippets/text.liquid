@@ -31,6 +31,7 @@
   assign text_width = width | default: bl_stts.width
   assign text_width_tablet = width_tablet | default: bl_stts.width_tablet
   assign text_width_mobile = width_mobile | default: bl_stts.width_mobile
+  assign is_card_heading = is_card_heading | default: bl_stts.is_card_heading
 
   if text == blank
     assign text = fallback_text | default: bl_stts.text
@@ -148,6 +149,7 @@
     {% if has_heading_border %} {{ heading_border_classes }}{% endif %}
     {% if enable_border_bottom %} border-style text-border-style-bottom{% endif %}
     {% if has_border %} border-style{% endif %}
+    {% if is_card_title_custom_width %} card-title-custom-width{% endif %}
   "
   style="
     {% render 'size-style', settings: bl_stts %}

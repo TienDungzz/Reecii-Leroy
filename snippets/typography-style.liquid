@@ -15,6 +15,7 @@
   assign wrap = wrap | default: settings.wrap
   assign letter_spacing = letter_spacing | default: settings.letter_spacing
   assign color = color | default: settings.color
+  assign button_link = button_link | default: settings.button_link
 -%}
 
 {%- capture variables -%}
@@ -72,6 +73,10 @@
       --line-height: var(--line-height--{{ type }}-{{ settings.line_height }});
     {% endif %}
     --letter-spacing: var(--letter-spacing--{{ type }}-{{ letter_spacing }});
+  {%- endif -%}
+  {%- if button_link == true -%}
+    --text-wrap: {{ wrap }};
+    --text-transform: {{ case }};
   {%- endif -%}
 {%- endcapture -%}
 {{- variables | strip | strip_newlines -}}

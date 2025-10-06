@@ -14,6 +14,7 @@
 		if block.settings.navigation == 'arrows-pagination' or block.settings.navigation == 'arrows'
 			assign enable_navigation = true
 		endif
+		assign arrows_position = block.settings.arrows_position
 
 		assign enable_pagination = false
 		if block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination'
@@ -75,7 +76,7 @@
 					</ul>
 
 					{%- if enable_navigation -%}
-						<div class="swiper-btns-wrap small-hide">
+						<div class="swiper-btns-wrap small-hide swiper-btns-wrap--{{ arrows_position }}">
 							{%- render 'swiper-button' -%}
 						</div>
 					{%- endif -%}
@@ -435,6 +436,23 @@
 			"default": "arrows",
 			"visible_if": "{{ block.settings.layout_type == 'carousel' }}"
 		},
+		{
+      "type": "select",
+      "id": "arrows_position",
+      "label": "Arrows position",
+      "options": [
+        {
+          "value": "inside",
+          "label": "Inside slide"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom slide"
+        }
+      ],
+      "default": "inside",
+      "visible_if": "{{ block.settings.navigation == 'arrows' or block.settings.navigation == 'arrows-pagination' and block.settings.layout_type == 'carousel' }}"
+    },
 		{
 			"type": "select",
 			"id": "pagination_type",
