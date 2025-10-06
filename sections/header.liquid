@@ -6,10 +6,10 @@
 {%- liquid
   assign sec_stts = section.settings
 
-  assign order = 'logo,menu,account,search,localization,mobile_search,actions'
+  assign order = 'multi_tab_menu,logo,mobile_logo,menu,message,account,search,localization,mobile_search,actions'
 
   if shop.customer_accounts_enabled
-    assign order = 'mobile_search,logo,menu,account,search,localization,actions'
+    assign order = 'multi_tab_menu,mobile_search,logo,mobile_logo,menu,message,account,search,localization,actions'
   endif
 
   assign rows = 'top,bottom' | split: ','
@@ -75,36 +75,51 @@
   endcapture
 
   if shop.customer_accounts_enabled
-    assign search_class = 'mobile:hidden'
+    assign search_class = 'max-md:hidden'
   endif
 
   capture search
     render 'header-search', style: search_style, input_id: 'Search-In-Modal', class: search_class
   endcapture
 
+  capture multi_tab_menu
+    render 'header-multi-site', settings: sec_stts, blocks: section.blocks
+  endcapture
+
+  capture message
+    render 'header-message', settings: sec_stts, blocks: section.blocks
+  endcapture
+
   # Handle localization positioning
   if sec_stts.localization_position == 'left'
     if sec_stts.search_position == 'left'
       if shop.customer_accounts_enabled
-        assign order = 'mobile_search,logo,account,search,localization,menu,actions'
+        assign order = 'multi_tab_menu,mobile_search,logo,mobile_logo,message,account,search,localization,menu,actions'
       else
-        assign order = 'logo,account,search,localization,menu,mobile_search,actions'
+        assign order = 'multi_tab_menu,logo,mobile_logo,message,account,search,localization,menu,mobile_search,actions'
       endif
     else
       if shop.customer_accounts_enabled
-        assign order = 'mobile_search,logo,menu,account,search,localization,actions'
+        assign order = 'multi_tab_menu,mobile_search,logo,mobile_logo,menu,message,account,search,localization,actions'
       else
-        assign order = 'logo,menu,account,search,localization,mobile_search,actions'
+        assign order = 'multi_tab_menu,logo,mobile_logo,menu,message,account,search,localization,mobile_search,actions'
       endif
     endif
   else
     if sec_stts.search_position == 'left'
       if shop.customer_accounts_enabled
-        assign order = 'mobile_search,logo,account,search,menu,localization,actions'
+        assign order = 'multi_tab_menu,mobile_search,logo,mobile_logo,message,account,search,menu,localization,actions'
       else
-        assign order = 'logo,account,search,menu,localization,mobile_search,actions'
+        assign order = 'multi_tab_menu,logo,mobile_logo,message,account,search,menu,localization,mobile_search,actions'
       endif
     endif
+  endif
+
+  # Handle logo row
+  if sec_stts.logo_row == 'bottom'
+    capture mobile_logo
+      render 'header-logo', header_settings: sec_stts, blocks: section.blocks, class: 'thinh-logo lg:none'
+    endcapture
   endif
 
   # Skip mobile search under specific conditions:
@@ -220,7 +235,7 @@
               endif
             when 'bottom'
               assign first = ''
-              assign class = class | append: ' mobile:hidden'
+              assign class = class | append: ' max-md:hidden'
 
               assign border_bottom_setting_id = 'border_width'
           endcase
@@ -239,12 +254,15 @@
             settings: sec_stts,
             first: first,
             logo: logo,
+            mobile_logo: mobile_logo,
             menu: menu,
             actions: actions,
             localization: localization_markup,
             account: account,
             search: search,
-            mobile_search: mobile_search
+            mobile_search: mobile_search,
+            multi_tab_menu: multi_tab_menu,
+            message: message
           %}
         {% endcapture %}
 
@@ -425,6 +443,10 @@
     border-bottom: var(--border-bottom-width) solid var(--color-border);
   }
 
+  .header__row--bottom .header__column--right > *:last-child {
+    margin-right: -1.2rem;
+  }
+
   @media screen and (max-width: 749px) {
     .header__row--top:not(.divider--page-width),
     .header__row--top.divider--page-width .header__columns {
@@ -432,12 +454,20 @@
     }
   }
 
-  .header__row.divider--page-width:not(.section--page-width) .header__columns {
+  .header__row.divider--page-width:not(.section--page-width) .header__columns:not(:has(.header-multi-site)) {
     @media screen and (min-width: 750px) {
       padding-inline-start: 0;
       padding-inline-end: 0;
       margin-inline-start: var(--page-margin);
       margin-inline-end: var(--page-margin);
+    }
+  }
+
+  .header__row.divider--page-width:not(.section--page-width) .header__columns:has(.header-multi-site) {
+    padding-inline: 0;
+
+    @media screen and (min-width: 1025px) {
+      padding-inline-start: 0;
     }
   }
 
@@ -520,6 +550,7 @@
     }
 
     @media screen and (max-width: 1024px) {
+
       --header-template-columns: var(--header-mobile-bookend) var(--header-mobile-bookend) 1fr
         var(--header-mobile-bookend) var(--header-mobile-bookend);
 
@@ -549,6 +580,22 @@
 
       .header-actions {
         grid-area: rightB;
+      }
+
+      &:has(.header-multi-site) {
+        .header-multi-site {
+          grid-column: 1 / 6;
+          grid-row: 1;
+        }
+
+        .header-logo,
+        &:not(:has(.header-actions)) .search-action,
+        .account-actions,
+        &:not(:has(.account-actions)) .search-action,
+        .search-action,
+        .header-actions {
+          grid-row: 2;
+        }
       }
     }
   }
@@ -709,6 +756,64 @@
   "class": "section-header-main",
   "blocks": [
     { "type": "@app" },
+    {
+      "type": "menu_tab",
+      "name": "Menu tab",
+      "settings": [
+        {
+          "type": "header",
+          "content": "t:content.logo"
+        },
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "t:settings.logo"
+        },
+        {
+          "type": "text",
+          "id": "logo_text",
+          "label": "t:settings.title",
+          "default": "Ella"
+        },
+        {
+          "type": "header",
+          "content": "t:content.menu"
+        },
+        {
+          "type": "page",
+          "id": "link",
+          "label": "t:settings.link"
+        },
+        {
+          "type": "header",
+          "content": "t:content.appearance"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "t:settings.color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "text_bg",
+          "label": "t:settings.background_color",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "text_color_active",
+          "label": "Color active",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "text_bg_active",
+          "label": "Background active",
+          "default": "#FFFFFF"
+        }
+      ]
+    },
     {
       "type": "mega_menu_1",
       "name": "t:sections.header.blocks.mega_menu.name_1",
@@ -1585,6 +1690,22 @@
       "default": "center"
     },
     {
+      "type": "select",
+      "id": "logo_row",
+      "label": "t:settings.row",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "top"
+    },
+    {
       "type": "header",
       "content": "t:content.menu"
     },
@@ -1645,6 +1766,90 @@
         }
       ],
       "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Message"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_message",
+      "label": "Show message",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "message",
+      "label": "Message",
+      "default": "<p>Summer Sale – Up to 30% OFF</p>",
+      "visible_if": "{{ section.settings.show_message }}"
+    },
+    {
+      "type": "select",
+      "id": "font",
+      "label": "t:settings.font",
+      "options": [
+        {
+          "value": "var(--font-body--family)",
+          "label": "t:options.body"
+        },
+        {
+          "value": "var(--font-subheading--family)",
+          "label": "t:options.subheading"
+        },
+        {
+          "value": "var(--font-heading--family)",
+          "label": "t:options.heading"
+        }
+      ],
+      "default": "var(--font-body--family)",
+      "visible_if": "{{ section.settings.show_message }}"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "label": "t:settings.size",
+      "options": [
+        {
+          "value": "1rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        }
+      ],
+      "default": "1rem",
+      "visible_if": "{{ section.settings.show_message }}"
+    },
+    {
+      "type": "select",
+      "id": "message_position",
+      "label": "t:settings.row",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "top",
+      "visible_if": "{{ section.settings.show_message }}"
     },
     {
       "type": "header",
@@ -1985,6 +2190,106 @@
       "label": "t:settings.inverse",
       "default": "primary",
       "visible_if": "{{ section.settings.enable_transparent_header_home or section.settings.enable_transparent_header_product or section.settings.enable_transparent_header_collection }}"
+    },
+    {
+      "type": "header",
+      "content": "Highlighted items"
+    },
+    {
+        "type": "textarea",
+        "id": "highlighted_item_1",
+        "label": "Menu level 1 items",
+        "info": "Enter the names of the menu items you'd like to display as highlighted items. Separate items with commas."
+    },
+    {
+        "type": "textarea",
+        "id": "highlighted_item_2",
+        "label": "Menu level 2 items",
+        "info": "Enter the names of the menu items you'd like to display as highlighted items. Separate items with commas."
+    },
+    {
+        "type": "textarea",
+        "id": "highlighted_item_3",
+        "label": "Menu level 3 items",
+        "info": "Enter the names of the menu items you'd like to display as highlighted items. Separate items with commas."
+    },
+    {
+        "type": "color",
+        "id": "highlighted_item_color",
+        "label": "t:settings.color",
+        "default": "#D12442"
+    },
+    {
+      "type": "header",
+      "content": "Label on menu"
+    },
+    {
+      "type": "paragraph",
+      "content": "New label"
+    },
+    {
+        "type": "textarea",
+        "id": "new_label_1",
+        "label": "Menu level 1 items",
+        "info": "Enter the names of the menu items you'd like to display as highlighted items. Separate items with commas."
+    },
+    {
+        "type": "textarea",
+        "id": "new_label_2",
+        "label": "Menu level 2 items",
+        "info": "Enter the names of the menu items you'd like to display as highlighted items. Separate items with commas."
+    },
+    {
+        "type": "textarea",
+        "id": "new_label_3",
+        "label": "Menu level 3 items",
+        "info": "Enter the names of the menu items you'd like to display as highlighted items. Separate items with commas."
+    },
+    {
+        "type": "color",
+        "id": "new_label_color",
+        "label": "t:settings.color",
+        "default": "#FFFFFF"
+    },
+    {
+        "type": "color_background",
+        "id": "new_label_bg",
+        "label": "t:settings.background",
+        "default": "#BAE4ED"
+    },
+    {
+      "type": "paragraph",
+      "content": "Sale label"
+    },
+    {
+        "type": "textarea",
+        "id": "sale_label_1",
+        "label": "Menu level 1 items",
+        "info": "Enter the names of the menu items you'd like to display as highlighted items. Separate items with commas."
+    },
+    {
+        "type": "textarea",
+        "id": "sale_label_2",
+        "label": "Menu level 2 items",
+        "info": "Enter the names of the menu items you'd like to display as highlighted items. Separate items with commas."
+    },
+    {
+        "type": "textarea",
+        "id": "sale_label_3",
+        "label": "Menu level 3 items",
+        "info": "Enter the names of the menu items you'd like to display as highlighted items. Separate items with commas."
+    },
+    {
+        "type": "color",
+        "id": "sale_label_color",
+        "label": "t:settings.color",
+        "default": "#FFFFFF"
+    },
+    {
+        "type": "color_background",
+        "id": "sale_label_bg",
+        "label": "t:settings.background",
+        "default": "#ff1a00"
     },
     {
       "type": "header",

@@ -5,6 +5,15 @@
   {% render 'header-menu' %}
 {% endcomment %}
 
+{%- liquid
+  assign menu_tab = blocks | where: 'type', 'menu_tab'
+  if menu_tab.size > 0
+    assign has_menu_tab = true
+  else
+    assign has_menu_tab = false
+  endif
+-%}
+
 <link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <noscript>
@@ -27,33 +36,27 @@
     if vertical_menu_style == 'style_1'
       render 'header-menu-vertical', blocks: blocks, bl_stts: bl_stts
     endif
-  -%}
 
-  <div class="header__menu-wrapper header__menu-multi-site-wrapper"></div>
+    assign keys = 'highlighted_item_,new_label_,sale_label_'
+  -%}
   <div class="header__menu-wrapper" data-main-menu>
     <nav class="header__inline-menu">
-      <ul class="list-menu list-menu-desktop list-menu--inline" role="list">
+      <ul class="list-menu list-menu-desktop list-menu--inline{% if has_menu_tab %} hidden{% endif %}" role="list">
         {%- for link in header_settings.menu.links -%}
           <li>
             {%- if link.links != blank -%}
               {%- liquid
-                assign mega_menu_1 = blocks | where: "type", "mega_menu_1"
-                assign mega_menu_2 = blocks | where: "type", "mega_menu_2"
-                assign mega_menu_3 = blocks | where: "type", "mega_menu_3"
-                assign mega_menu_4 = blocks | where: "type", "mega_menu_4"
-                assign mega_menu_5 = blocks | where: "type", "mega_menu_5"
+                assign mega_menu_1 = blocks | where: 'type', 'mega_menu_1'
+                assign mega_menu_2 = blocks | where: 'type', 'mega_menu_2'
+                assign mega_menu_3 = blocks | where: 'type', 'mega_menu_3'
 
                 assign check_mega_menu_1 = false
                 assign check_mega_menu_2 = false
                 assign check_mega_menu_3 = false
-                assign check_mega_menu_4 = false
-                assign check_mega_menu_5 = false
 
                 assign has_mega_menu_1 = false
                 assign has_mega_menu_2 = false
                 assign has_mega_menu_3 = false
-                assign has_mega_menu_4 = false
-                assign has_mega_menu_5 = false
 
                 assign menu_title = link.title | escape | downcase | handle
 
@@ -90,47 +93,30 @@
                   endif
                 endfor
 
-                if mega_menu_4.size > 0
-                  assign check_mega_menu_4 = true
-                endif
-                for block in mega_menu_4
-                  assign block_title = block.settings.menu_item | escape | downcase | handle
-                  if block_title == menu_title
-                    assign block = block
-                    assign has_mega_menu_4 = true
-                  endif
-                endfor
-
-                if mega_menu_5.size > 0
-                  assign check_mega_menu_5 = true
-                endif
-                for block in mega_menu_5
-                  assign block_title = block.settings.menu_item | escape | downcase | handle
-                  if block_title == menu_title
-                    assign block = block
-                    assign has_mega_menu_5 = true
-                  endif
-                endfor
-
                 assign icon_type = section.settings.icon_type
 
                 if check_mega_menu_1 and has_mega_menu_1
-                    render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type
+                  render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
                 elsif check_mega_menu_2 and has_mega_menu_2
-                    render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type
+                  render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
                 elsif check_mega_menu_3 and has_mega_menu_3
-                    render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type
-                elsif check_mega_menu_4 and has_mega_menu_4
-                    render 'header-mega-menu-4', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type
-                elsif check_mega_menu_5 and has_mega_menu_5
-                    render 'header-mega-menu-5', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type
+                  render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
                 else
-                  render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type
+                  render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type, settings: section.settings
                 endif
               -%}
             {%- else -%}
-              <a id="HeaderMenu-{{ link.handle }}" href="{{ link.url }}" class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline"{% if link.current %} aria-current="page"{% endif %}>
-                <span {%- if link.current %}class="header__active-menu-item"{% endif %}>
+              <a
+                id="HeaderMenu-{{ link.handle }}"
+                href="{{ link.url }}"
+                class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline"
+                {% if link.current %}
+                  aria-current="page"
+                {% endif %}
+              >
+                <span
+                  class="text{% if link.current %} header__active-menu-item{% endif %}"
+                >
                   {{- link.title | escape -}}
                 </span>
               </a>
@@ -152,5 +138,75 @@
   }
   .mega-menu__collage-wrapper {
     padding-block: var(--padding-4xl);
+  }
+
+  .list-menu__item.highlighted-item {
+    --color-foreground: var(--highlighted-color);
+    --color-foreground-rgb: var(--highlighted-color-rgb);
+  }
+
+  .list-menu__item .label-wrapper {
+    position: absolute;
+    right: 7px;
+    top: -9px;
+  }
+
+  .header__menu-item {
+    position: relative;
+  }
+
+  .header__inline-menu .label-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    font-size: 1.2rem;
+    pointer-events: none;
+  }
+
+  .header__inline-menu .label {
+    display: inline-block;
+    height: 15px;
+    text-transform: capitalize;
+    text-align: center;
+    border-radius: var(--badge-corner-radius);
+    padding: 0 var(--padding-xs);
+    position: relative;
+    color: var(--color-foreground);
+    background-color: var(--color-background);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -9px;
+      transform: translate(-50%) rotate(180deg);
+      border: 5px solid transparent;
+      border-bottom-color: var(--color-background);
+    }
+
+    &.new-label {
+      --color-foreground: var(--new-color);
+      --color-foreground-rgb: var(--new-color-rgb);
+      --color-background: var(--new-bg);
+      --color-background-rgb: var(--new-bg-rgb);
+    }
+
+    &.sale-label {
+      --color-foreground: var(--sale-color);
+      --color-foreground-rgb: var(--sale-color-rgb);
+      --color-background: var(--sale-bg);
+      --color-background-rgb: var(--sale-bg-rgb);
+    }
+  }
+
+  .mega-menu__content .label-wrapper {
+    margin-left: var(--margin-xs);
+  }
+
+  .mega-menu__content .label:before {
+    left: -8px;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%) rotate(270deg);
   }
 {%- endstylesheet -%}

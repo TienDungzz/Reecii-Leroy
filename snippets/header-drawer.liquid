@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
 
 {%- liquid
-  if localization.available_countries.size > 1 and block.settings.enable_country_selector or block.settings.enable_language_selector and localization.available_languages.size > 1
+  if localization.available_countries.size > 1 and section.settings.show_country or section.settings.show_language and localization.available_languages.size > 1
     assign localization_forms = true
   endif
 -%}
@@ -24,7 +24,7 @@
       class="drawer__inner d-flex flex-column h-full"
       role="dialog"
       aria-modal="true"
-      aria-label="{{ 'sections.header.menu' | t }}"
+      aria-label="{{ 'accessibility.menu' | t }}"
       tabindex="-1"
     >
       <div class="drawer__header flex justify-end items-center relative" style="--p: 1.5rem 0;">
@@ -80,7 +80,7 @@
                                   aria-current="page"
                                 {% endif %}
                               >
-                                {{ 'sections.header.go_to' | t: name: link.title | escape }}
+                                {{ 'content.go_to' | t: name: link.title | escape }}
                               </a>
                             </li>
                             {%- for childlink in link.links -%}
@@ -137,7 +137,7 @@
                                               aria-current="page"
                                             {% endif %}
                                           >
-                                            {{ 'sections.header.go_to' | t: name: childlink.title | escape }}
+                                            {{ 'content.go_to' | t: name: childlink.title | escape }}
                                           </a>
                                         </li>
                                         {%- for grandchildlink in childlink.links -%}
@@ -218,7 +218,7 @@
                     {%- form 'localization', id: 'HeaderCountryMobileForm', class: 'localization-form' -%}
                       <div>
                         <h2 class="visually-hidden" id="HeaderCountryMobileLabel">
-                          {{ 'localization.country_label' | t }}
+                          {{ 'accessibility.country_region' | t }}
                         </h2>
                         {%- render 'country-localization', localPosition: 'HeaderCountryMobile' -%}
                       </div>
@@ -231,7 +231,7 @@
                     {%- form 'localization', id: 'HeaderLanguageMobileForm', class: 'localization-form' -%}
                       <div>
                         <h2 class="visually-hidden" id="HeaderLanguageMobileLabel">
-                          {{ 'localization.language_label' | t }}
+                          {{ 'content.language' | t }}
                         </h2>
                         {%- render 'language-localization', localPosition: 'HeaderLanguageMobile' -%}
                       </div>
