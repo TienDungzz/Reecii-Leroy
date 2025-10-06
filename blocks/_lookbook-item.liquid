@@ -20,11 +20,7 @@
   assign image_height = image.height
   assign image_width = image.width
 
-  assign dots_style = block.settings.dots_style
-  assign banner_title = block.settings.banner_title
-  assign banner_link = block.settings.banner_link
-  assign banner_link_new_tab = block.settings.banner_link_new_tab
-  assign text_align = block.settings.text_align
+  assign dots_style_type = block.settings.dots_style_type
   assign show_products_button = block.settings.show_products_button
   assign products_button_text = block.settings.products_button_text
   assign products_button_text_hide = block.settings.products_button_text_hide
@@ -48,13 +44,12 @@
   assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
 
   assign element = 'div'
-  if block.settings.enable_fancybox
+  if block.settings.enable_fancybox and image != blank
     assign element = 'a'
   elsif block.settings.enable_parallax
     assign element = 'parallax-image'
   endif
 %}
-
 
 {%- if block.settings.enable_fancybox -%}
   {%- render 'fancybox_lib' -%}
@@ -79,7 +74,7 @@
 
 {% capture attributes %}
   {{ block.shopify_attributes }}
-  {% if block.settings.enable_fancybox %}
+  {% if block.settings.enable_fancybox and image != blank %}
       {{ attributes_fancybox }}
   {% endif %}
   {% if block.settings.enable_parallax %}
@@ -87,140 +82,186 @@
   {% endif %}
 {% endcapture %}
 
-{% capture icon %}
-  {% render 'icon-or-image',
-    icon: block.settings.icon,
-    icon_custom: block.settings.icon_custom,
-    svg_upload: block.settings.svg_upload,
-    image_upload: block.settings.image_upload,
-    width: block.settings.icon_width,
-    attributes: block.shopify_attributes
-  %}
-{% endcapture %}
-
-<div class="lookbook-item relative size-style{% if dots_style %} dots-style-number{% endif %}" style="{{ style }}">
-    <div class="lookbook-item__image relative">
-        <{{ element }}
-            class="{{ class }}"
-            {{ attributes }}
-        >
-        {%- if image != blank -%}
-            {%- render 'image',
-            image: image,
-            class: class_img,
-            height: image.height,
-            sizes: sizes,
-            widths: widths
-            -%}
-
-        {%- else -%}
-            {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
-        {%- endif -%}
-        </{{ element }}>
-    </div>
-    <div class="lookbook-item__content">
-        {%- content_for 'blocks' -%}
-    </div>
-
-    {%- if show_products_button -%}
-      <div class="lookBook__btnShowProducts">
-          <span class="icon_plus_2">icon</span>
-          <a class="show_products" href="#" aria-label="Show Products" tabindex="0">{{ products_button_text }}</a>
-          <a class="hide_products" href="#" aria-label="Hide Products" tabindex="0">{{ products_button_text_hide }}</a>
-      </div>
+<div class="lookbook-item relative size-style dots-style-{{ dots_style_type }}" style="{{ style }}">
+  <div class="lookbook-item__image relative">
+    <{{ element }}
+      class="{{ class }}"
+      {{ attributes }}
+    >
+    {%- if image != blank -%}
+      {%- render 'image',
+        image: image,
+        class: class_img,
+        height: image.height,
+        sizes: sizes,
+        widths: widths
+      -%}
+    {%- else -%}
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
     {%- endif -%}
-</div>
-<div class="lookbook-item__content flex justify-{{ text_align }}">
-    {% if banner_link != blank %}
-        <a href="{{ banner_link }}" class="lookbook-item__link" {% if banner_link_new_tab %}target="_blank"{% endif %}>{{ banner_title }}</a>
-    {% else %}
-        <p class="lookbook-item__title">{{ banner_title }}</p>
-    {% endif %}
+    </{{ element }}>
+  </div>
+  <div class="lookbook-item__content">
+    {%- content_for 'blocks' -%}
+  </div>
+
+  {%- if show_products_button -%}
+    <div class="lookBook__btnShowProducts">
+      <span class="icon_plus_2"></span>
+      <a class="show_products" href="#" aria-label="Show Products" tabindex="0">{{ products_button_text }}</a>
+      <a class="hide_products" href="#" aria-label="Hide Products" tabindex="0">{{ products_button_text_hide }}</a>
+    </div>
+  {%- endif -%}
 </div>
 
 {%- stylesheet -%}
-    .image-block {
-        display: flex;
-        justify-content: var(--horizontal-alignment, 'inline-start');
-    }
+  .image-block {
+    display: flex;
+    justify-content: var(--horizontal-alignment, 'inline-start');
+  }
 
-    .image-block--height-fill .image-block__image{
-        height: 100%;
-    }
+  .image-block--height-fill .image-block__image{
+    height: 100%;
+  }
 
-    .image-block__image{
-        object-fit: cover;
-        aspect-ratio: var(--ratio);
-    }
+  .image-block__image{
+    object-fit: cover;
+    aspect-ratio: var(--ratio);
+  }
 
+  .lookBook__btnShowProducts {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 5;
+    font-size: 1.4rem;
+    font-weight: 400;
+    height: 3rem;
+    min-width: 14rem;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 0.5rem;
+
+    & a {
+      color: #ffffff;
+      text-decoration: none;
+    }
+  }
+
+  @media screen and (min-width: 1025px) {
     .lookBook__btnShowProducts {
-        display: flex;
-        align-items: center;
-        position: absolute;
-        bottom: 25px;
-        left: 40px;
-        z-index: 5;
-        font-size: 14px;
-        font-weight: 400;
-        height: 30px;
-        min-width: 140px;
-        background-color: rgba(0, 0, 0, 0.7);
-        opacity: 0;
-        visibility: hidden;
-        border-radius: 5px;
-        transition: opacity 0.3s ease-in-out;
-    }
-
-    .lookBook__btnShowProducts a {
-        color: #ffffff;
-        text-decoration: none;
+      bottom: 2.5rem;
+      left: 4rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease-in-out;
     }
 
     .lookbook-item:hover .lookBook__btnShowProducts {
-        opacity: 1;
-        visibility: visible;
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .dots-style-dots .lookbook-dot__icon .icon-plus-wrapper,
+  .dots-style-number .lookbook-dot__icon .icon-plus-wrapper {
+    display: none;
+  }
+
+  .dots-style-plus .lookbook-dot__icon {
+    width: 3rem;
+    height: 3rem;
+    background-color: transparent;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    &:before {
+      top: 0;
+      left: 0;
+      width: 3rem;
+      height: 3rem;
     }
 
-    .lookBook__btnShowProducts .icon_plus_2 {
-        position: relative;
-        font-size: 0px;
-        width: 11px;
-        height: 30px;
-        padding: 0px 15px;
-        transition: transform 0.3s, -webkit-transform 0.3s;
+    & .icon-plus-wrapper {
+      transition: transform 0.3s ease;
     }
+  }
 
-    .lookBook__btnShowProducts .icon_plus_2::before {
-        position: absolute;
-        content: "";
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 2px;
-        height: 12px;
-        background: #ffffff;
-    }
+  .dots-style-plus .lookbook-dot.is-active .icon-plus-wrapper {
+    transform: rotate(45deg);
+  }
 
-    .lookBook__btnShowProducts .icon_plus_2::after {
-        position: absolute;
-        content: "";
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 12px;
-        height: 2px;
-        background: #ffffff;
-    }
+  .lookBook__btnShowProducts .icon_plus_2 {
+    position: relative;
+    font-size: 0px;
+    width: 11px;
+    height: 30px;
+    padding: 0px 15px;
+    transition: transform 0.3s, -webkit-transform 0.3s;
+  }
 
-    .lookBook__btnShowProducts.is-open .icon_plus_2 {
-        transform: rotate(45deg);
-    }
+  .lookBook__btnShowProducts .icon_plus_2::before {
+    position: absolute;
+    content: "";
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+    height: 12px;
+    background: #ffffff;
+  }
 
+  .lookBook__btnShowProducts .icon_plus_2::after {
+    position: absolute;
+    content: "";
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 2px;
+    background: #ffffff;
+  }
 
-  {%- endstylesheet -%}
+  .lookBook__btnShowProducts.is-open .icon_plus_2 {
+    transform: rotate(45deg);
+  }
+{%- endstylesheet -%}
+
 {% schema %}
 {
   "name": "Lookbook banner",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "_heading"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "button"
+    },
+    {
+      "type": "spacer"
+    },
+    {
+      "type": "_divider"
+    },
+    {
+      "type": "_lookbook-dot"
+    },
+    {
+      "type": "_lookbook-circle-text"
+    }
+  ],
   "settings": [
     {
       "type": "header",
@@ -260,10 +301,24 @@
       "default": false
     },
     {
-      "type": "checkbox",
-      "label": "Show dots as numbers",
-      "id": "dots_style",
-      "default": false
+      "type": "select",
+      "id": "dots_style_type",
+      "label": "Dots style type",
+      "options": [
+        {
+          "value": "dots",
+          "label": "Dots"
+        },
+        {
+          "value": "number",
+          "label": "Number"
+        },
+        {
+          "value": "plus",
+          "label": "Plus"
+        }
+      ],
+      "default": "dots"
     },
     {
       "type": "checkbox",
@@ -284,50 +339,6 @@
       "label": "Products button text hide",
       "default": "Hide Products",
       "visible_if": "{{ block.settings.show_products_button }}"
-    },
-    {
-      "type": "header",
-      "content": "Banner Content"
-    },
-    {
-      "type": "text",
-      "id": "banner_title",
-      "label": "Banner Title"
-    },
-    {
-      "type": "select",
-      "id": "text_align",
-      "label": "Text Align",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ],
-      "visible_if": "{{ block.settings.banner_title != blank }}",
-      "default": "left"
-    },
-    {
-      "type": "url",
-      "id": "banner_link",
-      "label": "Banner Link",
-      "info": "Leave blank to disable link",
-      "visible_if": "{{ block.settings.banner_title != blank }}"
-    },
-    {
-      "type": "checkbox",
-      "label": "Open in new tab",
-      "id": "banner_link_new_tab",
-      "default": false,
-      "visible_if": "{{ block.settings.banner_link != blank and block.settings.banner_title != blank }}"
     },
     {
       "type": "header",
@@ -356,11 +367,15 @@
     {
       "type": "select",
       "id": "width",
-      "label": "Desktop width",
+      "label": "t:settings.width_desktop",
       "options": [
         {
           "value": "fit-content",
-          "label": "Fit"
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
         },
         {
           "value": "custom",
@@ -372,7 +387,7 @@
     {
       "type": "range",
       "id": "custom_width",
-      "label": "Custom (%)",
+      "label": "t:settings.custom_width",
       "min": 1,
       "max": 100,
       "step": 1,
@@ -383,11 +398,15 @@
     {
       "type": "select",
       "id": "width_tablet",
-      "label": "Tablet width",
+      "label": "t:settings.width_tablet",
       "options": [
         {
           "value": "fit-content",
-          "label": "Fit"
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
         },
         {
           "value": "custom",
@@ -399,7 +418,7 @@
     {
       "type": "range",
       "id": "custom_width_tablet",
-      "label": "Custom (%)",
+      "label": "t:settings.custom_width",
       "min": 1,
       "max": 100,
       "step": 1,
@@ -410,11 +429,15 @@
     {
       "type": "select",
       "id": "width_mobile",
-      "label": "Mobile width",
+      "label": "t:settings.width_mobile",
       "options": [
         {
           "value": "fit-content",
-          "label": "Fit"
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
         },
         {
           "value": "custom",
@@ -426,7 +449,7 @@
     {
       "type": "range",
       "id": "custom_width_mobile",
-      "label": "Custom (%)",
+      "label": "t:settings.custom_width",
       "min": 1,
       "max": 100,
       "step": 1,
@@ -571,35 +594,6 @@
       "step": 1,
       "default": 0,
       "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
-    }
-  ],
-  "blocks": [
-    {
-      "type": "_lookbook-dot"
-    },
-    {
-      "type": "@theme"
-    },
-    {
-      "type": "@app"
-    },
-    {
-      "type": "_heading"
-    },
-    {
-      "type": "text"
-    },
-    {
-      "type": "button"
-    },
-    {
-      "type": "spacer"
-    },
-    {
-      "type": "_divider"
-    },
-    {
-      "type": "_lookbook-circle-text"
     }
   ],
   "presets": [
