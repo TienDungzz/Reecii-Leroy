@@ -392,11 +392,11 @@ class DropdownDetails extends HTMLDetailsElement {
     if (Shopify.designMode && this.hasAttribute('check-shopify-design-mode')) {
       this.addEventListener('shopify:block:select', () => {
         this.isOpen = true;
-        this.elements.dropdown.classList.add('active');
+        // this.elements.dropdown.classList.add('active');
       });
       this.addEventListener('shopify:block:deselect', () => {
         this.isOpen = false;
-        this.elements.dropdown.classList.remove('active');
+        // this.elements.dropdown.classList.remove('active');
       });
     }
   }
@@ -432,31 +432,46 @@ class DropdownDetails extends HTMLDetailsElement {
   }
 
   _toggleOpen(event) {
-    event.preventDefault();
+    if (!event.target.closest('a')) event.preventDefault();
     this.isOpen = !this.isOpen;
-    this.elements.dropdown.classList.toggle('active');
-    this.toggleAttribute('open', this.isOpen);
+    // this.elements.dropdown.classList.toggle('active');
+    // this.toggleAttribute('open', this.isOpen);
+    this._animate(this.isOpen);
   }
 
   _hoverOpen(event) {
     const value = event.type === 'mouseenter' || event.type === 'focusin';
     this.isOpen = value;
-    this.elements.dropdown.classList.toggle('active', value);
+    if (this.isConnected) {
+      this._animate(value);
+    } else {
+      value ? this.setAttribute('open', 'true') : this.setAttribute('open', 'false');
+    }
+    // this.elements.dropdown.classList.toggle('active', value);
     if (this.closest('header-menu')) this.closest('.header-wrapper').preventHide = value;
   }
 
   close() {
     this.isOpen = false;
-    this.elements.dropdown.classList.remove('active');
-    this.setAttribute('open', 'false');
+    this._animate(this.isOpen);
+    // this.elements.dropdown.classList.remove('active');
+    // this.setAttribute('open', 'false');
+
   }
 
   async _animate(open) {
+    const translateYIn = 'translateY(-50%)';
+    const translateYOut = 'translateY(-105%)';
     if (open) {
       this.setAttribute('open', 'true');
-      await Motion.timeline(this.elements.dropdown, { opacity: [0, 1], transform: ['translateY(-1rem)', 'translateY(0)'] }, { duration: 0.25, at: '-0.1' }).finished;
+
+      await Motion.animate(this.elements.dropdown, { opacity: [0, 1], visibility: 'visible' }, { duration: 0.6, delay: 0.2 });
+
+      await Motion.animate(this.elements.dropdown.firstElementChild, { transform: [`${translateYIn}`, 'translateY(0px)'] }, { duration: 0.6 }).finished;
     } else {
-      await Motion.timeline(this.elements.dropdown, { opacity: [1, 0], transform: ['translateY(0)', 'translateY(1rem)'] }, { duration: 0.15 }).finished;
+      await Motion.animate(this.elements.dropdown, { opacity: 0, visibility: 'hidden' }, { duration: 0.3 });
+
+      await Motion.animate(this.elements.dropdown.firstElementChild, { transform: `${translateYOut}` }, { duration: 0.6 }).finished;
       this.setAttribute('open', 'false');
     }
   }
