@@ -20,6 +20,10 @@
   {%- endif -%}
 {% endcapture %}
 
+{%- capture submit_class -%}
+email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.button_type_preset }} {% if block.settings.style_class != 'button-custom' %} {{ block.settings.style_class }}{% else %}{% if block.settings.hide_submit_border %} bor-none{% endif %} {% endif %} {{ block.settings.style_class }}--{{ block.id }}{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}
+{%- endcapture -%}
+
 <email-signup
   class="email-signup-block size-style spacing-style"
   style="{% render 'size-style', settings: block.settings %}{% render 'spacing-style', settings: block.settings %}--gap: {{ block.settings.gap }}px;"
@@ -32,7 +36,7 @@
       </div>
       <button
         type="submit"
-        class="promo-btn size-style email-signup__button email-signup__button--text email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.button_type_preset }} {{ block.settings.style_class }} {{ block.settings.style_class }}--{{ block.id }}{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}"
+        class="promo-btn size-style email-signup__button email-signup__button--text {{ submit_class }}"
         aria-label="{{ 'content.button_label' | t }}"
         style="
           {%- if block.settings.submit_width == 'custom' -%}
@@ -74,6 +78,10 @@
         {% endif %}
         --input-border-width: {{ block.settings.input_border_width }}px;
         --input-border-radius: {{ block.settings.input_border_radius }}px;
+        {% if block.settings.integrated_button %}
+          --padding-vertical: 1.6rem;
+          --padding-horizontal: 1.2rem;
+        {% endif %}
         {% render 'border-override', settings: block.settings %}
       "
     >
@@ -111,11 +119,16 @@
       <button
         id="EmailSignup-submit-{{ block.id }}"
         type="submit"
-        class="size-style email-signup__button{% if block.settings.integrated_button %} email-signup__button--integrated{% endif %} email-signup__button--{{ block.settings.display_type }} email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.button_type_preset }}{% if block.settings.display_type == 'icon' and block.settings.background_button == false %} email-signup__button--icon-fill{% endif %} {{ block.settings.style_class }} {{ block.settings.style_class }}--{{ block.id }}{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}"
+        class="size-style test2121212121212 email-signup__button{% if block.settings.integrated_button %} email-signup__button--integrated{% endif %} email-signup__button--{{ block.settings.display_type }} {{ submit_class }}{% if block.settings.display_type == 'icon' and block.settings.background_button == false %} email-signup__button--icon-fill{% endif %}{% if block.settings.display_type == 'icon' %} submit-icon-size{% endif %} {{ submit_class }}"
         {% if block.settings.display_type != 'text' %}
           aria-label="{{ 'content.button_label' | t }}"
         {% endif %}
         style="
+          {% if block.settings.display_type == 'icon' %}
+            --icon-size-desktop: {{ block.settings.icon_size_desktop }}px;
+            --icon-size-mobile: {{ block.settings.icon_size_mobile }}px;
+          {% endif %}
+
           {%- if block.settings.integrated_button -%}
             --size-style-width: fit-content;
           {%- else -%}
@@ -140,6 +153,8 @@
         {% else %}
           {%- if block.settings.icon_type == 'chevron' -%}
             {{- 'icon-caret.svg' | inline_asset_content -}}
+          {%- elsif block.settings.icon_type == 'arrow' -%}
+            {{- 'icon-arrow.svg' | inline_asset_content -}}
           {%- else -%}
             {{- 'icon-fly.svg' | inline_asset_content -}}
           {%- endif -%}
@@ -260,6 +275,7 @@
   .email-signup__input-groups:has(.email-signup__button--integrated) {
     & .email-signup__input {
       padding-inline: 1.8rem 5.5rem;
+      padding-inline: var(--padding-vertical) var(--padding-horizontal);
     }
 
     &:has(.email-signup__button--text) .email-signup__input {
@@ -430,6 +446,23 @@
 
   .email-signup__message-text {
     margin: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .submit-icon-size {
+      width: var(--size-style-width);
+    }
+    .submit-icon-size svg {
+      width: var(--icon-size-desktop);
+      height: var(--icon-size-desktop);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .submit-icon-size svg {
+      width: var(--icon-size-mobile);
+      height: var(--icon-size-mobile);
+    }
   }
 {% endstylesheet %}
 
@@ -964,9 +997,20 @@
         {
           "value": "button-secondary",
           "label": "t:options.secondary"
+        },
+        {
+          "value": "button-custom",
+          "label": "Button custom"
         }
       ],
       "default": "button"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_submit_border",
+      "label": "Hide submit border",
+      "default": false,
+      "visible_if": "{{ block.settings.style_class == 'button-custom' }}"
     },
     {
       "type": "select",
@@ -994,11 +1038,37 @@
           "label": "Chevron"
         },
         {
+          "value": "arrow",
+          "label": "Arrow"
+        },
+        {
           "value": "fly",
           "label": "Fly"
         }
       ],
       "default": "chevron",
+      "visible_if": "{{ block.settings.display_type == 'icon' }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_size_desktop",
+      "label": "Icon size",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ block.settings.display_type == 'icon' }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_size_mobile",
+      "label": "Icon size",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
       "visible_if": "{{ block.settings.display_type == 'icon' }}"
     },
     {

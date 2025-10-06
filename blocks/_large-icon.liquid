@@ -1,0 +1,372 @@
+{% assign block_settings = block.settings %}
+{% assign icon_block_class = 'icon-block__media large-icon-block__media icon-block_' | append: block_settings.icon | append: ' icon-block-' | append: block.id %}
+
+{% capture icon %}
+  {% render 'icon-or-image',
+    icon: block_settings.icon,
+    icon_custom: block_settings.icon_custom,
+    svg_upload: block_settings.svg_upload,
+    image_upload: block_settings.image_upload,
+    width: block_settings.width,
+    class_name: icon_block_class,
+    attributes: block.shopify_attributes
+  %}
+{% endcapture %}
+{%- if block_settings.link != blank -%}
+  <a
+    href="{{ block_settings.link }}"
+    class="text-inherit"
+    style="--size-style-width-mobile: {{ block_settings.width_mb }}px;"
+    {% if block_settings.open_in_new_tab %}
+      target="_blank" rel="noopener"
+    {% endif %}
+  >
+    {{ icon }}
+  </a>
+{%- else -%}
+  {% if block.id contains 'collection-infor-icon' %}
+    <a class="button-secondary" href="{{ closest.collection.url }}" style="--size-style-width-mobile: {{ block_settings.width_mb }}px;">{{ icon }}</a>
+  {% else %}
+    <div style="--size-style-width-mobile: {{ block_settings.width_mb }}px;">
+      {{ icon }}
+    </div>
+  {% endif %}
+{%- endif -%}
+
+{% stylesheet %}
+  .icon-block {
+    display: flex;
+    flex-shrink: 0;
+    fill: currentcolor;
+  }
+
+  .icon-block__media {
+    height: auto;
+    object-fit: cover;
+    aspect-ratio: var(--ratio);
+  }
+
+  @media (max-width: 749px) {
+    .marquee__content .marquee__repeated-items:has(.large-icon-block__media) * {
+      max-width: var(--size-style-width-mobile);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Large icon",
+  "class": "icon-block",
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "apple",
+          "label": "Apple"
+        },
+        {
+          "value": "arrow",
+          "label": "Arrow"
+        },
+        {
+          "value": "banana",
+          "label": "Banana"
+        },
+        {
+          "value": "bottle",
+          "label": "Bottle"
+        },
+        {
+          "value": "box",
+          "label": "Box"
+        },
+        {
+          "value": "carrot",
+          "label": "Carrot"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "chat_bubble",
+          "label": "Chat bubble"
+        },
+        {
+          "value": "check_mark",
+          "label": "Check mark"
+        },
+        {
+          "value": "clipboard",
+          "label": "Clipboard"
+        },
+        {
+          "value": "dairy",
+          "label": "Dairy"
+        },
+        {
+          "value": "dairy_free",
+          "label": "Dairy free"
+        },
+        {
+          "value": "dryer",
+          "label": "Dryer"
+        },
+        {
+          "value": "eye",
+          "label": "Eye"
+        },
+        {
+          "value": "facebook",
+          "label": "Facebook"
+        },
+        {
+          "value": "fire",
+          "label": "Fire"
+        },
+        {
+          "value": "gluten_free",
+          "label": "Gluten free"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        },
+        {
+          "value": "instagram",
+          "label": "Instagram"
+        },
+        {
+          "value": "instagram-black",
+          "label": "Instagram Black"
+        },
+        {
+          "value": "iron",
+          "label": "Iron"
+        },
+        {
+          "value": "leaf",
+          "label": "Leaf"
+        },
+        {
+          "value": "leather",
+          "label": "Leather"
+        },
+        {
+          "value": "lightning_bolt",
+          "label": "Lightning bolt"
+        },
+        {
+          "value": "lipstick",
+          "label": "Lipstick"
+        },
+        {
+          "value": "lock",
+          "label": "Lock"
+        },
+        {
+          "value": "map_pin",
+          "label": "Map pin"
+        },
+        {
+          "value": "nut_free",
+          "label": "Nut free"
+        },
+        {
+          "value": "pants",
+          "label": "Pants"
+        },
+        {
+          "value": "paw_print",
+          "label": "Paw print"
+        },
+        {
+          "value": "pepper",
+          "label": "Pepper"
+        },
+        {
+          "value": "perfume",
+          "label": "Perfume"
+        },
+        {
+          "value": "pinterest",
+          "label": "Pinterest"
+        },
+        {
+          "value": "plane",
+          "label": "Plane"
+        },
+        {
+          "value": "plant",
+          "label": "Plant"
+        },
+        {
+          "value": "price_tag",
+          "label": "Price tag"
+        },
+        {
+          "value": "question_mark",
+          "label": "Question mark"
+        },
+        {
+          "value": "recycle",
+          "label": "Recylce"
+        },
+        {
+          "value": "return",
+          "label": "Return"
+        },
+        {
+          "value": "ruler",
+          "label": "Ruler"
+        },
+        {
+          "value": "serving_dish",
+          "label": "Serving dish"
+        },
+        {
+          "value": "shirt",
+          "label": "Shirt"
+        },
+        {
+          "value": "shoe",
+          "label": "Shoe"
+        },
+        {
+          "value": "silhouette",
+          "label": "Silhouette"
+        },
+        {
+          "value": "snapchat",
+          "label": "Snapchat"
+        },
+        {
+          "value": "snowflake",
+          "label": "Snowflake"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "stopwatch",
+          "label": "Stopwatch"
+        },
+        {
+          "value": "tiktok",
+          "label": "Tiktok"
+        },
+        {
+          "value": "truck",
+          "label": "Truck"
+        },
+        {
+          "value": "tumblr",
+          "label": "Tumblr"
+        },
+        {
+          "value": "twitter",
+          "label": "X (Twitter)"
+        },
+        {
+          "value": "vimeo",
+          "label": "Vimeo"
+        },
+        {
+          "value": "washing",
+          "label": "Washing"
+        }
+      ],
+      "default": "apple",
+      "visible_if": "{{ block.settings.icon_custom == 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "icon_custom",
+      "label": "Custom icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "svg",
+          "label": "SVG"
+        },
+        {
+          "value": "image",
+          "label": "Image"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "liquid",
+      "id": "svg_upload",
+      "label": "SVG icon",
+      "info": "Go to this link [find your icon](https:\/\/fontawesome.com\/v5\/search). Find the icon you want, then copy the SVG code and paste it here.",
+      "visible_if": "{{ block.settings.icon_custom == 'svg' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_upload",
+      "label": "t:settings.image_icon",
+      "visible_if": "{{ block.settings.icon_custom == 'image' }}"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.size",
+      "visible_if": "{{ block.settings.icon_custom != 'svg' and block.settings.icon != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "t:settings.width",
+      "min": 20,
+      "max": 500,
+      "step": 5,
+      "unit": "px",
+      "default": 100,
+      "visible_if": "{{ block.settings.icon_custom != 'svg' and block.settings.icon != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "width_mb",
+      "label": "Width mobile",
+      "min": 20,
+      "max": 500,
+      "step": 5,
+      "unit": "px",
+      "default": 50,
+      "visible_if": "{{ block.settings.icon_custom != 'svg' and block.settings.icon != 'none' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Large icon",
+      "category": "t:categories.basic",
+      "settings": {
+        "icon": "price_tag"
+      }
+    }
+  ]
+}
+{% endschema %}
