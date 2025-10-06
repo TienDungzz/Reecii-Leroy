@@ -114,10 +114,6 @@ body {
   overflow-x: clip;
 }
 
-
-/* Khinh classes utilities */
-
-/* Recalculate line break positions to make lines of approximately equal length. */
 @supports (text-wrap: balance) {
   h1,
   h2,
@@ -128,7 +124,6 @@ body {
   }
 }
 
-/* Smart line breaks, avoid short words being separated, keep the layout natural. */
 @supports (text-wrap: pretty) {
   p,
   .inline-richtext,
@@ -148,8 +143,6 @@ body {
   margin-block-end: 0;
 }
 
-/* end Khinh classes utilities */
-
 body.overflow-hidden {
   padding-inline-end: var(--scrollbar-width, 0);
 }
@@ -158,7 +151,7 @@ body.overflow-hidden {
   overflow: hidden;
   padding-inline-end: var(--scrollbar-width, 0);
 }
-/* khinh */
+
 .page-width {
   width: 100%;
   margin: 0 auto;
@@ -169,7 +162,6 @@ body.overflow-hidden {
 .page-width--default {
   max-width: calc(var(--page-width) + 3rem);
 }
-/* end khinh */
 
 .page-width--full {
   max-width: 100%;
@@ -210,6 +202,10 @@ body.overflow-hidden {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.list-disc {
+  list-style-position: inside;
 }
 
 .visually-hidden {
@@ -433,7 +429,7 @@ blockquote {
 .field__input,
 .form__label,
 .select__select {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   letter-spacing: 0.04rem;
 }
 
@@ -473,8 +469,6 @@ table:not([class]) th {
   }
 }
 
-/* Start: CSS */
-/* NOTE: sm = mobile <= 749px; md = tablet >= 750px; lg = desktop >= 1025px; xl = large desktop >= 1280px*/
 img, picture, video, canvas, svg {
     display: block;
     max-width: 100%;
@@ -777,9 +771,25 @@ img {
 .bg-transparent {
   background-color: transparent;
 }
-/* khinh add class */
+
 .bg-background {
   background-color: var(--color-background);
+}
+
+.border-top {
+  border-top: 0.1rem solid var(--color-border);
+}
+
+.border-bottom {
+  border-bottom: 0.1rem solid var(--color-border);
+}
+
+.border-left {
+  border-left: 0.1rem solid var(--color-border);
+}
+
+.border-right {
+  border-right: 0.1rem solid var(--color-border);
 }
 
 .justify-center {
@@ -988,108 +998,113 @@ img {
   -webkit-text-stroke-color: var(--color-foreground);
 }
 
-/* thinh add class */
 .after-none::after,
 .before-none::before {
   content: none;
 }
-/* khinh fix bug */
+
 [style*="--corner-radius"] {
   border-radius: var(--corner-radius);
 }
-/* khinh fix bug */
+
 [style*="--w:"] {
   width: var(--w);
 }
-/* khinh fix bug */
+
 [style*="--h:"] {
   height: var(--h);
 }
-/* khinh fix bug */
+
 [style*="--min-w:"] {
   min-width: var(--min-w);
 }
-/* khinh fix bug */
+
 [style*="--max-w:"] {
   max-width: min(100%, var(--max-w));
 }
-/* khinh fix bug */
+
 [style*="--max-h:"] {
   max-height: min(100%, var(--max-h));
 }
-/* khinh fix bug */
+
 [style*="--mt:"] {
   margin-top: var(--mt);
 }
-/* khinh fix bug */
+
 [style*="--mb:"] {
   margin-bottom: var(--mb);
 }
-/* khinh fix bug */
+
 [style*="--p:"] {
   padding: var(--p);
 }
-/* khinh fix bug */
+
 [style*="--pt:"] {
   padding-top: calc(var(--pt) * 0.5);
 }
-/* khinh fix bug */
+
 [style*="--pb:"] {
   padding-bottom: calc(var(--pb) * 0.5);
 }
 
-/* khinh fix bug */
 [style*="--pl:"] {
   padding-left: calc(var(--pl) * 0.5);
 }
 
-/* khinh fix bug */
 [style*="--pr:"] {
   padding-right: calc(var(--pr) * 0.5);
 }
-/* khinh fix bug */
+
 [style*="--m:"] {
   margin: var(--m);
 }
-/* khinh fix bug */
+
 [style*="--mb:"] {
   margin-bottom: var(--mb);
 }
-/* khinh fix bug */
+
 [style*="--gap:"] {
   gap: var(--gap, 0);
 }
-/* khinh fix bug */
+
 [style*="--gap-x:"] {
   column-gap: var(--gap-x, 0);
 }
-/* khinh fix bug */
+
 [style*="--gap-y:"] {
   row-gap: var(--gap-y, 0);
 }
-/* khinh fix bug */
+
 [style*="--bg-color:"] {
   background: var(--bg-color);
 }
-/* khinh fix bug */
+
 [style*="--fg-color:"] {
   color: var(--fg-color);
 }
-/* khinh fix bug */
+
 [style*="--top:"] {
   top: var(--top);
 }
-/* khinh fix bug */
+
 [style*="--bottom:"] {
   bottom: var(--bottom);
 }
-/* khinh fix bug */
+
 [style*="--left:"] {
   left: var(--left);
 }
-/* khinh fix bug */
+
 [style*="--right:"] {
   right: var(--right);
+}
+
+[style*="--b-width:"] {
+  border-width: var(--b-width);
+}
+
+[style*="--b-color:"] {
+  border-color: var(--b-color);
 }
 
 .group-block {
@@ -1156,22 +1171,6 @@ img {
   [style*="--mb:"] {
     margin-bottom: calc(var(--mb) * 0.75);
   }
-
-  /* [style*="--pt:"] {
-    padding-top: calc(var(--pt) * 0.75);
-  }
-
-  [style*="--pb:"] {
-    padding-bottom: calc(var(--pb) * 0.75);
-  }
-
-  [style*="--pl:"] {
-    padding-left: calc(var(--pl) * 0.75);
-  }
-
-  [style*="--pr:"] {
-    padding-right: calc(var(--pr) * 0.75);
-  } */
 
   .page-width[style*="--pr:"] {
     padding-right: 1rem;
@@ -1251,7 +1250,6 @@ img {
     align-items: center;
   }
 
-  /* hyun add */
   [style*="--min-w-sm:"] {
     min-width: var(--min-w-sm);
   }
@@ -1271,22 +1269,6 @@ img {
   [style*="--mb:"] {
     margin-bottom: calc(var(--mb) * 0.5);
   }
-/*
-  [style*="--pt:"] {
-    padding-top: calc(var(--pt) * 0.5);
-  }
-
-  [style*="--pb:"] {
-    padding-bottom: calc(var(--pb) * 0.5);
-  }
-
-  [style*="--pl:"] {
-    padding-left: calc(var(--pl) * 0.5);
-  }
-
-  [style*="--pr:"] {
-    padding-right: calc(var(--pr) * 0.5);
-  } */
 
   [style*="--max-sm-p:"] {
     padding: var(--max-sm-p);
@@ -1334,42 +1316,34 @@ img {
 
   .body-3xl-font-size {
     font-size: calc(var(--body-3xl-font-size) - 0.6rem);
-    /* line-height: calc(var(--body-3xl-line-height) - 1rem); */
   }
 
   .body-2xl-font-size {
     font-size: calc(var(--body-2xl-font-size) - 0.4rem);
-    /* line-height: calc(var(--body-2xl-line-height) - 0.6rem); */
   }
 
   .body-xl-font-size {
     font-size: calc(var(--body-xl-font-size) - 0.2rem);
-    /* line-height: calc(var(--body-xl-line-height) - 0.4rem); */
   }
 
   .body-l-font-size {
     font-size: calc(var(--body-l-font-size) - 0.2rem);
-    /* line-height: calc(var(--body-l-line-height) - 0.2rem); */
   }
 
   .body-m-font-size {
     font-size: calc(var(--body-m-font-size) - 0.2rem);
-    /* line-height: calc(var(--body-m-line-height) - 0.4rem); */
   }
 
   .body-s-font-size {
     font-size: calc(var(--body-s-font-size) - 0.2rem);
-    /* line-height: calc(var(--body-s-line-height) - 0.2rem); */
   }
 
   .body-xs-font-size {
     font-size: calc(var(--body-xs-font-size) - 0.2rem);
-    /* line-height: calc(var(--body-xs-line-height) - 0.4rem); */
   }
 
   .body-xxs-font-size {
     font-size: var(--body-xxs-font-size);
-    /* line-height: var(--body-xxs-line-height); */
   }
 }
 
@@ -1380,42 +1354,34 @@ img {
 
   .body-3xl-font-size {
     font-size: calc(var(--body-3xl-font-size) - 0.2rem);
-    /* line-height: calc(var(--body-3xl-line-height) - 0.4rem); */
   }
 
   .body-2xl-font-size {
     font-size: calc(var(--body-2xl-font-size) - 0.2rem);
-    /* line-height: calc(var(--body-2xl-line-height) - 0.4rem); */
   }
 
   .body-xl-font-size {
     font-size: var(--body-xl-font-size);
-    /* line-height: var(--body-xl-line-height); */
   }
 
   .body-l-font-size {
     font-size: var(--body-l-font-size);
-    /* line-height: var(--body-l-line-height); */
   }
 
   .body-m-font-size {
     font-size: var(--body-m-font-size);
-    /* line-height: var(--body-m-line-height); */
   }
 
   .body-s-font-size {
     font-size: var(--body-s-font-size);
-    /* line-height: var(--body-s-line-height); */
   }
 
   .body-xs-font-size {
     font-size: var(--body-xs-font-size);
-    /* line-height: var(--body-xs-line-height); */
   }
 
   .body-xxs-font-size {
     font-size: var(--body-xxs-font-size);
-    /* line-height: var(--body-xxs-line-height); */
   }
 }
 
@@ -1476,24 +1442,22 @@ img {
     height: auto;
   }
 
-  /* hyun add */
   [style*="--min-w-md:"] {
     min-width: var(--min-w-md);
   }
-
-  /* khinh fix bug */
+  
   [style*="--pt:"] {
     padding-top: calc(var(--pt) * 0.75);
   }
-  /* khinh fix bug */
+  
   [style*="--pb:"] {
     padding-bottom: calc(var(--pb) * 0.75);
   }
-  /* khinh fix bug */
+  
   [style*="--pl:"] {
     padding-left: calc(var(--pl) * 0.75);
   }
-  /* khinh fix bug */
+  
   [style*="--pr:"] {
     padding-right: calc(var(--pr) * 0.75);
   }
@@ -1587,19 +1551,19 @@ img {
   [style*="--lg-gap:"] {
     gap: var(--lg-gap, 0);
   }
-  /* khinh fix bug */
+  
   [style*="--pt:"] {
     padding-top: var(--pt);
   }
-  /* khinh fix bug */
+  
   [style*="--pb:"] {
     padding-bottom: var(--pb);
   }
-  /* khinh fix bug */
+  
   [style*="--pl:"] {
     padding-left: var(--pl);
   }
-  /* khinh fix bug */
+  
   [style*="--pr:"] {
     padding-right: var(--pr);
   }
@@ -1638,58 +1602,34 @@ img {
 
   .body-3xl-font-size {
     font-size: var(--body-3xl-font-size);
-    /* line-height: var(--body-3xl-line-height); */
   }
 
   .body-2xl-font-size {
     font-size: var(--body-2xl-font-size);
-    /* line-height: var(--body-2xl-line-height); */
   }
 
   .body-xl-font-size {
     font-size: var(--body-xl-font-size);
-    /* line-height: var(--body-xl-line-height); */
   }
 
   .body-l-font-size {
     font-size: var(--body-l-font-size);
-    /* line-height: var(--body-l-line-height); */
   }
 
   .body-m-font-size {
     font-size: var(--body-m-font-size);
-    /* line-height: var(--body-m-line-height); */
   }
 
   .body-s-font-size {
     font-size: var(--body-s-font-size);
-    /* line-height: var(--body-s-line-height); */
   }
 
   .body-xs-font-size {
     font-size: var(--body-xs-font-size);
-    /* line-height: var(--body-xs-line-height); */
   }
 
   .body-xxs-font-size {
     font-size: ar(--body-xxs-font-size);
-    /* line-height: var(--body-xxs-line-height); */
-  }
-
-  .block-border--top {
-    border-top: 0.1rem solid var(--color-foreground);
-  }
-
-  .block-border--bottom {
-    border-bottom: 0.1rem solid var(--color-foreground);
-  }
-
-  .block-border--left {
-    border-left: 0.1rem solid var(--color-foreground);
-  }
-
-  .block-border--right {
-    border-right: 0.1rem solid var(--color-foreground);
   }
 
   .group-align-left>* {
@@ -1734,7 +1674,6 @@ img {
   }
 }
 
-/* End: CSS */
 .link,
 .customer a:not(.button) {
   cursor: pointer;
@@ -1893,8 +1832,6 @@ h3 .icon-arrow,
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  /* width: 20px;
-  height: 20px; */
   width: var(--icon-size-md);
   height: var(--icon-size-md);
 }
@@ -1910,14 +1847,6 @@ summary {
   list-style: none;
   user-select: none;
   position: relative;
-
-  /* .icon-caret {
-    position: absolute;
-    height: 0.6rem;
-    right: 1.5rem;
-    top: calc(50% - 0.2rem);
-    transition: transform var(--duration-medium) ease-out;
-  } */
 
   & .svg-wrapper {
     margin-inline-start: auto;
@@ -1937,8 +1866,6 @@ summary::-webkit-details-marker {
 
 details {
   width: 100%;
-  /* khinh fix bug */
-  /* border-block-start: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-8)); */
 }
 
 summary {
@@ -1958,12 +1885,10 @@ summary {
   }
 }
 
-/* details[open]>summary .icon-caret { */ /* khinh fix bug */
 details[open="true"]>summary .icon-caret {
   transform: rotate(180deg);
 }
 
-/* hyun fix bug */
 details[open] > summary .icon-caret-wrapper {
   transform: rotateX(180deg);
 }
@@ -2076,7 +2001,6 @@ details[open] > summary .icon-plus-wrapper {
   box-shadow: var(--focused-base-box-shadow);
 }
 
-/* Fallback - for browsers that don't support :focus-visible, a fallback is set for :focus */
 .focused {
   outline: var(--focused-base-outline);
   outline-offset: var(--focused-base-outline-offset);
@@ -2096,7 +2020,6 @@ details[open] > summary .icon-plus-wrapper {
 }
 
 /* Focus ring - none */
-/* Dangerous for a11y - Use with care */
 .focus-none {
   box-shadow: none !important;
   outline: 0 !important;
@@ -2117,7 +2040,7 @@ details[open] > summary .icon-plus-wrapper {
     0 0 0.5rem 0.1rem rgb(var(--color-foreground-rgb) / var(--opacity-30));
 }
 
-/* Start: Multiple properties */
+/* Multiple properties */
 .separator-top {
   border-top: solid 0.1rem rgb(var(--color-foreground-rgb) / var(--opacity-8));
 }
@@ -2151,8 +2074,7 @@ details[open] > summary .icon-plus-wrapper {
   background: #f1f1f1;
 }
 
-/* End: Multiple properties */
-/* Start: Spacing */
+/* Spacing */
 .spacing {
   padding-block: calc(var(--p-spacing-t, 0) * 0.5) calc(var(--p-spacing-b, 0) * 0.5);
 
@@ -2186,7 +2108,6 @@ details[open] > summary .icon-plus-wrapper {
     margin-block: var(--m-spacing-t-xs, 0) var(--m-spacing-b-xs, 0);
   }
 }
-/* End: Spacing */
 
 /* component-title */
 .title,
@@ -2407,95 +2328,6 @@ details[open] > summary .icon-plus-wrapper {
   }
 }
 
-/* .grid {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-  padding: 0;
-  list-style: none;
-}
-
-.grid,
-.grid-spacing {
-  column-gap: var(--grid-mobile-horizontal-spacing);
-  row-gap: var(--grid-mobile-vertical-spacing);
-
-  @media screen and (min-width: 750px) {
-    column-gap: var(--grid-desktop-horizontal-spacing);
-    row-gap: var(--grid-desktop-vertical-spacing);
-  }
-}
-
-@media screen and (min-width: 750px) and (max-width: 1399px) {
-
-  .grid[style*="--grid-tablet-horizontal-spacing"],
-  .grid-spacing[style*="--grid-tablet-horizontal-spacing"] {
-    --grid-desktop-horizontal-spacing: calc(var(--grid-tablet-horizontal-spacing) * 0.75);
-  }
-
-  .grid[style*="--grid-tablet-vertical-spacing"],
-  .grid-spacing[style*="--grid-tablet-vertical-spacing"] {
-    --grid-desktop-vertical-spacing: calc(var(--grid-tablet-vertical-spacing) * 0.75);
-  }
-}
-
-.grid:last-child {
-  margin-bottom: 0;
-}
-
-.grid__item {
-  width: calc(25% - var(--grid-mobile-horizontal-spacing) * 3 / 4);
-  max-width: calc(50% - var(--grid-mobile-horizontal-spacing) / 2);
-  flex-grow: 1;
-  flex-shrink: 0;
-
-  @media screen and (min-width: 750px) {
-    width: calc(25% - var(--grid-desktop-horizontal-spacing) * 3 / 4);
-    max-width: calc(50% - var(--grid-desktop-horizontal-spacing) / 2);
-  }
-}
-
-.grid--gapless.grid {
-  gap: 0;
-}
-
-.grid--1-col .grid__item,
-.grid[data-view="list"] .grid__item,
-.grid[data-view="1"] .grid__item {
-  max-width: 100%;
-  width: 100%;
-}
-
-@media screen and (max-width: 1024px) {
-  .grid--1-col-tablet-down .grid__item {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .slider--tablet.grid--peek {
-    margin: 0;
-    width: 100%;
-  }
-
-  .slider--tablet.grid--peek .grid__item {
-    box-sizing: content-box;
-    margin: 0;
-  }
-
-  .slider.slider--tablet .scroll-trigger.animate--slide-in,
-  .slider.slider--mobile .scroll-trigger.animate--slide-in {
-    animation: none;
-    opacity: var(--opacity-100);
-    transform: inherit;
-  }
-
-  .scroll-trigger:not(.scroll-trigger--offscreen) .slider--tablet {
-    animation: var(--animation-slide-in);
-  }
-}
- */
-
-/* khinh media block component */
 /* component-media */
 .media {
   display: block;
@@ -2554,7 +2386,6 @@ details[open] > summary .icon-plus-wrapper {
 .media--circle {
   border-radius: var(--style-border-radius-50);
 }
-/* end khinh media block component */
 
 .link-wrap {
   position: absolute;
@@ -2575,7 +2406,6 @@ deferred-media {
 }
 
 /* component-button */
-/* Button - default */
 .button--tertiary {
   --color-primary-button-background: var(--color-secondary-button-background);
   --color-primary-button-text: var(--color-secondary-button-text);
@@ -2717,6 +2547,10 @@ button.shopify-payment-button__button--unbranded {
   padding-block:  var(--button-padding-vertical-mobile, var(--button-padding-vertical));
   padding-inline: var(--button-padding-horizontal-mobile, var(--button-padding-horizontal));
 
+  &.w-full {
+    width: 100%;
+  }
+
   @media (min-width: 750px) {
     padding-block:  var(--button-padding-vertical);
     padding-inline: var(--button-padding-horizontal);
@@ -2747,7 +2581,6 @@ input:not(:placeholder-shown)::placeholder {
   opacity: var(--opacity-0);
 }
 
-/* The declaration above is messing with buttons that have an attribute of hidden as it overwrites the display value */
 .button[hidden] {
   display: none;
 }
@@ -2810,7 +2643,6 @@ button.shopify-payment-button__button--unbranded:hover:not([disabled]) {
   --button-border-color: var(--color-secondary-button-hover-border);
 }
 
-/* Needed to override the default Shopify styles */
 button.shopify-payment-button__button--unbranded:hover:not([disabled]) {
   background: var(--button-background-color);
 }
@@ -3042,7 +2874,7 @@ details[open]>.share-button__fallback {
   font-family: var(--font-body--family);
   font-style: var(--font-body--style);
   font-weight: var(--font-body--weight);
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   width: 100%;
   box-sizing: border-box;
   transition: box-shadow var(--duration-short) ease;
@@ -3153,8 +2985,7 @@ details[open]>.share-button__fallback {
 .select__select,
 .customer select {
   cursor: pointer;
-  padding: 0 calc(var(--inputs-border-width) + 3rem) 0 2rem;
-  margin: var(--inputs-border-width);
+  padding: 0 calc(var(--inputs-border-width) + 3.5rem) 0 1rem;
   min-height: calc(var(--inputs-border-width) * 2);
 }
 
@@ -3178,22 +3009,20 @@ details[open]>.share-button__fallback {
 .customer .field input {
   flex-grow: 1;
   text-align: left;
-  padding: 1.5rem;
+  padding: 1rem;
   margin: var(--inputs-border-width);
   transition: box-shadow var(--duration-short) ease;
 }
 
 .field__label,
 .customer .field label {
-  font-size: 1.4rem;
-  left: calc(var(--inputs-border-width) + 2rem);
-  top: calc(1rem + var(--inputs-border-width));
+  font-size: 1.2rem;
+  left: 1rem;
+  top: calc(1.2rem + var(--inputs-border-width));
   margin-bottom: 0;
   pointer-events: none;
   position: absolute;
   color: rgb(var(--color-foreground-rgb) / var(--opacity-75));
-  letter-spacing: 0.1rem;
-  line-height: 1.5;
   transition: top var(--duration-medium) var(--cubic-smooth),
     font-size var(--duration-medium) var(--cubic-smooth),
     letter-spacing var(--duration-medium) var(--cubic-smooth);
@@ -3212,7 +3041,7 @@ details[open]>.share-button__fallback {
 .customer .field input:-webkit-autofill~label {
   font-size: 1rem;
   top: calc(var(--inputs-border-width) + 0.2rem);
-  left: calc(var(--inputs-border-width) + 2rem);
+  left: 1rem;
   letter-spacing: 0.04rem;
 }
 
@@ -3222,7 +3051,7 @@ details[open]>.share-button__fallback {
 .customer .field input:focus,
 .customer .field input:not(:placeholder-shown),
 .customer .field input:-webkit-autofill {
-  padding: 2rem 1.5rem 2rem 2rem;
+  padding: 1.5rem 0 0 2rem;
   margin: var(--inputs-border-width);
 }
 
@@ -3267,12 +3096,6 @@ details[open]>.share-button__fallback {
   min-height: 10rem;
   resize: none;
 }
-
-/* input[type="checkbox"] {
-  display: inline-block;
-  width: auto;
-  margin-right: 0.5rem;
-} */
 
 /* Form global */
 .form__label {
@@ -3407,10 +3230,6 @@ details[open]>.share-button__fallback {
   }
 
   &:before {
-    /* muốn bỏ 2 dòng này được không */
-    /* background: rgb(var(--quantity-color-background) / var(--opacity-10)); */
-    /* -webkit-background: rgb(var(--quantity-color-background) / var(--opacity-10)); */
-    /* muốn bỏ 2 dòng này được không */
     pointer-events: none;
     content: "";
     position: absolute;
@@ -3727,7 +3546,7 @@ details[open]>.share-button__fallback {
 
 .announcement-bar-slider--fade-in-next .announcement-bar__message {
   --announcement-translate-from: -1.5rem;
-  /* Prevent flicker */
+  
   opacity: var(--opacity-0);
   animation-name: translateAnnouncementSlideIn;
   animation-delay: var(--duration-announcement-bar);
@@ -3735,7 +3554,7 @@ details[open]>.share-button__fallback {
 
 .announcement-bar-slider--fade-in-previous .announcement-bar__message {
   --announcement-translate-from: 1.5rem;
-  /* Prevent flicker */
+
   opacity: var(--opacity-0);
   animation-name: translateAnnouncementSlideIn;
   animation-delay: var(--duration-announcement-bar);
@@ -4196,7 +4015,6 @@ details[open]>.share-button__fallback {
   .animate--hover-3d-lift .shopify-payment-button__button:hover {
     transition: transform var(--duration-extended) ease,
       box-shadow var(--duration-long) ease;
-    /* Slow the card transition speed while hover is active. */
     transform: rotate(1deg);
     box-shadow: -1rem -1rem 1rem -1rem rgb(0 0 0 / var(--opacity-5)),
       1rem 1rem 1rem -1rem rgb(0 0 0 / var(--opacity-5)),
@@ -4207,7 +4025,6 @@ details[open]>.share-button__fallback {
   .animate--hover-3d-lift .collage__item .card-wrapper:hover .card--card,
   .animate--hover-3d-lift .collage__item .card-wrapper:hover .card--standard .card__inner {
     transform: rotate(0.5deg);
-    /* Less intense rotation for collage items. */
   }
 
   .animate--hover-3d-lift .product-grid .grid__item:hover,
@@ -4216,12 +4033,10 @@ details[open]>.share-button__fallback {
   .animate--hover-3d-lift .blog-articles .article:hover,
   .animate--hover-3d-lift .complementary-slide li:hover {
     z-index: 2;
-    /* Make sure the hovered card is the topmost card. */
   }
 
   .animate--hover-3d-lift .product-grid {
     isolation: isolate;
-    /* Ensure z-index changes here don't negatively effect other UI stacking. */
   }
 
   .animate--hover-3d-lift .card-wrapper .card--shape.card--standard:not(.card--text) .card__inner {
@@ -4233,7 +4048,6 @@ details[open]>.share-button__fallback {
   .animate--hover-3d-lift .card-wrapper:hover .card--shape.card--standard:not(.card--text) .card__inner {
     transition: transform calc(2 * var(--duration-extended)) ease,
       filter var(--duration-long) ease;
-    /* Slow the card transition speed while hover is active. */
     filter: drop-shadow(0rem 2rem 2rem rgb(0 0 0 / var(--opacity-15))) drop-shadow(0rem 1rem 1rem rgb(0 0 0 / var(--opacity-15)));
   }
 
@@ -4469,10 +4283,7 @@ details[open]>.share-button__fallback {
 
 .drawer__inner {
   height: 100%;
-  /* width: 45rem; */
-  /* max-width: calc(100vw - 3rem); */
   padding: 0 1.5rem;
-  /* border: 0.1rem solid rgb(var(--color-foreground-rgb) / var(--opacity-20)); */
   border-right: 0;
   overflow: hidden;
   display: flex;
@@ -4481,12 +4292,6 @@ details[open]>.share-button__fallback {
   transition-duration: var(--duration-extra-long);
   transition-timing-function: var(--cubic-smooth);
 }
-
-/* .drawer.active .drawer__inner {
-  transform: translateX(0);
-  box-shadow: #ffffff1a 0 0.8rem 2.4rem, #fff3 0 1.6rem 5.6rem,
-    #fff3 0 2.4rem 8rem;
-} */
 
 /* drawer - button (Close) */
 .drawer__close {
@@ -4641,7 +4446,7 @@ details[open]>.share-button__fallback {
   }
 }
 
-/* Start: collapsible-tab */
+/* collapsible-tab */
 collapsible-tab:not([data-tabList-mobile]) .collapsible-tab__header {
   cursor: pointer;
   pointer-events: auto;
@@ -4684,8 +4489,7 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
   }
 }
 
-/* End: collapsible-tab */
-/* Start: Collage */
+/* Collage */
 .collage-wrapper-title {
   margin-top: 0;
   margin-bottom: 3rem;
@@ -4858,7 +4662,6 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
   }
 }
 
-/* Needed for gradient continuity with or without animation, background-attachment: local scopes the gradient to its container which happens automatically when a transform is applied (animation on scroll) */
 .collage-card {
     height: 100%;
     position: relative;
@@ -4943,11 +4746,9 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
   outline: none;
   box-shadow: none;
 }
+/* Collage */
 
-/* End: Collage */
-
-/* khinh Start: Swiper */
-
+/* Swiper */
 swiper-component {
   display: block;
   width: 100%;
@@ -5001,5 +4802,3 @@ swiper-component {
   top: unset !important;
   bottom: 0;
 }
-
-/* khinh End: Swiper */

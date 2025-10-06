@@ -1,4 +1,3 @@
-/* Gap scaling style */
 .gap-style,
 .layout-panel-flex {
   --gap-scale: var(--spacing-scale-md);
@@ -62,8 +61,6 @@
     --spacing-scale: var(--spacing-scale-default);
   }
 
-  /* Must disable this, when you use these with calc and another unit type, things break — see logo.liquid */
-  /* stylelint-disable length-zero-no-unit */
   --padding-block: 0px;
   --padding-block-start: var(--padding-block, 0px);
   --padding-block-end: var(--padding-block, 0px);
@@ -77,8 +74,6 @@
   --margin-inline-start: var(--margin-inline, 0px);
   --margin-inline-end: var(--margin-inline, 0px);
 
-  /* hyun fix bug */
-  /* mobile spacing style */
   @media screen and (max-width: 749px) {
     --padding-block-start-mobile: var(--padding-block-start, 0px);
     --padding-block-end-mobile: var(--padding-block-end, 0px);
@@ -93,8 +88,6 @@
 
 /* Size style */
 .size-style {
-  /* width: 100%;
-  height: 100%; */
   width: var(--size-style-width-mobile, var(--size-style-width));
   height: var(--size-style-height-mobile, var(--size-style-height));
 
@@ -109,10 +102,6 @@
   }
 }
 
-/* Section width full vs. page
-   The reason we use a grid to contain the section is to allow for the section to have a
-   full-width background image even if the section content is constrained by the page width. Do not try
-   to rewrite this to max-width: --page-width; margin: 0 auto;, it doesn't work. */
 .section {
   --full-page-grid-central-column-width: min(
     var(--page-width) - var(--page-margin) * 2,
@@ -122,48 +111,34 @@
   --full-page-grid-with-margins: var(--full-page-grid-margin) var(--full-page-grid-central-column-width)
     var(--full-page-grid-margin);
 
-  /* Utility variable gives the grid's first column width. Provides an offset width for components like carousels */
   --util-page-margin-offset: max(
     var(--page-margin),
     calc((100% - min(var(--page-content-width), calc(100% - (var(--page-margin) * 2)))) / 2)
   );
-
-  /* Offset for full-width sections to account for the page margin,
-  used for Marquee — note that --util-page-margin-offset doesn't work here */
   --full-page-margin-inline-offset: calc(((100vw - var(--scrollbar-width, 0px) - var(--full-page-grid-central-column-width)) / 2) * -1);
-
   width: 100%;
-
-  /* This is required to make background images work, which are <img> rendered absolutely */
   position: relative;
-
-  /* Set up the grid */
   display: grid;
   grid-template-columns: var(--full-page-grid-with-margins);
   min-height: var(--section-min-height, 'auto');
 }
 
-/* Place all direct children in the center column by default */
 .section > * {
   grid-column: 2;
 }
 
-/* For page-width sections, all content goes in the center column */
 .section--page-width > * {
   grid-column: 2;
 }
 
-/* For full-width sections, content spans all columns */
 .section--full-width > * {
   grid-column: 1 / -1;
 }
 
-/* Some page-width sections should still extend all the way to the right edge of the page, e.g. collection carousel */
 .section--page-width.section--full-width-right > * {
   grid-column: 2 / 4;
 }
 
-/* For full-width sections with margin, content still spans full width but with space on the sides */
 .section--full-width.section--full-width-margin > * {
   grid-column: 1 / -1;
 
@@ -173,7 +148,6 @@
   }
 }
 
-/* Some section content break out to full width of the page */
 .section > .force-full-width {
   grid-column: 1 / -1;
 }
@@ -230,7 +204,6 @@
   margin-block-end: 0;
 }
 
-/* This is to deal with the margin applied to the p when custom styles are enabled. The p isn't the first child anymore due to the style tag */
 .text-block > style + * {
   margin-block-start: 0;
 }
@@ -244,10 +217,6 @@ accordion-custom {
       overflow-y: clip;
       opacity: 0;
       interpolate-size: allow-keywords;
-      /* transition: content-visibility var(--animation-speed-slow) allow-discrete,
-        padding-block var(--animation-speed-slow) var(--animation-easing),
-        opacity var(--animation-speed-slow) var(--animation-easing),
-        block-size var(--animation-speed-slow) var(--animation-easing); */
     }
 
     &:not([open]) {
@@ -308,7 +277,6 @@ a {
   --button-color: var(--color, var(--color-primary-hover));
 }
 
-/* Add underline to text using our paragraph styles only. */
 p:not(.h1, .h2, .h3, .h4, .h5, .h6) a:where(:not(.button, .button-primary, .button-secondary)),
 .rte
   :is(p, ul, ol, table):not(.h1, .h2, .h3, .h4, .h5, .h6)
@@ -341,20 +309,16 @@ media-gallery {
 }
 
 :not(.dialog-zoomed-gallery) > .product-media-container {
-  /* width and overflow forces children to shrink to parent width */
   --slide-width: round(up, 100%, 1px);
 
   display: flex;
   aspect-ratio: var(--gallery-aspect-ratio, var(--media-preview-ratio));
   max-height: var(--constrained-height);
   width: 100%;
-
-  /* Relative position needed for video and 3d models */
   position: relative;
   overflow: hidden;
 
   &:where(.constrain-height) {
-    /* arbitrary offset value based on average theme spacing and header height */
     --viewport-offset: 400px;
     --constrained-min-height: 300px;
     --constrained-height: max(var(--constrained-min-height), calc(100vh - var(--viewport-offset)));
@@ -369,7 +333,6 @@ media-gallery:where(.media-gallery--grid) .media-gallery__grid {
 }
 
 media-gallery.media-gallery--grid .media-gallery__grid .product-media-container {
-  /* Needed for safari to stretch to full grid height */
   height: 100%;
 }
 
@@ -395,11 +358,9 @@ media-gallery.media-gallery--grid .media-gallery__grid .product-media-container 
 
   .media-gallery--large-first-image .product-media-container:first-child,
   .media-gallery--two-column .product-media-container:only-child {
-    /* First child spans 2 columns */
     grid-column: span 2;
   }
 
-  /* Display grid view as a carousel on mobile, grid on desktop */
   media-gallery:is(.media-gallery--grid) swiper-component {
     display: none;
   }
@@ -410,7 +371,6 @@ media-gallery.media-gallery--grid .media-gallery__grid .product-media-container 
 }
 
 .product-media-container--model {
-  /* Usefull when view in your space is shown */
   flex-direction: column;
 }
 
@@ -472,7 +432,6 @@ zoom-dialog dialog {
   }
 }
 
-/* Animate the UI elements in only after the view transition is complete */
 .close-button {
   position: fixed;
   top: var(--margin-lg);
@@ -484,19 +443,10 @@ zoom-dialog dialog {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* For the outline radius */
   border-radius: var(--style-border-radius-50);
 }
 
-/* This triggers iOS < 16.4. The outline bug is not recognized as a lack of @supports */
-
 @supports not (background-color: rgb(from red 150 g b / alpha)) {
-  /**
-    There is a bug in safari < 16.4 that causes the outline to not follow the elements border radius. This is a workaround.
-    Using element selector to increase specificity.
-  **/
-
   .close-button:focus-visible {
     outline: none;
     overflow: visible;
@@ -602,28 +552,22 @@ zoom-dialog dialog {
   flex: 1;
 }
 
-/* If the product media is already providing an image cover, hide images provided by sibling deferred-media */
 .product-media__image ~ * .deferred-media__poster-image {
   display: none;
 }
 
-/* If the product media is playing, hide the preview image */
 .product-media-container:has(.deferred-media__playing) .product-media__image {
   opacity: 0;
   transition: opacity var(--animation-speed) var(--animation-easing);
 }
 
-/* Deferred media & Product model  */
 :is(product-model, deferred-media) {
-  /* Height needed to make sure when it's set to be stretched, it takes the full height */
   height: 100%;
   width: 100%;
   position: relative;
 }
 
 product-model model-viewer,
-/* Media that have a poster button sibling providing the size should be absolute-positioned.
-Otherwise, it should be a block to rely on its own size */
 :is(deferred-media, product-model) > .deferred-media__poster-button ~ *:not(template) {
   display: block;
   position: absolute;
@@ -632,8 +576,6 @@ Otherwise, it should be a block to rely on its own size */
   width: 100%;
   height: 100%;
   overflow: hidden;
-
-  /* Required to make sure the absolute position respects the padding of the wrapper: */
   padding: inherit;
 }
 
@@ -643,7 +585,6 @@ slideshow-slide .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui_
 }
 
 .dialog-zoomed-gallery .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui__controls-area {
-  /* Move the controls above the thumbnails. Need to calculate the height of the thumbnails list */
   bottom: var(--padding-lg);
   right: var(--padding-lg);
 }
@@ -651,7 +592,6 @@ slideshow-slide .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui_
 @media screen and (max-width: 749px) {
   swiper-component:has(:not(.mobile\:hidden) :is(.swiper-controls__dots, .swiper-controls__counter))
     .shopify-model-viewer-ui__controls-area {
-    /* Position the controls just above the counter */
     bottom: calc(var(--minimum-touch-target) + var(--padding-sm));
   }
 }
@@ -659,26 +599,20 @@ slideshow-slide .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui_
 @media screen and (min-width: 750px) {
   swiper-component:has(:not(.desktop\:hidden) :is(.swiper-controls__dots, .swiper-controls__counter))
     .shopify-model-viewer-ui__controls-area {
-    /* Position the controls just above the counter */
     bottom: calc(var(--minimum-touch-target) + var(--padding-sm));
   }
 
   .dialog-zoomed-gallery .shopify-model-viewer-ui__controls-area.shopify-model-viewer-ui__controls-area {
-    /* Move the controls up to match the padding on the thumbnails */
     bottom: var(--padding-lg);
-
-    /* Move the controls to the left of the thumbnails list on the right */
     right:  var(--padding-lg);
   }
 }
 
 :is(deferred-media, .video-placeholder-wrapper).border-style {
-  /* Apply the border radius to the video */
   overflow: hidden;
 }
 
 deferred-media {
-  /* The overflow hidden in the deferred-media won't let the button show the focus ring */
   &:has(:focus-visible) {
     outline: var(--focus-outline-width) solid currentcolor;
     outline-offset: var(--focus-outline-offset);
@@ -750,7 +684,6 @@ deferred-media[data-media-loaded] img {
 }
 
 deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__poster-button ~ video) {
-  /* only apply this on the video block not product media */
   object-fit: cover;
   height: 100%;
   aspect-ratio: var(--size-style-aspect-ratio, auto);
@@ -838,7 +771,6 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus) {
-  /* Unset button styles */
   padding: 0;
   background: transparent;
   box-shadow: none;
@@ -900,18 +832,14 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
   background-color: transparent;
 }
 
-/* Chrome, Safari, Edge, Opera */
 .quantity-selector input[type='number']::-webkit-inner-spin-button,
 .quantity-selector input[type='number']::-webkit-outer-spin-button {
   appearance: none;
 }
 
-/* Firefox */
 .quantity-selector input[type='number'] {
   appearance: textfield;
 }
-
-/* Pills (used in facets and predictive search) */
 
 .pills__pill {
   --pills-pill-background-color: rgb(var(--color-foreground-rgb) / var(--opacity-5-15));
@@ -965,10 +893,6 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
   padding-top: var(--padding-xl);
   padding-bottom: var(--padding-xl);
 }
-
-/* .swiper-thumbs {
-  height: 600px;
-} */
 
 .swiper-controls__thumbnails {
   height: fit-content;
@@ -1084,4 +1008,29 @@ swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
 .color-scheme-custom {
   color: var(--color-foreground);
   background: var(--color-background);
+}
+
+.alertBox {
+  padding: var(--size-20) var(--size-17);
+  border-radius: var(--style-border-radius-inputs);
+}
+
+.alertBox--success {
+  color: var(--color-success-text);
+  background-color: var(--color-success-background);
+}
+
+.alertBox--error {
+  color: var(--color-error-text);
+  background-color: var(--color-error-background);
+}
+
+.alertBox--info {
+  color: var(--color-info-text);
+  background-color: var(--color-info-background);
+}
+
+.alertBox--warning {
+  color: var(--color-warning-text);
+  background-color: var(--color-warning-background);
 }

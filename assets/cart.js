@@ -38,363 +38,516 @@ class GiftWrapButton extends HTMLElement {
 }
 if (!customElements.get('gift-wrap-button')) customElements.define('gift-wrap-button', GiftWrapButton);
 
-class CartRemoveButton extends HTMLElement {
+class CartItemsComponent extends HTMLElement {
+  #debouncedOnChange;
+
   constructor() {
     super();
+    this.handleQuantityUpdate = this.handleQuantityUpdate.bind(this);
 
-    this.addEventListener('click', (event) => {
-      event.preventDefault();
-      const cartItemsComponent = this.closest('cart-items-component') || this.closest('cart-drawer-items');
-      const lineIndex = this.dataset.index;
-      const tableRow = this.closest('.cart-items__table-row');
-
-      console.log(tableRow);
-
-      setTimeout(() => {
-        if (tableRow) tableRow.classList.add('removing');
-        cartItemsComponent.updateQuantity(lineIndex, 0, event);
-      });
+    // Listen for custom remove events from on:click handlers
+    this.addEventListener('onLineItemRemove', (event) => {
+      if (event?.detail?.line) {
+        this.onLineItemRemove(event.detail.line);
+      }
     });
   }
-}
-if (!customElements.get('cart-remove-button')) customElements.define('cart-remove-button', CartRemoveButton);
 
-class CartItemsComponent extends HTMLElement {
-  constructor() {
-    super();
-    this.lineItemStatusElement =
-      document.getElementById('shopping-cart-line-item-status') || document.getElementById('CartDrawer-LineItemStatus');
-
-    const debouncedOnChange = debounce((event) => {
-      this.onChange(event);
-    }, ON_CHANGE_DEBOUNCE_TIMER);
-
-    this.addEventListener('change', debouncedOnChange.bind(this));
+  // Debounce utility as a private method
+  #debounce(fn, wait) {
+    let timeout;
+    function debounced(...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn.apply(this, args), wait);
+    }
+    debounced.cancel = () => clearTimeout(timeout);
+    return debounced;
   }
 
-  cartUpdateUnsubscriber = undefined;
+  // Animation end utility
+  #onAnimationEnd(elements, callback, options = { subtree: true }) {
+    const animations = Array.isArray(elements)
+      ? elements.flatMap((element) => element.getAnimations(options))
+      : elements.getAnimations(options);
+    const animationPromises = animations.reduce((acc, animation) => {
+      if (animation.timeline instanceof DocumentTimeline) {
+        acc.push(animation.finished);
+      }
+      return acc;
+    }, []);
+    return Promise.allSettled(animationPromises).then(callback);
+  }
+
+  // Reduced motion check
+  #prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
 
   connectedCallback() {
-    this.cartUpdateUnsubscriber = subscribe(PUB_SUB_EVENTS.cartUpdate, (event) => {
-      if (event.source === 'cart-items-component') {
-        return;
-      }
-      this.onCartUpdate();
-    });
+    document.addEventListener('cart:update', this.handleCartUpdate);
+    document.addEventListener('discount:update', this.handleDiscountUpdate);
+    document.addEventListener('quantity-selector:update', this.handleQuantityUpdate);
   }
 
   disconnectedCallback() {
-    if (this.cartUpdateUnsubscriber) {
-      this.cartUpdateUnsubscriber();
-    }
+    document.removeEventListener('cart:update', this.handleCartUpdate);
+    document.removeEventListener('discount:update', this.handleDiscountUpdate);
+    document.removeEventListener('quantity-selector:update', this.handleQuantityUpdate);
   }
 
-  resetQuantityInput(id) {
-    const input = document.querySelector(`#Quantity-${id}`) || document.getElementById(`Drawer-quantity-${id}`);
-    if (input) {
-      input.value = input.getAttribute('value');
-      this.isEnterPressed = false;
-    }
-  }
+  async handleQuantityUpdate(event) {
+    const { quantity, cartLine } = event.detail || {};
+    if (typeof cartLine === 'undefined' || cartLine === null) return;
 
-  setValidity(event, index, message) {
-    if (event.target && typeof event.target.setCustomValidity === 'function') {
-      event.target.setCustomValidity(message);
-      event.target.reportValidity();
-      this.resetQuantityInput(index);
-      event.target.select();
-    }
-  }
-
-  validateQuantity(event) {
-    if (!event.target.closest('quantity-input')) {
+    if (quantity === 0) {
+      this.onLineItemRemove(cartLine);  
       return;
     }
 
-    const inputValue = parseInt(event.target.value);
-    const index = event.target.dataset.index;
-    let message = '';
-
-    if (inputValue < event.target.dataset.min) {
-      message = window.quickOrderListStrings.min_error.replace('[min]', event.target.dataset.min);
-    } else if (inputValue > parseInt(event.target.max)) {
-      message = window.quickOrderListStrings.max_error.replace('[max]', event.target.max);
-    } else if (inputValue % parseInt(event.target.step) !== 0) {
-      message = window.quickOrderListStrings.step_error.replace('[step]', event.target.step);
+    const lineItemRow = this.querySelector(`.cart-items__table-row[data-line="${cartLine}"]`);
+    console.log('lineItemRow', lineItemRow);
+    if (lineItemRow) {
+      const textComponent = lineItemRow.querySelectorAll?.('text-loader-component');
+      textComponent?.forEach?.((component) => {
+        component.spinner();
+      });
     }
 
-    if (message) {
-      this.setValidity(event, index, message);
-    } else {
-      if (event.target && typeof event.target.setCustomValidity === 'function') {
-        event.target.setCustomValidity('');
-        event.target.reportValidity();
-      }
-      this.updateQuantity(
-        index,
-        inputValue,
-        event,
-        document.activeElement.getAttribute('name'),
-        event.target.dataset.quantityVariantId
+    await this.updateQuantity({
+      line: cartLine,
+      quantity,
+      action: 'change',
+    });
+  }
+
+  /**
+   * Handles QuantitySelectorUpdateEvent change event.
+   * @param {QuantitySelectorUpdateEvent} event - The event.
+   */
+  // #onQuantityChange(event) {
+  //   const { quantity, cartLine: line } = event.detail || {};
+  //   if (!line) return;
+
+  //   if (quantity === 0) {
+  //     this.onLineItemRemove(line);
+  //     return;
+  //   }
+
+  //   // Find the cart row by its class and data-line attribute (cart-items__table-row)
+  //   const lineItemRow = this.querySelector(`.cart-items__table-row[data-line="${line}"]`);
+  //   if (lineItemRow) {
+  //     const textComponent = lineItemRow.querySelector?.('text-loader-component');
+  //     textComponent?.spinner();
+  //   }
+
+  //   this.updateQuantity({
+  //     line,
+  //     quantity,
+  //     action: 'change',
+  //   });
+  // }
+
+  /**
+   * Handles the line item removal.
+   * @param {number} line - The line item index (1-based).
+   */
+  async onLineItemRemove(line) {
+    // Animate removal of the row(s) in the UI
+    const cartItemRowToRemove = this.querySelector(`.cart-items__table-row[data-line="${line}"]`);
+    if (!cartItemRowToRemove) {
+      // Still attempt to update quantity to 0 in backend
+      await this.updateQuantity({
+        line,
+        quantity: 0,
+        action: 'clear',
+      });
+      return;
+    }
+
+    // Remove any child rows (e.g., bundled items) that have this row as parent
+    let rowsToRemove = [cartItemRowToRemove];
+    // NodeList returned by querySelectorAll does not have filter in all browsers, so convert to array
+    const allRows = Array.from(this.querySelectorAll(`.cart-items__table-row`));
+    if (cartItemRowToRemove.dataset.key) {
+      rowsToRemove = rowsToRemove.concat(
+        allRows.filter(
+          (row) => row.dataset.parentKey === cartItemRowToRemove.dataset.key
+        )
       );
     }
+
+    // Animate and remove rows
+    for (const row of rowsToRemove) {
+      const remove = () => row.remove();
+      if (this.#prefersReducedMotion()) {
+        remove();
+      } else {
+        row.style.setProperty('--row-height', `${row.clientHeight}px`);
+        row.classList.add('removing');
+        await this.#onAnimationEnd(row, remove);
+      }
+    }
+
+    // After animation, update backend
+    await this.updateQuantity({
+      line,
+      quantity: 0,
+      action: 'clear',
+    });
   }
 
-  onChange(event) {
-    this.validateQuantity(event);
+  createAbortController() {
+    if (this.activeFetch) {
+      this.activeFetch.abort();
+    }
+    const abortController = new AbortController();
+    this.activeFetch = abortController;
+    return abortController;
   }
 
-  dispatchChangeForShippingMessage() {
-    document.querySelectorAll('[data-free-shipping-wrapper]').forEach(freeShippingWrapper => {
-        const changeEvent = new Event('change', { bubbles: true })
-        freeShippingWrapper.dispatchEvent(changeEvent);
-    })
+  async getSectionHTML(sectionId, url = window.location.href) {
+    const targetUrl = new URL(url);
+    targetUrl.searchParams.set('section_id', sectionId);
+  
+    const response = await fetch(targetUrl, { cache: 'no-store' });
+    return await response.text();
   }
+  
+  /**
+   * Renders a section by fetching its HTML and updating the DOM.
+   * @param {string} sectionId
+   */
+  async renderSection(sectionId) {
+    // Fetch the new section HTML
+    const html = await this.getSectionHTML(sectionId);
+    const newDOM = new DOMParser().parseFromString(html, 'text/html');
+    // Find the new and old section containers
+    const newSection = newDOM.querySelector(`[data-section-id="${sectionId}"] .section--page-width`);
+    const oldSection = document.querySelector(`[data-section-id="${sectionId}"] .section--page-width`);
 
-  onCartUpdate() {
-    if (this.tagName === 'CART-DRAWER-ITEMS') {
-      fetch(`${routes.cart_url}?section_id=cart-drawer`)
-        .then((response) => response.text())
-        .then((responseText) => {
-
-          const html = new DOMParser().parseFromString(responseText, 'text/html');
-          const selectors = ['cart-drawer-items', '.cart-drawer__footer'];
-          for (const selector of selectors) {
-            const targetElement = document.querySelector(selector);
-            const sourceElement = html.querySelector(selector);
-            if (targetElement && sourceElement) {
-              targetElement.replaceWith(sourceElement);
-            }
+    // Only proceed if both new and old sections exist
+    if (newSection && oldSection) {
+      // For each child in the new section, update the corresponding child in the old section
+      Array.from(newSection.children).forEach(child => {
+        // Skip message and shipping blocks
+        if (
+          !child.classList.contains('cart-page__message') &&
+          !child.classList.contains('cart-page__shipping')
+        ) {
+          let target = null;
+          // Prefer matching by id
+          if (child.id) {
+            target = oldSection.querySelector(`#${child.id}`);
           }
-        })
-        .catch((e) => {
-          console.error(e);
-        });
-    } else {
-      fetch(`${routes.cart_url}?section_id=main-cart`)
-        .then((response) => response.text())
-        .then((responseText) => {
-          const html = new DOMParser().parseFromString(responseText, 'text/html');
-          const sourceComponent = html.querySelector('cart-items-component .section--page-width');
-          if (sourceComponent) {
-            Array.from(sourceComponent.children).forEach(child => {
-              console.log(child);
-              if (!child.classList.contains('cart-page__message') && !child.classList.contains('cart-page__shipping')) {
-                let target;
-                if (child.id) {
-                  target = this.querySelector(`#${child.id}`);
-                }
-                if (!target && child.classList.length > 0) {
-                  target = this.querySelector(`.${child.classList[0]}`);
-                }
-                if (target) {
-                  target.replaceWith(child.cloneNode(true));
-                }
-              }
-            });
+          // Fallback: match by first class name
+          if (!target && child.classList.length > 0) {
+            target = oldSection.querySelector(`.${child.classList[0]}`);
           }
-        })
-        .catch((e) => {
-          console.error(e);
-        });
+          // If a target is found, replace it with the new child
+          if (target) {
+            target.replaceWith(child.cloneNode(true));
+          }
+        }
+      });
     }
   }
 
+  /**
+   * Updates the quantity for a cart line.
+   * @param {Object} config - The config.
+   * @param {number} config.line - The line (1-based).
+   * @param {number} config.quantity - The quantity.
+   * @param {string} config.action - The action ('change' or 'clear').
+   */
+  async updateQuantity(config) {
+    // Use CartPerformance from global.js if available
+    let cartPerformanceUpdateMarker = null;
+    if (
+      typeof CartPerformance !== 'undefined' &&
+      CartPerformance &&
+      typeof CartPerformance.createStartingMarker === 'function'
+    ) {
+      cartPerformanceUpdateMarker = CartPerformance.createStartingMarker(`${config.action}:user-action`);
+    }
+
+    this.classList.add('cart-items-disabled');
+
+    const { line, quantity } = config;
+    const cartTotal = this.querySelector('.cart-total text-loader-component');
+
+    // Collect all section IDs to update
+    const cartItemsComponents = document.querySelectorAll('cart-items-component');
+    const sectionsToUpdate = new Set();
+    cartItemsComponents.forEach((item) => {
+      if (item.dataset.sectionId) sectionsToUpdate.add(item.dataset.sectionId);
+    });
+
+    if (sectionsToUpdate.size === 0 && window.Shopify?.designMode) {
+      const possibleSection = document.querySelector('[data-section-id*="cart"]');
+      if (possibleSection) sectionsToUpdate.add(possibleSection.dataset.sectionId);
+    }
+
+    const abortController = this.createAbortController();
+
+    const bodyObj = {
+      line,
+      quantity,
+      sections: Array.from(sectionsToUpdate).join(','),
+      sections_url: window.location.pathname,
+    };
+
+    const fetchOptions = {
+      ...fetchConfig('json'),
+      body: JSON.stringify(bodyObj),
+      signal: abortController.signal,
+    };
+
+    cartTotal?.spinner();
+
+    try {
+      const response = await fetch(`${routes.cart_change_url}`, fetchOptions);
+
+      const json = await response.json();
+
+      console.log('json', json);
+      console.log('json.errors', json.errors);
+
+      if (json.errors) {
+        resetSpinner(this);
+        this.#handleCartError(line, json);
+        return;
+      }
+
+      if (window.Shopify.designMode) {
+        for (const id of sectionsToUpdate) {
+          await this.renderSection(id);
+        }
+        document.dispatchEvent(new CustomEvent('cart:updated', { detail: json }));
+        return;
+      }
+
+      if (json.sections) {
+        this.updateSections(json.sections);
+        document.dispatchEvent(new CustomEvent('cart:updated', { detail: json }));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this.classList.remove('cart-items-disabled');
+      if (
+        typeof CartPerformance !== 'undefined' &&
+        CartPerformance &&
+        typeof CartPerformance.measureFromMarker === 'function' &&
+        cartPerformanceUpdateMarker
+      ) {
+        CartPerformance.measureFromMarker(`${config.action}:user-action`, cartPerformanceUpdateMarker);
+      }
+    }
+  }
+
+  updateSections(sections) {
+    console.log('updateSections', sections);
+    if (!sections) return;
+
+    resetSpinner(this);
+
+    Object.entries(sections).forEach(([id, html]) => {
+      const target = document.querySelector(`[data-section-id="${id}"]`);
+      if (!target) return;
+
+      const newDOM = new DOMParser().parseFromString(html, 'text/html');
+      const newSection = newDOM.querySelector(`[data-section-id="${id}"] .section--page-width`);
+
+      console.log('newSection', newSection);
+      console.log('target', target);
+
+      // Only proceed if both new and old sections exist
+      if (newSection && target) {
+        // For each child in the new section, update the corresponding child in the old section
+        Array.from(newSection.children).forEach(child => {
+          // Skip message and shipping blocks
+          if (
+            !child.classList.contains('cart-page__message') &&
+            !child.classList.contains('cart-page__shipping')
+          ) {
+            let targetChild = null;
+            // Prefer matching by id
+            if (child.id) {
+              targetChild = target.querySelector(`#${child.id}`);
+            }
+            // Fallback: match by first class name
+            if (!targetChild && child.classList.length > 0) {
+              targetChild = target.querySelector(`.${child.classList[0]}`);
+            }
+            // If a target child is found, replace it with the new child
+            if (targetChild) {
+              targetChild.replaceWith(child.cloneNode(true));
+            }
+          }
+        });
+      }
+      // If you want to replace the whole section instead, uncomment the following:
+      // if (newSection) target.replaceWith(newSection);
+    });
+  }
+
+  /**
+   * Handles the discount update.
+   * @param {DiscountUpdateEvent} event - The event.
+   */
+  handleDiscountUpdate = (event) => {
+    this.handleCartUpdate(event);
+  };
+
+  /**
+   * Handles the cart error.
+   * @param {number} line - The line.
+   * @param {Object} json - The parsed response text.
+   * @param {string} json.errors - The errors.
+   */
+  #handleCartError = (line, json) => {
+    const quantitySelector = this.querySelector(`.cart-items__table-row[data-line="${line}"]`);
+    const quantityInput = quantitySelector?.querySelector?.('input');
+    if (!quantityInput) {
+      console.error('Quantity input not found');
+      return;
+    }
+    
+    quantityInput.value = quantityInput.defaultValue;
+
+    const cartItemError = this.querySelector(`.cart-items__table-row[data-line="${line}"] .cart-item__error-text`);
+    const cartItemErrorContainer = this.querySelector(`.cart-items__table-row[data-line="${line}"] .cart-item__error`);
+
+    if (!(cartItemError instanceof HTMLElement)) {
+      console.error('Cart item error not found');
+      return;
+    }
+    if (!(cartItemErrorContainer instanceof HTMLElement)) {
+      console.error('Cart item error container not found');
+      return;
+    }
+
+    cartItemError.textContent = json.errors;
+    cartItemErrorContainer.classList.remove('hidden');
+  };
+
+  /**
+   * Handles the cart update.
+   *
+   * @param {DiscountUpdateEvent | CustomEvent | CartAddEvent} event
+   */
+  handleCartUpdate(event) {
+    // Accept both {data: {sections}} and {sections} in event.detail
+    let sections = undefined;
+    if (event?.detail?.data?.sections) {
+      sections = event.detail.data.sections;
+    } else if (event?.detail?.sections) {
+      sections = event.detail.sections;
+    }
+    if (sections) this.updateSections(sections);
+  };
+
+  /**
+   * Gets the section id.
+   * @returns {string} The section id.
+   */
+  get sectionId() {
+    const { sectionId } = this.dataset || {};
+    if (!sectionId) throw new Error('Section id missing');
+    return sectionId;
+  }
+}
+if (!customElements.get('cart-items-component')) customElements.define('cart-items-component', CartItemsComponent);
+
+class CartDrawerItems extends CartItemsComponent {
   getSectionsToRender() {
     return [
       {
-        id: 'main-cart-items',
-        section: document.getElementById('main-cart-items').dataset.id,
-        selector: '.js-contents',
+        id: 'CartDrawer',
+        section: 'cart-drawer',
+        selector: 'cart-drawer-items'
+      },
+      {
+        id: 'CartDrawer',
+        section: 'cart-drawer',
+        selector: '.drawer__footer'
       },
       {
         id: 'cart-icon-bubble',
         section: 'cart-icon-bubble',
         selector: '.shopify-section',
       },
-      {
-        id: 'cart-live-region-text',
-        section: 'cart-live-region-text',
-        selector: '.shopify-section',
-      }
     ];
   }
+}
+if (!customElements.get('cart-drawer-items')) customElements.define('cart-drawer-items', CartDrawerItems);
 
-  updateQuantity(line, quantity, event, name, variantId) {
-    this.enableLoading(line);
+class QuantitySelectorComponent extends HTMLElement {
+  constructor() {
+    super();
 
-    const body = JSON.stringify({
-      line,
-      quantity,
-      sections: this.getSectionsToRender().map((section) => section.section),
-      sections_url: window.location.pathname,
+    this.refs = {
+      input: this.querySelector('.quantity__input'),
+    };
+
+    this.increase = this.increase.bind(this);
+    this.decrease = this.decrease.bind(this);
+    this.setQuantity = this.setQuantity.bind(this);
+  }
+
+  connectedCallback() {
+    const input = this.refs.input;
+    if (!input) return;
+
+    this.addEventListener('increaseQuantity', this.increase);
+    this.addEventListener('decreaseQuantity', this.decrease);
+    input.addEventListener('blur', this.setQuantity);
+    input.addEventListener('focus', () => input.select());
+  }
+
+  increase() {
+    const input = this.refs.input;
+    input.stepUp();
+    this.dispatchQuantityUpdate();
+  }
+
+  decrease() {
+    const input = this.refs.input;
+    input.stepDown();
+    this.dispatchQuantityUpdate();
+  }
+
+  setQuantity() {
+    this.dispatchQuantityUpdate();
+  }
+
+  dispatchQuantityUpdate() {
+    const input = this.refs.input;
+    const quantity = Number(input.value);
+    const cartLine = Number(input.dataset.cartLine);
+
+    this.#checkQuantityRules();
+
+    // Dispatch global event để Cart component xử lý
+    const event = new CustomEvent('quantity-selector:update', {
+      bubbles: true,
+      detail: { quantity, cartLine },
     });
-    const eventTarget = event && event.currentTarget instanceof CartRemoveButton ? 'clear' : 'change';
 
-    fetch(`${routes.cart_change_url}`, { ...fetchConfig(), body })
-      .then((response) => response.text())
-      .then((state) => {
-        let parsedState;
-        try {
-          parsedState = JSON.parse(state);
-        } catch (e) {
-          this.updateLiveRegions(line, window.cartStrings.error);
-          this.disableLoading(line);
-          return;
-        }
-
-        CartPerformance.measure(`${eventTarget}:paint-updated-sections`, () => {
-          const quantityElement =
-            document.getElementById(`Quantity-${line}`) || document.getElementById(`Drawer-quantity-${line}`);
-          const items = document.querySelectorAll('.cart-item');
-
-          if (parsedState.errors) {
-            if (quantityElement) {
-              quantityElement.value = quantityElement.getAttribute('value');
-            }
-            this.updateLiveRegions(line, parsedState.errors);
-            return;
-          }
-
-          this.classList.toggle('is-empty', parsedState.item_count === 0);
-          const cartDrawerWrapper = document.querySelector('cart-drawer');
-          const cartSummary = document.getElementById('main-cart-summary');
-
-          if (cartSummary) cartSummary.classList.toggle('is-empty', parsedState.item_count === 0);
-          if (cartDrawerWrapper) cartDrawerWrapper.classList.toggle('is-empty', parsedState.item_count === 0);
-
-          this.getSectionsToRender().forEach((section) => {
-            const sectionElement = document.getElementById(section.id);
-            if (!sectionElement) return;
-            const elementToReplace =
-              sectionElement.querySelector(section.selector) || sectionElement;
-            const sectionHtml = parsedState.sections && parsedState.sections[section.section];
-            if (sectionHtml && elementToReplace) {
-              elementToReplace.innerHTML = this.getSectionInnerHTML(sectionHtml, section.selector);
-            }
-          });
-
-          const updatedItem = parsedState.items && parsedState.items[line - 1];
-          const updatedValue = updatedItem ? updatedItem.quantity : undefined;
-          let message = '';
-          if (
-            items.length === (parsedState.items ? parsedState.items.length : 0) &&
-            quantityElement &&
-            updatedValue !== undefined &&
-            updatedValue !== parseInt(quantityElement.value, 10)
-          ) {
-            message = window.cartStrings.quantityError.replace('[quantity]', updatedValue);
-          } else if (
-            items.length === (parsedState.items ? parsedState.items.length : 0) &&
-            updatedValue === undefined
-          ) {
-            message = window.cartStrings.error;
-          }
-          this.updateLiveRegions(line, message);
-
-          const lineItem =
-            document.getElementById(`CartItem-${line}`) || document.getElementById(`CartDrawer-Item-${line}`);
-          if (lineItem && lineItem.querySelector(`[name="${name}"]`)) {
-            const input = lineItem.querySelector(`[name="${name}"]`);
-            if (cartDrawerWrapper) {
-              trapFocus(cartDrawerWrapper, input);
-            } else {
-              input.focus();
-            }
-          } else if (parsedState.item_count === 0 && cartDrawerWrapper) {
-            const emptyDrawer = cartDrawerWrapper.querySelector('.drawer__inner-empty');
-            const firstLink = cartDrawerWrapper.querySelector('a');
-            if (emptyDrawer && firstLink) {
-              trapFocus(emptyDrawer, firstLink);
-            }
-          } else if (document.querySelector('.cart-item') && cartDrawerWrapper) {
-            const firstName = document.querySelector('.cart-item__name');
-            if (firstName) {
-              trapFocus(cartDrawerWrapper, firstName);
-            }
-          }
-        });
-
-        CartPerformance.measureFromEvent(`${eventTarget}:user-action`, event);
-
-        publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cartData: parsedState, variantId: variantId });
-
-        document.dispatchEvent(new CustomEvent('cart:updated', { detail: state }));
-      })
-      .catch(() => {
-        this.querySelectorAll('.loading__spinner').forEach((overlay) => overlay.classList.add('hidden'));
-        const errors = document.getElementById('cart-errors') || document.getElementById('CartDrawer-CartErrors');
-        if (errors) {
-          errors.textContent = window.cartStrings.error;
-        }
-      })
-      .finally(() => {
-        this.disableLoading(line);
-      });
+    this.dispatchEvent(event);
   }
 
-  updateLiveRegions(line, message) {
-    const lineItemError =
-      document.getElementById(`Line-item-error-${line}`) || document.getElementById(`CartDrawer-LineItemError-${line}`);
-    if (lineItemError) {
-      const errorTextElement = lineItemError.querySelector('.cart-item__error-text');
-      if (errorTextElement) {
-        errorTextElement.innerHTML = message;
-      }
-    }
+  #checkQuantityRules() {
+    const input = this.refs.input;
+    const min = Number(input.min);
+    const max = Number(input.max);
+    const newValue = Number(input.value);
 
-    if (this.lineItemStatusElement) {
-      this.lineItemStatusElement.setAttribute('aria-hidden', true);
-    }
-
-    const cartStatus =
-      document.getElementById('cart-live-region-text') || document.getElementById('CartDrawer-LiveRegionText');
-    if (cartStatus) {
-      cartStatus.setAttribute('aria-hidden', false);
-
-      setTimeout(() => {
-        cartStatus.setAttribute('aria-hidden', true);
-      }, 1000);
-    }
-  }
-
-  getSectionInnerHTML(html, selector) {
-    return new DOMParser().parseFromString(html, 'text/html').querySelector(selector).innerHTML;
-  }
-
-  enableLoading(line) {
-    const mainCartItems = document.getElementById('main-cart-items') || document.getElementById('CartDrawer-CartItems');
-    if (mainCartItems) {
-      mainCartItems.classList.add('cart__items--disabled');
-    }
-
-    const loadingSpinner = this.querySelectorAll(`#CartItem-${line} .loading__spinner`);
-    const cartDrawerItemElements = this.querySelectorAll(`#CartDrawer-Item-${line} .loading__spinner`);
-
-    this.classList.add('loading');
-    [...loadingSpinner, ...cartDrawerItemElements].forEach((overlay) => overlay.classList.remove('hidden'));
-
-    document.activeElement.blur();
-    if (this.lineItemStatusElement) {
-      this.lineItemStatusElement.setAttribute('aria-hidden', false);
-    }
-  }
-
-  disableLoading(line) {
-    const mainCartItems = document.getElementById('main-cart-items') || document.getElementById('CartDrawer-CartItems');
-    if (mainCartItems) {
-      mainCartItems.classList.remove('cart__items--disabled');
-    }
-
-    const loadingSpinner = this.querySelectorAll(`#CartItem-${line} .loading__spinner`);
-    const cartDrawerItemElements = this.querySelectorAll(`#CartDrawer-Item-${line} .loading__spinner`);
-
-    this.classList.remove('loading');
-    loadingSpinner.forEach((overlay) => overlay.classList.add('hidden'));
-    cartDrawerItemElements.forEach((overlay) => overlay.classList.add('hidden'));
+    if (!isNaN(min) && newValue < min) input.value = min;
+    if (!isNaN(max) && max && newValue > max) input.value = max;
   }
 }
-if (!customElements.get('cart-items-component')) customElements.define('cart-items-component', CartItemsComponent);
+if (!customElements.get('quantity-selector-component')) customElements.define('quantity-selector-component', QuantitySelectorComponent);
 
 class CartDiscountComponent extends HTMLElement {
   constructor() {
@@ -408,11 +561,13 @@ class CartDiscountComponent extends HTMLElement {
 
     const discountForm = this.querySelector('form.cart-discount__form');
     if (discountForm) {
+      console.log('discountForm', discountForm);
       discountForm.addEventListener('submit', this.applyDiscount);
     }
 
     this.addEventListener('click', (event) => {
       if (event.target.closest('.cart-discount__pill')) {
+        console.log('event', event);
         this.removeDiscount(event);
       }
     });
@@ -452,6 +607,31 @@ class CartDiscountComponent extends HTMLElement {
       }
     }
     return discountCodes;
+  }
+
+  /**
+   * Use CartItemsComponent.updateSections to update the relevant sections in the DOM.
+   * @param {Object} sections - The sections object from the response.
+   */
+  updateSections(sections) {
+    // Use CartItemsComponent's updateSections
+    const cartItemsComponent = document.querySelector('cart-items-component');
+    if (cartItemsComponent && typeof cartItemsComponent.updateSections === 'function') {
+      cartItemsComponent.updateSections(sections);
+    }
+  }
+
+  /**
+   * Use CartItemsComponent.renderSection to render a single section by id and html.
+   * @param {string} sectionId
+   * @param {string} html
+   */
+  renderSection(sectionId, html) {
+    // Use CartItemsComponent's renderSection
+    const cartItemsComponent = document.querySelector('cart-items-component');
+    if (cartItemsComponent && typeof cartItemsComponent.renderSection === 'function') {
+      cartItemsComponent.renderSection(sectionId, html);
+    }
   }
 
   async applyDiscount(event) {
@@ -506,10 +686,12 @@ class CartDiscountComponent extends HTMLElement {
         return;
       }
 
-      const newHtml = data.sections[this.dataset.sectionId];
-      const parsedHtml = new DOMParser().parseFromString(newHtml, 'text/html');
-      const section = parsedHtml.getElementById(`shopify-section-${this.dataset.sectionId}`);
+      const newHtml = data.sections && data.sections[this.dataset.sectionId];
+      const parsedHtml = newHtml ? new DOMParser().parseFromString(newHtml, 'text/html') : null;
+      const section = parsedHtml ? parsedHtml.getElementById(`shopify-section-${this.dataset.sectionId}`) : null;
       const discountPills = section?.querySelectorAll('.cart-discount__pill') || [];
+      console.log('section', section);
+      console.log('discountPills', discountPills);
       if (section) {
         const codes = Array.from(discountPills)
           .map((element) => (element instanceof HTMLLIElement ? element.dataset.discountCode : null))
@@ -529,11 +711,14 @@ class CartDiscountComponent extends HTMLElement {
       }
 
       document.dispatchEvent(new CustomEvent('DiscountUpdateEvent', { detail: { data, id: this.id } }));
-      if (typeof morphSection === 'function') {
-        morphSection(this.dataset.sectionId, newHtml);
-      } else {
-        const sectionEl = document.getElementById(`shopify-section-${this.dataset.sectionId}`);
-        if (sectionEl) sectionEl.outerHTML = newHtml;
+
+      // Use CartItemsComponent's updateSections and renderSection
+      console.log('data.sections', data.sections);
+      console.log('newHtml', newHtml);
+      if (data.sections) {
+        this.updateSections(data.sections);
+      } else if (newHtml) {
+        this.renderSection(this.dataset.sectionId, newHtml);
       }
     } catch (error) {
     } finally {
@@ -590,11 +775,12 @@ class CartDiscountComponent extends HTMLElement {
       const data = await response.json();
 
       document.dispatchEvent(new CustomEvent('DiscountUpdateEvent', { detail: { data, id: this.id } }));
-      if (typeof morphSection === 'function') {
-        morphSection(this.dataset.sectionId, data.sections[this.dataset.sectionId]);
-      } else {
-        const sectionEl = document.getElementById(`shopify-section-${this.dataset.sectionId}`);
-        if (sectionEl) sectionEl.outerHTML = data.sections[this.dataset.sectionId];
+
+      // Use CartItemsComponent's updateSections and renderSection
+      if (data.sections) {
+        this.updateSections(data.sections);
+      } else if (data.sections && data.sections[this.dataset.sectionId]) {
+        this.renderSection(this.dataset.sectionId, data.sections[this.dataset.sectionId]);
       }
     } catch (error) {
     } finally {
@@ -612,10 +798,7 @@ class CartDiscountComponent extends HTMLElement {
     target && target.classList.remove('hidden');
   }
 }
-
-if (!customElements.get('cart-discount-component')) {
-  customElements.define('cart-discount-component', CartDiscountComponent);
-}
+if (!customElements.get('cart-discount-component')) customElements.define('cart-discount-component', CartDiscountComponent);
 
 if (!customElements.get('cart-note')) {
   customElements.define(
@@ -638,30 +821,7 @@ if (!customElements.get('cart-note')) {
   );
 }
 
-class CartDrawerItems extends CartItemsComponent {
-  getSectionsToRender() {
-    return [
-      {
-        id: 'CartDrawer',
-        section: 'cart-drawer',
-        selector: 'cart-drawer-items'
-      },
-      {
-        id: 'CartDrawer',
-        section: 'cart-drawer',
-        selector: '.drawer__footer'
-      },
-      {
-        id: 'cart-icon-bubble',
-        section: 'cart-icon-bubble',
-        selector: '.shopify-section',
-      },
-    ];
-  }
-}
-if (!customElements.get('cart-drawer-items')) customElements.define('cart-drawer-items', CartDrawerItems);
-
-class CountryProvince extends HTMLElement {
+class CountryProvinceComponent extends HTMLElement {
   constructor() {
     super();
 
@@ -669,20 +829,34 @@ class CountryProvince extends HTMLElement {
     this.countryElement = this.querySelector('[name="address[country]"]');
     this.countryElement.addEventListener('change', this.handleCountryChange.bind(this));
 
-    if (this.getAttribute('country') !== '') {
-      this.countryElement.selectedIndex = Math.max(0, Array.from(this.countryElement.options).findIndex((option) => option.textContent === this.dataset.country));
+    if (this.dataset.country && this.dataset.country !== '') {
+      const idx = Array.from(this.countryElement.options).findIndex(
+        (option) => option.textContent === this.dataset.country
+      );
+      this.countryElement.selectedIndex = Math.max(0, idx);
       this.countryElement.dispatchEvent(new Event('change'));
-    }
-    else {
+    } else {
       this.handleCountryChange();
     }
   }
 
   handleCountryChange() {
-    const option = this.countryElement.options[this.countryElement.selectedIndex], provinces = JSON.parse(option.dataset.provinces);
+    const option = this.countryElement.options[this.countryElement.selectedIndex];
+    if (!option || !option.dataset.provinces) {
+      this.provinceElement.parentElement.style.display = 'none';
+      this.provinceElement.innerHTML = '';
+      return;
+    }
+    let provinces = [];
+    try {
+      provinces = JSON.parse(option.dataset.provinces);
+    } catch (e) {
+      provinces = [];
+    }
     this.provinceElement.parentElement.style.display = provinces.length === 0 ? 'none' : 'block';
 
     if (provinces.length === 0) {
+      this.provinceElement.innerHTML = '';
       return;
     }
 
@@ -694,9 +868,9 @@ class CountryProvince extends HTMLElement {
     });
   }
 }
-customElements.define('country-province', CountryProvince);
+if (!customElements.get('country-province-component')) customElements.define('country-province-component', CountryProvinceComponent);
 
-class ShippingCalculator extends HTMLFormElement {
+class ShippingCalculatorComponent extends HTMLFormElement {
   constructor() {
     super();
 
@@ -715,92 +889,29 @@ class ShippingCalculator extends HTMLFormElement {
 
     this.submitButton.setAttribute('aria-busy', 'true');
 
-    const variantId = this.getProductVariantId();
-    
-    if (variantId) {
-      this.addToCartAndCalculateShipping(variantId, { zip, country, province });
-    } else {
-      this.formatError({ error: 'No product variant selected' });
-      this.resultsElement.style.display = 'block';
-      this.submitButton.removeAttribute('aria-busy');
-    }
-  }
-
-  addToCartAndCalculateShipping(variantId, shippingAddress) {
-    const addToCartBody = JSON.stringify({
-      items: [{ id: variantId, quantity: 1 }]
+    const body = JSON.stringify({
+      shipping_address: { zip, country, province }
     });
+    let sectionUrl = `${routes.cart_url}/shipping_rates.json`;
 
-    fetch(`${routes.cart_add_url}`, {
-      ...fetchConfig(),
-      body: addToCartBody
-    })
-    .then(() => {
-      const body = JSON.stringify({
-        shipping_address: shippingAddress
+    sectionUrl = sectionUrl.replace(/\/\//g, '/');
+
+    fetch(sectionUrl, { ...fetchConfig('javascript'), ...{ body } })
+      .then((response) => response.json())
+      .then((parsedState) => {
+        if (parsedState.shipping_rates) {
+          this.formatShippingRates(parsedState.shipping_rates);
+        } else {
+          this.formatError(parsedState);
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      })
+      .finally(() => {
+        this.resultsElement.hidden = false;
+        this.submitButton.removeAttribute('aria-busy');
       });
-
-      let sectionUrl = `${routes.cart_url}/shipping_rates.json`;
-      sectionUrl = sectionUrl.replace('//', '/');
-
-      return fetch(sectionUrl, { ...fetchConfig(), ...{ body } });
-    })
-    .then((response) => response.json())
-    .then((parsedState) => {
-      if (parsedState.shipping_rates) {
-        this.formatShippingRates(parsedState.shipping_rates);
-      } else {
-        this.formatError(parsedState);
-      }
-    })
-    .catch((e) => {
-      console.error(e);
-      this.formatError({ error: 'An error occurred while calculating shipping rates.' });
-    })
-    .finally(() => {
-      this.removeFromCart(variantId);
-      this.resultsElement.style.display = 'block';
-      this.submitButton.removeAttribute('aria-busy');
-    });
-  }
-
-  removeFromCart(variantId) {
-    const removeBody = JSON.stringify({
-      updates: { [variantId]: 0 }
-    });
-
-    fetch(`${routes.cart_update_url}`, {
-      ...fetchConfig(),
-      body: removeBody
-    }).catch((e) => {
-      console.error('Error removing temporary item from cart:', e);
-    });
-  }
-
-  getProductVariantId() {
-    const productForm = document.querySelector('product-form-component form');
-    if (productForm) {
-      const variantInput = productForm.querySelector('[name="id"]');
-      if (variantInput && variantInput.value) {
-        return variantInput.value;
-      }
-    }
-    
-    const variantSelector = document.querySelector('variant-selects');
-    if (variantSelector) {
-      const currentVariant = variantSelector.currentVariant;
-      if (currentVariant && currentVariant.id) {
-        return currentVariant.id;
-      }
-    }
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const variantFromUrl = urlParams.get('variant');
-    if (variantFromUrl) {
-      return variantFromUrl;
-    }
-
-    return null;
   }
 
   formatError(errors) {
@@ -808,9 +919,9 @@ class ShippingCalculator extends HTMLFormElement {
       return `<li>${errors[errorKey]}</li>`;
     });
     this.resultsElement.innerHTML = `
-      <div class="alert alert--error grid gap-2 text-sm leading-tight">
-        <p>Error calculating shipping rates</p>
-        <ul class="list-disc grid gap-2" role="list">${shippingRatesList.join('')}</ul>
+      <div class="alertBox alertBox--error grid gap-xl">
+        <p>${window.shippingCalculatorStrings.error}</p>
+        <ul class="list-disc grid gap-xl p-0 m-0" role="list">${shippingRatesList.join('')}</ul>
       </div>
     `;
   }
@@ -819,13 +930,12 @@ class ShippingCalculator extends HTMLFormElement {
     const shippingRatesList = shippingRates.map(({ presentment_name, currency, price }) => {
       return `<li>${presentment_name}: ${currency} ${price}</li>`;
     });
-
     this.resultsElement.innerHTML = `
-      <div class="alert alert--${shippingRates.length === 0 ? 'error' : 'success'} grid gap-2 text-sm leading-tight">
-        <p>${shippingRates.length === 0 ? 'No shipping rates found' : shippingRates.length === 1 ? 'Shipping rate found' : 'Multiple shipping rates found'}</p>
-        ${shippingRatesList.length === 0 ? '' : `<ul class="list-disc grid gap-2" role="list">${shippingRatesList.join('')}</ul>`}
+      <div class="alertBox alertBox--${shippingRates.length === 0 ? 'error' : 'warning'} grid gap-xl">
+        <p>${shippingRates.length === 0 ? window.shippingCalculatorStrings.not_found : shippingRates.length === 1 ? window.shippingCalculatorStrings.one_result : window.shippingCalculatorStrings.multiple_results}</p>
+        ${shippingRatesList.length === 0 ? '' : `<ul class="list-disc grid gap-xl p-0 m-0" role="list">${shippingRatesList.join('')}</ul>`}
       </div>
     `;
   }
 }
-customElements.define('shipping-calculator', ShippingCalculator, { extends: 'form' });
+if (!customElements.get('shipping-calculator-component')) customElements.define('shipping-calculator-component', ShippingCalculatorComponent, { extends: 'form' });

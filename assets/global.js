@@ -3953,3 +3953,24 @@ class FilterFAQs extends HTMLElement {
 }
 
 if (!customElements.get("filter-faqs")) customElements.define('filter-faqs', FilterFAQs);
+
+class TextLoaderComponent extends HTMLElement {
+  spinner() {
+    this.querySelector('.loading__spinner').classList.remove('hidden');
+  }
+
+  shimmer() {
+    this.setAttribute('shimmer', '');
+  }
+}
+if (!customElements.get('text-loader-component')) customElements.define('text-loader-component', TextLoaderComponent);
+
+function resetSpinner(container = document.body) {
+  const spinner = container.querySelectorAll('text-loader-component');
+  spinner.forEach((item) => item.querySelector('.loading__spinner').classList.add('hidden'));
+}
+
+function resetShimmer(container = document.body) {
+  const shimmer = container.querySelectorAll('text-loader-component');
+  shimmer.forEach((item) => item.removeAttribute('shimmer'));
+}

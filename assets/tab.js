@@ -1,4 +1,3 @@
-// Tabs Component khinh
 class TabsComponent extends HTMLElement {
   constructor() {
     super();
@@ -9,8 +8,8 @@ class TabsComponent extends HTMLElement {
   }
 
   init() {
-    this.tabs = this.querySelectorAll(".tabs-component-panel-trigger"); // target class
-    this.tabContents = this.querySelectorAll(".tabs-component-content"); // content class
+    this.tabs = this.querySelectorAll(".tabs-component-panel-trigger");
+    this.tabContents = this.querySelectorAll(".tabs-component-content");
 
     this.initRender();
     this.tabs.forEach((tab) => {
