@@ -11,11 +11,14 @@
 <collapsible-text-component
   class="
     spacing-style size-style collapsible-text
-    {% if settings.inherit_color_scheme == false %}color-{{ settings.color_scheme }}{% endif %}
+    {% if settings.inherit_color_scheme == false %}color-scheme-custom{% endif %}
   "
   style="
     {% render 'spacing-style', settings: settings %}
     {% render 'size-style', settings: settings %}
+    {% if settings.inherit_color_scheme == false %}
+      {% render 'color-scheme-style', settings: settings %}
+    {% endif %}
     --preview-height: {{ settings.preview_height | divided_by: 10.0 }}rem;
   "
   {{ block.shopify_attributes }}

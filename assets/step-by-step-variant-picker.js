@@ -81,7 +81,6 @@ class StepIndicator extends HTMLElement {
         const fields = lastTab.querySelectorAll('textarea');
 
         const checkCompleted = () => {
-            console.log(123123)
             const isFilled = Array.from(fields).some(el => el.value.trim() !== '');
             const stepEl = this.querySelector(`.steps__step[data-step="${this.steps - 1}"]`);
 

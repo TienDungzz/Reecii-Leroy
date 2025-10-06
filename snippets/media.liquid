@@ -22,7 +22,7 @@
   class="
     media-block
     spacing-style
-    {% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}
+    {% if block.settings.inherit_color_scheme == false %}color-scheme-custom{% endif %}
     {% if show_image and block.settings.image_position == 'contain' or show_video and block.settings.video_position == 'contain' %}
       media-block--contain
     {% endif %}
@@ -30,6 +30,9 @@
   style="
     {% render 'border-override', settings: block.settings %}
     {% render 'spacing-style', settings: block.settings %}
+    {% if block.settings.inherit_color_scheme == false %}
+      {% render 'color-scheme-style', settings: block.settings %}
+    {% endif %}
     --image-position: {{ block.settings.image_position }};
     --video-position: {{ block.settings.video_position }};
     --aspect-ratio: {{ aspect_ratio }};

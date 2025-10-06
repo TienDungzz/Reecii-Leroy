@@ -53,7 +53,15 @@
   If the jumbo text is not wrapped inside its own container, the overflow calculation does not always work correctly
   (looks like some weird off-by-one error when comparing sizes).
 {% endcomment %}
-<div class="jumbo-text__container{% if bl_stts.inherit_color_scheme == false %} color-{{ bl_stts.color_scheme }}{% endif %}">
+<div 
+  class="
+    jumbo-text__container
+    {% if bl_stts.inherit_color_scheme == false %}color-scheme-custom{% endif %}
+  "
+  {% if bl_stts.inherit_color_scheme == false %}
+    style="{% render 'color-scheme-style', settings: bl_stts %}"
+  {% endif %}
+>
   {% if text != blank %}
     <jumbo-text {{ attributes }}>{{ text }}</jumbo-text>
   {% else %}
