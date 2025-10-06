@@ -85,7 +85,7 @@ function lookbookViewPopup() {
                 prevEl: container.querySelector('.swiper-button-prev'),
             },
             breakpoints: {
-                0: { slidesPerView: 2 },
+                0: { slidesPerView: 1.3 },
                 640: { slidesPerView: 3 },
                 1024: { slidesPerView: 4 },
             },

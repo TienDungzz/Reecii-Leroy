@@ -16,8 +16,12 @@
   assign show_product_button = block_stts.show_product_button
 %}
 
-<lookbook-dot class="lookbook-dot" style="--dot-inner-color: {{ dot_inner_color }}; --dot-outer-color: {{ dot_outer_color }}; --dot-size-desktop: {{ dot_size_desktop }}; --dot-size-mobile: {{ dot_size_mobile }}; --dot-position-top: {{ dot_position_top }}; --dot-position-left: {{ dot_position_left }};">
-  <div class="lookbook-dot__icon" data-product-lookbook></div>
+<lookbook-dot class="lookbook-dot" style="--dot-inner-color: {{ dot_inner_color }}; --dot-outer-color: {{ dot_outer_color }}; --dot-size-desktop: {{ dot_size_desktop }}; --dot-size-mobile: {{ dot_size_mobile }}; --dot-position-top: {{ dot_position_top }}; --dot-position-left: {{ dot_position_left }};" {{ block.shopify_attributes }}>
+  <div class="lookbook-dot__icon" data-product-lookbook>
+    <span class="svg-wrapper icon-plus-wrapper">
+      {{- 'icon-plus.svg' | inline_asset_content -}}
+    </span>
+  </div>
   <div class="lookbook-dot__content">
     {% render 'card-lookbook', card_product: card_product, show_product_image: show_product_image, show_product_title: show_product_title, show_product_price: show_product_price, show_product_variant: show_product_variant, show_product_button: show_product_button, option: card_product_option %}
     </div>
@@ -86,6 +90,7 @@
 {% schema %}
   {
     "name": "Lookbook dot",
+    "tag": null,
     "settings": [
       {
         "type": "header",
