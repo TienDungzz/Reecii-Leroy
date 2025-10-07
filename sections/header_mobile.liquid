@@ -1,18 +1,59 @@
-<div class="header-mobile mobile--multi-tab">
-  <div class="header-mobile-content">
-    <header-mobile-tabs>
-      <div class="tabs-product-header flex overflow-x-a">
+{% if settings.enable_multi_tab_layout_mobile %}
+  <link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
+
+  {%- liquid
+    if localization.available_countries.size > 1 and section.settings.show_country or section.settings.show_language and localization.available_languages.size > 1
+      assign localization_forms = true
+    endif
+  -%}
+
+  <side-drawer
+    class="drawer__container drawer drawer--menu drawer--menu-multi-tab fixed top-0 left-0 w-screen h-full z-9 flex no-js-hidden"
+    id="Drawer-Menu"
+    data-drawer-direction="left"
+  >
+    <div id="Drawer-Overlay-Menu" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
+    <header-drawer class="side-drawer" data-drawer-content data-breakpoint="tablet">
+      <div
+        class="drawer__inner d-flex flex-column h-full"
+        role="dialog"
+        aria-modal="true"
+        aria-label="{{ 'accessibility.menu' | t }}"
+        tabindex="-1"
+      >
+        <div class="drawer__wrapper menu-drawer relative h-full motion-reduce color-{{ section.settings.menu_color_scheme }}">
+          <div class="header-mobile mobile--multi-tab">
+            <div class="section-resource-list">
+              <header-mobile-tabs>
+                <div class="section-resource-list__header">
+                  {%- content_for 'block', type: '_menu_tab_headings', id: 'static-menu-tab-heading' -%}
+                </div>
+                <div class="section-resource-list__content">
+                  {%- content_for 'block', type: '_menu_tab_contents', id: 'static-menu-tab-content' -%}
+                </div>
+              </header-mobile-tabs>
+            </div>
+          </div>
+        </div>
       </div>
-
-      {%- content_for 'blocks' -%}
-    </header-mobile-tabs>
-  </div>
-</div>
-
-
+    </header-drawer>
+  </side-drawer>
+{% endif %}
 
 {% stylesheet %}
+  .drawer--menu-multi-tab .drawer__inner {
+    padding-inline: 0;
+  }
 
+  .drawer--menu-multi-tab .menu-drawer__menu .menu-drawer__menu-item,
+  .drawer--menu-multi-tab .menu-drawer__menu-grid {
+    padding-inline: var(--page-margin);
+  }
+
+  .drawer--menu-multi-tab .menu-drawer__close-button {
+    padding: 0 var(--minimum-touch-target) 0 var(--page-margin);
+    height: var(--minimum-touch-target);
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -20,10 +61,73 @@
   "name": "Header mobile multi-tab",
   "blocks": [
     {
-      "type": "_menu_tab"
+      "type": "_menu_tab_headings"
+    },
+    {
+      "type": "_menu_tab_contents"
     }
   ],
-  "settings": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media level 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image_level_1",
+      "label": "Show icons beside the menu items",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "media_type",
+      "label": "Type",
+      "options": [
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "rectangle",
+          "label": "Rectangle"
+        }
+      ],
+      "default": "circle",
+      "visible_if": "{{ section.settings.show_image_level_1 == true }}"
+    },
+    {
+      "type": "range",
+      "id": "media_width",
+      "min": 20,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "Width",
+      "default": 24,
+      "visible_if": "{{ section.settings.show_image_level_1 == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Media sub menu items"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image_sub_menu",
+      "label": "Show images below the sub menu items",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "media_width_sub_menu",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Width",
+      "default": 50,
+      "visible_if": "{{ section.settings.show_image_sub_menu == true }}"
+    }
+  ],
   "presets": [
     {
       "name": "Header mobile multi-tab"
