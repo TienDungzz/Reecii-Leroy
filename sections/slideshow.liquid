@@ -53,7 +53,7 @@
 {%- endcapture -%}
 
 {%- capture class_slideshow -%}
-  slideshow slideshow--{{ section.settings.slide_height }}
+  slideshow slideshow--{{ section.settings.slide_height }} slideshow-mb--{{ section.settings.slide_height_mb }}
   {% if show_left_categories or show_right_banner and is_layout_masonry == false %} flex flex-wrap{% endif %}
   {% if show_left_categories and is_layout_masonry == false %} slideshow--has-categories{% endif %}
   {% if show_right_banner and is_layout_masonry == false %} slideshow--has-right-banner{% endif %}
@@ -71,6 +71,16 @@
     --hero-min-height: var(--section-height-{{ section.settings.slide_height }});
   {% elsif section.settings.slide_height != 'height_first_slide' %}
     --hero-min-height: auto;
+  {% endif %}
+
+  {% if section.settings.slide_height_mb == 'custom' %}
+    --hero-min-height-mb: {{ section.settings.section_height_custom_mb }}svh;
+  {% elsif section.settings.slide_height_mb == 'full-screen' %}
+    --hero-min-height-mb: 100svh;
+  {% elsif section.settings.slide_height_mb != 'adapt_image' %}
+    --hero-min-height-mb: var(--section-height-{{ section.settings.slide_height_mb }});
+  {% elsif section.settings.slide_height_mb != 'height_first_slide' %}
+    --hero-min-height-mb: auto;
   {% endif %}
 
   {%- if is_layout_masonry -%}
@@ -549,6 +559,10 @@
     .slideshow--stack-mobile .slideshow__slide {
       flex-direction: column;
     }
+
+    .slideshow .slideshow__slides {
+      height: var(--hero-min-height-mb, auto);
+    }
   }
 {%- endstylesheet -%}
 
@@ -660,6 +674,43 @@
       "default": 100,
       "unit": "%",
       "visible_if": "{{ section.settings.slide_height == 'custom' and section.settings.slideshow_type != 'masonry' }}"
+    },
+    {
+      "type": "select",
+      "id": "slide_height_mb",
+      "label": "Height mobile",
+      "options": [
+        {
+          "value": "height_first_slide",
+          "label": "Adapt to first slide height"
+        },
+        {
+          "value": "adapt_image",
+          "label": "Adapt to first image"
+        },
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        },
+        {
+          "value": "full-screen",
+          "label": "t:options.full_screen"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "medium",
+      "visible_if": "{{ section.settings.slideshow_type != 'masonry' }}"
     },
     {
       "type": "header",
@@ -904,7 +955,7 @@
         },
         {
           "value": "arrows",
-          "label": "Arrows"
+          "label": "t:options.arrows"
         },
         {
           "value": "pagination",

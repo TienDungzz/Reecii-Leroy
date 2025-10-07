@@ -36,8 +36,17 @@
 
 {% capture list_items %}
   {% for child_block in block.blocks %}
-    <li id="Slide-{{ child_block.id }}-{{ forloop.index }}" class="grid__item{% if show_mobile_slider or block.settings.layout_type == 'carousel' %} swiper-slide{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-      {% if settings.animations_reveal_on_scroll %} style="--animation-order: {{ forloop.index }};"{% endif %}
+    <li
+      id="Slide-{{ child_block.id }}-{{ forloop.index }}"
+      class="
+        grid__item{% if show_mobile_slider or block.settings.layout_type == 'carousel' %} swiper-slide{% endif %}
+        layout-panel-flex layout-panel-flex--{{ block.settings.content_direction }}
+        {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}
+      "
+      style="
+        {% if settings.animations_reveal_on_scroll %}--animation-order: {{ forloop.index }};{% endif %}
+        {% render 'layout-panel-style', settings: block.settings, scale_min: 8 %}
+      "
     >
       {% render child_block, enable_lookbook_all_items_layout: block.settings.enable_lookbook_all_items_layout %}
     </li>
@@ -50,7 +59,8 @@
 
 <div
   class="
-    lookbook-section-list group-block relative
+    lookbook-section-list
+    group-block relative
     {% if block.settings.enable_lookbook_all_items_layout == false %} style-{{ view_product }}{% endif %}
     group-block--height-{{ block.settings.height }}
     group-block--width-{{ block.settings.width }}
@@ -67,14 +77,12 @@
   {% endif %}
 
   style="
-    {% render 'layout-panel-style', settings: block.settings %}
     {% render 'spacing-style', settings: block.settings %}
     {% render 'size-style', settings: block.settings %}
     {% if block.settings.inherit_color_scheme == false %}
       {% render 'color-scheme-style', settings: block.settings %}
     {% endif %}
     {% if block.settings.width == 'custom' %}
-      --size-style-width: {{ block.settings.custom_width }}%;
       --size-style-width-mobile: 100%;
     {% endif %}
   "
@@ -122,7 +130,7 @@
         <ul
           id="Grid-{{ block.id }}"
           data-id="{{ block.id }}"
-          class="grid grid-layout instagram-grid list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
+          class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
           role="list"
           aria-label="{{ 'content.grid.name' | t }}"
           style="--grid-desktop-horizontal-spacing: {{ block.settings.gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.gap }}px;"
@@ -173,75 +181,61 @@
         </div>
       </swiper-component>
 
-    {% when 'custom' %}
-      <div class="lookbook-section-list-custom w-full list-unstyled product-side-{{ block.settings.product_side }}" style="--column-1-width: {{ block.settings.column_1_width }}%; --column-2-width: {{ block.settings.column_2_width }}%;">
+    {% when 'editorial' %}
+      {%- liquid
+        if block.settings.image_layout contains 'right'
+          assign layout_class = 'grid__item--right'
+        else
+          assign layout_class = 'grid__item--left'
+        endif
+      -%}
+      <div
+        class="
+          lookbook--editorial-layout
+          w-full grid list-unstyled
+          md:items-{{ block.settings.vertical_alignment | replace: 'flex-start', 'start' | replace: 'flex-end', 'end' }}
+          md:justify-{{ block.settings.horizontal_alignment |  replace: 'flex-start', 'start' |  replace: 'flex-end', 'end' | replace: 'space-between', 'between' }}
+          {{ layout_class }}
+        "
+        style="--gap: {{ block.settings.gap }}px;"
+      >
         {{- list_items -}}
       </div>
   {% endcase %}
 </div>
 
 {% stylesheet %}
-    .group-block--width-full {
-        width: 100%;
+  .group-block--width-full {
+    width: 100%;
+  }
+
+  .group-block--width-fit {
+    width: fit-content;
+  }
+
+  .lookbook--editorial-layout {
+    --column-1-width: 66.6666%;
+    --column-2-width: 33.3333%;
+    --lookbook-item-odd-width: calc(var(--column-1-width) - calc(var(--gap) / 2));
+    --lookbook-item-even-width: calc(var(--column-2-width) - calc(var(--gap) / 2));
+  }
+
+  @media screen and (min-width: 750px) {
+    .lookbook--editorial-layout {
+      grid-template-columns: var(--lookbook-item-odd-width) var(--lookbook-item-even-width);
+      gap: var(--gap);
     }
 
-    .group-block--width-fit {
-        width: fit-content;
+    .lookbook--editorial-layout.grid__item--right {
+      grid-template-columns: var(--lookbook-item-even-width) var(--lookbook-item-odd-width);
     }
+  }
 
-    .lookbook-section-list-custom {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 0px;
+  @media screen and (max-width: 749px) {
+    .lookbook--editorial-layout {
+      grid-template-columns: 100%;
     }
-
-    @media screen and (min-width: 750px) {
-      .lookbook-section-list-custom.product-side-left {
-        justify-content: flex-end;
-      }
-
-      .lookbook-section-list-custom.product-side-right {
-        justify-content: flex-start;
-      }
-
-      .lookbook-section-list-custom .grid__item:nth-child(1) {
-          width: var(--column-1-width);
-      }
-
-      .lookbook-section-list-custom .grid__item:nth-child(2) {
-          width: var(--column-2-width);
-      }
-
-      .lookbook-section-list-custom .grid__item:has(.lookbook-item-all-swiper-component) {
-        position: absolute;
-        z-index: 99;
-      }
-
-      .lookbook-section-list-custom.product-side-left .grid__item:has(.lookbook-item-all-swiper-component) {
-        left: 0;
-      }
-
-      .lookbook-section-list-custom.product-side-right .grid__item:has(.lookbook-item-all-swiper-component) {
-        right: 0;
-      }
-    }
-
-    @media screen and (max-width: 749px) {
-      .lookbook-section-list-custom {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .lookbook-section-list-custom .grid__item {
-        width: 100%;
-        order: 1;
-      }
-
-      .lookbook-section-list-custom .grid__item:has(.lookbook-item-all-swiper-component) {
-        order: 2;
-      }
-    }
+  }
 {% endstylesheet %}
 
 <script src="{{ 'lookbook.js' | asset_url }}" defer="defer"></script>
@@ -263,13 +257,19 @@
       "type": "_divider"
     },
     {
-        "type": "_lookbook-item"
+      "type": "_lookbook-item"
     },
     {
       "type": "_lookbook-item-all"
     },
     {
       "type": "_lookbook-circle-text"
+    },
+    {
+      "type": "_lookbook-row"
+    },
+    {
+      "type": "_lookbook-group"
     }
   ],
   "tag": null,
@@ -292,48 +292,11 @@
           "label": "Carousel"
         },
         {
-          "value": "custom",
-          "label": "t:options.custom"
+          "value": "editorial",
+          "label": "t:options.editorial"
         }
       ],
       "default": "grid"
-    },
-    {
-      "type": "range",
-      "id": "column_1_width",
-      "label": "Column 1 width",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "default": 50,
-      "visible_if": "{{ block.settings.layout_type == 'custom' }}"
-    },
-    {
-      "type": "range",
-      "id": "column_2_width",
-      "label": "Column 2 width",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "default": 50,
-      "visible_if": "{{ block.settings.layout_type == 'custom' }}"
-    },
-    {
-      "type": "select",
-      "id": "product_side",
-      "label": "Product side",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ],
-      "default": "left",
-      "visible_if": "{{ block.settings.layout_type == 'custom' }}"
     },
     {
       "type": "checkbox",
@@ -391,7 +354,45 @@
     },
     {
       "type": "select",
-      "id": "vertical_alignment_flex_direction_column",
+      "id": "content_direction",
+      "label": "t:settings.direction",
+      "options": [
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "row",
+      "visible_if": "{{ block.settings.content_direction == 'fake-value' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ block.settings.layout_type != 'carousel' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
       "label": "t:settings.position",
       "options": [
         {
@@ -405,9 +406,37 @@
         {
           "value": "flex-end",
           "label": "t:options.bottom"
+        },
+        {
+          "value": "stretch",
+          "label": "t:options.stretch"
         }
       ],
-      "default": "center"
+      "default": "center",
+      "visible_if": "{{ block.settings.layout_type != 'carousel' }}"
+    },
+    {
+      "type": "select",
+      "id": "image_layout",
+      "label": "Image layout",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "align_baseline",
+      "label": "t:settings.align_baseline",
+      "default": false,
+      "visible_if": "{{ block.settings.layout_type != 'carousel' and block.settings.vertical_alignment == 'flex-end' }}"
     },
     {
       "type": "range",
@@ -443,7 +472,7 @@
         },
         {
           "value": "arrows",
-          "label": "Arrows"
+          "label": "t:options.arrows"
         },
         {
           "value": "pagination",
@@ -520,7 +549,7 @@
         "options": [
             {
                 "value": "fit",
-                "label": "Fit"
+                "label": "t:options.fit"
             },
             {
                 "value": "full",
@@ -536,7 +565,7 @@
     {
         "type": "range",
         "id": "custom_width",
-        "label": "Custom (%)",
+        "label": "t:settings.custom_percent",
         "min": 1,
         "max": 100,
         "step": 1,
@@ -827,7 +856,7 @@
     {
       "type": "color",
       "id": "scheme_arrow_color",
-      "label": "Arrow color",
+      "label": "t:settings.arrow_color",
       "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -835,7 +864,7 @@
     {
       "type": "color",
       "id": "scheme_arrow_background",
-      "label": "Arrow background",
+      "label": "t:settings.arrow_background",
       "default": "#ffffff",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -843,7 +872,7 @@
     {
       "type": "color",
       "id": "scheme_arrow_border",
-      "label": "Arrow border",
+      "label": "t:settings.arrow_border",
       "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -851,7 +880,7 @@
     {
       "type": "color",
       "id": "scheme_pagination_color",
-      "label": "Pagination color",
+      "label": "t:settings.pagination_color",
       "default": "#cecece",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -859,7 +888,7 @@
     {
       "type": "color",
       "id": "scheme_pagination_active_color",
-      "label": "Pagination active color",
+      "label": "t:settings.pagination_active_color",
       "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"

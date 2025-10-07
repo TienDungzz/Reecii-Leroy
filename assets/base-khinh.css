@@ -93,11 +93,6 @@ ul.swiper-wrapper {
   .swiper-button {
     --swiper-navigation-sides-offset: 0.1rem;
   }
-
-  /* &.swiper-watch-progress .swiper-slide:not(.swiper-slide-visible) {
-    opacity: var(--opacity-0) !important;
-    transition: var(--animation-speed-slow) var(--animation-timing-fade-in);
-  } */
 }
 
 .swiper-button {
@@ -149,7 +144,6 @@ ul.swiper-wrapper {
 
   .icon {
     width: var(--button-icon-size);
-    /* height: var(--button-icon-size); */
   }
 
   @media screen and (min-width: 1025px) {
@@ -180,7 +174,7 @@ ul.swiper-wrapper {
 }
 
 
-/* swiper buttons posistion */
+/* swiper buttons position */
 .swiper-btns-wrap--bottom {
   display: flex;
   justify-content: center;
@@ -203,7 +197,6 @@ ul.swiper-wrapper {
     opacity: var(--opacity-50);
   }
 }
-/* end swiper buttons posistion */
 
 /* spacing-style */
 .spacing-style,
@@ -255,7 +248,7 @@ ul.swiper-wrapper {
 .body-l-font-size,
 .body-s-font-size,
 .body-xxs-font-size {
-  line-height: var(--line-height--body-normal); /* 1.4 */
+  line-height: var(--line-height--body-normal);
 }
 
 .body-3xl-font-size,
@@ -263,7 +256,7 @@ ul.swiper-wrapper {
 .body-xl-font-size,
 .body-m-font-size,
 .body-xs-font-size {
-  line-height: var(--line-height--body-medium); /* 1.5 */
+  line-height: var(--line-height--body-medium);
 }
 
 h1,
@@ -380,7 +373,7 @@ h6,
   position: absolute;
   z-index: var(--layer-lowest);
   inset: 0;
-  clip-path: inset(-50px 0 0 0); /* stylelint-disable-line */
+  clip-path: inset(-50px 0 0 0);
 }
 
 @media (min-width: 750px) {
@@ -395,7 +388,7 @@ h6,
   position: absolute;
   z-index: var(--layer-lowest);
   inset: 0;
-  clip-path: inset(0 0 -50px 0); /* stylelint-disable-line */
+  clip-path: inset(0 0 -50px 0);
 }
 
 @media (min-width: 750px) {
@@ -404,7 +397,7 @@ h6,
   }
 }
 
-/* START: Display Srollbar */
+/* Display Srollbar */
 .disable-srollbar::-webkit-scrollbar {
   display: none;
 }
@@ -420,7 +413,6 @@ h6,
 .disable-srollbar::-webkit-scrollbar-thumb:hover {
   display: none;
 }
-/* END: Display Srollbar */
 
 /* Base group-block */
 .group-block,
@@ -482,7 +474,6 @@ h6,
   overflow: hidden;
 }
 
-/* Dimension utilities - Height */
 .group-block--height-fit {
   height: auto;
 }
@@ -492,7 +483,6 @@ h6,
   height: var(--size-style-height);
 }
 
-/* Flex behavior for height variants */
 .layout-panel-flex--column > .group-block--height-fit {
   flex: 0 1 auto;
 }
@@ -665,17 +655,6 @@ h6,
   }
 }
 
-/* direction mobile */
-/* @media screen and (max-width: 749px) {
-  .mobile-direction--column {
-    flex-direction: column;
-  }
-
-  .mobile-direction--row {
-    flex-direction: row;
-  }
-} */
-
 /* gap utility */
 .gap-2xs {
   gap: var(--gap-2xs);
@@ -743,15 +722,12 @@ deferred-media[class]
     .deferred-media__poster-button img,
     .deferred-media__poster-button ~ video
   ) {
-  /* only apply this on the video block not product media */
   object-fit: cover;
   height: 100%;
   aspect-ratio: var(--size-style-aspect-ratio, auto);
 }
 
 product-model model-viewer,
-/* Media that have a poster button sibling providing the size should be absolute-positioned.
-Otherwise, it should be a block to rely on its own size */
 :is(deferred-media, product-model) > .deferred-media__poster-button ~ *:not(template) {
   display: block;
   position: absolute;
@@ -760,8 +736,6 @@ Otherwise, it should be a block to rely on its own size */
   width: 100%;
   height: 100%;
   overflow: hidden;
-
-  /* Required to make sure the absolute position respects the padding of the wrapper: */
   padding: inherit;
 }
 
@@ -893,7 +867,6 @@ summary {
   width: var(--checkbox-size);
   height: var(--checkbox-size);
 
-  /* Outline is on the SVG instead, to allow it to have border-radius */
   &:focus-visible {
     outline: none;
   }
@@ -1010,9 +983,6 @@ summary {
 }
 
 /* details--dropdown */
-.details--dropdown .details__list {
-  background-color: var(--color-background);
-}
 
 /* bubble */
 .bubble {
@@ -1360,4 +1330,13 @@ summary {
     }
   }
 
+}
+
+/* visible */
+.fade {
+  opacity: var(--opacity-0);
+  transition: opacity var(--animation-speed-slow) var(--animation-timing-fade-in);
+}
+.fade--active {
+  opacity: var(--opacity-100);
 }

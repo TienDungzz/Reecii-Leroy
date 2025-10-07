@@ -25,7 +25,7 @@
 %}
 
 {% capture class %}
-  image-block image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hover_overlay == true %} image-overlay{% endif %}{% if block.settings.hover_zoomIn == true %} image-zoomIn{% endif %}{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}
+  image-block image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hover_zoomIn == true %} image-zoomIn{% endif %}{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}
 {% endcapture %}
 
 {% capture style %}
@@ -46,27 +46,6 @@
     assign element = 'a'
   elsif block.settings.enable_parallax
     assign element = 'parallax-image'
-  endif
-
-  assign show_content_on_img = block.settings.show_content_on_img
-  assign content_type = block.settings.content_type
-  assign content_alignment = block.settings.content_alignment
-  assign content_position_top = block.settings.content_position_top | append: 'px'
-  assign content_position_right = block.settings.content_position_right | append: 'px'
-  assign content_position_bottom = block.settings.content_position_bottom | append: 'px'
-  assign content_position_left = block.settings.content_position_left | append: 'px'
-
-  if block.settings.content_position_top == 0
-    assign content_position_top = 'auto'
-  endif
-  if block.settings.content_position_right == 0
-    assign content_position_right = 'auto'
-  endif
-  if block.settings.content_position_bottom == 0
-    assign content_position_bottom = 'auto'
-  endif
-  if block.settings.content_position_left == 0
-    assign content_position_left = 'auto'
   endif
 %}
 
@@ -173,7 +152,7 @@
       {% else %}
         {%- if background_video != blank -%}
           {% if block.settings.enable_fancybox %}
-            <a class="tets1212121212121212" href="https://new-ella-demo-07.myshopify.com/cdn/shop/videos/c/vp/72219224600a4aa09afa67296776c69c/72219224600a4aa09afa67296776c69c.HD-1080p-4.8Mbps-50977332.mp4?v=0" data-type="video" data-caption="{{ background_video.alt | default: 'Instagram Video' }}" {{ attributes }}>
+            <a href="{{ background_video.sources.first.url }}" data-type="video" data-caption="{{ background_video.alt | default: 'Instagram Video' }}" {{ attributes }}>
           {% endif %}
           <video-background-component
             class="{{ video_classes }}"
@@ -216,68 +195,20 @@
       {% endif %}
     </{{ element }}>
   </div>
-  <div class="instagram-item__content{% if block.settings.hover_slide_content == true %} image-content-slide-in{% endif %} text-{{ content_alignment }} {% if content_type == 'absolute-c-x' %} top-0 {% endif %}{% if show_content_on_img != blank %} {{ content_type }}{% endif %}" style="--posTop: {{ content_position_top }}; --posRight: {{ content_position_right }}; --posBottom: {{ content_position_bottom }}; --posLeft: {{ content_position_left }};">
+  {% if block.settings.center_button == true %}
+    <div class="absolute-c-c hover-content-block">
+      {% render 'button', link: block.settings.center_button_link, label: block.settings.center_button_text %}
+    </div>
+  {% endif %}
+  {% if block.settings.toggle_overlay %}
+    <div class="hover-content-block">
+      {% render 'overlay', settings: block.settings, layer: '0' %}
+    </div>
+  {% endif %}
+  <div class="instagram-item__content">
     {%- content_for 'blocks' -%}
   </div>
 </div>
-
-{%- if background_video != blank -%}
-  <script>
-    (function() {
-      'use strict';
-
-      // Use more specific selector to avoid conflicts
-      const instagramItems = document.querySelectorAll('.instagram-item[data-video-enabled="true"]');
-
-      if (instagramItems.length === 0) return;
-
-      // Debounce function to prevent rapid play/pause calls
-      function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-          const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-          };
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-        };
-      }
-
-      // Optimized event handlers
-      const handleMouseOver = debounce(function(video) {
-        if (video && video.readyState >= 2) { // HAVE_CURRENT_DATA
-          video.play().catch(e => console.warn('Video play failed:', e));
-        }
-      }, 100);
-
-      const handleMouseOut = debounce(function(video) {
-        if (video && video.readyState >= 2) {
-          video.pause();
-        }
-      }, 100);
-
-      // Add event listeners with proper cleanup
-      instagramItems.forEach(item => {
-        const video = item.querySelector('video');
-        if (!video) return;
-
-        // Mark item as video-enabled for future reference
-        item.setAttribute('data-video-enabled', 'true');
-
-        // Use event delegation for better performance
-        const mouseOverHandler = () => handleMouseOver(video);
-        const mouseOutHandler = () => handleMouseOut(video);
-
-        item.addEventListener('mouseenter', mouseOverHandler, { passive: true });
-        item.addEventListener('mouseleave', mouseOutHandler, { passive: true });
-
-        // Store handlers for potential cleanup
-        item._videoHandlers = { mouseOver: mouseOverHandler, mouseOut: mouseOutHandler };
-      });
-    })();
-  </script>
-{%- endif -%}
 
 {% if image != blank and block.settings.icon_link != blank %}
   <script>
@@ -607,41 +538,6 @@
     height: var(--icon-button-size);
   }
 
-  .instagram-item__content.custom {
-    position: absolute;
-    top: var(--posTop, 0);
-    right: var(--posRight, 0);
-    bottom: var(--posBottom, 0);
-    left: var(--posLeft, 0);
-    transform: none;
-  }
-
-  .instagram-item__content {
-    display: flex;
-    flex-direction: column;
-    z-index: 3;
-  }
-
-  .instagram-item__content.text-left {
-    align-items: flex-start;
-  }
-  .instagram-item__content.text-center {
-    align-items: center;
-  }
-  .instagram-item__content.text-right {
-    align-items: flex-end;
-  }
-
-  .instagram-item__content.text-left * {
-    text-align: left;
-  }
-  .instagram-item__content.text-center * {
-    text-align: center;
-  }
-  .instagram-item__content.text-right * {
-    text-align: right;
-  }
-
   .icon_plus {
     font-size: 0px;
     width: 48px;
@@ -686,7 +582,7 @@
     transform: translate(-50%, -50%) scale(1) rotate(0);
   }
 
-  .image-overlay:before {
+  /* .image-overlay:before {
     content: "";
     width: 100%;
     height: 100%;
@@ -703,7 +599,7 @@
 
   .instagram-item:hover .image-overlay:before {
     top: 0;
-  }
+  } */
 
   .image-zoomIn img {
     transition: transform .64s ease;
@@ -714,19 +610,6 @@
     transition: transform .64s ease;
   }
 
-  .instagram-item:has(.image-content-slide-in) .text-block:not(.h1):not(.h2):not(.h3):not(.h4):not(.h5):not(.h6):has(p) {
-    opacity: 0;
-    height: 0;
-    transform: translateX(-50%);
-    transition: all 0.3s ease-in-out;
-  }
-
-  .instagram-item:has(.image-content-slide-in):hover .text-block:not(.h1):not(.h2):not(.h3):not(.h4):not(.h5):not(.h6):has(p) {
-    opacity: 1;
-    height: auto;
-    transform: translateX(0);
-  }
-
   .instagram-item--bg-color {
     background-color: var(--background-color);
     width: 100%;
@@ -735,37 +618,6 @@
   }
 
 {%- endstylesheet -%}
-
-{%- if block.settings.enable_fancybox -%}
-  <style>
-    /* Fancybox custom styles for Instagram items */
-    .fancybox__container {
-      --fancybox-bg: rgba(0, 0, 0, 0.95);
-    }
-
-    .fancybox__toolbar {
-      --fancybox-toolbar-bg: rgba(0, 0, 0, 0.8);
-    }
-
-    .fancybox__nav button {
-      --fancybox-color: #ffffff;
-      --fancybox-bg: rgba(255, 255, 255, 0.1);
-    }
-
-    .fancybox__nav button:hover {
-      --fancybox-bg: rgba(255, 255, 255, 0.2);
-    }
-
-    .fancybox__button {
-      --fancybox-color: #ffffff;
-      --fancybox-bg: rgba(255, 255, 255, 0.1);
-    }
-
-    .fancybox__button:hover {
-      --fancybox-bg: rgba(255, 255, 255, 0.2);
-    }
-  </style>
-{%- endif -%}
 
 {% schema %}
 {
@@ -857,7 +709,7 @@
     {
       "type": "checkbox",
       "id": "hide_on_mobile",
-      "label": "Hide on mobile",
+      "label": "t:settings.hide_on_mobile",
       "default": false
     },
     {
@@ -893,11 +745,11 @@
     {
       "type": "select",
       "id": "width",
-      "label": "Desktop width",
+      "label": "t:settings.width_desktop",
       "options": [
         {
           "value": "fit-content",
-          "label": "Fit"
+          "label": "t:options.fit"
         },
         {
           "value": "custom",
@@ -909,7 +761,7 @@
     {
       "type": "range",
       "id": "custom_width",
-      "label": "Custom (%)",
+      "label": "t:settings.custom_percent",
       "min": 1,
       "max": 100,
       "step": 1,
@@ -920,11 +772,11 @@
     {
       "type": "select",
       "id": "width_tablet",
-      "label": "Tablet width",
+      "label": "t:settings.width_tablet",
       "options": [
         {
           "value": "fit-content",
-          "label": "Fit"
+          "label": "t:options.fit"
         },
         {
           "value": "custom",
@@ -936,7 +788,7 @@
     {
       "type": "range",
       "id": "custom_width_tablet",
-      "label": "Custom (%)",
+      "label": "t:settings.custom_percent",
       "min": 1,
       "max": 100,
       "step": 1,
@@ -947,11 +799,11 @@
     {
       "type": "select",
       "id": "width_mobile",
-      "label": "Mobile width",
+      "label": "t:settings.width_mobile",
       "options": [
         {
           "value": "fit-content",
-          "label": "Fit"
+          "label": "t:options.fit"
         },
         {
           "value": "custom",
@@ -963,7 +815,7 @@
     {
       "type": "range",
       "id": "custom_width_mobile",
-      "label": "Custom (%)",
+      "label": "t:settings.custom_percent",
       "min": 1,
       "max": 100,
       "step": 1,
@@ -1039,105 +891,6 @@
       "step": 1,
       "unit": "px",
       "default": 0
-    },
-    {
-      "type": "header",
-      "content": "Content"
-    },
-    {
-      "type": "select",
-      "id": "content_alignment",
-      "label": "Content alignment",
-      "options": [
-        {
-          "value": "left",
-          "label": "Left"
-        },
-        {
-          "value": "center",
-          "label": "Center"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        }
-      ],
-      "default": "center"
-    },
-    {
-      "type": "checkbox",
-      "label": "Show content on image",
-      "id": "show_content_on_img",
-      "default": true
-    },
-    {
-      "type": "select",
-      "id": "content_type",
-      "label": "Content type",
-      "options": [
-        {
-          "value": "absolute-c-c",
-          "label": "Center Center"
-        },
-        {
-          "value": "absolute-c-x",
-          "label": "Center Horizontal"
-        },
-        {
-          "value": "absolute-c-y",
-          "label": "Center Vertical"
-        },
-        {
-          "value": "custom",
-          "label": "t:options.custom"
-        }
-      ],
-      "default": "absolute-c-c",
-      "visible_if": "{{ block.settings.show_content_on_img }}"
-    },
-    {
-      "type": "range",
-      "id": "content_position_top",
-      "label": "Top",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0,
-      "visible_if": "{{ block.settings.content_type == 'custom' }}"
-    },
-    {
-      "type": "range",
-      "id": "content_position_left",
-      "label": "Left",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 20,
-      "visible_if": "{{ block.settings.content_type == 'custom' }}"
-    },
-    {
-      "type": "range",
-      "id": "content_position_right",
-      "label": "Right",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0,
-      "visible_if": "{{ block.settings.content_type == 'custom' }}"
-    },
-    {
-      "type": "range",
-      "id": "content_position_bottom",
-      "label": "Bottom",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 20,
-      "visible_if": "{{ block.settings.content_type == 'custom' }}"
     },
     {
       "type": "header",
@@ -1310,15 +1063,120 @@
     },
     {
       "type": "checkbox",
-      "id": "hover_overlay",
-      "label": "Hover overlay",
-      "default": false
+      "id": "toggle_overlay",
+      "label": "Hover Overlay",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:settings.overlay_color",
+      "alpha": true,
+      "default": "#0000004D",
+      "visible_if": "{{ block.settings.toggle_overlay }}"
+    },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "t:settings.overlay_style",
+      "options": [
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        },
+        {
+          "value": "gradient",
+          "label": "t:options.gradient"
+        }
+      ],
+      "default": "solid",
+      "visible_if": "{{ block.settings.toggle_overlay }}"
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "t:settings.gradient_direction",
+      "options": [
+        {
+          "value": "to top",
+          "label": "t:options.up"
+        },
+        {
+          "value": "to bottom",
+          "label": "t:options.down"
+        }
+      ],
+      "default": "to top",
+      "visible_if": "{{ block.settings.toggle_overlay and block.settings.overlay_style == 'gradient' }}"
     },
     {
       "type": "checkbox",
-      "id": "hover_slide_content",
-      "label": "Hover slide content",
-      "default": false
+      "label": "Center Button",
+      "id": "center_button",
+      "default": false,
+      "info": "Button will be centered on the image when hover",
+      "visible_if": "{{ block.settings.background_media == 'image' }}"
+    },
+    {
+      "type": "text",
+      "id": "center_button_text",
+      "label": "Button text",
+      "default": "Shop now",
+      "visible_if": "{{ block.settings.center_button == true }}"
+    },
+    {
+      "type": "url",
+      "id": "center_button_link",
+      "label": "Button link",
+      "visible_if": "{{ block.settings.center_button == true }}"
+    },
+    {
+      "type": "select",
+      "id": "style_class",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "button",
+          "label": "t:options.primary"
+        },
+        {
+          "value": "button-secondary",
+          "label": "t:options.secondary"
+        },
+        {
+          "value": "link",
+          "label": "t:options.link"
+        }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "t:settings.case",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "t:options.capitalize"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_underline",
+      "label": "t:options.underline",
+      "default": false,
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
     },
     {
       "type": "header",
@@ -1405,6 +1263,9 @@
     },
     {
       "type": "button"
+    },
+    {
+      "type": "_content-hover"
     }
   ],
   "presets": [

@@ -21,12 +21,12 @@
   assign link = link | default: block.settings.link
   assign style_class = style_class | default: block.settings.style_class
   assign link_underline = link_underline | default: block.settings.link_underline
-  assign case = case | default: block.settings.case
   assign link_reveal = link_reveal | default: block.settings.link_reveal
   assign open_in_new_tab = open_in_new_tab | default: block.settings.open_in_new_tab
   assign shopify_attributes = shopify_attributes | default: block.shopify_attributes
   assign label = label | default: block.settings.label
   assign button_style = button_style | default: block.settings.button_style
+  assign wrap = wrap | default: block.settings.wrap
 -%}
 <a
   {% if link == blank %}role="link"
@@ -40,8 +40,6 @@
     {{ style_class }}
     {% if link_reveal and style_class == 'link' %}link--reveal{% endif %}
     {% if link_underline %}link--underline{% endif %}
-    {% if case == 'uppercase' %}uppercase{% endif %}
-    {% if case == 'capitalize' %}capitalize{% endif %}
     {% if button_style == 'outline' %}button--outline{% endif %}
     {{ style_class }}--{{ block.id }}
   "
@@ -49,6 +47,9 @@
     {% render 'size-style', settings: block.settings %}
     {% render 'button-style', settings: block.settings %}
     {{ style }}
+    {% if style_class == 'link' %}
+      {% render 'typography-style', settings: block.settings, button_link: true %}
+    {% endif %}
   "
   {%- if open_in_new_tab -%}
     target="_blank"
@@ -90,6 +91,8 @@
     font-weight: var(--button-font-weight-link, var(--font-body--weight));
     text-decoration: none;
     text-decoration-color: currentcolor;
+    text-wrap: var(--text-wrap);
+    text-transform: var(--text-transform);
     &[style*="--button-font-size-link"] {
       font-size: var(--button-font-size-link);
     }

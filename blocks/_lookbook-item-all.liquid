@@ -1,16 +1,29 @@
 {% liquid
-  assign columns_desktop = 1
-  assign columns_tablet = 1
   assign columns_mobile = 1
+  assign columns_tablet = 1
+  assign columns_desktop = 1
   assign columns_gap = 0
 
-  assign enable_navigation = true
+  assign enable_navigation = false
+  if block.settings.navigation == 'arrows-pagination' or block.settings.navigation == 'arrows'
+    assign enable_navigation = true
+  endif
+
+  assign enable_pagination = false
+  if block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination'
+    assign enable_pagination = true
+  endif
 %}
 
 {% capture list_items %}
-  {% for product in block.settings.product_list  %}
-    <li id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}" class="grid__item swiper-slide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}" {% if settings.animations_reveal_on_scroll %} style="--animation-order: {{ forloop.index }};"{% endif %}>
-      {% comment %} {% render 'card-lookbook', card_product: product, show_product_image: true, show_product_title: true, show_product_price: true, show_product_variant: true, show_product_button: true, option: 'standard' %} {% endcomment %}
+  {% for product in block.settings.product_list %}
+    <li
+      id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}"
+      class="grid__item swiper-slide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+      {% if settings.animations_reveal_on_scroll %}
+        style="--animation-order: {{ forloop.index }};"
+      {% endif %}
+    >
       {% content_for 'block',
         type: 'card-product-flex',
         id: 'product-slide-item',
@@ -21,11 +34,14 @@
     {% unless forloop.last %}
       <!--@list/split-->
     {% endunless %}
-
   {% endfor %}
 {% endcapture %}
 
-<div class="lookbook-item-all size-style" style="{% render 'size-style', settings: block.settings %}">
+<div
+  class="lookbook-item-all relative size-style"
+  style="{% render 'size-style', settings: block.settings %}"
+  {{ block.shopify_attributes }}
+>
   <div
     class="section-resource-list__content gap-style"
     style="--horizontal-alignment: {{ section.settings.horizontal_alignment }};{%  render 'gap-style', value: block.settings.gap %}"
@@ -41,9 +57,8 @@
       "1400": { "slidesPerView": {{ columns_desktop }} }
     }
   {%- endcapture -%}
-
   <swiper-component
-    class="lookbook-item-all-swiper-component w-full block"
+    class="lookbook-item-all-swiper-component full-width"
     {%- render 'swiper-data',
       settings: block.settings,
       slides_per_view: slides_per_view,
@@ -59,7 +74,7 @@
         columns_gap: columns_gap,
       %}"
   >
-    <div class="swiper w-full" style="--swiper-navigation-top-offset: 50%;">
+    <div class="swiper w-full">
       <ul
         id="Slider-{{ block.id }}"
         data-id="{{ block.id }}"
@@ -68,13 +83,13 @@
         {{ list_items }}
       </ul>
 
-      {%- if enable_navigation -%}
-        <div class="swiper-btns-wrap small-hide">
-          {%- render 'swiper-button' -%}
-        </div>
-      {%- endif -%}
       {%- if enable_pagination -%}
         <div class="swiper-pagination"></div>
+      {%- endif -%}
+      {%- if enable_navigation -%}
+        <div class="swiper-btns-wrap small-hide swiper-btns-wrap--{{ block.settings.arrows_position }}">
+          {%- render 'swiper-button' -%}
+        </div>
       {%- endif -%}
     </div>
   </swiper-component>
@@ -83,6 +98,7 @@
 {% schema %}
 {
   "name": "Lookbook item all",
+  "tag": null,
   "blocks": [
     {
       "type": "@theme"
@@ -122,6 +138,82 @@
       "step": 1,
       "unit": "px",
       "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Carousel layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "navigation",
+      "label": "Navigation",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "arrows",
+          "label": "t:options.arrows"
+        },
+        {
+          "value": "pagination",
+          "label": "Pagination"
+        },
+        {
+          "value": "arrows-pagination",
+          "label": "Arrows & Pagination"
+        }
+      ],
+      "default": "arrows"
+    },
+    {
+      "type": "select",
+      "id": "arrows_position",
+      "label": "Arrows position",
+      "options": [
+        {
+          "value": "inside",
+          "label": "Inside slide"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom slide"
+        }
+      ],
+      "default": "inside",
+      "visible_if": "{{ block.settings.navigation == 'arrows' or block.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "select",
+      "id": "pagination_type",
+      "label": "Pagination type",
+      "visible_if": "{{ block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' }}",
+      "options": [
+        {
+          "value": "bullets",
+          "label": "t:options.dots"
+        },
+        {
+          "value": "dynamic",
+          "label": "Dynamic"
+        },
+        {
+          "value": "progressbar",
+          "label": "Progress"
+        },
+        {
+          "value": "fraction",
+          "label": "t:options.counter"
+        }
+      ],
+      "default": "bullets"
     },
     {
       "type": "header",

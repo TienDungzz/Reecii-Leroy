@@ -28,14 +28,22 @@
 >
   <div class="{{ cart_summary_inner_class }}">
     <div class="cart__summary">
-      {% content_for 'block', id: 'cart-summary-title', type: 'text' %}
-      {% content_for 'block', id: 'cart-summary-divider-1', type: '_divider' %}
+      <div 
+        class="spacing-style text-block flex-column border-bottom" 
+        style="
+          --b-width: 2px;
+          --padding-block-start: 14px; 
+          --padding-block-end: 12px;
+        "
+      >
+        <p class="text-block__text uppercase font-bold">{{ 'content.cart.order_summary' | t }}</p>
+      </div>
       {% content_for 'block', id: 'cart-shipping-calculator', type: '_cart-shipping-calculator' %}
-      {% content_for 'block', id: 'cart-summary-divider-2', type: '_divider' %}
+      {% content_for 'block', id: 'cart-summary-divider-1', type: '_divider' %}
       {% content_for 'block', id: 'cart-discounts', type: '_cart-discounts' %}
-      {% content_for 'block', id: 'cart-summary-divider-3', type: '_divider' %}
+      {% content_for 'block', id: 'cart-summary-divider-2', type: '_divider' %}
       {% content_for 'block', id: 'cart-total', type: '_cart-total' %}
-      {% content_for 'block', id: 'cart-summary-divider-4', type: '_divider' %}
+      {% content_for 'block', id: 'cart-summary-divider-3', type: '_divider' %}
       {% content_for 'block', id: 'cart-checkout', type: '_cart-checkout' %}
       {% content_for 'blocks' %}
     </div>
@@ -174,8 +182,7 @@
   "name": "t:names.summary",
   "tag": null,
   "blocks": [
-    { "type": "@app" },
-    { "type": "@theme" }
+    { "type": "@app" }
   ],
   "settings": [
     {
@@ -432,7 +439,7 @@
     {
       "type": "color",
       "id": "scheme_arrow_color",
-      "label": "Arrow color",
+      "label": "t:settings.arrow_color",
       "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -440,7 +447,7 @@
     {
       "type": "color",
       "id": "scheme_arrow_background",
-      "label": "Arrow background",
+      "label": "t:settings.arrow_background",
       "default": "#ffffff",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -448,7 +455,7 @@
     {
       "type": "color",
       "id": "scheme_arrow_border",
-      "label": "Arrow border",
+      "label": "t:settings.arrow_border",
       "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -456,7 +463,7 @@
     {
       "type": "color",
       "id": "scheme_pagination_color",
-      "label": "Pagination color",
+      "label": "t:settings.pagination_color",
       "default": "#cecece",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -464,7 +471,7 @@
     {
       "type": "color",
       "id": "scheme_pagination_active_color",
-      "label": "Pagination active color",
+      "label": "t:settings.pagination_active_color",
       "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
