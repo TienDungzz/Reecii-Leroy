@@ -1,14 +1,6 @@
-<link
-  rel="stylesheet"
-  href="{{ 'component-before-you-leave.css' | asset_url }}"
-  media="print"
-  onload="this.media='all'"
->
-<noscript>{{ 'component-before-you-leave.css' | asset_url | stylesheet_tag }}</noscript>
-
 <before-you-leave
-  data-delay="{{ section.settings.newsletter_popup_delay | times:1000 }}"
-  data-expire="{{ section.settings.newsletter_popup_expire }}"
+  data-expire="{{ section.settings.popup_expire }}"
+  data-delay="{{ section.settings.popup_delay | times: 1000 }}"
 >
   <div
     class="modal--popup fixed top-0 left-0 z-9 w-screen h-full flex-center no-js-hidden"
@@ -16,10 +8,7 @@
     id="before-you-leave-popup"
   >
     <div id="Modal-Overlay-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-    <div
-      class="popup__inner w-auto absolute-c-c flex flex-column color-{{ section.settings.color_scheme }}"
-      style="--popup-max-width: 96rem;"
-    >
+    <div class="popup__inner w-auto absolute-c-c flex flex-column color-{{ section.settings.color_scheme }}">
       <button
         type="button"
         class="popup__close"
@@ -34,43 +23,58 @@
   </div>
 </before-you-leave>
 
-<script>
+{% stylesheet %}
+  @media screen and (min-width: 750px) {
+    before-you-leave .popup__inner {
+      min-width: 90vw;
+    }
+  }
+
+  @media screen and (min-width: 1025px) {
+    before-you-leave .popup__inner {
+      min-width: 96rem;
+    }
+  }
+{% endstylesheet %}
+
+<script defer="defer">
   class BeforeYouLeave extends HTMLElement {
     constructor() {
       super();
-
       this.popup = this.querySelector('.modal--popup');
-      this.overlay = this.querySelector('[id^="Modal-Overlay-"]');
-      this.closeButton = this.querySelector('[data-close-popup]');
-
-      this.timeToShow = parseInt(this.getAttribute('data-delay'));
       this.expiresDate = this.getAttribute('data-expire');
+      this.timeToShow = parseInt(this.getAttribute('data-delay')) || 0;
 
-      if (this.getCookie('before-you-leave-popup') === '') {
-        setTimeout(() => {
-          if (this.popup) {
-            this.popup.setAttribute('open', 'true');
-            document.body.classList.add('overflow-hidden');
-          }
-        }, this.timeToShow);
-      } else {
-      }
+      if (!this.getCookie('before-you-leave-popup') && !Shopify.designMode) this.setOpenPopup(this.timeToShow);
 
-      this.dismissLabel = this.querySelector('label[for="dismiss"]');
-      if (this.dismissLabel) {
-        this.dismissLabel.addEventListener('click', this.setClosePopup.bind(this));
-      }
+      this.querySelector('[data-close-popup]')?.addEventListener('click', this.setClosePopup.bind(this));
+      this.querySelector('[id^="Modal-Overlay-"]')?.addEventListener('click', this.setClosePopup.bind(this));
+      this.querySelector('label[for="dismiss"]')?.addEventListener('click', this.setClosePopup.bind(this));
 
-      this.handleOverlayClick();
-      this.handleCloseButtonClick();
+      if (Shopify.designMode) {
+				document.addEventListener('shopify:section:select', (e) => {
+					if (e.target.matches('.section-before-you-leave')) this.setOpenPopup(0);
+				});
+
+				document.addEventListener('shopify:section:deselect', (e) => {
+					if (e.target.matches('.section-before-you-leave')) this.setClosePopup();
+				});
+			}
     }
 
-    handleCloseButtonClick() {
-      if (this.closeButton) this.closeButton.addEventListener('click', this.setClosePopup.bind(this));
-    }
+		setOpenPopup(timeToShow) {
+      setTimeout(() => {
+        if (this.popup) {
+          this.popup.setAttribute('open', 'true');
+          document.body.classList.add('overflow-hidden');
+        }
+      }, timeToShow);
+		}
 
-    handleOverlayClick() {
-      if (this.overlay) this.overlay.addEventListener('click', this.setClosePopup.bind(this));
+    setClosePopup() {
+      this.setCookie('before-you-leave-popup', 'closed', this.expiresDate);
+      this.popup.removeAttribute('open');
+      document.body.classList.remove('overflow-hidden');
     }
 
     setCookie(cname, cvalue, exdays) {
@@ -100,34 +104,15 @@
     deleteCookie(name) {
       document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
-
-    setClosePopup() {
-      this.setCookie('before-you-leave-popup', 'closed', this.expiresDate);
-      this.removeAttribute('open');
-      this.popup.removeAttribute('open');
-      document.body.classList.remove('overflow-hidden');
-    }
   }
   if (!customElements.get('before-you-leave')) customElements.define('before-you-leave', BeforeYouLeave);
 </script>
-
-{%- stylesheet -%}
-  before-you-leave .popup__inner {
-    @media screen and (min-width: 750px) {
-      min-width: 90vw;
-    }
-
-    @media screen and (min-width: 1025px) {
-      min-width: 96rem;
-    }
-  }
-{%- endstylesheet -%}
 
 {% schema %}
 {
   "name": "Before you leave",
   "tag": "section",
-  "class": "shopify-section--popup section--before-you-leave",
+  "class": "section-before-you-leave",
   "enabled_on": {
     "groups": ["custom.popup"]
   },
@@ -137,26 +122,26 @@
     }
   ],
   "settings": [
-    {
-      "type": "range",
-      "id": "newsletter_popup_expire",
-      "label": "Show again after",
-      "max": 30,
-      "min": 1,
-      "step": 1,
-      "unit": "day",
-      "default": 1
-    },
-    {
-      "type": "range",
-      "id": "newsletter_popup_delay",
-      "label": "Delay time",
-      "max": 60,
-      "min": 5,
-      "step": 1,
-      "unit": "s",
-      "default": 5
-    },
+		{
+			"type": "range",
+			"id": "popup_expire",
+			"max": 30,
+			"min": 1,
+			"step": 1,
+			"unit": "day",
+			"label": "t:sections.promotion-popup.settings.show_again_after.label",
+			"default": 1
+		},
+		{
+			"type": "range",
+			"id": "popup_delay",
+			"max": 60,
+			"min": 1,
+			"step": 1,
+			"unit": "s",
+			"label": "t:sections.promotion-popup.settings.delay_time.label",
+			"default": 5
+		},
     {
       "type": "header",
       "content": "t:content.appearance"

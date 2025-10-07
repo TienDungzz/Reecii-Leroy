@@ -1,8 +1,35 @@
-{% comment %}
-	"groups": ["custom.popup"]
-{% endcomment %}
+{% assign width_content = 935 %}
 
-<style>
+<side-drawer class="drawer promotionPopup fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden" element-s-popup id="Promotion-popup-{{ section.id }}" data-moved="false" tabindex="-1">
+	<div id="Drawer-Overlay-Promotion-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
+	<promotion-popup class="popup__inner promotion-popup w-full h-auto absolute-c-c flex flex-column global-settings-popup color-{{ section.settings.color_scheme }}"
+		role="dialog"
+		aria-modal="true"
+		aria-label="{{ 'accessibility.promotion-popup' | t }}"
+		style="--popup-max-width: {{ width_content }}px; --popup-max-height: min(100%, 75vh); --p: 0;"
+		data-expire="{{ section.settings.popup_expire }}"
+		data-delay="{{ section.settings.popup_delay | times: 1000 }}"
+	>
+		{% content_for 'blocks' %}
+
+		<button
+			class="drawer__close block t-button bor-none rounded-full cursor-pointer absolute"
+			type="button"
+			onclick="this.closest('side-drawer').close()"
+			aria-label="{{ 'accessibility.close_dialog' | t }}"
+			style="--top: 0.3rem; --right: 0.3rem;"
+		>
+			{{- 'icon-close.svg' | inline_asset_content -}}
+		</button>
+
+		<div class="newsletter--checked center">
+			<input id="dismiss" type="checkbox" name="dismiss">
+			<label for="dismiss" class="form-label--checkbox" role="text">No, thanks</label>
+		</div>
+	</promotion-popup>
+</side-drawer>
+
+{% stylesheet %}
 	.promotion-popup__close.close-effect .line {
 		background: var(--color-foreground);
 	}
@@ -44,42 +71,7 @@
 			font-size: 2rem;
 		}
 	}
-</style>
-
-{%- liquid
-	assign width_content = 935
-	assign width_info = 'calc(100% - 395px)'
-	assign width_info_md = 55
--%}
-
-<side-drawer class="drawer promotionPopup fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden" element-s-popup id="Promotion-popup-{{ section.id }}" data-moved="false" tabindex="-1">
-	<div id="Drawer-Overlay-Promotion-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-	<promotion-popup class="popup__inner promotion-popup w-full h-auto absolute-c-c flex flex-column global-settings-popup color-{{ section.settings.color_scheme }}"
-		role="dialog"
-		aria-modal="true"
-		aria-label="{{ 'accessibility.promotion-popup' | t }}"
-		style="--popup-max-width: {{ width_content }}px; --popup-max-height: min(100%, 75vh); --p: 0;"
-		data-expire="1"
-		data-delay="5"
-	>
-		{% content_for 'blocks' %}
-
-		<button 
-			class="drawer__close block t-button bor-none rounded-full cursor-pointer absolute" 
-			type="button" 
-			onclick="this.closest('side-drawer').close()" 
-			aria-label="{{ 'accessibility.close_dialog' | t }}" 
-			style="--top: 0.3rem; --right: 0.3rem;"
-		>
-			{{- 'icon-close.svg' | inline_asset_content -}}
-		</button>
-
-		<div class="newsletter--checked center">
-			<input id="dismiss" type="checkbox" name="dismiss">
-			<label for="dismiss" class="form-label--checkbox" role="text">No, thanks</label>
-		</div>
-	</promotion-popup>
-</side-drawer>
+{% endstylesheet %}
 
 <script defer="defer">
 	class PromotionPopup extends HTMLElement {
@@ -92,8 +84,8 @@
 			this.timeToShow = parseInt(this.getAttribute('data-delay')) || 0;
 			this._storage = this.getBestStorage();
 
-			this.querySelector('.drawer__close').addEventListener('click', this.setClose.bind(this));
-			this.drawer.querySelector('[id^="Drawer-Overlay-"]').addEventListener('click', this.setClose.bind(this));
+			this.querySelector('.drawer__close').addEventListener('click', this.setClosePopup.bind(this));
+			this.drawer.querySelector('[id^="Drawer-Overlay-"]').addEventListener('click', this.setClosePopup.bind(this));
 
 			// Dismiss until tomorrow
 			const dismissCheckbox = this.querySelector('#dismiss');
@@ -107,48 +99,42 @@
 
 			if (Shopify.designMode) {
 				document.addEventListener('shopify:section:select', (e) => {
-					if (e.target.matches('.section-promotion-popup')) this.setOpen(0);
+					if (e.target.matches('.section-promotion-popup')) this.setOpenPopup(0);
 				});
 
 				document.addEventListener('shopify:section:deselect', (e) => {
-					if (e.target.matches('.section-promotion-popup')) this.setClose();
+					if (e.target.matches('.section-promotion-popup')) this.setClosePopup();
 				});
 			}
 		}
 
 		connectedCallback() {
 			// Run load after element is attached to DOM for reliability across browsers/private modes
-			try { this.load(); } catch (_) { this.setOpen(this.timeToShow || 0); }
+			try { this.load(); } catch (_) { this.setOpenPopup(this.timeToShow || 0); }
 		}
 
 		load() {
 			// If user dismissed for today, do not open
 			if (this.getStore(this.dismissTodayCookieName)) return;
 
-			console.log('getStore(this.cookieName)', !this.getStore(this.cookieName));
-
 			if (!this.getStore(this.cookieName)) this.drawer.classList.add('active');
-			if (!this.getStore(this.cookieName) && !Shopify.designMode) this.setOpen(this.timeToShow);
+			if (!this.getStore(this.cookieName) && !Shopify.designMode) this.setOpenPopup(this.timeToShow);
 		}
 
-		setOpen(timeToShow) {
-			console.log('setOpen');
-
+		setOpenPopup(timeToShow) {
 			setTimeout(() => {
 				this.drawer.classList.add('active');
 				document.body.classList.add('overflow-hidden');
-
-				console.log("add class active");
 
 				this.drawer.addEventListener('transitionend', () => {
 					const containerToTrapFocusOn = this.drawer.querySelector('.popup__inner');
 					const focusElement = this.drawer.querySelector('.field__input');
 					trapFocus(containerToTrapFocusOn, focusElement);
 				}, { once: true });
-			}, 0);
+			}, timeToShow);
 		}
 
-		setClose() {
+		setClosePopup() {
 			this.setStoreDays(this.cookieName, 'closed', this.expiresDate);
 			this.drawer.classList.remove('active');
 			document.body.classList.remove('overflow-hidden');
