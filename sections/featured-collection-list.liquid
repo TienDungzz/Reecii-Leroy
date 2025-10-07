@@ -96,7 +96,10 @@
 {%- endcapture -%}
 
 {%- capture style_tabs_header_item -%}
-  --p: {{ sec_stts.tabs_header_padding_block_items }}px {{ sec_stts.tabs_header_padding_inline_items }}px;
+  --button-padding-vertical: {{ sec_stts.tabs_header_padding_block_items }}px;
+  --button-padding-vertical-mobile: {{ sec_stts.tabs_header_padding_block_items | times: 0.75 }}px;
+  --button-padding-horizontal: {{ sec_stts.tabs_header_padding_inline_items }}px;
+  --button-padding-horizontal-mobile: {{ sec_stts.tabs_header_padding_inline_items | times: 0.75 }}px;
   --border-radius: {{ sec_stts.tabs_header_corner_radius }}px;
   --border-width: {{ sec_stts.tabs_header_border_thickness }}px;
   --border-style: solid;
@@ -1303,7 +1306,7 @@
         },
         {
           "value": "arrows",
-          "label": "Arrows"
+          "label": "t:options.arrows"
         },
         {
           "value": "pagination",
@@ -1399,7 +1402,7 @@
       "step": 1,
       "default": 0,
       "unit": "px",
-      "label": "Padding top",
+      "label": "t:settings.padding_top",
       "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
     },
     {
@@ -1410,7 +1413,7 @@
       "step": 1,
       "default": 20,
       "unit": "px",
-      "label": "Padding bottom",
+      "label": "t:settings.padding_bottom",
       "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
     },
     {
@@ -1517,7 +1520,7 @@
     {
       "type": "checkbox",
       "id": "link_underline",
-      "label": "Underline",
+      "label": "t:options.underline",
       "default": false,
       "visible_if": "{{ section.settings.style_class == 'link' and section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
     },
@@ -1717,7 +1720,7 @@
       ],
       "default": "stretch",
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}",
-      "label": "Align items"
+      "label": "t:settings.align_items"
     },
     {
       "type": "select",
@@ -1747,7 +1750,7 @@
     {
       "type": "select",
       "id": "image_position",
-      "label": "Fit",
+      "label": "t:options.fit",
       "visible_if": "{{ section.settings.banner_image != blank  and section.settings.media_ratio != 'adapt' and section.settings.video_url != blank  }}",
       "options": [
         {
@@ -2097,7 +2100,7 @@
     {
       "type": "inline_richtext",
       "id": "content_text",
-      "label": "Text",
+      "label": "t:options.text",
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
     },
     {
