@@ -1,59 +1,34 @@
-{%- liquid
-  assign bl_stts = block.settings
-  assign success_message = 'content.copied' | t
-  assign copy_text = 'content.copy' | t
--%}
-
-<div class="promotion-code flex-center spacing-style" style="{% render 'spacing-padding', settings: bl_stts %}">
-  <div class="code-input_wrapper">
-    <copy-code class="field code__input items-center">
-      <input
-        class="field__input"
-        type="text"
-        value="{{ bl_stts.promotion_popup_discount_code_text }}"
-        readonly
-      >
-      <button class="button-code--copy t-button cursor-pointer relative shrink-0 flex-center">
-        {% render 'icon-copy' %}
-        <span class="tooltip" data-success_message="{{ success_message }}">
-          {{ copy_text }}
-        </span>
-      </button>
-    </copy-code>
-    {%- if bl_stts.promotion_popup_discount_code_des != blank -%}
-      <div class="code-popup__desc" style="--mt: 1.2rem;">
-        <p>{{ bl_stts.promotion_popup_discount_code_des }}</p>
-      </div>
-    {%- endif -%}
-  </div>
+<div
+  class="
+    promotion-code flex-center
+    size-style
+    spacing-style
+  "
+  style="
+    {% render 'size-style', settings: block.settings %}
+    {% render 'spacing-padding', settings: block.settings %}
+  "
+  {{ block.shopify_attributes }}
+>
+  <copy-code class="field code__input items-center">
+    <input
+      id="Promotion-code-input"
+      class="field__input {{ block.settings.input_alignment }} {{ block.settings.input_type_preset }}"
+      type="text"
+      name="promotion-code"
+      value="{{ block.settings.promotion_popup_discount_code_text }}"
+      readonly
+    >
+    <button class="button-code--copy t-button cursor-pointer relative shrink-0 flex-center">
+      {% render 'icon-copy' %}
+      <span class="tooltip" data-success_message="{{ 'content.copied' | t }}">
+        {{ 'content.copy' | t }}
+      </span>
+    </button>
+  </copy-code>
 </div>
 
-<script>
-  class CopyCode extends HTMLElement {
-    constructor() {
-      super();
-    }
-
-    connectedCallback() {
-      this.addEventListener('click', this.copyCode.bind(this));
-    }
-
-    disconnectedCallback() {
-      this.removeEventListener('click', this.copyCode.bind(this));
-    }
-
-    copyCode() {
-      this.inputField = this.querySelector('.code__input .field__input');
-      this.tooltip = this.querySelector('.tooltip');
-      navigator.clipboard.writeText(this.inputField.value).then(() => {
-        this.tooltip.textContent = this.tooltip.dataset.success_message;
-      });
-    }
-  }
-  customElements.define('copy-code', CopyCode);
-</script>
-
-{%- stylesheet -%}
+{% stylesheet %}
   .promotion-code .field {
     padding-inline: 0.4rem;
   }
@@ -112,7 +87,32 @@
       pointer-events: auto;
     }
   }
-{%- endstylesheet -%}
+{% endstylesheet %}
+
+<script defer="defer">
+  class CopyCode extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    connectedCallback() {
+      this.addEventListener('click', this.copyCode.bind(this));
+    }
+
+    disconnectedCallback() {
+      this.removeEventListener('click', this.copyCode.bind(this));
+    }
+
+    copyCode() {
+      this.inputField = this.querySelector('.code__input .field__input');
+      this.tooltip = this.querySelector('.tooltip');
+      navigator.clipboard.writeText(this.inputField.value).then(() => {
+        this.tooltip.textContent = this.tooltip.dataset.success_message;
+      });
+    }
+  }
+  customElements.define('copy-code', CopyCode);
+</script>
 
 {% schema %}
 {
@@ -125,9 +125,66 @@
       "label": "Code"
     },
     {
-      "type": "text",
-      "id": "promotion_popup_discount_code_des",
-      "label": "Description"
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width_mobile",
+      "label": "t:settings.width_mobile",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
     },
     {
       "type": "header",
