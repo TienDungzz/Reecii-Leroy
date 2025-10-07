@@ -2,11 +2,6 @@
   assign bl_id = block.id | replace: '_', '' | downcase
   assign bl_stts = block.settings
 
-  assign spacing = bl_stts.spacing | default: 40
-  assign title_spacing = bl_stts.title_spacing | default: 16
-  assign grid_gap = bl_stts.grid_gap | default: 20
-  assign alignment = bl_stts.alignment | default: 'left'
-
   case bl_stts.image_ratio
   when 'landscape'
     assign ratio = '16 / 9'
@@ -149,7 +144,7 @@
     {
       "type": "select",
       "id": "width_tablet",
-      "label": "Tablet width",
+      "label": "t:settings.width_tablet",
       "options": [
         {
           "value": "fit-content",
@@ -356,12 +351,6 @@
       "step": 1,
       "default": 10,
       "label": "Gap"
-    },
-    {
-      "type": "text_alignment",
-      "id": "alignment",
-      "label": "t:settings.alignment",
-      "default": "left"
     },
     {
       "type": "header",
@@ -663,7 +652,7 @@
     {
       "type": "color",
       "id": "scheme_arrow_color",
-      "label": "Arrow color",
+      "label": "t:settings.arrow_color",
       "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -671,7 +660,7 @@
     {
       "type": "color",
       "id": "scheme_arrow_background",
-      "label": "Arrow background",
+      "label": "t:settings.arrow_background",
       "default": "#ffffff",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -679,7 +668,7 @@
     {
       "type": "color",
       "id": "scheme_arrow_border",
-      "label": "Arrow border",
+      "label": "t:settings.arrow_border",
       "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -687,7 +676,7 @@
     {
       "type": "color",
       "id": "scheme_pagination_color",
-      "label": "Pagination color",
+      "label": "t:settings.pagination_color",
       "default": "#cecece",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -695,7 +684,7 @@
     {
       "type": "color",
       "id": "scheme_pagination_active_color",
-      "label": "Pagination active color",
+      "label": "t:settings.pagination_active_color",
       "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -798,26 +787,6 @@
     {
       "type": "header",
       "content": "t:settings_schema.global.settings.spacing.label"
-    },
-    {
-      "type": "range",
-      "id": "spacing",
-      "min": 20,
-      "max": 80,
-      "step": 5,
-      "unit": "px",
-      "label": "Spacing between header and grid",
-      "default": 40
-    },
-    {
-      "type": "range",
-      "id": "title_spacing",
-      "min": 10,
-      "max": 40,
-      "step": 2,
-      "unit": "px",
-      "label": "Space below title",
-      "default": 16
     },
     {
       "type": "header",
