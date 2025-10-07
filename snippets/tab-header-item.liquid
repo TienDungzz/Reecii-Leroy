@@ -8,10 +8,15 @@
 
   {%- capture link -%}#tabs-{{ id }}-{{ forloop.index }}{%- endcapture -%}
 
+  {%- if settings.style_class == 'link' -%}
+    {%- assign style_tabs_header_item = '' -%}
+  {%- endif-%}
+
   {% render 'button',
     link: link,
     label: label,
     class: class_default,
+    style: style_tabs_header_item,
     style_class: settings.style_class,
     button_style: settings.button_style,
     link_underline: settings.link_underline,
@@ -23,14 +28,18 @@
 {%- endif -%}
 
 {%- stylesheet -%}
-  .tabs-component-panel-trigger:hover,
-  .tabs-component-panel-trigger.--active {
-    --button-color: var(--color-tab-active);
-    --button-background-color: var(--background-tab-active);
-    background: var(--background-tab-active);
-    &.button--outline {
-      --border-outline-color: var(--color-tab-active);
-    }
+  .tabs-component-panel-trigger.button:hover,
+  .tabs-component-panel-trigger.button.--active {
+    --button-color: var(--color-primary-button-hover-text);
+    --button-background-color: var(--color-primary-button-hover-background);
+    --color-border: var(--color-primary-button-hover-border);
+  }
+
+  .tabs-component-panel-trigger.button-secondary:hover,
+  .tabs-component-panel-trigger.button-secondary.--active {
+    --button-color: var(--color-secondary-button-hover-text);
+    --button-background-color: var(--color-secondary-button-hover-background);
+    --color-border: var(--color-secondary-button-hover-border);
   }
 
 {%- endstylesheet -%}
