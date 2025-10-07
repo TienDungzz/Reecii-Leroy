@@ -8,10 +8,15 @@
 
   {%- capture link -%}#tabs-{{ id }}-{{ forloop.index }}{%- endcapture -%}
 
+  {%- if settings.style_class == 'link' -%}
+    {%- assign style_tabs_header_item = '' -%}
+  {%- endif-%}
+
   {% render 'button',
     link: link,
     label: label,
     class: class_default,
+    style: style_tabs_header_item,
     style_class: settings.style_class,
     button_style: settings.button_style,
     link_underline: settings.link_underline,
