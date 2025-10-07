@@ -1,0 +1,71 @@
+{%- liquid
+  assign divider = block.settings.divider
+  assign scheme_border = block.settings.scheme_border
+-%}
+{%- capture children -%}
+  {%- content_for 'blocks' -%}
+{%- endcapture -%}
+<ul
+  class="
+    site-nav-mobile--list list-unstyled
+    {% if divider %} site-nav-mobile--list-divider{% endif %}
+  "
+  data-tab-for="{{ block.settings.tab_for }}"
+  style="{% if divider %}--color-border: {{ scheme_border }};{% endif %}"
+>
+  {{- children -}}
+</ul>
+
+{%- stylesheet -%}
+  .site-nav-mobile--list-divider .menu-drawer__inner-submenu .menu-drawer__menu > li {
+    padding-block-end: var(--padding-lg);
+  }
+
+  .site-nav-mobile--list-divider .menu-drawer__inner-submenu .menu-drawer__menu > li,
+  .site-nav-mobile--list-divider > li {
+    border-bottom: 1px solid var(--color-border);
+  }
+{%- endstylesheet -%}
+
+{% schema %}
+{
+  "name": "Menu item",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "_menu-tab-item"
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "tab_for",
+      "label": "Tab for",
+      "info": "Enter the same text as the heading to link or reference it."
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "divider",
+      "label": "Divider",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "scheme_border",
+      "label": "t:settings.borders",
+      "default": "#E6E6E6",
+      "alpha": true,
+      "visible_if": "{{ block.settings.divider == true }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Menu item"
+    }
+  ]
+}
+{% endschema %}
