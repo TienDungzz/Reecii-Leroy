@@ -244,10 +244,19 @@
         <div class="right-banner__grid grid-layout grid-layout--2">
           {% for i in (1..4) %}
             {% assign image = 'right_banner_image_' | append: i %}
+            {% assign link = 'right_banner_link_' | append: i %}
             {% assign image = section.settings[image] %}
+            {% assign link = section.settings[link] %}
+
             <div class="right-banner__item relative overflow-hidden{% if image == blank %} right-banner__item--placeholder{% endif %}">
               {% if image != blank %}
-                {%- render 'image', image: image, sizes: '100vw' -%}
+                {% if link != blank %}
+                  <a class="right-banner__item__link" href="{{ link }}" {% if section.settings.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+                {% endif %}
+                {%- render 'image', image: image, sizes: '100vw', link: link -%}
+                {% if link != blank %}
+                  </a>
+                {% endif %}
               {%- else -%}
                 {{ 'collection-' | append: i | placeholder_svg_tag: 'placeholder-svg placeholder-svg--bg' }}
               {% endif %}
@@ -1169,9 +1178,21 @@
       "visible_if": "{{ section.settings.show_right_banner == true and section.settings.slideshow_type == 'default' }}"
     },
     {
+      "type": "url",
+      "id": "right_banner_link_1",
+      "label": "Link 1",
+      "visible_if": "{{ section.settings.show_right_banner == true and section.settings.slideshow_type == 'default' }}"
+    },
+    {
       "type": "image_picker",
       "id": "right_banner_image_2",
       "label": "Image 2",
+      "visible_if": "{{ section.settings.show_right_banner == true and section.settings.slideshow_type == 'default' }}"
+    },
+    {
+      "type": "url",
+      "id": "right_banner_link_2",
+      "label": "Link 2",
       "visible_if": "{{ section.settings.show_right_banner == true and section.settings.slideshow_type == 'default' }}"
     },
     {
@@ -1181,10 +1202,28 @@
       "visible_if": "{{ section.settings.show_right_banner == true and section.settings.slideshow_type == 'default' }}"
     },
     {
+      "type": "url",
+      "id": "right_banner_link_3",
+      "label": "Link 3",
+      "visible_if": "{{ section.settings.show_right_banner == true and section.settings.slideshow_type == 'default' }}"
+    },
+    {
       "type": "image_picker",
       "id": "right_banner_image_4",
       "label": "Image 4",
       "visible_if": "{{ section.settings.show_right_banner == true and section.settings.slideshow_type == 'default' }}"
+    },
+    {
+      "type": "url",
+      "id": "right_banner_link_4",
+      "label": "Link 4",
+      "visible_if": "{{ section.settings.show_right_banner == true and section.settings.slideshow_type == 'default' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": false
     },
     {
       "type": "header",
