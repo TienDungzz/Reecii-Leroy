@@ -102,7 +102,24 @@
   %}
 {% endcapture %}
 
-<div class="instagram-item relative {% if background_media == 'background_color' %} instagram-item--bg-color{% endif %}" {% if background_video != blank %}data-video-enabled="true"{% endif %}{% if block.settings.enable_typing_content %} data-typing-content="true"{% endif %} style="--icon-button-bg-color: {{ block.settings.icon_button_bg_color }}; --icon-button-color: {{ block.settings.icon_button_color }}; --icon-button-size: {{ block.settings.icon_button_size }}px; --icon-button-position-right: {{ block.settings.icon_button_position_right }}px; --icon-button-position-bottom: {{ block.settings.icon_button_position_bottom }}px; --icon-button-position-left: {{ block.settings.icon_button_position_left }}px; --background-color: {{ block.settings.background_color }}; --ratioBg: {{ ratio }}">
+<div
+  class="instagram-item relative {% if background_media == 'background_color' %} instagram-item--bg-color{% endif %}" 
+  {% if background_video != blank %}
+    data-video-enabled="true"
+  {% endif %}
+  {% if block.settings.enable_typing_content %} 
+    data-typing-content="true"
+  {% endif %} 
+  style="
+    --icon-button-bg-color: {{ block.settings.icon_button_bg_color }}; 
+    --icon-button-color: {{ block.settings.icon_button_color }}; 
+    --icon-button-size: {{ block.settings.icon_button_size }}px; 
+    --icon-button-position-right: {{ block.settings.icon_button_position_right }}px; 
+    --icon-button-position-bottom: {{ block.settings.icon_button_position_bottom }}px; 
+    --icon-button-position-left: {{ block.settings.icon_button_position_left }}px; 
+    --background-color: {{ block.settings.background_color }}; --ratioBg: {{ ratio }}
+  "
+>
   <div class="instagram-item__image overflow-hidden relative">
     <{{ element }}
       class="{{ class }}"
@@ -714,7 +731,7 @@
     },
     {
       "type": "checkbox",
-      "label": "Enable Typing Content",
+      "label": "t:settings.enable_typing_content",
       "id": "enable_typing_content",
       "default": false
     },
@@ -899,15 +916,15 @@
     {
       "type": "select",
       "id": "icon",
-      "label": "Icon",
+      "label": "t:settings.icon",
       "options": [
         {
           "value": "none",
-          "label": "None"
+          "label": "t:options.none"
         },
         {
           "value": "instagram-cart",
-          "label": "Instagram Cart"
+          "label": "t:options.instagram_cart"
         },
         {
           "value": "custom",
@@ -928,7 +945,7 @@
         },
         {
           "value": "image",
-          "label": "Image"
+          "label": "t:options.image"  
         }
       ],
       "default": "svg"
@@ -1051,20 +1068,20 @@
     },
     {
       "type": "checkbox",
-      "label": "Hover Zoom",
+      "label": "t:settings.hover_zoom",  
       "id": "hover_zoomIn",
       "default": true
     },
     {
       "type": "checkbox",
-      "label": "Hover Plus Icon",
+      "label": "t:settings.hover_plus_icon",
       "id": "hover_plus_icon",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "toggle_overlay",
-      "label": "Hover Overlay",
+      "label": "t:settings.hover_overlay",
       "default": true
     },
     {
@@ -1111,7 +1128,7 @@
     },
     {
       "type": "checkbox",
-      "label": "Center Button",
+      "label": "t:settings.center_button",
       "id": "center_button",
       "default": false,
       "info": "Button will be centered on the image when hover",
@@ -1120,14 +1137,14 @@
     {
       "type": "text",
       "id": "center_button_text",
-      "label": "Button text",
+      "label": "t:settings.button_label",
       "default": "Shop now",
       "visible_if": "{{ block.settings.center_button == true }}"
     },
     {
       "type": "url",
       "id": "center_button_link",
-      "label": "Button link",
+      "label": "t:settings.button_link",
       "visible_if": "{{ block.settings.center_button == true }}"
     },
     {
@@ -1185,7 +1202,7 @@
     {
       "type": "checkbox",
       "id": "enable_fancybox",
-      "label": "Enable Fancybox Lightbox",
+      "label": "t:settings.enable_lightbox",  
       "default": true,
       "info": "Opens images and videos in a beautiful lightbox gallery",
       "visible_if": "{{ block.settings.enable_parallax == false }}"
@@ -1193,14 +1210,14 @@
     {
       "type": "checkbox",
       "id": "enable_parallax",
-      "label": "Enable parallax scroll",
+      "label": "t:settings.enable_parallax_scroll",
       "default": false,
       "visible_if": "{{ block.settings.enable_fancybox == false }}"
     },
     {
       "type": "range",
       "id": "parallax_speed",
-      "label": "Parallax speed",
+      "label": "t:settings.parallax_speed",
       "min": 0,
       "max": 4,
       "step": 0.5,
