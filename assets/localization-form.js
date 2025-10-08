@@ -21,8 +21,8 @@ if (!customElements.get('localization-form')) {
         this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
         this.addEventListener('keydown', this.onContainerKeyDown.bind(this));
         if (this.mql.matches) this.addEventListener('focusout', this.closeSelector.bind(this));
-        this.querySelector('#Selector-Overlay').addEventListener('click', this.hidePanel.bind(this));
-        this.elements.button.addEventListener('click', this.openSelector.bind(this));
+        this.querySelector('#Selector-Overlay')?.addEventListener('click', this.hidePanel.bind(this));
+        this.elements.button?.addEventListener('click', this.openSelector.bind(this));
 
         if (this.mqlDesktop.matches && this.getAttribute('activate-event') === 'hover') {
           const hoverEvents = ['focusin', 'mouseenter', 'mouseleave'];
@@ -36,7 +36,7 @@ if (!customElements.get('localization-form')) {
           this.elements.search.addEventListener('keydown', this.onSearchKeyDown.bind(this));
         }
         if (this.elements.closeButton) {
-          this.elements.closeButton.addEventListener('click', this.hidePanel.bind(this));
+          this.elements.closeButton?.addEventListener('click', this.hidePanel.bind(this));
         }
         if (this.elements.resetButton) {
           this.elements.resetButton.addEventListener('click', this.resetFilter.bind(this));
@@ -48,17 +48,17 @@ if (!customElements.get('localization-form')) {
       }
 
       hidePanel() {
-        // this.elements.button.setAttribute('aria-expanded', 'false');
-        // this.elements.drawer.classList.remove('active');
-        // if (this.elements.search) {
-        //   this.elements.search.value = '';
-        //   this.filterCountries();
-        //   this.elements.search.setAttribute('aria-activedescendant', '');
-        // }
-        // if (!this.mql.matches) removeTrapFocus(this.elements.button);
-        // document.body.classList.remove('overflow-hidden-mobile');
-        // document.querySelector('.menu-drawer').classList.remove('disclosure-selector-open');
-        // this.header.preventHide = false;
+        this.elements.button.setAttribute('aria-expanded', 'false');
+        this.elements.drawer.classList.remove('active');
+        if (this.elements.search) {
+          this.elements.search.value = '';
+          this.filterCountries();
+          this.elements.search.setAttribute('aria-activedescendant', '');
+        }
+        if (!this.mql.matches) removeTrapFocus(this.elements.button);
+        document.body.classList.remove('overflow-hidden-mobile');
+        document.querySelector('.menu-drawer').classList.remove('disclosure-selector-open');
+        this.header.preventHide = false;
       }
 
       onContainerKeyDown(event) {
@@ -116,6 +116,7 @@ if (!customElements.get('localization-form')) {
         event.preventDefault();
         const form = this.querySelector('form');
         this.elements.input.value = event.currentTarget.dataset.value;
+
         if (form) form.submit();
       }
 
@@ -145,7 +146,7 @@ if (!customElements.get('localization-form')) {
 
       _hoverOpen(event) {
         const value = event.type === 'mouseenter' || event.type === 'focusin';
-        this.elements.drawer.classList.toggle('active', value);
+        this.elements.drawer?.classList.toggle('active', value);
         this.elements.button.setAttribute('aria-expanded', value);
         if (!document.body.classList.contains('overflow-hidden-tablet')) document.body.classList.toggle('overflow-hidden-mobile', value);
         if (this.hasAttribute('data-prevent-hide')) this.header.preventHide = value;
@@ -213,6 +214,158 @@ if (!customElements.get('localization-form')) {
 
       onSearchKeyDown(event) {
         if (event.code.toUpperCase() === 'ENTER') event.preventDefault();
+      }
+    }
+  );
+}
+
+if (!customElements.get('dropdown-localization-component')) {
+  customElements.define(
+    'dropdown-localization-component',
+    class DropdownLocalizationComponent extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.init();
+      }
+
+      init() {
+        this.mql = window.matchMedia('(min-width: 750px)');
+        this.mqlDesktop = window.matchMedia('(min-width: 1025px)');
+        this.header = document.querySelector('.header-wrapper');
+        this.elements = {
+          button: this.querySelector('.dropdown-localization__button'),
+          drawer: this.querySelector('.selector__dropdown[element-s-up]'),
+          panel: this.querySelector('.disclosure__list-wrapper'),
+        };
+        this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
+        if (this.mql.matches) this.addEventListener('focusout', this.closeSelector.bind(this));
+        this.elements.button.addEventListener('click', this.openSelector.bind(this));
+        // this.elements.drawer?.addEventListener('click', this.closeSelector.bind(this));
+      }
+
+      onContainerKeyUp(event) {
+        event.preventDefault();
+
+        switch (event.code.toUpperCase()) {
+          case 'ESCAPE':
+            if (this.elements.button.getAttribute('aria-expanded') == 'false') return;
+            this.hidePanel();
+            event.stopPropagation();
+            this.elements.button.focus();
+            break;
+          case 'SPACE':
+            if (this.elements.button.getAttribute('aria-expanded') == 'true') return;
+            this.openSelector();
+            break;
+        }
+      }
+
+      openSelector() {
+        this.elements.button.focus();
+        this.elements.drawer.classList.toggle('active');
+        this.elements.button.setAttribute('aria-expanded', (this.elements.button.getAttribute('aria-expanded') === 'false').toString());
+        if (!document.body.classList.contains('overflow-hidden-tablet')) {
+          document.body.classList.add('overflow-hidden-mobile');
+        }
+        if (this.mql.matches) {
+          if (this.elements.search) this.elements.search.focus();
+        } else {
+
+          this.addEventListener('transitionend', () => {
+            const containerToTrapFocusOn = this.querySelector('.slide__inner--mb');
+            const focusElement = this.querySelector('.selector__close-button');
+            trapFocus(containerToTrapFocusOn, focusElement);
+          }, { once: true });
+
+          this.elements.drawer.classList.add('drawer-slide-mb');
+        }
+        if (this.hasAttribute('data-prevent-hide')) {
+          this.header.preventHide = true;
+        }
+        document.querySelector('.menu-drawer').classList.add('disclosure-selector-open');
+      }
+
+      closeSelector(event) {
+        if (!this.contains(event.target) || !this.contains(event.relatedTarget)) {
+          this.hidePanel();
+        }
+      }
+
+      hidePanel() {
+        this.elements.button.setAttribute('aria-expanded', 'false');
+        this.elements.drawer.classList.remove('active');
+      }
+    }
+  );
+}
+
+if (!customElements.get('drawer-localization-component')) {
+  customElements.define(
+    'drawer-localization-component',
+    class DrawerLocalizationComponent extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.init();
+      }
+
+      init() {
+        this.header = document.querySelector('.header-wrapper');
+        this.elements = {
+          button: this.querySelector('.drawer-localization__button'),
+          drawer: this.querySelector('.selector__dropdown[element-s-up]'),
+          backButton: this.querySelector('.menu-drawer__back-button'),
+        };
+        this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
+        // this.addEventListener('focusout', this.closeSelector.bind(this));
+        this.elements.button.addEventListener('click', this.openSelector.bind(this));
+        this.elements.backButton.addEventListener('click', this.closeSelector.bind(this));
+        // this.elements.drawer?.addEventListener('click', this.closeSelector.bind(this));
+      }
+
+      openSelector() {
+        this.elements.button.focus();
+        this.elements.drawer.classList.add('active');
+      }
+
+      onContainerKeyUp(event) {
+        event.preventDefault();
+
+        switch (event.code.toUpperCase()) {
+          case 'ESCAPE':
+            if (this.elements.button.getAttribute('aria-expanded') == 'false') return;
+            this.hidePanel();
+            event.stopPropagation();
+            this.elements.button.focus();
+            break;
+          case 'SPACE':
+            if (this.elements.button.getAttribute('aria-expanded') == 'true') return;
+            this.openSelector();
+            break;
+        }
+      }
+
+      closeSelector(event) {
+        console.log(`%c🔍 Log event.target:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", event.target);
+
+        console.log(`%c🔍 Log event.relatedTarget:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", event.relatedTarget);
+
+        event.preventDefault();
+        if (!this.contains(event.target) || !this.contains(event.relatedTarget)) {
+          this.hidePanel();
+        }
+      }
+
+      hidePanel() {
+        this.elements.button.setAttribute('aria-expanded', 'false');
+        this.elements.drawer.classList.remove('active');
+        document.body.classList.remove('overflow-hidden-mobile');
+        document.querySelector('.menu-drawer').classList.remove('disclosure-selector-open');
       }
     }
   );

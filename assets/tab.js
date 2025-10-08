@@ -98,4 +98,54 @@ class TabsComponent extends HTMLElement {
     }
   }
 }
-if (!customElements.get('tabs-component')) customElements.define("tabs-component", TabsComponent);
+if (!customElements.get("tabs-component"))
+  customElements.define("tabs-component", TabsComponent);
+
+class HeaderMobileTabs extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.init();
+  }
+
+  init() {
+    console.log("init");
+    this.tabs = this.querySelectorAll("[data-tab-heading]");
+    this.tabContents = this.querySelectorAll("[data-tab-for]");
+
+    this.tabs.forEach((tab) => {
+      tab.addEventListener("click", this.handleTabClick.bind(this));
+    });
+  }
+
+  handleTabClick(event) {
+    event.preventDefault();
+
+    console.log("handleTabClick");
+
+
+    let target = event.target.closest("a"),
+      tabTarget = target.getAttribute("data-tab-heading-target");
+
+    if (target.classList.contains("active")) return;
+
+    this.tabs.forEach((tab) => tab.classList.remove("active"));
+
+    target.classList.add("active");
+
+    this.tabContents.forEach((content) => {
+      content.style.display = "none";
+
+      if (content.getAttribute("data-tab-for") == tabTarget) {
+        content.style.display = "block";
+      }
+    });
+  }
+
+
+}
+
+if (!customElements.get("header-mobile-tabs"))
+  customElements.define("header-mobile-tabs", HeaderMobileTabs);
