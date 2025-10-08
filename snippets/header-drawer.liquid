@@ -180,7 +180,8 @@
               {%- endfor -%}
             </ul>
           </nav>
-          <div class="menu-drawer__utility-links">
+          {%- render 'menu-drawer-utility', settings: section.settings -%}
+          {% comment %} <div class="menu-drawer__utility-links">
             {%- if shop.customer_accounts_enabled -%}
               <a
                 href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}"
@@ -243,9 +244,100 @@
             {%- if block.settings.mobile_show_social -%}
               {% render 'social-icons', class: 'list' %}
             {%- endif -%}
-          </div>
+          </div> {% endcomment %}
         </div>
       </div>
     </div>
   </header-drawer>
 </side-drawer>
+
+{% stylesheet %}
+  .drawer--menu .drawer__close {
+    position: relative;
+    right: 0;
+    top: 0;
+    z-index: var(--layer-heightened);
+  }
+
+  .menu-drawer__back-button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: var(--padding-md) var(--minimum-touch-target) var(--padding-md) var(--padding-xl);
+    border: none;
+    color: var(--color-foreground);
+    background-color: transparent;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow-x: hidden;
+    line-height: 1.2;
+    box-shadow: none;
+    letter-spacing: normal;
+  }
+
+  .menu-drawer__back-button > .svg-wrapper {
+    margin-right: var(--padding-md);
+    width: var(--icon-size-xs);
+    height: var(--icon-size-xs);
+  }
+
+  .menu-drawer {
+    svg {
+      width: var(--icon-size-xs);
+      height: var(--icon-size-xs);
+    }
+
+    .disclosure__list-wrapper {
+      opacity: var(--opacity-0);
+      visibility: hidden;
+      transform: translateY(0);
+      transition-property: opacity, visibility, transform;
+      transition-duration: var(--duration-medium);
+      transition-timing-function: var(--cubic-smooth);
+    }
+
+    .selector__dropdown .disclosure__list-wrapper {
+      transform: translate(-5%);
+      border-radius: 0;
+      border: none;
+      z-index: var(--layer-raised);
+    }
+
+    .selector__dropdown.active .disclosure__list-wrapper {
+      transform: translate(0);
+      opacity: var(--opacity-100);
+      visibility: visible;
+    }
+
+    .country-selector-form__wrapper .country-selector__list,
+    .localization-form--language {
+      padding-inline: var(--padding-xl);
+    }
+
+    .disclosure-has-popup[open] > summary::before {
+      position: absolute;
+    }
+
+    .details--dropdown .details__list {
+      top: unset;
+      bottom: 100%;
+    }
+
+    .country-selector-form__wrapper .localization-form:only-child {
+      padding: 0;
+      width: 100%;
+    }
+
+    .country-filter,
+    .language-filler {
+      padding-inline: var(--padding-xl);
+    }
+
+    .language-selector localization-form {
+      height: 100%;
+      display: flex;
+    }
+  }
+{% endstylesheet %}

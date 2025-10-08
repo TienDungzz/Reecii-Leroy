@@ -149,7 +149,7 @@
 
   if show_country or show_language
     capture localization_markup
-      render 'dropdown-localization', show_country: show_country, show_language: show_language, country_style: sec_stts.country_selector_style, localization_position: sec_stts.localization_position, localization_type: sec_stts.localization_type
+      render 'dropdown-localization', show_country: show_country, show_language: show_language, country_style: sec_stts.country_selector_style, localization_position: sec_stts.localization_position, localization_type: sec_stts.localization_type, hide_mobile: true
     endcapture
   endif
 
@@ -313,6 +313,8 @@
     &[transparent='not-sticky'][data-sticky-state='active'],
     /* Only show opaque background when hovering over menu items with children (mega menu)
        Multiple selectors for performance: each simple :has() check is faster than one complex selector with multiple conditions */
+
+    &:hover,
     &:has(.mega-menu__list:hover),
     &:has(.list-menu__item[aria-haspopup]:is(:hover, [aria-expanded='true'], [data-animating])),
     &:has(.menu-list__list-item[slot='overflow'] .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])) {
@@ -325,18 +327,25 @@
       --color-background-rgb: inherit;
       --color-border: inherit;
       --color-border-rgb: inherit;
+      --color-primary-button-text: var(--color-foreground);
+      --color-primary-button-hover-text: var(--color-foreground);
 
-      .header__row {
+      .header__row:after {
+        opacity: var(--opacity-100);
         /* Faster transition for "in" animation */
-        transition: color var(--animation-values-fast), border-color var(--animation-values-fast),
-          background-color var(--animation-values-fast), padding-block-start var(--animation-slowest-smooth), padding-block-end var(--animation-slowest-smooth);
+        transition: opacity var(--animation-values-fast), color var(--animation-values-fast), border-color var(--animation-values-fast),
+          background-color var(--animation-values-fast);
       }
     }
 
     .header__row {
+      background-color: transparent;
+    }
+
+    .header__row:after {
       /* Slower transition for "out" animation */
-      transition: color var(--animation-values-slow), border-color var(--animation-values-slow),
-        background-color var(--animation-values-slow), padding-block-start var(--animation-slowest-smooth), padding-block-end var(--animation-slowest-smooth);
+      transition: opacity var(--animation-values-slow), color var(--animation-values-slow), border-color var(--animation-values-slow),
+        background-color var(--animation-values-slow);
     }
   }
 
@@ -359,7 +368,6 @@
     --color-primary-button-hover-background: inherit;
     --color-primary-button-hover-border: inherit;
     --color-primary-button-hover-text: inherit;
-    --color-primary-hover: inherit;
   }
 
   /* section-header */
@@ -392,11 +400,36 @@
     z-index: initial;
   }
 
+  .section-header-main.scrolled-past-header {
+    .header__row {
+      transition-delay: .4s;
+    }
+  }
+
+  .section-header-main:not(.scrolled-past-header) {
+    .header__row {
+      transition-delay: 0s;
+    }
+  }
+
   .header__row {
     position: relative;
+    background-color: var(--header-bg-color, var(--color-background));
+    transition: padding-block-start var(--animation-speed), padding-block-end var(--animation-speed);
 
     /* will default to bg from its color scheme unless --header-bg-color is transparent */
-    background-color: var(--header-bg-color, var(--color-background));
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--header-bg-color, var(--color-background));
+      z-index: -1;
+      opacity: var(--opacity-0);
+      pointer-events: none;
+    }
   }
 
   /* Header padding styles */

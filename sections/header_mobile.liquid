@@ -30,6 +30,7 @@
                 </div>
                 <div class="section-resource-list__content">
                   {%- content_for 'block', type: '_menu_tab_contents', id: 'static-menu-tab-content' -%}
+                  {%- render 'menu-drawer-utility', settings: section.settings -%}
                 </div>
               </header-mobile-tabs>
             </div>
@@ -47,12 +48,38 @@
 
   .drawer--menu-multi-tab .menu-drawer__menu .menu-drawer__menu-item,
   .drawer--menu-multi-tab .menu-drawer__menu-grid {
-    padding-inline: var(--page-margin);
+    padding-inline: var(--padding-xl);
   }
 
   .drawer--menu-multi-tab .menu-drawer__close-button {
-    padding: 0 var(--minimum-touch-target) 0 var(--page-margin);
+    padding: 0 var(--minimum-touch-target) 0 var(--padding-xl);
     height: var(--minimum-touch-target);
+  }
+
+  .menu-drawer__utility-links {
+    .disclosure__list-wrapper {
+      position: fixed;
+      width: 100%;
+      top: 0;
+      height: 100dvh;
+      left: 0;
+      background-color: var(--color-background);
+      max-height: initial;
+      display: grid;
+      flex-direction: column;
+      grid-template-rows: 4.5rem 1fr 5rem;
+    }
+
+    localization-form:has(.country-selector__list--with-multiple-currencies) {
+      width: 100%;
+      max-height: calc(100dvh - 9.5rem);
+      display: block;
+
+      .country-selector__list--with-multiple-currencies {
+        width: 100%;
+        max-height: calc(100dvh - 16.5rem);
+      }
+    }
   }
 {% endstylesheet %}
 
@@ -126,6 +153,84 @@
       "label": "Width",
       "default": 50,
       "visible_if": "{{ section.settings.show_image_sub_menu == true }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.localization"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_country",
+      "label": "t:settings.country_region",
+      "info": "t:info.manage_countries_regions",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "country_selector_style",
+      "label": "t:settings.flag",
+      "default": true,
+      "visible_if": "{{ section.settings.show_country }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_language",
+      "label": "t:settings.language_selector",
+      "info": "t:info.manage_languages",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "localization_font",
+      "label": "t:settings.font",
+      "options": [
+        {
+          "value": "heading",
+          "label": "t:options.heading"
+        },
+        {
+          "value": "subheading",
+          "label": "t:options.subheading"
+        },
+        {
+          "value": "body",
+          "label": "t:options.body"
+        },
+        {
+          "value": "accent",
+          "label": "t:options.accent"
+        }
+      ],
+      "default": "heading",
+      "visible_if": "{{ section.settings.show_country or section.settings.show_language }}"
+    },
+    {
+      "type": "select",
+      "id": "localization_font_size",
+      "label": "t:settings.size",
+      "options": [
+        {
+          "value": "1rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        }
+      ],
+      "default": "1rem"
     }
   ],
   "presets": [

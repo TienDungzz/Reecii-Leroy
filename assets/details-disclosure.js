@@ -7,7 +7,6 @@ class SideDrawerOpener extends HTMLElement {
     let isFirstLoad  = true;
     button.addEventListener('click', () => {
       const drawer = document.querySelector(this.getAttribute('data-side-drawer'));
-      console.log("drawer", drawer);
 
       if (isFirstLoad && this.hasAttribute('drawer-has-url')) {
         isFirstLoad = false;
@@ -471,7 +470,7 @@ class DropdownDetails extends HTMLDetailsElement {
     } else {
       await Motion.animate(this.elements.dropdown, { opacity: 0, visibility: 'hidden' }, { duration: 0.3 });
 
-      await Motion.animate(this.elements.dropdown.firstElementChild, { transform: `${translateYOut}` }, { duration: 0.6 }).finished;
+      await Motion.animate(this.elements.dropdown.firstElementChild, { transform: `${translateYOut}` }, { duration: 0.3 }).finished;
       this.setAttribute('open', 'false');
     }
   }

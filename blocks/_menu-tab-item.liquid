@@ -1,12 +1,13 @@
 {%- liquid
+  assign sec_stts = section.settings
   assign bl_stts = block.settings
   assign bl_id = block.id
   assign link = bl_stts.link
   assign submenu = bl_stts.sub_menu
   assign menu_handle = submenu.handle
 
-  assign show_image_level_1 = section.settings.show_image_level_1
-  assign show_image_sub_menu = section.settings.show_image_sub_menu
+  assign show_image_level_1 = sec_stts.show_image_level_1
+  assign show_image_sub_menu = sec_stts.show_image_sub_menu
 
   assign media_width_desktop = '100vw'
   assign media_width_mobile = '100vw'
@@ -15,18 +16,18 @@
   assign sizes_banner = 'auto, (min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
   assign widths_banner = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
 
-  assign media_type_level_1 = section.settings.media_type
+  assign media_type_level_1 = sec_stts.media_type
   assign image_type_level_1 = bl_stts.image_type_level_1
   assign svg_upload_level_1 = bl_stts.svg_upload_level_1
   assign image_upload_level_1 = bl_stts.image_level_1
-  assign width_level_1 = section.settings.media_width
+  assign width_level_1 = sec_stts.media_width
 
   assign banner_level_2 = bl_stts.banner_level_2
   if banner_level_2 != blank
     assign ratio_level_2 = banner_level_2.aspect_ratio
   endif
 
-  assign media_width_sub_menu = section.settings.media_width_sub_menu
+  assign media_width_sub_menu = sec_stts.media_width_sub_menu
 
   capture class_link
     echo 'menu-drawer__menu-item--multi-tab menu-drawer__menu-item link link--text list-menu__item focus-inset'
