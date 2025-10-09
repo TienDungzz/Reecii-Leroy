@@ -56,7 +56,7 @@
 
 {% comment %} href="{{ image | image_url : width: image_width_2x , height: image_height_2x  }}" {% endcomment %}
 {% capture attributes_fancybox %}
-  href="{{ block.settings.fancybox_link }}"
+  href="{{ block.settings.link }}"
   data-pswp-src="{{ image | image_url : width: image_width_2x , height: image_height_2x  }}"
   data-pswp-width="{{ image_width_2x  }}"
   data-pswp-height="{{ image_height_2x }}"
@@ -161,7 +161,7 @@
 
 {% schema %}
 {
-  "name": "Image",
+  "name": "t:names.image",
   "tag": null,
   "settings": [
     {
@@ -172,14 +172,7 @@
     {
       "type": "url",
       "id": "link",
-      "label": "Link",
-      "visible_if": "{{ block.settings.enable_fancybox == false }}"
-    },
-    {
-      "type": "url",
-      "id": "fancybox_link",
-      "label": "Fancybox link",
-      "visible_if": "{{ block.settings.enable_fancybox }}"
+      "label": "Link"
     },
     {
       "type": "checkbox",
@@ -404,11 +397,11 @@
       "options": [
         {
           "value": "none",
-          "label": "None"
+          "label": "t:options.none"
         },
         {
           "value": "solid",
-          "label": "Solid"
+          "label": "t:options.solid"
         }
       ],
       "default": "none"
@@ -452,28 +445,28 @@
     {
       "type": "checkbox",
       "id": "enable_fancybox",
-      "label": "Enable Fancybox",
+      "label": "t:settings.enable_lightbox",
       "default": false,
       "visible_if": "{{ block.settings.enable_parallax == false }}"
     },
     {
       "type": "checkbox",
       "id": "enable_parallax",
-      "label": "Enable parallax scroll",
+      "label": "t:settings.enable_parallax_scroll",
       "default": false,
       "visible_if": "{{ block.settings.enable_fancybox == false }}"
     },
     {
       "type": "checkbox",
       "id": "disable_parallax_mobile",
-      "label": "Disable parallax scroll on mobile",
+      "label": "t:settings.disable_parallax_scroll_on_mobile",
       "default": false,
       "visible_if": "{{ block.settings.enable_parallax }}"
     },
     {
       "type": "range",
       "id": "parallax_speed",
-      "label": "Parallax speed",
+      "label": "t:settings.parallax_speed",
       "min": 0,
       "max": 4,
       "step": 0.5,
@@ -523,7 +516,7 @@
   ],
   "presets": [
     {
-      "name": "Image",
+      "name": "t:names.image",
       "category": "Basic"
     }
   ]

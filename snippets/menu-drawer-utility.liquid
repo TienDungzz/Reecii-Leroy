@@ -1,0 +1,43 @@
+<div class="menu-drawer__utility-links">
+  {% liquid
+    assign show_language = settings.show_language
+    if localization.available_languages.size <= 1
+      assign show_language = false
+    endif
+
+    assign show_country = settings.show_country
+    if localization.available_countries.size <= 1
+      assign show_country = false
+    endif
+
+    assign country_style = settings.country_selector_style
+  %}
+
+  {%- capture icon_globe -%}
+    <svg
+      class="icon-globe icon"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      viewBox="0 0 50 50"
+    >
+      {%- render 'icon', icon: 'globe' -%}
+    </svg>
+  {%- endcapture -%}
+  {%- if show_language and localization.available_languages.size > 1 -%}
+    <div>
+      <h3 class="menu-drawer__utility-heading h6" id="HeaderLanguageLabel">
+        {{ 'content.localization_region_and_language' | t }}
+      </h3>
+      {%- render 'language-country-localization',
+        localPosition: 'HeaderLanguage',
+        country_style: country_style,
+        show_language: show_language,
+        show_country: show_country,
+        icon_globe: icon_globe,
+        show_back_button: true,
+        element: 'drawer'
+      -%}
+    </div>
+  {%- endif -%}
+</div>

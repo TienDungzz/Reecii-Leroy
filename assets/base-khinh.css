@@ -1007,15 +1007,15 @@ summary {
     position: relative;
   }
 
-  &[data-drawer-direction="right"] [data-drawer-content] {
+  [data-drawer-direction="right"] [data-drawer-content] {
     margin-inline-start: auto;
   }
 
-  &[data-drawer-direction="left"] .drawer__close {
+  &:not(.drawer--menu)[data-drawer-direction="left"] .drawer__close {
     right: calc(var(--minimum-touch-target) * -1);
   }
 
-  &[data-drawer-direction="right"] .drawer__close {
+  &:not(.drawer--menu)[data-drawer-direction="right"] .drawer__close {
     left: calc(var(--minimum-touch-target) * -1);
   }
 }
@@ -1028,6 +1028,9 @@ summary {
   color: var(--color-background);
   background-color: var(--color-foreground);
   padding: var(--padding-sm);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 
   > button {
     height: 100%;
@@ -1339,4 +1342,17 @@ summary {
 }
 .fade--active {
   opacity: var(--opacity-100);
+}
+
+/* Icon caret */
+.icon-caret svg {
+  transition: transform var(--animation-speed) var(--animation-easing);
+}
+
+.icon-caret--forward svg {
+  transform: rotate(-90deg);
+}
+
+.icon-caret--backward svg {
+  transform: rotate(90deg);
 }

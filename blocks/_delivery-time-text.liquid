@@ -1,30 +1,40 @@
+{% comment %} 
+  Reformatted with 2-space indentation.
+{% endcomment %}
 {% capture text %}
   {%- liquid
-      assign delivery_time_icon = block.settings.delivery_time_icon
-      assign text = block.settings.text
-      assign hr = block.settings.hr
-      assign min = block.settings.min
-      assign frm_day = block.settings.frm_day
-      assign exclude_day = block.settings.exclude_day
-      assign d_start = block.settings.d_start
-      assign d_end = block.settings.d_end
-      assign time = block.settings.time
+    assign delivery_time_icon = block.settings.delivery_time_icon
+    assign text = block.settings.text
+    assign hr = block.settings.hr
+    assign min = block.settings.min
+    assign frm_day = block.settings.frm_day
+    assign exclude_day = block.settings.exclude_day
+    assign d_start = block.settings.d_start
+    assign d_end = block.settings.d_end
+    assign time = block.settings.time
   -%}
   <delivery-time class="productView-dlvr d-none"
-      data-delivery-time
-      data-frm-day="{{frm_day}}"
-      data-exclude-day="{{exclude_day}}"
-      data-estimate-start="{{d_start}}"
-      data-estimate-end="{{d_end}}"
-      data-time="{{time}}"
+    data-delivery-time
+    data-frm-day="{{frm_day}}"
+    data-exclude-day="{{exclude_day}}"
+    data-estimate-start="{{d_start}}"
+    data-estimate-end="{{d_end}}"
+    data-time="{{time}}"
   >
-      <span class="productView-dlvr__text">
-          {%- capture remainHTML -%}<span data-hour-delivery class="productView-dlvr__remaining"><span class="productView-dlvr__remaining-hr"></span> {{hr}} <span class="productView-dlvr__remaining-mins"></span> {{min}}</span>{%- endcapture -%}
-          {{ text | replace:'[hour]',remainHTML | replace:'[date_start]','<span data-start-delivery class="productView-dlvr__date-start txt-d-underline"></span>' | replace:'[date_end]','<span data-end-delivery class="productView-dlvr__date-end txt-d-underline"></b>'}}
-      </span>
+    <span class="productView-dlvr__text">
+      {%- capture remainHTML -%}
+        <span data-hour-delivery class="productView-dlvr__remaining">
+          <span class="productView-dlvr__remaining-hr"></span> {{hr}} <span class="productView-dlvr__remaining-mins"></span> {{min}}
+        </span>
+      {%- endcapture -%}
+      {{ text
+        | replace:'[hour]',remainHTML
+        | replace:'[date_start]','<span data-start-delivery class="productView-dlvr__date-start txt-d-underline"></span>'
+        | replace:'[date_end]','<span data-end-delivery class="productView-dlvr__date-end txt-d-underline"></b>'
+      }}
+    </span>
   </delivery-time>
 {% endcapture %}
-
 
 {% render 'text', text: text, block: block %}
 
@@ -36,111 +46,111 @@
   "tag": null,
   "settings": [
     {
-        "type": "richtext",
-        "id": "text",
-        "label": "t:sections.main-product.blocks.delivery-time.settings.label__1",
-        "default": "<p>Order within the next [hour] to receive it. Estimated delivery is between [date_start] and [date_end]</p>",
-        "info": "t:sections.main-product.blocks.delivery-time.settings.info__1"
+      "type": "richtext",
+      "id": "text",
+      "label": "t:sections.main-product.blocks.delivery-time.settings.label__1",
+      "default": "<p>Order within the next [hour] to receive it. Estimated delivery is between [date_start] and [date_end]</p>",
+      "info": "t:sections.main-product.blocks.delivery-time.settings.info__1"
     },
     {
-        "type": "range",
-        "id": "d_start",
-        "min": 0,
-        "max": 99,
-        "step": 1,
-        "label": "t:sections.main-product.blocks.delivery-time.settings.label__2",
-        "default": 10
+      "type": "range",
+      "id": "d_start",
+      "min": 0,
+      "max": 99,
+      "step": 1,
+      "label": "t:sections.main-product.blocks.delivery-time.settings.label__2",
+      "default": 10
     },
     {
-        "type": "range",
-        "id": "d_end",
-        "min": 0,
-        "max": 99,
-        "step": 1,
-        "label": "t:sections.main-product.blocks.delivery-time.settings.label__3",
-        "default": 15
+      "type": "range",
+      "id": "d_end",
+      "min": 0,
+      "max": 99,
+      "step": 1,
+      "label": "t:sections.main-product.blocks.delivery-time.settings.label__3",
+      "default": 15
     },
     {
-        "type": "text",
-        "id": "exclude_day",
-        "label": "t:sections.main-product.blocks.delivery-time.settings.label__4",
-        "default": "SAT,SUN",
-        "info": "t:sections.main-product.blocks.delivery-time.settings.info__3"
+      "type": "text",
+      "id": "exclude_day",
+      "label": "t:sections.main-product.blocks.delivery-time.settings.label__4",
+      "default": "SAT,SUN",
+      "info": "t:sections.main-product.blocks.delivery-time.settings.info__3"
     },
     {
-        "type": "select",
-        "id": "frm_day",
-        "default": "d, DD MMM",
-        "options": [
-            {
-                "value": "d, DDth MMM",
-                "label": "Friday, 12th May"
-            },
-            {
-                "value": "d, DD MMM",
-                "label": "Friday, 12 May"
-            },
-            {
-                "value": "d, DDth MMM YYYY",
-                "label": "Friday, 12th May 2024"
-            },
-            {
-                "value": "d, DDth MMM, YYYY",
-                "label": "Friday, 12th May, 2024"
-            },
-            {
-                "value": "d, MMM DDth, YYYY",
-                "label": "Friday, May 12th, 2024"
-            },
-            {
-                "value": "d, MMM DDth",
-                "label": "Friday, May 12th"
-            },
-            {
-                "value": "d, MMM DDth YYYY",
-                "label": "Friday, May 12th 2024"
-            },
-            {
-                "value": "d, MMM DD",
-                "label": "Friday, May 12"
-            },
-            {
-                "value": "d, MMM DD YYYY",
-                "label": "Friday, May 12 2024"
-            },
-            {
-                "value": "d, MM/DD/YYYY",
-                "label": "Friday, 05/12/2024"
-            },
-            {
-                "value": "d, DD/M/YYYY",
-                "label": "Friday, 12/05/2024"
-            },
-            {
-                "value": "d, YYYY/MM/DD",
-                "label": "Friday, 2024/05/12"
-            }
-        ],
-        "label": "t:sections.main-product.blocks.delivery-time.settings.label__5"
+      "type": "select",
+      "id": "frm_day",
+      "default": "d, DD MMM",
+      "options": [
+        {
+          "value": "d, DDth MMM",
+          "label": "Friday, 12th May"
+        },
+        {
+          "value": "d, DD MMM",
+          "label": "Friday, 12 May"
+        },
+        {
+          "value": "d, DDth MMM YYYY",
+          "label": "Friday, 12th May 2024"
+        },
+        {
+          "value": "d, DDth MMM, YYYY",
+          "label": "Friday, 12th May, 2024"
+        },
+        {
+          "value": "d, MMM DDth, YYYY",
+          "label": "Friday, May 12th, 2024"
+        },
+        {
+          "value": "d, MMM DDth",
+          "label": "Friday, May 12th"
+        },
+        {
+          "value": "d, MMM DDth YYYY",
+          "label": "Friday, May 12th 2024"
+        },
+        {
+          "value": "d, MMM DD",
+          "label": "Friday, May 12"
+        },
+        {
+          "value": "d, MMM DD YYYY",
+          "label": "Friday, May 12 2024"
+        },
+        {
+          "value": "d, MM/DD/YYYY",
+          "label": "Friday, 05/12/2024"
+        },
+        {
+          "value": "d, DD/M/YYYY",
+          "label": "Friday, 12/05/2024"
+        },
+        {
+          "value": "d, YYYY/MM/DD",
+          "label": "Friday, 2024/05/12"
+        }
+      ],
+      "label": "t:sections.main-product.blocks.delivery-time.settings.label__5"
     },
     {
-        "type": "text",
-        "id": "time",
-        "label": "t:sections.main-product.blocks.delivery-time.settings.label__6",
-        "info": "t:sections.main-product.blocks.delivery-time.settings.info__4",
-        "default": "16:00:00"
+      "type": "text",
+      "id": "time",
+      "label": "t:sections.main-product.blocks.delivery-time.settings.label__6",
+      "info": "t:sections.main-product.blocks.delivery-time.settings.info__4",
+      "default": "16:00:00"
     },
     {
-        "type": "text",
-        "id": "hr",
-        "label": "t:sections.main-product.blocks.delivery-time.settings.label__7",
-        "default": "hours"
+      "type": "text",
+      "id": "hr",
+      "label": "t:sections.main-product.blocks.delivery-time.settings.label__7",
+      "default": "hours"
     },
     {
-        "type": "text",
-        "id": "min",
-        "label": "t:sections.main-product.blocks.delivery-time.settings.label__8",
-        "default": "minutes"
+      "type": "text",
+      "id": "min",
+      "label": "t:sections.main-product.blocks.delivery-time.settings.label__8",
+      "default": "minutes"
     },
     {
       "type": "header",
@@ -209,7 +219,7 @@
       "type": "text",
       "id": "stroke_text_content",
       "label": "t:settings.select_stroke_content",
-      "visible_if": "{{ block.settings.stroke_text == true }}",
+      "visible_if": "{{ block.settings.stroke_text == true }}"
     },
     {
       "type": "header",
@@ -741,17 +751,17 @@
       "type": "header",
       "content": "t:settings.border"
     },
-     {
+    {
       "type": "checkbox",
       "id": "enable_border",
-      "label": "Enable border",
+      "label": "t:settings.enable_border",
       "default": false,
       "visible_if": "{{ block.settings.enable_border_bottom == false }}"
     },
     {
       "type": "checkbox",
       "id": "enable_border_bottom",
-      "label": "Enable bottom border",
+      "label": "t:settings.enable_border_bottom",
       "default": false,
       "visible_if": "{{ block.settings.enable_border == false }}"
     },
@@ -779,7 +789,7 @@
       "max": 10,
       "step": 1,
       "unit": "px",
-      "label": "Thickness",
+      "label": "t:settings.thickness",
       "default": 0,
       "visible_if": "{{ block.settings.enable_border_bottom == true or block.settings.enable_border == true }}"
     },
@@ -790,7 +800,7 @@
       "options": [
         {
           "value": "100%",
-          "label": "Full"
+          "label": "t:options.fill"
         },
         {
           "value": "custom",

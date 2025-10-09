@@ -10,16 +10,30 @@
   "
   {{ block.shopify_attributes }}
 >
-  <copy-code class="field code__input items-center">
+  <copy-code
+    class="promotion-code__field relative"
+    style="
+      --input-border-width: {{ block.settings.input_border_width }}px;
+      --input-border-radius: {{ block.settings.input_border_radius }}px;
+    "
+  >
     <input
-      id="Promotion-code-input"
-      class="field__input {{ block.settings.input_alignment }} {{ block.settings.input_type_preset }}"
+      class="promo-code__input promotion-code__input--{{ block.settings.border_style }} {{ block.settings.input_alignment }} {{ block.settings.input_type_preset }}"
       type="text"
-      name="promotion-code"
       value="{{ block.settings.promotion_popup_discount_code_text }}"
       readonly
     >
-    <button class="button-code--copy t-button cursor-pointer relative shrink-0 flex-center">
+    <button
+      class="
+        promo-code__button promo-code__button--integrated
+        {{ block.settings.style_class }}
+        {% if block.settings.hide_button_border %}bor-none{% endif %}
+      "
+      style="
+        --icon-size-desktop: {{ block.settings.icon_size_desktop }}px;
+        --icon-size-mobile: {{ block.settings.icon_size_mobile }}px;
+      "
+    >
       {% render 'icon-copy' %}
       <span class="tooltip" data-success_message="{{ 'content.copied' | t }}">
         {{ 'content.copy' | t }}
@@ -29,15 +43,97 @@
 </div>
 
 {% stylesheet %}
-  .promotion-code .field {
-    padding-inline: 0.4rem;
-  }
+  .promo-code__input {
+    --box-shadow-color: var(--color-input-border);
 
-  .promotion-code .field__input {
-    text-align: center;
+    width: 100%;
+    padding-block: 0.8rem;
+    padding-inline: 1.8rem 5.5rem;
+    border-width: var(--input-border-width);
+    border-radius: var(--input-border-radius);
+    border-style: solid;
+    border-color: var(--color-input-border);
+    box-shadow: var(--inputs-shadow-horizontal-offset) var(--inputs-shadow-vertical-offset)
+      var(--inputs-shadow-blur-radius) var(--box-shadow-color);
 
     &:focus {
+      outline: none;
       box-shadow: none;
+    }
+
+    &.promotion-code__input--underline {
+      --box-shadow-multiplier: 1;
+
+      color: var(--color-input-text);
+      background-color: transparent;
+      padding: 1.6rem 2.8rem;
+      border: none;
+      border-radius: 0;
+      box-shadow: 0 calc(var(--input-border-width) * var(--box-shadow-multiplier)) 0 var(--box-shadow-color);
+      transition: box-shadow var(--animation-values);
+
+      &:focus-visible {
+        --box-shadow-multiplier: 1.75;
+        --box-shadow-color: var(--color-input-text);
+
+        outline: none;
+      }
+    }
+
+    &.promotion-code__input--none {
+      color: var(--color-input-text);
+      background-color: var(--color-input-background);
+      border: none;
+    }
+  }
+
+  .promo-code__button {
+    aspect-ratio: 1;
+    padding-inline: var(--padding-xs);
+    min-width: auto;
+    min-height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & svg {
+      color: var(--button-color);
+      fill: currentcolor;
+
+      @media screen and (min-width: 750px) {
+        width: var(--icon-size-desktop);
+        height: var(--icon-size-desktop);
+      }
+
+      @media screen and (max-width: 749px) {
+        width: var(--icon-size-mobile);
+        height: var(--icon-size-mobile);
+      }
+    }
+
+    &:hover .tooltip {
+      opacity: var(--opacity-100);
+      transform: translate(-50%, 0);
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    &.promo-code__button--integrated {
+      --button-offset: 0.1rem;
+
+      position: absolute;
+      height: calc(100% - (var(--button-offset) * 2) - (var(--input-border-width) * 2));
+      right: var(--input-border-width);
+      top: 50%;
+      transform: translateY(-50%);
+
+      @media screen and (max-width: 749px) {
+        width: fit-content;
+      }
+    }
+
+    &.bor-none {
+      border: none;
     }
   }
 
@@ -75,18 +171,6 @@
       transform: translate(-50%);
     }
   }
-
-  .promotion-code .button-code--copy {
-    width: var(--size-36);
-    height: var(--size-36);
-
-    &:hover .tooltip {
-      opacity: var(--opacity-100);
-      transform: translate(-50%, 0);
-      visibility: visible;
-      pointer-events: auto;
-    }
-  }
 {% endstylesheet %}
 
 <script defer="defer">
@@ -104,7 +188,7 @@
     }
 
     copyCode() {
-      this.inputField = this.querySelector('.code__input .field__input');
+      this.inputField = this.querySelector('.promotion-code__field .promo-code__input');
       this.tooltip = this.querySelector('.tooltip');
       navigator.clipboard.writeText(this.inputField.value).then(() => {
         this.tooltip.textContent = this.tooltip.dataset.success_message;
@@ -120,9 +204,148 @@
   "tag": null,
   "settings": [
     {
+      "type": "header",
+      "content": "t:content.input"
+    },
+    {
       "type": "text",
       "id": "promotion_popup_discount_code_text",
       "label": "Code"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "t:settings.border",
+      "options": [
+        {
+          "value": "all",
+          "label": "t:options.all"
+        },
+        {
+          "value": "underline",
+          "label": "t:options.underline"
+        },
+        {
+          "value": "none",
+          "label": "t:options.none"
+        }
+      ],
+      "default": "all"
+    },
+    {
+      "type": "range",
+      "id": "input_border_width",
+      "label": "t:settings.border_width",
+      "min": 0,
+      "max": 4,
+      "step": 0.5,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.border_style != 'underline' }}"
+    },
+    {
+      "type": "text_alignment",
+      "id": "input_alignment",
+      "label": "t:settings.alignment",
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "input_type_preset",
+      "label": "t:settings.type_preset",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "paragraph",
+          "label": "t:options.paragraph"
+        },
+        {
+          "value": "h1",
+          "label": "t:options.h1"
+        },
+        {
+          "value": "h2",
+          "label": "t:options.h2"
+        },
+        {
+          "value": "h3",
+          "label": "t:options.h3"
+        },
+        {
+          "value": "h4",
+          "label": "t:options.h4"
+        },
+        {
+          "value": "h5",
+          "label": "t:options.h5"
+        },
+        {
+          "value": "h6",
+          "label": "t:options.h6"
+        }
+      ],
+      "default": "paragraph",
+      "info": "t:info.edit_presets_in_theme_settings"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "select",
+      "id": "style_class",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "button",
+          "label": "t:options.primary"
+        },
+        {
+          "value": "button-secondary",
+          "label": "t:options.secondary"
+        }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_button_border",
+      "label": "Hide button border",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "icon_size_desktop",
+      "label": "Icon size desktop",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "icon_size_mobile",
+      "label": "Icon size mobile",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 24
     },
     {
       "type": "header",
