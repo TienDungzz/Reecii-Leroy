@@ -212,7 +212,13 @@
 
 <div
   class="section section--{{ page_width }} color-{{ sec_stts.color_scheme }} relative z-0 spacing-style"
-  style="{% render 'spacing-style', settings: sec_stts %}"
+  style="
+    {% render 'spacing-style', settings: sec_stts %}
+    {% if page_width == 'custom' %}
+      --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    {% endif %}
+  "
 >
   <div>
     {%- liquid
@@ -1584,14 +1590,29 @@
       "options": [
         {
           "value": "page-width",
-          "label": "Page"
+          "label": "t:options.page"
         },
         {
           "value": "full-width",
-          "label": "Full"
+          "label": "t:options.full"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "page_width_custom",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "default": 1570,
+      "unit": "px",
+      "label": "t:settings_schema.layout.settings.page_width.label",
+      "visible_if": "{{ section.settings.page_width == 'custom' }}"
     },
     {
       "type": "color_scheme",

@@ -1,6 +1,9 @@
 {% assign placeholder = 'content.featured_products' | t %}
-{% assign collection_title = '<h2>' | append: placeholder | append: '</h2>' %}
-{% comment %} {% render 'heading_text', placeholder_text: placeholder, block: block %} {% endcomment %}
+{% if block.settings.text != blank %}
+  {% assign collection_title = '<h2>' | append: block.settings.text | append: '</h2>' %}
+{% else %}
+  {% assign collection_title = '<h2>' | append: placeholder | append: '</h2>' %}
+{% endif %}
 
 {% render 'text', fallback_text: collection_title, block: block, class_heading: 'section-header' %}
 
