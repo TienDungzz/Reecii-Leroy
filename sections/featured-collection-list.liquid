@@ -1194,7 +1194,7 @@
       "max": 5,
       "step": 1,
       "default": 1,
-      "label": "Number of columns items on desktop",
+      "label": "t:settings.number_of_columns_items_on_desktop",
       "visible_if": "{{ section.settings.layout_type == 'duo' or section.settings.layout_type == 'duo-carousel' }}"
     },
     {
@@ -1283,7 +1283,7 @@
     {
       "type": "checkbox",
       "id": "loop",
-      "label": "Loop",
+      "label": "t:settings.loop",
       "default": false,
       "visible_if": "{{ section.settings.layout_type == 'tabs-carousel'}}"
     },
@@ -1297,12 +1297,12 @@
     {
       "type": "select",
       "id": "navigation",
-      "label": "Navigation",
+      "label": "t:settings.navigation",
       "visible_if": "{{ section.settings.layout_type == 'tabs-carousel' or section.settings.layout_type == 'duo-carousel'}}",
       "options": [
         {
           "value": "none",
-          "label": "None"
+          "label": "t:options.none"
         },
         {
           "value": "arrows",
@@ -1310,7 +1310,7 @@
         },
         {
           "value": "pagination",
-          "label": "Pagination"
+          "label": "t:options.pagination"
         },
         {
           "value": "arrows-pagination",
@@ -1450,7 +1450,7 @@
       "options": [
         {
           "value": "default",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "outline",
@@ -1610,7 +1610,7 @@
     {
       "type": "image_picker",
       "id": "banner_image",
-      "label": "Image",
+      "label": "t:settings.image",
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}",
       "info": "If you use a video, the image will be used as a poster"
     },
@@ -1648,17 +1648,17 @@
     {
       "type": "select",
       "id": "video_display_mode",
-      "label": "Video display mode",
+      "label": "t:settings.video_type",
       "default": "inline",
       "info": "Choose how the video appears on the page.",
       "options": [
         {
           "value": "inline",
-          "label": "Play video within the section"
+          "label": "t:options.inline"
         },
         {
           "value": "popup",
-          "label": "Play video in a modal"
+          "label": "t:options.dialog"
         }
       ],
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
@@ -1692,11 +1692,11 @@
       "options": [
         {
           "value": "left",
-          "label": "Left"
+          "label": "t:options.left"
         },
         {
           "value": "right",
-          "label": "Right"
+          "label": "t:options.right"
         }
       ],
       "default": "left",
@@ -1708,7 +1708,7 @@
       "options": [
         {
           "value": "stretch",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "start",
@@ -1739,15 +1739,15 @@
         },
         {
           "value": "landscape",
-          "label": "Landscape"
+          "label": "t:options.landscape"
         },
         {
           "value": "portrait",
-          "label": "Portrait"
+          "label": "t:options.portrait"
         },
         {
           "value": "square",
-          "label": "Square"
+          "label": "t:options.square"
         }
       ],
       "default": "adapt"
@@ -1760,24 +1760,24 @@
       "options": [
         {
           "value": "cover",
-          "label": "Cover"
+          "label": "t:options.cover"
         },
         {
           "value": "contain",
-          "label": "Contain"
+          "label": "t:options.contain"
         }
       ],
       "default": "cover"
     },
     {
       "type": "header",
-      "content": "Content inside media",
+      "content": "t:content.content_inside_media",
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
     },
     {
       "type": "select",
       "id": "content_media_position",
-      "label": "Position",
+      "label": "t:settings.position",
       "options": [
         {
           "value": "top",
@@ -1800,6 +1800,11 @@
       "id": "content_media_alignment",
       "label": "t:settings.alignment",
       "default": "left",
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:settings.heading",
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
     },
     {
@@ -1884,7 +1889,7 @@
         }
       ],
       "default": "var(--font-body--family)",
-      "visible_if": "{{ section.settings.heading_type_preset == 'custom' }}"
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.heading_type_preset == 'custom' }}"
     },
     {
       "type": "select",
@@ -1893,7 +1898,7 @@
       "options": [
         {
           "value": "default",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "3xl",
@@ -1929,7 +1934,7 @@
         }
       ],
       "default": "default",
-      "visible_if": "{{ section.settings.heading_type_preset == 'custom' }}"
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.heading_type_preset == 'custom' }}"
     },
     {
       "type": "select",
@@ -1950,12 +1955,17 @@
         }
       ],
       "default": "none",
-      "visible_if": "{{ section.settings.heading_type_preset == 'custom' }}"
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.heading_type_preset == 'custom' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:settings.subheading",
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
     },
     {
       "type": "inline_richtext",
       "id": "content_subheading",
-      "label": "Subheading",
+      "label": "t:settings.subheading",
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
     },
     {
@@ -1965,14 +1975,14 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "Subheading margin bottom",
+      "label": "t:settings.spacing_bottom",
       "default": 0,
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
     },
     {
       "type": "select",
       "id": "subheading_type_preset",
-      "label": "Subheading type preset",
+      "label": "t:settings.preset",
       "options": [
         {
           "value": "rte",
@@ -2034,16 +2044,16 @@
         }
       ],
       "default": "var(--font-body--family)",
-      "visible_if": "{{ section.settings.subheading_type_preset == 'custom' }}"
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.subheading_type_preset == 'custom' }}"
     },
     {
       "type": "select",
       "id": "subheading_font_size",
-      "label": "Subheading font size",
+      "label": "t:settings.size",
       "options": [
         {
           "value": "default",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "3xl",
@@ -2079,7 +2089,7 @@
         }
       ],
       "default": "default",
-      "visible_if": "{{ section.settings.subheading_type_preset == 'custom' }}"
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.subheading_type_preset == 'custom' }}"
     },
     {
       "type": "select",
@@ -2100,7 +2110,12 @@
         }
       ],
       "default": "none",
-      "visible_if": "{{ section.settings.text_type_preset == 'custom' }}"
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.text_type_preset == 'custom' }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:settings.text",
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
     },
     {
       "type": "inline_richtext",
@@ -2115,14 +2130,14 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "Text margin bottom",
+      "label": "t:settings.spacing_bottom",
       "default": 0,
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
     },
     {
       "type": "select",
       "id": "text_type_preset",
-      "label": "Text type preset",
+      "label": "t:settings.preset",
       "options": [
         {
           "value": "rte",
@@ -2184,16 +2199,16 @@
         }
       ],
       "default": "var(--font-body--family)",
-      "visible_if": "{{ section.settings.text_type_preset == 'custom' }}"
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.text_type_preset == 'custom' }}"
     },
     {
       "type": "select",
       "id": "text_font_size",
-      "label": "Text font size",
+      "label": "t:settings.size",
       "options": [
         {
           "value": "default",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "3xl",
@@ -2229,7 +2244,7 @@
         }
       ],
       "default": "default",
-      "visible_if": "{{ section.settings.text_type_preset == 'custom' }}"
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.text_type_preset == 'custom' }}"
     },
     {
       "type": "select",
@@ -2250,7 +2265,7 @@
         }
       ],
       "default": "none",
-      "visible_if": "{{ section.settings.text_type_preset == 'custom' }}"
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.text_type_preset == 'custom' }}"
     },
     {
       "type": "text",
