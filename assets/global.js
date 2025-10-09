@@ -254,6 +254,10 @@ function trapFocus(container, elementToFocus = container) {
   document.addEventListener("focusout", trapFocusHandlers.focusout);
   document.addEventListener("focusin", trapFocusHandlers.focusin);
 
+  console.log(`%c🔍 Log elementToFocus:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", elementToFocus);
+
+  console.log("clkick");
+
   elementToFocus?.focus();
 
   if (
@@ -1671,6 +1675,7 @@ class SwiperComponent extends HTMLElement {
         loop: getOption("loop", false),
         speed: getOption("speed", 500),
         parallax: getOption("parallax", false),
+        effect: getOption("effect", false),
         spaceBetween: defaultSpacebetween,
         autoplay: {
           enabled: getOption("slide-autoplay", false),
@@ -3793,42 +3798,88 @@ class HoverButton extends HTMLElement {
 if (!customElements.get('hover-button')) customElements.define('hover-button', HoverButton);
 
 
-class ParallaxBackground extends HTMLElement {
-  constructor() {
-    super();
-    this._onScroll = this._onScroll.bind(this);
-    this._container = this;
-    this._parallaxImg = this._container.querySelector('.parallax-image')
-  }
+// class ParallaxScroll extends HTMLElement {
+//   constructor() {
+//     super();
+//     this._target = null;
+//   }
 
-  connectedCallback() {
-    this._onScroll();
-    window.addEventListener('resize', this._onResize.bind(this));
-  }
+//   connectedCallback() {
+//     if (!window.Motion || !Motion.animate || !Motion.scroll) return;
 
-  _onScroll() {
-    let from = this._getRatio(this._parallaxImg, this._container) * -100 + '%';
-    let to = this._getRatio(this._parallaxImg, this._container) * 100 + '%';
+//     const selector = this.getAttribute('data-target') || '.target';
+//     this._target = this.querySelector(selector) || this.firstElementChild;
+//     if (!this._target) return;
 
-    Motion.scroll(Motion.animate(this._parallaxImg, { y: [from, to] }), {
-      target: this._container,
-      offset: ["start end", "end start"]
-    })
-  }
+//     const axis = (this.getAttribute('data-axis') || 'y').toLowerCase(); // 'y' | 'x'
+//     const speed = parseFloat(this.getAttribute('data-speed')) || 0.5;    // 0..1+
+//     const mobileFactor = parseFloat(this.getAttribute('data-mobile-factor')) || 0.5;
+//     const disableOnMobile = this.getAttribute('data-disable-mobile') === 'true';
+//     const isMobile = window.innerWidth < 750;
 
-  _getRatio(el, container) {
-    let hItem = el.getBoundingClientRect().height
-    , hCtn = container.getBoundingClientRect().height;
+//     if (disableOnMobile && isMobile) return;
 
-    return (hItem - hCtn) / hCtn;
-  }
+//     const effectiveSpeed = isMobile ? speed * mobileFactor : speed;
 
-  _onResize() {
-    this._onScroll();
-  }
-}
+//     // Offsets syntax follows Motion One scroll offset
+//     const offsetAttr = this.getAttribute('data-offset');
+//     const offset = offsetAttr
+//       ? offsetAttr.split(',').map(s => s.trim())
+//       : ['start end', 'end start'];
 
-if (!customElements.get('parallax-background')) customElements.define('parallax-background', ParallaxBackground);
+//     // Range in px or % for axis
+//     const rangeAttr = this.getAttribute('data-range'); // e.g. "40" or "20%" (applies symmetrically)
+//     const ease = this.getAttribute('data-ease');       // e.g. "0.25,0.1,0.25,1"
+//     const duration = parseFloat(this.getAttribute('data-duration')) || 0.3;
+
+//     const parseRange = () => {
+//       if (!rangeAttr) return 40; // px baseline
+//       if (rangeAttr.endsWith('%')) return (parseFloat(rangeAttr) || 0);
+//       return parseFloat(rangeAttr) || 40;
+//     };
+
+//     const rawRange = parseRange();
+//     const toValue = (val) =>
+//       typeof val === 'number' ? val : `${val}`;
+
+//     const usePercent = typeof rawRange !== 'number' || (rangeAttr && rangeAttr.endsWith('%'));
+//     const dist = rawRange * effectiveSpeed;
+
+//     const from = usePercent ? `-${dist}%` : -dist;
+//     const to = usePercent ? `${dist}%` : dist;
+
+//     const easing = ease
+//       ? ease.split(',').map(n => parseFloat(n.trim())).slice(0, 4)
+//       : [0.33, 1, 0.68, 1];
+
+//     Object.assign(this._target.style, {
+//       willChange: 'transform',
+//       transform: 'translate3d(0,0,0)',
+//       backfaceVisibility: 'hidden',
+//     });
+
+//     const keyframes = axis === 'x'
+//       ? { x: [toValue(from), toValue(to)] }
+//       : { y: [toValue(from), toValue(to)] };
+
+//     Motion.scroll(
+//       Motion.animate(
+//         this._target,
+//         keyframes,
+//         { ease: easing, duration: duration }
+//       ),
+//       {
+//         target: this,
+//         smooth: true,
+//         offset
+//       }
+//     );
+//   }
+// }
+
+// if (!customElements.get('parallax-background')) {
+//   customElements.define('parallax-background', ParallaxScroll);
+// }
 
 class FilterFAQs extends HTMLElement {
   constructor() {

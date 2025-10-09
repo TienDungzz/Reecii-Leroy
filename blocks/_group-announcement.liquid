@@ -1,6 +1,11 @@
 {% comment %} [START block.markup] {% endcomment %}
 <div
-  class="group-block{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %} group-block--{{ block.id }} grid__item block{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+  class="
+    group-block w-full
+    group-block--{{ block.id }}
+    {% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}
+    {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}
+  "
   style="
     --width-header-col: {{ block.settings.width_grid_item }}%;
     {% if block.settings.inherit_color_scheme == false %}
@@ -10,51 +15,40 @@
   {{ block.shopify_attributes }}
 >
   {% if block.blocks.size > 0 %}
-    <slideshow-component
+    <swiper-component
       class="announcement-bar"
       role="region"
       aria-roledescription="{{ 'content.carousel' | t }}"
       aria-label="{{ 'content.announcement_bar' | t }}"
+      {%- render 'swiper-data',
+        settings: block.settings,
+        slides_per_view: 1,
+        space_between: block.settings.gap,
+        watch_slides_progress: true,
+        autoplay: block.settings.auto_rotate,
+        effect: 'fade'
+      -%}
+      style="
+        {% render 'swiper-style',
+          columns_mobile: 1,
+          columns_tablet: 1,
+          columns_desktop: 1,
+          columns_gap: 0,
+        %}
+      "
     >
-      <div class="announcement-bar-slider slider-buttons">
-        {% if block.blocks.size > 1 %}
-          <button
-            type="button"
-            class="slider-button slider-button--prev"
-            name="previous"
-            aria-label="{{ 'content.previous_announcement' | t }}"
-            aria-controls="Slider-{{ block.id }}"
-          >
-            <span class="svg-wrapper">
-              {{- 'icon-caret.svg' | inline_asset_content -}}
-            </span>
-          </button>
-        {%- endif -%}
+      <div class="announcement-bar-slider swiper">
         <div
-          class="grid grid--1-col slider slider--everywhere"
+          class="swiper-wrapper grid grid-layout product-grid grid-layout--1 list-unstyled"
           id="Slider-{{ block.id }}"
           aria-live="polite"
           aria-atomic="true"
-          data-autoplay="{{ block.settings.auto_rotate }}"
-          data-speed="{{ block.settings.change_slides_speed }}"
         >
           {% content_for 'blocks' %}
         </div>
-        {% if block.blocks.size > 1 %}
-          <button
-            type="button"
-            class="slider-button slider-button--next"
-            name="next"
-            aria-label="{{ 'content.next_announcement' | t }}"
-            aria-controls="Slider-{{ block.id }}"
-          >
-            <span class="svg-wrapper">
-              {{- 'icon-caret.svg' | inline_asset_content -}}
-            </span>
-          </button>
-        {%- endif -%}
+        {%- render 'swiper-button' -%}
       </div>
-    </slideshow-component>
+    </swiper-component>
     {%- if request.design_mode -%}
       <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
       <style>
@@ -73,10 +67,7 @@
 {
   "name": "Group: Announcement",
   "tag": null,
-  "blocks": [
-    { "type": "@app" },
-    { "type": "_announcement-text" }
-  ],
+  "blocks": [{ "type": "@app" }, { "type": "_announcement-text" }],
   "settings": [
     {
       "type": "range",
@@ -95,13 +86,13 @@
     },
     {
       "type": "checkbox",
-      "id": "auto_rotate",
+      "id": "autoplay",
       "label": "t:sections.announcement-bar.settings.auto_rotate.label",
       "default": false
     },
     {
       "type": "range",
-      "id": "change_slides_speed",
+      "id": "autoplay_speed",
       "min": 3,
       "max": 10,
       "step": 1,

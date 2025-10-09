@@ -15,24 +15,26 @@
           assign sec_stts = section.settings
           assign bl_stts = block.settings
 
-          assign text_color = bl_stts.text_color
+          assign text_color = bl_stts.text_color.rgb
           assign text_bg = bl_stts.text_bg
           assign text_color_active = bl_stts.text_color_active.rgb
           assign text_bg_active = bl_stts.text_bg_active.rgb
 
           assign text_style = '--color: ' | append: text_color | append: ';' | append: '--background-color: ' | append: text_bg | append: ';' | append: '--color-active: ' | append: text_color_active | append: ';' | append: '--background-color-active: ' | append: text_bg_active | append: ';'
 
-          assign logo_height = sec_stts.logo_width | divided_by: bl_stts.logo.aspect_ratio | ceil
-          assign logo_height_mobile = sec_stts.logo_width_mobile | divided_by: bl_stts.logo.aspect_ratio | ceil
+          assign logo_width = '16'
+          assign logo_width_mobile = '16'
+          assign logo_height = logo_width | divided_by: bl_stts.logo.aspect_ratio | ceil
+          assign logo_height_mobile = logo_width_mobile | divided_by: bl_stts.logo.aspect_ratio | ceil
 
-          assign logo_style = '--header-logo-image-width: ' | append: sec_stts.logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: sec_stts.logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: logo_height_mobile | append: 'px;'
+          assign logo_style = '--header-logo-image-width: ' | append: 'auto;' | append: '--header-logo-image-width-mobile: ' | append: 'auto; --header-logo-image-height: ' | append: logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: logo_height_mobile | append: 'px;'
         %}
         {%- case block.type -%}
           {%- when '@app' -%}
             {% render block %}
           {%- when 'menu_tab' -%}
             <div
-              class="{{ bl_stts | class_list }}"
+              class="{{ bl_stts | class_list }}{% if bl_stts.divider %} divider--right{% endif %}"
               style="{{ text_style }}"
             >
               {%- liquid
@@ -104,18 +106,38 @@
 
 {%- stylesheet -%}
   .header .link.link--multi-site {
-    color: var(--color);
+    position: relative;
+    color: rgb(var(--color));
     background-color: var(--background-color);
     padding: var(--padding-lg) var(--padding-xl);
     transition: color var(--animation-speed) var(--animation-timing-hover), background-color var(--animation-speed) var(--animation-timing-hover);
+    display: block;
+    height: 100%;
     &.link--multi-site--active {
       color: rgba(var(--color-active) / var(--opacity-100));
       background-color: rgba(var(--background-color-active) / var(--opacity-100));
+    }
+
+    svg {
+      height: 16px;
+      width: auto;
+      fill: currentColor;
     }
 
     &:hover {
       color: rgba(var(--color-active) / var(--opacity-80));
       background-color: rgba(var(--background-color-active) / var(--opacity-80));
     }
+  }
+
+  .header-multi-site .divider--right .link--multi-site:not(.link--multi-site--active)::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 30px;
+    background-color: rgba(var(--color) / var(--opacity-30));
   }
 {%- endstylesheet -%}

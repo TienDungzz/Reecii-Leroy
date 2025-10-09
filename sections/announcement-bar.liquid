@@ -1,4 +1,14 @@
-<announcement-bar class="group-block group-block--{{ section.id }} page-width">
+<announcement-bar
+  class="
+    group-block block page-width
+    group-block--{{ section.id }}
+    color-{{ section.settings.color_scheme }}
+  "
+  style="
+    --pt:{{ section.settings.padding_top }}px;
+    --pb:{{ section.settings.padding_bottom }}px;
+  "
+>
   {% content_for 'blocks' %}
 </announcement-bar>
 
@@ -10,11 +20,7 @@
   "enabled_on": {
     "groups": ["header"]
   },
-  "blocks": [
-    { "type": "@app" },
-    { "type": "_group-announcement-bar" },
-    { "type": "_group-sale-banner" }
-  ],
+  "blocks": [{ "type": "@app" }, { "type": "_group-announcement-bar" }, { "type": "_group-sale-banner" }],
   "settings": [
     {
       "type": "color_scheme",
@@ -76,7 +82,7 @@
               },
               "blocks": [
                 {
-                  "type": "_announcement-text",  
+                  "type": "_announcement-text",
                   "settings": {
                     "text": "Welcome to our store"
                   }
@@ -113,8 +119,7 @@
         },
         {
           "type": "_group-sale-banner",
-          "blocks": [
-          ]
+          "blocks": []
         }
       ]
     }

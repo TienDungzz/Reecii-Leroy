@@ -1,4 +1,7 @@
-<div class="menu-drawer__utility-links">
+<div
+  class="menu-drawer__utility-links"
+  style="--menu-drawer-animation-index: {{ listmenu_size | plus: 1 }};"
+>
   {% liquid
     assign show_language = settings.show_language
     if localization.available_languages.size <= 1
@@ -13,19 +16,8 @@
     assign country_style = settings.country_selector_style
   %}
 
-  {%- capture icon_globe -%}
-    <svg
-      class="icon-globe icon"
-      aria-hidden="true"
-      focusable="false"
-      fill="none"
-      viewBox="0 0 50 50"
-    >
-      {%- render 'icon', icon: 'globe' -%}
-    </svg>
-  {%- endcapture -%}
   {%- if show_language and localization.available_languages.size > 1 -%}
-    <div>
+    <div class="{% if class_animated != blank %} {{ class_animated }}{% endif %}">
       <h3 class="menu-drawer__utility-heading h6" id="HeaderLanguageLabel">
         {{ 'content.localization_region_and_language' | t }}
       </h3>
@@ -41,3 +33,35 @@
     </div>
   {%- endif -%}
 </div>
+
+{% stylesheet %}
+  .menu-drawer__utility-links {
+    .disclosure__list.country-selector__list,
+    .disclosure__list.language-selector__list {
+      padding-block-end: var(--padding-sm);
+    }
+    
+    .disclosure__list-wrapper {
+      position: fixed;
+      width: 100%;
+      top: 0;
+      height: calc(100dvh - var(--header-height));
+      left: 0;
+      background-color: var(--color-background);
+      max-height: initial;
+      display: grid;
+      grid-template-rows: 4.5rem 1fr 5rem;
+    }
+
+    localization-form:has(.country-selector__list--with-multiple-currencies) {
+      width: 100%;
+      max-height: calc(100dvh - 9.5rem - var(--header-height));
+      display: block;
+
+      .country-selector__list--with-multiple-currencies {
+        width: 100%;
+        max-height: calc(100dvh - 16.5rem - var(--header-height));
+      }
+    }
+  }
+{% endstylesheet %}
