@@ -42,19 +42,19 @@
   assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
 
   assign element = 'div'
-  if block.settings.enable_fancybox
+  if block.settings.animation_type == 'fancybox'
     assign element = 'a'
-  elsif block.settings.enable_parallax
+  elsif block.settings.animation_type == 'parallax'
     assign element = 'parallax-image'
   endif
 %}
 
-{%- if block.settings.enable_fancybox -%}
+{%- if block.settings.animation_type == 'fancybox' -%}
   {%- render 'fancybox_lib' -%}
 {%- endif -%}
 
 {% capture class_img %}
-  image-block__image {% if block.settings.enable_parallax %} image-parallax--target{% endif %}
+  image-block__image {% if block.settings.animation_type == 'parallax' %} image-parallax--target{% endif %}
 {% endcapture %}
 
 {% capture attributes_fancybox %}
@@ -79,14 +79,14 @@
 
 {% capture attributes %}
   {{ block.shopify_attributes }}
-  {% if block.settings.enable_fancybox %}
+  {% if block.settings.animation_type == 'fancybox' %}
     {% if background_media == 'image' and image != blank %}
       {{ attributes_fancybox }}
     {% elsif background_media == 'video' and background_video != blank %}
       {{ attributes_fancybox_video }}
     {% endif %}
   {% endif %}
-  {% if block.settings.enable_parallax %}
+  {% if block.settings.animation_type == 'parallax' %}
     {{ attributes_parllax }}
   {% endif %}
 {% endcapture %}
@@ -143,7 +143,7 @@
           <span class="icon_plus"></span>
         {% endif %}
 
-        {% if block.settings.enable_fancybox %}
+        {% if block.settings.animation_type == 'fancybox' %}
           {% if block.settings.icon_link != blank and block.settings.icon != 'none' %}
             <a href="{{ block.settings.icon_link }}" class="text-inherit"
               {% if block.settings.icon_open_in_new_tab %}
@@ -168,7 +168,7 @@
         {% endif %}
       {% else %}
         {%- if background_video != blank -%}
-          {% if block.settings.enable_fancybox %}
+          {% if block.settings.animation_type == 'fancybox' %}
             <a href="{{ background_video.sources.first.url }}" data-type="video" data-caption="{{ background_video.alt | default: 'Instagram Video' }}" {{ attributes }}>
           {% endif %}
           <video-background-component
@@ -197,7 +197,7 @@
             </span>
 
           </video-background-component>
-          {% if block.settings.enable_fancybox %}
+          {% if block.settings.animation_type == 'fancybox' %}
             </a>
           {% endif %}
         {%- else -%}
@@ -227,7 +227,7 @@
   </div>
 </div>
 
-{% if image != blank and block.settings.icon_link != blank %}
+{% if image != blank and block.settings.icon_link != blank and block.settings.animation_type == 'fancybox' %}
   <script>
     (function(){
       const iconMedia = document.querySelector('.instagram-item__image .icon_media');
@@ -436,7 +436,7 @@
   </script>
 {% endif %}
 
-{%- if block.settings.enable_fancybox -%}
+{%- if block.settings.animation_type == 'fancybox' -%}
   <script>
     (function() {
       'use strict';
@@ -714,7 +714,7 @@
       "type": "url",
       "id": "link",
       "label": "Link",
-      "visible_if": "{{ block.settings.enable_fancybox == false }}"
+      "visible_if": "{{ block.settings.animation_type == 'fancybox' }}"
     },
     {
       "type": "color",
@@ -916,7 +916,7 @@
     {
       "type": "select",
       "id": "icon",
-      "label": "t:settings.icon",
+      "label": "Icon",
       "options": [
         {
           "value": "none",
@@ -924,31 +924,251 @@
         },
         {
           "value": "instagram-cart",
-          "label": "t:options.instagram_cart"
+          "label": "Instagram Cart"
         },
         {
-          "value": "custom",
-          "label": "t:options.custom"
+          "value": "cart",
+          "label": "Cart"
+        },
+        {
+          "value": "apple",
+          "label": "t:options.apple"
+        },
+        {
+          "value": "arrow",
+          "label": "t:options.arrow"
+        },
+        {
+          "value": "banana",
+          "label": "t:options.banana"
+        },
+        {
+          "value": "bottle",
+          "label": "t:options.bottle"
+        },
+        {
+          "value": "box",
+          "label": "t:options.box"
+        },
+        {
+          "value": "carrot",
+          "label": "t:options.carrot"
+        },
+        {
+          "value": "circle",
+          "label": "t:options.circle"
+        },
+        {
+          "value": "chat_bubble",
+          "label": "t:options.chat_bubble"
+        },
+        {
+          "value": "check_mark",
+          "label": "t:options.check_mark"
+        },
+        {
+          "value": "clipboard",
+          "label": "t:options.clipboard"
+        },
+        {
+          "value": "dairy",
+          "label": "t:options.dairy"
+        },
+        {
+          "value": "dairy_free",
+          "label": "t:options.dairy_free"
+        },
+        {
+          "value": "dryer",
+          "label": "t:options.dryer"
+        },
+        {
+          "value": "eye",
+          "label": "t:options.eye"  
+        },
+        {
+          "value": "facebook",
+          "label": "t:options.facebook"
+        },
+        {
+          "value": "fire",
+          "label": "t:options.fire"
+        },
+        {
+          "value": "gluten_free",
+          "label": "t:options.gluten_free"
+        },
+        {
+          "value": "heart",
+          "label": "t:options.heart"
+        },
+        {
+          "value": "instagram",
+          "label": "t:options.instagram"
+        },
+        {
+          "value": "instagram-black",
+          "label": "t:options.instagram_black"
+        },
+        {
+          "value": "iron",
+          "label": "t:options.iron"
+        },
+        {
+          "value": "leaf",
+          "label": "t:options.leaf"
+        },
+        {
+          "value": "leather",
+          "label": "t:options.leather"
+        },
+        {
+          "value": "lightning_bolt",
+          "label": "t:options.lightning_bolt"
+        },
+        {
+          "value": "lipstick",
+          "label": "t:options.lipstick"
+        },
+        {
+          "value": "lock",
+          "label": "t:options.lock"
+        },
+        {
+          "value": "map_pin",
+          "label": "t:options.map_pin"
+        },
+        {
+          "value": "nut_free",
+          "label": "t:options.nut_free"
+        },
+        {
+          "value": "pants",
+          "label": "t:options.pants"
+        },
+        {
+          "value": "paw_print",
+          "label": "t:options.paw_print"
+        },
+        {
+          "value": "pepper",
+          "label": "t:options.pepper"
+        },
+        {
+          "value": "perfume",
+          "label": "t:options.perfume"
+        },
+        {
+          "value": "pinterest",
+          "label": "t:options.pinterest"
+        },
+        {
+          "value": "plane",
+          "label": "t:options.plane"
+        },
+        {
+          "value": "plant",
+          "label": "t:options.plant"
+        },
+        {
+          "value": "price_tag",
+          "label": "t:options.price_tag"
+        },
+        {
+          "value": "question_mark",
+          "label": "t:options.question_mark"
+        },
+        {
+          "value": "recycle",
+          "label": "t:options.recycle"
+        },
+        {
+          "value": "return",
+          "label": "t:options.return"
+        },
+        {
+          "value": "ruler",
+          "label": "t:options.ruler"
+        },
+        {
+          "value": "serving_dish",
+          "label": "t:options.serving_dish"
+        },
+        {
+          "value": "shirt",
+          "label": "t:options.shirt"
+        },
+        {
+          "value": "shoe",
+          "label": "t:options.shoe"
+        },
+        {
+          "value": "silhouette",
+          "label": "t:options.silhouette"
+        },
+        {
+          "value": "snapchat",
+          "label": "t:options.snapchat"
+        },
+        {
+          "value": "snowflake",
+          "label": "t:options.snowflake"
+        },
+        {
+          "value": "star",
+          "label": "t:options.star"
+        },
+        {
+          "value": "stopwatch",
+          "label": "t:options.stopwatch"
+        },
+        {
+          "value": "tiktok",
+          "label": "t:options.tiktok"
+        },
+        {
+          "value": "truck",
+          "label": "t:options.truck"
+        },
+        {
+          "value": "tumblr",
+          "label": "t:options.tumblr"
+        },
+        {
+          "value": "twitter",
+          "label": "t:options.twitter"
+        },
+        {
+          "value": "vimeo",
+          "label": "t:options.vimeo"
+        },
+        {
+          "value": "washing",
+          "label": "t:options.washing"
         }
       ],
-      "default": "none"
+      "default": "instagram-cart",
+      "visible_if": "{{ block.settings.icon_custom == 'none' }}"
     },
     {
       "type": "select",
       "id": "icon_custom",
       "label": "Custom icon",
-      "visible_if": "{{ block.settings.icon == 'custom'}}",
       "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
         {
           "value": "svg",
           "label": "SVG"
         },
         {
           "value": "image",
-          "label": "t:options.image"  
+          "label": "Image"
         }
       ],
-      "default": "svg"
+      "default": "none"
     },
     {
       "type": "liquid",
@@ -972,50 +1192,50 @@
       "step": 2,
       "unit": "px",
       "default": 40,
-      "visible_if": "{{ block.settings.icon_custom != 'svg' }}"
+      "visible_if": "{{ block.settings.icon_custom != 'svg' and block.settings.icon == 'custom' }}"
     },
     {
       "type": "url",
       "id": "icon_link",
       "label": "t:settings.link",
-      "visible_if": "{{ block.settings.background_media == 'image' }}"
+      "visible_if": "{{ block.settings.icon != 'none' }}"
     },
     {
       "type": "checkbox",
       "id": "icon_open_in_new_tab",
       "label": "t:settings.open_new_tab",
       "default": false,
-      "visible_if": "{{ block.settings.background_media == 'image' }}"
+      "visible_if": "{{ block.settings.icon != 'none' }}"
     },
     {
       "type": "color",
       "id": "icon_button_bg_color",
-      "label": "Icon button background color",
+      "label": "Background",
       "default": "#ffffff",
-      "visible_if": "{{ block.settings.background_media == 'image' }}"
+      "visible_if": "{{ block.settings.icon != 'none' }}"
     },
     {
       "type": "color",
       "id": "icon_button_color",
-      "label": "Icon button color",
+      "label": "Color",
       "default": "#232323",
-      "visible_if": "{{ block.settings.background_media == 'image' }}"
+      "visible_if": "{{ block.settings.icon != 'none' }}"
     },
     {
       "type": "range",
       "id": "icon_button_size",
-      "label": "Icon button size",
+      "label": "Size",
       "min": 20,
       "max": 100,
       "step": 1,
       "unit": "px",
       "default": 40,
-      "visible_if": "{{ block.settings.background_media == 'image' }}"
+      "visible_if": "{{ block.settings.icon != 'none' }}"
     },
     {
       "type": "select",
       "id": "icon_button_position",
-      "label": "Icon button position",
+      "label": "Position",
       "options": [
         {
           "value": "left",
@@ -1027,40 +1247,40 @@
         }
       ],
       "default": "right",
-      "visible_if": "{{ block.settings.background_media == 'image' }}"
+      "visible_if": "{{ block.settings.icon != 'none' }}"
     },
     {
       "type": "range",
       "id": "icon_button_position_right",
-      "label": "Icon button position right",
+      "label": "Position right",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
       "default": 20,
-      "visible_if": "{{ block.settings.background_media == 'image' and block.settings.icon_button_position == 'right' }}"
+      "visible_if": "{{ block.settings.icon != 'none' and block.settings.icon_button_position == 'right' }}"
     },
     {
       "type": "range",
       "id": "icon_button_position_left",
-      "label": "Icon button position left",
+      "label": "Position left",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
       "default": 20,
-      "visible_if": "{{ block.settings.background_media == 'image' and block.settings.icon_button_position == 'left' }}"
+      "visible_if": "{{ block.settings.icon != 'none' and block.settings.icon_button_position == 'left' }}"
     },
     {
       "type": "range",
       "id": "icon_button_position_bottom",
-      "label": "Icon button position bottom",
+      "label": "Position bottom",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
       "default": 20,
-      "visible_if": "{{ block.settings.background_media == 'image' }}"
+      "visible_if": "{{ block.settings.icon != 'none' }}"
     },
     {
       "type": "header",
@@ -1200,19 +1420,24 @@
       "content": "Animation"
     },
     {
-      "type": "checkbox",
-      "id": "enable_fancybox",
-      "label": "t:settings.enable_lightbox",  
-      "default": true,
-      "info": "Opens images and videos in a beautiful lightbox gallery",
-      "visible_if": "{{ block.settings.enable_parallax == false }}"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_parallax",
-      "label": "t:settings.enable_parallax_scroll",
-      "default": false,
-      "visible_if": "{{ block.settings.enable_fancybox == false }}"
+      "type": "select",
+      "id": "animation_type",
+      "label": "Animation type",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fancybox",
+          "label": "Fancybox"
+        },
+        {
+          "value": "parallax",
+          "label": "Parallax"
+        }
+      ],
+      "default": "fancybox"
     },
     {
       "type": "range",
@@ -1222,7 +1447,7 @@
       "max": 4,
       "step": 0.5,
       "default": 0.5,
-      "visible_if": "{{ block.settings.enable_fancybox == false and block.settings.enable_parallax }}"
+      "visible_if": "{{ block.settings.animation_type == 'parallax' }}"
     },
     {
       "type": "header",
