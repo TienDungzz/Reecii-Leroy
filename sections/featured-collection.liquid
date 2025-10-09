@@ -613,7 +613,16 @@
                 %}
               "
             >
-              <div class="swiper w-full">
+              <div 
+                class="swiper w-full"
+                style="
+                  {% if section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                  --dots-top-offset: {{ sec_stts.dots_top_offset }}px;
+                  {% elsif section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                  --progress-top-offset: {{ sec_stts.progress_top_offset }}px;
+                  {% endif %}
+                "
+              >
                 <ul
                   id="Slider-{{ sec_id }}"
                   data-id="{{ sec_id }}"
@@ -1578,6 +1587,28 @@
         }
       ],
       "default": "bullets"
+    },
+    {
+      "type": "range",
+      "id": "dots_top_offset",
+      "label": "Dots top offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "range",
+      "id": "progress_top_offset",
+      "label": "Progress top offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "header",
