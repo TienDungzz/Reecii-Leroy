@@ -22,27 +22,63 @@
         <li>
           {%- if link.links != blank -%}
             {%- liquid
-              assign mega_menu = blocks | where: 'type', 'mega_menu'
-              assign check_mega_menu = false
-              if mega_menu.size > 0
-                assign check_mega_menu = true
-              endif
+              assign mega_menu_1 = blocks | where: 'type', 'mega_menu_1'
+              assign mega_menu_2 = blocks | where: 'type', 'mega_menu_2'
+              assign mega_menu_3 = blocks | where: 'type', 'mega_menu_3'
 
-              assign has_mega_menu = false
+              assign check_mega_menu_1 = false
+              assign check_mega_menu_2 = false
+              assign check_mega_menu_3 = false
+
+              assign has_mega_menu_1 = false
+              assign has_mega_menu_2 = false
+              assign has_mega_menu_3 = false
+
               assign menu_title = link.title | escape | downcase | handle
 
-              for block in mega_menu
+              if mega_menu_1.size > 0
+                assign check_mega_menu_1 = true
+              endif
+              for block in mega_menu_1
                 assign block_title = block.settings.menu_item | escape | downcase | handle
                 if block_title == menu_title
                   assign block = block
-                  assign has_mega_menu = true
+                  assign has_mega_menu_1 = true
                 endif
               endfor
 
-              if check_mega_menu and has_mega_menu
-                render 'header-mega-menu', link: link, forloopIndex: forloop.index, block: block
+              if mega_menu_2.size > 0
+                assign check_mega_menu_2 = true
+              endif
+              for block in mega_menu_2
+                assign block_title = block.settings.menu_item | escape | downcase | handle
+                if block_title == menu_title
+                  assign block = block
+                  assign has_mega_menu_2 = true
+                endif
+              endfor
+
+              if mega_menu_3.size > 0
+                assign check_mega_menu_3 = true
+              endif
+              for block in mega_menu_3
+                assign block_title = block.settings.menu_item | escape | downcase | handle
+                if block_title == menu_title
+                  assign block = block
+                  assign has_mega_menu_3 = true
+                endif
+              endfor
+
+              assign icon_type = section.settings.icon_type
+
+              if check_mega_menu_1 and has_mega_menu_1
+                render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
+              elsif check_mega_menu_2 and has_mega_menu_2
+                render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
+              elsif check_mega_menu_3 and has_mega_menu_3
+                render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
               else
-                render 'header-dropdown-menu', link: link, forloopIndex: forloop.index
+                render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type, settings: section.settings
               endif
             -%}
           {%- else -%}
