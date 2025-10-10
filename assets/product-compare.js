@@ -113,11 +113,11 @@ class ProductCompare extends HTMLElement {
       "[data-compare-product-popup] .compareTable"
     );
     const item = compareTable.querySelector(
-      `.compareTable-row[data-product-compare-id="${id}"]`
+      `.compare-table-row[data-product-compare-id="${id}"]`
     );
     const handle = item?.dataset.compareProductHandle;
 
-    if (compareTable.querySelectorAll("tbody .compareTable-row").length === 1) {
+    if (compareTable.querySelectorAll("tbody .compare-table-row").length === 1) {
       item?.remove();
       this.decrementCounterCompare(handle);
       document.body.classList.remove("compare-product-show");

@@ -65,7 +65,7 @@
         {% content_for 'block', id: 'button', type: 'button' %}
       </div>
       <div class="article-editorial__image-container">
-        <a href="{{ article.url }}">
+        <a {% if article.url != blank %}href="{{ article.url }}"{% else %}role="link" aria-disabled="true"{% endif %}>
           {% content_for 'block', id: 'image', type: '_blog-post-image', image: article.image %}
         </a>
       </div>

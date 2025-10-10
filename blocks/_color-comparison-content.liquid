@@ -1,8 +1,8 @@
 {{ 'component-compare-color.css' | asset_url | stylesheet_tag: preload: true }}
 
-<div class="color-comparison-content halo-compareColors spacing-style"
+<div class="spacing-style"
   style="{% render 'spacing-style', settings: block.settings %}">
-  <div class="halo-compareColors-swatch halo-productOptions">
+  <div class="halo-compare-colors-swatch">
     {%- liquid
       assign product_swatch_option = settings.swatch | downcase
       for option in product.options_with_values
@@ -18,7 +18,7 @@
       assign color = ''
     -%}
     {%- if variantCount > 1 and product.variants.first.title != 'Default Title' -%}
-      <ul class="compareColors-list list-unstyled left flex flex-wrap items-center justify-start">
+      <ul class="compare-colors-list list-unstyled left flex flex-wrap items-center justify-start">
         {%- for variant in product.variants -%}
           {%- assign color = variant.options[index] -%}
           {%- assign color_check = color | prepend: "|" | append: "|" -%}
@@ -85,7 +85,7 @@
       </ul>
     {%- endif -%}
   </div>
-  <div class="halo-compareColors-image custom-scrollbar-x left clearfix" id="sortTableList"></div>
+  <div class="halo-compare-colors-image left clearfix" id="sortTableList"></div>
 </div>
 
 <script src="{{ 'halo-compare-color.js' | asset_url }}" defer="defer"></script>

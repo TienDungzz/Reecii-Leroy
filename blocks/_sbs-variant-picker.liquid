@@ -30,18 +30,18 @@
   --steps-color: {{ steps_color.red }},{{ steps_color.green }},{{ steps_color.blue }};
   --steps-color-added: {{ steps_color_added.red }},{{ steps_color_added.green }},{{ steps_color_added.blue }};"
 >
-    {%- for option in product_resource.options_with_values -%}
-        <div class="steps__step" data-step="{{ forloop.index0 }}">
-            <div class="steps__step-number"><span class="checkmark"></span></div>
-            <div class="steps__step-name"><legend class="form__label">{{ option.name }}</legend></div>
-        </div>
-    {%- endfor -%}
-    {%- if block.settings.show_customization_option and require_item != blank -%}
-        <div class="steps__step" data-step="{{ forloop_index }}">
-            <div class="steps__step-number"><span class="checkmark"></span></div>
-            <div class="steps__step-name"><legend class="form__label">{{ require_item }}</legend></div>
-        </div>
-    {%- endif -%}
+  {%- for option in product_resource.options_with_values -%}
+    <div class="steps__step" data-step="{{ forloop.index0 }}">
+      <div class="steps__step-number"><span class="checkmark"></span></div>
+      <div class="steps__step-name"><legend class="form__label">{{ option.name }}</legend></div>
+    </div>
+  {%- endfor -%}
+  {%- if block.settings.show_customization_option and require_item != blank -%}
+    <div class="steps__step" data-step="{{ forloop_index }}">
+      <div class="steps__step-number"><span class="checkmark"></span></div>
+      <div class="steps__step-name"><legend class="form__label">{{ require_item }}</legend></div>
+    </div>
+  {%- endif -%}
 </div>
 
 {% render 'sbs-variant-picker', 
