@@ -1082,7 +1082,6 @@
                 {% endfor %}
               </div>
             </div>
-            </div>
         {% endcase %}
 
         {%- if pos_media_banner == 'right' and section_has_settings_media -%}
@@ -1138,27 +1137,27 @@
     {
       "type": "select",
       "id": "layout_type",
-      "label": "t:settings_schema.global.settings.type.label",
+      "label": "t:settings.type",
       "options": [
         {
           "value": "tabs-grid",
-          "label": "Tabs grid"
+          "label": "t:options.tabs_grid"
         },
         {
           "value": "tabs-carousel",
-          "label": "Tabs carousel"
+          "label": "t:options.tabs_carousel"
         },
         {
           "value": "vertical",
-          "label": "Vertical"
+          "label": "t:options.vertical"
         },
         {
           "value": "duo",
-          "label": "Duo"
+          "label": "t:options.duo"
         },
         {
           "value": "duo-carousel",
-          "label": "Duo carousel"
+          "label": "t:options.duo_carousel"
         }
       ],
       "default": "tabs-grid"
@@ -1277,7 +1276,7 @@
     },
     {
       "type": "header",
-      "content": "Carousel layout",
+      "content": "t:content.carousel",
       "visible_if": "{{ section.settings.layout_type == 'tabs-carousel' or section.settings.layout_type == 'duo-carousel' }}"
     },
     {
@@ -1322,7 +1321,7 @@
     {
       "type": "select",
       "id": "pagination_type",
-      "label": "Pagination type",
+      "label": "t:settings.pagination_type",
       "visible_if": "{{ section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
       "options": [
         {
@@ -1331,11 +1330,11 @@
         },
         {
           "value": "dynamic",
-          "label": "Dynamic"
+          "label": "t:options.dynamic"
         },
         {
           "value": "progressbar",
-          "label": "Progress"
+          "label": "t:options.progress"
         },
         {
           "value": "fraction",
@@ -1346,20 +1345,20 @@
     },
     {
       "type": "header",
-      "content": "Section layout"
+      "content": "t:content.section_layout"
     },
     {
       "type": "select",
       "id": "page_width",
-      "label": "Width",
+      "label": "t:settings.width",
       "options": [
         {
           "value": "page-width",
-          "label": "Page"
+          "label": "t:options.page"
         },
         {
           "value": "full-width",
-          "label": "Full"
+          "label": "t:options.full"
         }
       ],
       "default": "page-width"
@@ -1390,7 +1389,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "Gap",
+      "label": "t:settings.gap",
       "default": 16,
       "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
     },
@@ -1454,7 +1453,7 @@
         },
         {
           "value": "outline",
-          "label": "Outline"
+          "label": "t:options.outline"  
         }
       ],
       "default": "default"
@@ -1527,9 +1526,9 @@
     {
       "type": "checkbox",
       "id": "link_reveal",
-      "label": "Reveal on hover",
+      "label": "t:settings.reveal_on_hover",
       "default": false,
-      "info": "Only works inside a Group block",
+      "info": "t:info.link_reveal_info",  
       "visible_if": "{{ section.settings.style_class == 'link' and section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
     },
     {
@@ -1612,7 +1611,7 @@
       "id": "banner_image",
       "label": "t:settings.image",
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}",
-      "info": "If you use a video, the image will be used as a poster"
+      "info": "t:info.banner_image_info"
     },
     {
       "type": "select",
@@ -1650,7 +1649,7 @@
       "id": "video_display_mode",
       "label": "t:settings.video_type",
       "default": "inline",
-      "info": "Choose how the video appears on the page.",
+      "info": "t:info.video_display_mode_info",  
       "options": [
         {
           "value": "inline",
@@ -1688,7 +1687,7 @@
     {
       "type": "select",
       "id": "position",
-      "label": "Position",
+      "label": "t:settings.position",  
       "options": [
         {
           "value": "left",
@@ -1730,7 +1729,7 @@
     {
       "type": "select",
       "id": "media_ratio",
-      "label": "Ratio",
+      "label": "t:settings.ratio",
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}",
       "options": [
         {
@@ -2328,7 +2327,7 @@
   "blocks": [{ "type": "@theme" }, { "type": "@app" }],
   "presets": [
     {
-      "name": "Product list: Tabs grid",
+      "name": "t:names.product_list_tabs_grid",
       "category": "t:categories.products",
       "settings": {
         "layout_type": "tabs-grid",
@@ -2437,7 +2436,7 @@
       }
     },
     {
-      "name": "Product list: Tabs carousel",
+      "name": "t:names.product_list_tabs_carousel",
       "category": "t:categories.products",
       "settings": {
         "layout_type": "tabs-carousel",
@@ -2546,7 +2545,7 @@
       }
     },
     {
-      "name": "Product list: Vertical",
+      "name": "t:names.product_list_vertical",
       "category": "t:categories.products",
       "settings": {
         "layout_type": "vertical",
@@ -2633,7 +2632,7 @@
       }
     },
     {
-      "name": "Product list: Duo",
+      "name": "t:names.product_list_duo",
       "category": "t:categories.products",
       "settings": {
         "layout_type": "duo",
