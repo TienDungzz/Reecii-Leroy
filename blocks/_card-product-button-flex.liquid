@@ -27,8 +27,14 @@
       --pl: 0; --pr: 0;--md-pl: 1rem; --md-pr: 1rem;--lg-pl: 1.6rem; --lg-pr: 1.6rem;
       {% else %}
         --p: {{ padding_block }} {{ padding_inline }};
-        {% if block.settings.background %}
-        --bg-color: {{ block.settings.background_color }};--corner-radius: {{ block.settings.corner_radius }}px;{% endif %}
+        {% if  block.settings.style_class != 'link' %}
+          --corner-radius: {{ block.settings.corner_radius }}px;
+          {% if block.settings.style_class == 'button' %}
+            --style-border-radius-buttons-primary: {{ block.settings.corner_radius }}px;
+          {% else %}
+            --style-border-radius-buttons-secondary: {{ block.settings.corner_radius }}px;
+          {% endif %}
+        {% endif %}
       {% endif %}
       {% render 'size-style', settings: block.settings %}
     "
@@ -290,10 +296,8 @@
     box-sizing: border-box;
     line-height: 1;
     text-transform: uppercase;
-    padding: 0;
 
     &.button {
-      padding: 0.8rem;
       min-width: 100%;
     }
 
@@ -453,6 +457,16 @@
       "default": "button"
     },
     {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "t:settings.corner_radius",
+      "default": 0,
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "visible_if": "{{ block.settings.style_class != 'link' and settings.quick_add_type == 'text' }}"
+    },
+    {
       "type": "checkbox",
       "id": "link_underline",
       "label": "t:options.underline",
@@ -463,31 +477,6 @@
       "type": "header",
       "content": "t:content.appearance",
       "visible_if": "{{ settings.quick_add_type == 'text' }}"
-    },
-    {
-      "type": "checkbox",
-      "id": "background",
-      "label": "t:settings.background",
-      "default": false,
-      "visible_if": "{{ settings.quick_add_type == 'text' }}"
-    },
-    {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:settings.background_color",
-      "alpha": true,
-      "default": "#000",
-      "visible_if": "{{ block.settings.background and settings.quick_add_type == 'text' }}"
-    },
-    {
-      "type": "range",
-      "id": "corner_radius",
-      "label": "t:settings.corner_radius",
-      "default": 0,
-      "min": 0,
-      "max": 50,
-      "step": 1,
-      "visible_if": "{{ block.settings.background and settings.quick_add_type == 'text' }}"
     },
     {
       "type": "header",

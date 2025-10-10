@@ -212,7 +212,13 @@
 
 <div
   class="section section--{{ page_width }} color-{{ sec_stts.color_scheme }} relative z-0 spacing-style"
-  style="{% render 'spacing-style', settings: sec_stts %}"
+  style="
+    {% render 'spacing-style', settings: sec_stts %}
+    {% if page_width == 'custom' %}
+      --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    {% endif %}
+  "
 >
   <div>
     {%- liquid
@@ -607,7 +613,16 @@
                 %}
               "
             >
-              <div class="swiper w-full">
+              <div 
+                class="swiper w-full"
+                style="
+                  {% if section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                  --dots-top-offset: {{ sec_stts.dots_top_offset }}px;
+                  {% elsif section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                  --progress-top-offset: {{ sec_stts.progress_top_offset }}px;
+                  {% endif %}
+                "
+              >
                 <ul
                   id="Slider-{{ sec_id }}"
                   data-id="{{ sec_id }}"
@@ -1586,6 +1601,28 @@
       "default": "bullets"
     },
     {
+      "type": "range",
+      "id": "dots_top_offset",
+      "label": "Dots top offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "range",
+      "id": "progress_top_offset",
+      "label": "Progress top offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
       "type": "header",
       "content": "t:content.section_layout"
     },
@@ -1601,9 +1638,24 @@
         {
           "value": "full-width",
           "label": "t:options.full"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "page_width_custom",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "default": 1570,
+      "unit": "px",
+      "label": "t:settings_schema.layout.settings.page_width.label",
+      "visible_if": "{{ section.settings.page_width == 'custom' }}"
     },
     {
       "type": "color_scheme",
