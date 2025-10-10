@@ -315,6 +315,7 @@
        Multiple selectors for performance: each simple :has() check is faster than one complex selector with multiple conditions */
 
     &:hover,
+    &:has(.header__icon--menu button.active),
     &:has(.mega-menu__list:hover),
     &:has(.list-menu__item[aria-haspopup]:is(:hover, [aria-expanded='true'], [data-animating])),
     &:has(.menu-list__list-item[slot='overflow'] .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])) {
@@ -346,6 +347,12 @@
       /* Slower transition for "out" animation */
       transition: opacity var(--animation-values-slow), color var(--animation-values-slow), border-color var(--animation-values-slow),
         background-color var(--animation-values-slow);
+    }
+  }
+
+  .header:has(.header__icon--menu button.active) {
+    .header__icon:not(.header__icon--menu) {
+      display: none;
     }
   }
 
@@ -448,6 +455,10 @@
     &:not(:has(.header__row--top)) .header__row--bottom {
       padding-block-start: var(--padding-block-start);
     }
+
+    &:has(.header__row--top) .header__row--bottom {
+      padding-block-start: var(--padding-block-end);
+    }
   }
 
   /* Animated Sticky Header */
@@ -501,6 +512,7 @@
 
     @media screen and (min-width: 1025px) {
       padding-inline-start: 0;
+      padding-inline-end: var(--page-margin);
     }
   }
 
@@ -803,7 +815,7 @@
           "label": "t:settings.logo"
         },
         {
-          "type": "text",
+          "type": "liquid",
           "id": "logo_text",
           "label": "t:settings.title",
           "default": "Ella"
@@ -844,6 +856,12 @@
           "id": "text_bg_active",
           "label": "t:settings.background_color_active",
           "default": "#FFFFFF"
+        },
+        {
+          "type": "checkbox",
+          "id": "divider",
+          "label": "t:settings.divider",
+          "default": false
         }
       ]
     },
@@ -2223,6 +2241,12 @@
       "label": "t:settings.inverse",
       "default": "primary",
       "visible_if": "{{ section.settings.enable_transparent_header_home or section.settings.enable_transparent_header_product or section.settings.enable_transparent_header_collection }}"
+    },
+    {
+      "type": "color_scheme",
+      "id": "menu_mobile_color_scheme",
+      "label": "t:settings.mobile_menu",
+      "default": "primary"
     },
     {
       "type": "header",
