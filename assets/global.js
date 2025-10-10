@@ -10,16 +10,19 @@ getScrollbarWidth();
 // Calc height of header
 function headerHeight() {
   const mainMenu = document.querySelector("[data-main-menu]");
-  const header = mainMenu.closest(".header__row");
-  // const slideshowContent = document.querySelectorAll('.slideshow__text-wrapper');
+  if (!mainMenu) return;
 
-  if (header && document.querySelector("[data-main-menu] .header__inline-menu")) {
+  const header = mainMenu.closest(".header__row");
+  if (!header) return;
+
+  const listMenuDesktop = document.querySelector(".list-menu-desktop");
+  if (!listMenuDesktop) return;
+
+  if (document.querySelector("[data-main-menu] .header__inline-menu")) {
     const headerHeight = header.offsetHeight - 1 + "px";
-    // const headerHeightSlideshow = header.offsetHeight + 27 + 'px';
     var listMenuWrapper = document.querySelectorAll(".list-menu--wrapper");
-    var sectionHeader =
-      document.querySelector(".list-menu-desktop").offsetHeight;
-    var listMenu = document.querySelector(".list-menu-desktop");
+    var sectionHeader = listMenuDesktop.offsetHeight;
+    var listMenu = listMenuDesktop;
 
     if (sectionHeader > 52) {
       listMenuWrapper.forEach((summary) => {
@@ -35,38 +38,30 @@ function headerHeight() {
       listMenu.style.setProperty("--list-menu-height", headerHeight);
     }
 
-    // if (slideshowContent) {
-    //   slideshowContent.forEach((slide) => {
-    //     slide.style.paddingTop = headerHeightSlideshow;
-    //   })
-    // }
+    const stickyHeader = header.closest('sticky-header');
+    if (stickyHeader) {
+      header.addEventListener("mouseenter", function () {
+        const newHeight = header.offsetHeight - 1 + "px";
 
-  const stickyHeader = header.closest('sticky-header');
-  if (stickyHeader) {
-
-    header.addEventListener("mouseenter", function () {
-      const newHeight = header.offsetHeight - 1 + "px";
-
-      if (listMenuWrapper && listMenuWrapper.length) {
-        listMenuWrapper.forEach((summary) => {
-          summary.style.setProperty("--top-position", newHeight);
-        });
-      }
-    });
-    header.addEventListener("mouseleave", function () {
-      // Optionally, reset --top-position to its original value if needed
-      const newHeight = header.offsetHeight - 1 + "px";
-      if (sectionHeader > 52) {
-        listMenuWrapper.forEach((summary) => {
-          summary.style.setProperty("--top-position", "auto");
-        });
-      } else {
-        listMenuWrapper.forEach((summary) => {
-          summary.style.setProperty("--top-position", newHeight);
-        });
-      }
-    });
-  }
+        if (listMenuWrapper && listMenuWrapper.length) {
+          listMenuWrapper.forEach((summary) => {
+            summary.style.setProperty("--top-position", newHeight);
+          });
+        }
+      });
+      header.addEventListener("mouseleave", function () {
+        const newHeight = header.offsetHeight - 1 + "px";
+        if (sectionHeader > 52) {
+          listMenuWrapper.forEach((summary) => {
+            summary.style.setProperty("--top-position", "auto");
+          });
+        } else {
+          listMenuWrapper.forEach((summary) => {
+            summary.style.setProperty("--top-position", newHeight);
+          });
+        }
+      });
+    }
   }
 }
 
@@ -4114,16 +4109,26 @@ function appendTabMenuToMainMenu() {
   const mainMenu = document.querySelector('[data-main-menu]');
   const tabMenu = document.querySelector(`[data-menu-page='${handle}']`);
 
-  if (!handle || handle === 'undefined') {
-    mainMenu.querySelector('.list-menu--inline').classList.remove('hidden');
-    return
-  };
+  if (!mainMenu) {
+    // Cannot find main menu element, nothing to do
+    return;
+  }
 
-  if (tabMenu && mainMenu) {
+  if (!handle || handle === 'undefined') {
+    const inlineMenu = mainMenu.querySelector('.list-menu--inline');
+    if (inlineMenu) {
+      inlineMenu.classList.remove('hidden');
+    }
+    return;
+  }
+
+  if (tabMenu) {
     const template = tabMenu.querySelector('template');
-    const templateContent = template.content.cloneNode(true);
-    mainMenu.innerHTML = '';
-    mainMenu.appendChild(templateContent);
+    if (template) {
+      const templateContent = template.content.cloneNode(true);
+      mainMenu.innerHTML = '';
+      mainMenu.appendChild(templateContent);
+    }
   }
 }
 appendTabMenuToMainMenu();

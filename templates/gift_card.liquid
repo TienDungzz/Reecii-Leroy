@@ -36,12 +36,14 @@
 
     {{ content_for_header }}
 
-    {%- render 'global-style' -%}
+    {%- liquid
+      render 'global-style'
+      
+      render 'global-css'
 
-    {{ 'base.css' | asset_url | stylesheet_tag }}
+      render 'global-script'
+    -%}
     {{ 'template-giftcard.css' | asset_url | stylesheet_tag }}
-
-    {%- render 'global-script' -%}
   </head>
 
   <body class="gift-card">

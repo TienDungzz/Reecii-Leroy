@@ -13,6 +13,7 @@
   assign weight = weight | default: settings.weight
   assign case = case | default: settings.case
   assign wrap = wrap | default: settings.wrap
+  assign line_height = line_height | default: settings.line_height
   assign letter_spacing = letter_spacing | default: settings.letter_spacing
   assign color = color | default: settings.color
   assign button_link = button_link | default: settings.button_link
@@ -65,12 +66,12 @@
     --font-family: {{ font }};
     --text-transform: {{ case }};
     --text-wrap: {{ wrap }};
-    {% if settings.type_preset == 'custom' and settings.font_size == blank %}
-      --line-height--display: var(--line-height--display-{{ settings.line_height }});
-      --line-height--heading: var(--line-height--heading-{{ settings.line_height }});
-      --line-height--body: var(--line-height--body-{{ settings.line_height }});
+    {% if preset == 'custom' and font_size == blank %}
+      --line-height--display: var(--line-height--display-{{ line_height }});
+      --line-height--heading: var(--line-height--heading-{{ line_height }});
+      --line-height--body: var(--line-height--body-{{ line_height }});
     {% else %}
-      --line-height: var(--line-height--{{ type }}-{{ settings.line_height }});
+      --line-height: var(--line-height--{{ type }}-{{ line_height }});
     {% endif %}
     --letter-spacing: var(--letter-spacing--{{ type }}-{{ letter_spacing }});
   {%- endif -%}

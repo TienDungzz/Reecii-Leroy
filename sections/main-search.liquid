@@ -1,11 +1,11 @@
-{{ 'template-collection.css' | asset_url | stylesheet_tag }}
-{{ 'component-search.css' | asset_url | stylesheet_tag }}
+{{ 'template-collection.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'component-search.css' | asset_url | stylesheet_tag: preload: true }}
 
 {%- if section.settings.enable_filtering
   or section.settings.enable_sorting
   or section.settings.enable_products_per_page
 -%}
-  {{ 'component-facets.css' | asset_url | stylesheet_tag }}
+  {{ 'component-facets.css' | asset_url | stylesheet_tag: preload: true }}
   <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
@@ -626,8 +626,8 @@
     {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "t:sections.all.colors.label",
-      "info": "t:sections.all.colors.has_cards_info",
+      "label": "t:settings.color_scheme",
+      "info": "t:info.has_cards_info",
       "default": "scheme-1"
     },
     {
@@ -690,7 +690,7 @@
     },
     {
       "type": "header",
-      "content": "t:sections.all.padding.name"
+      "content": "t:content.section_padding"
     },
     {
       "type": "range",
@@ -699,7 +699,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
+      "label": "t:settings.top",
       "default": 36
     },
     {
@@ -709,7 +709,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
+      "label": "t:settings.bottom",
       "default": 36
     }
   ]

@@ -3,12 +3,12 @@
 {% endcomment %}
 
   {%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}
-    {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
+    {{ 'quantity-popover.css' | asset_url | stylesheet_tag: preload: true }}
 
-    {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
-    {{ 'component-cart.css' | asset_url | stylesheet_tag }}
-    {{ 'component-totals.css' | asset_url | stylesheet_tag }}
-    {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+    {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'component-cart.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'component-totals.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'component-discounts.css' | asset_url | stylesheet_tag: preload: true }}
 
     {%- render 'cart-drawer' -%}
 
@@ -39,7 +39,7 @@
       {
         "type": "color_scheme",
         "id": "color_scheme",
-        "label": "t:sections.all.colors.label",
+        "label": "t:settings.color_scheme",
         "default": "scheme-1"
       }
     ]

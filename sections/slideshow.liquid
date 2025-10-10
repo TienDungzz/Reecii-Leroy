@@ -1,5 +1,5 @@
-{{ 'component-slideshow.css' | asset_url | stylesheet_tag }}
-{{ 'slideshow-masonry.css' | asset_url | stylesheet_tag }}
+{{ 'component-slideshow.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'slideshow-masonry.css' | asset_url | stylesheet_tag: preload: true }}
 
 {%- liquid
   assign sec_stts = section.settings
@@ -1227,7 +1227,7 @@
     },
     {
       "type": "header",
-      "content": "t:sections.all.animation.content"
+      "content": "t:content.animations"
     },
     {
       "type": "select",
@@ -1235,19 +1235,19 @@
       "options": [
         {
           "value": "none",
-          "label": "t:sections.all.animation.image_behavior.options__1.label"
+          "label": "t:options.none"
         },
         {
           "value": "ambient",
-          "label": "t:sections.all.animation.image_behavior.options__2.label"
+          "label": "t:options.ambient_movement"
         },
         {
           "value": "zoom-in",
-          "label": "t:sections.all.animation.image_behavior.options__4.label"
+          "label": "t:options.zoom_in_on_scroll"
         }
       ],
       "default": "none",
-      "label": "t:sections.all.animation.image_behavior.label"
+      "label": "t:settings.image_behavior"
     },
     {
       "type": "header",
@@ -1267,7 +1267,7 @@
     },
     {
       "type": "header",
-      "content": "t:sections.all.padding.name"
+      "content": "t:content.section_padding"
     },
     {
       "type": "range",
@@ -1276,7 +1276,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
+      "label": "t:settings.top",
       "default": 36
     },
     {
@@ -1286,7 +1286,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
+      "label": "t:settings.bottom",
       "default": 36
     }
   ],
