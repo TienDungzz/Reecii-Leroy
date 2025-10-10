@@ -87,7 +87,16 @@ style="{% if progressbar_left != blank %}--pl: {{ progressbar_left }};{% endif %
         columns_gap: columns_gap,
       %}"
     >
-      <div class="swiper">
+      <div 
+        class="swiper"
+        style="
+          {% if block.settings.pagination_type == 'bullets' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' %}
+          --dots-top-offset: {{ block.settings.dots_top_offset }}px;
+          {% elsif block.settings.pagination_type == 'progressbar' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' %}
+          --progress-top-offset: {{ block.settings.progress_top_offset }}px;
+          {% endif %}
+        "
+      >
   {%- endif -%}
   <ul
     id="Slider-{{ bl_id }}"
@@ -410,6 +419,28 @@ style="{% if progressbar_left != blank %}--pl: {{ progressbar_left }};{% endif %
     },
     {
       "type": "range",
+      "id": "dots_top_offset",
+      "label": "Dots top offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ block.settings.pagination_type == 'bullets' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "range",
+      "id": "progress_top_offset",
+      "label": "Progress top offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ block.settings.pagination_type == 'progressbar' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "range",
       "id": "progressbar_left",
       "label": "t:settings.progressbar_left",
       "min": 0,
@@ -417,7 +448,7 @@ style="{% if progressbar_left != blank %}--pl: {{ progressbar_left }};{% endif %
       "step": 1,
       "unit": "px",
       "default": 0,
-      "visible_if": "{{ block.settings.pagination_type == 'progressbar' }}"
+      "visible_if": "{{ block.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "range",
@@ -428,7 +459,7 @@ style="{% if progressbar_left != blank %}--pl: {{ progressbar_left }};{% endif %
       "step": 1,
       "unit": "px",
       "default": 0,
-      "visible_if": "{{ block.settings.pagination_type == 'progressbar' }}"
+      "visible_if": "{{ block.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "header",

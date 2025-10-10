@@ -9,7 +9,7 @@ if (typeof window.compareColor === 'undefined') {
             }
 
             init() {
-                this.imageList = this.querySelector('.halo-compareColors-image');
+                this.imageList = this.querySelector('.halo-compare-colors-image');
                 this.textList = this.querySelector('[class*="compare-colors-text"]');
                 this.sortTable = document.getElementById('sortTableList');
 
