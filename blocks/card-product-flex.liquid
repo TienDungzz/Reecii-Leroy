@@ -44,8 +44,9 @@
       items-{{ block.settings.align_items}}
       justify-{{ block.settings.justify_content }}
       gap-style
+      spacing-style
     "
-    style="{% render 'gap-style', value: block.settings.gap %}"
+    style="{% render 'gap-style', value: block.settings.gap %} {% render 'spacing-padding', settings: block.settings %}"
   >
     <template>
       <div
@@ -361,6 +362,50 @@
       "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",
