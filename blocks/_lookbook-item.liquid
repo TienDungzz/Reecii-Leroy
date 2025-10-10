@@ -44,19 +44,15 @@
   assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
 
   assign element = 'div'
-  if block.settings.enable_fancybox and image != blank
+  if block.settings.animation_type == 'fancybox' and image != blank
     assign element = 'a'
-  elsif block.settings.enable_parallax
+  elsif block.settings.animation_type == 'parallax'
     assign element = 'parallax-image'
   endif
 %}
 
-{%- if block.settings.enable_fancybox -%}
-  {%- render 'fancybox_lib' -%}
-{%- endif -%}
-
 {% capture class_img %}
-  image-block__image {% if block.settings.enable_parallax %} image-parallax--target{% endif %}
+  image-block__image {% if block.settings.animation_type == 'parallax' %} image-parallax--target{% endif %}
 {% endcapture %}
 
 {% capture attributes_fancybox %}
@@ -74,10 +70,10 @@
 
 {% capture attributes %}
   {{ block.shopify_attributes }}
-  {% if block.settings.enable_fancybox and image != blank %}
+  {% if block.settings.animation_type == 'fancybox' and image != blank %}
       {{ attributes_fancybox }}
   {% endif %}
-  {% if block.settings.enable_parallax %}
+  {% if block.settings.animation_type == 'parallax' %}
     {{ attributes_parllax }}
   {% endif %}
 {% endcapture %}
@@ -292,7 +288,7 @@
       "type": "url",
       "id": "link",
       "label": "t:settings.link",
-      "visible_if": "{{ block.settings.enable_fancybox == false }}"
+      "visible_if": "{{ block.settings.animation_type == 'fancybox' }}"
     },
     {
       "type": "checkbox",
@@ -531,19 +527,24 @@
       "content": "Animation"
     },
     {
-      "type": "checkbox",
-      "id": "enable_fancybox",
-      "label": "t:settings.enable_lightbox",
-      "default": true,
-      "info": "t:info.enable_fancybox_info",
-      "visible_if": "{{ block.settings.enable_parallax == false }}"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_parallax",
-      "label": "t:settings.enable_parallax_scroll",
-      "default": false,
-      "visible_if": "{{ block.settings.enable_fancybox == false }}"
+      "type": "select",
+      "id": "animation_type",
+      "label": "Animation type",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fancybox",
+          "label": "Fancybox"
+        },
+        {
+          "value": "parallax",
+          "label": "Parallax"
+        }
+      ],
+      "default": "fancybox"
     },
     {
       "type": "range",
@@ -553,7 +554,7 @@
       "max": 4,
       "step": 0.5,
       "default": 0.5,
-      "visible_if": "{{ block.settings.enable_fancybox == false and block.settings.enable_parallax }}"
+      "visible_if": "{{ block.settings.animation_type == 'parallax' }}"
     },
     {
       "type": "header",

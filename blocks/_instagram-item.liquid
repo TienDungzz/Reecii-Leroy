@@ -49,10 +49,6 @@
   endif
 %}
 
-{%- if block.settings.animation_type == 'fancybox' -%}
-  {%- render 'fancybox_lib' -%}
-{%- endif -%}
-
 {% capture class_img %}
   image-block__image {% if block.settings.animation_type == 'parallax' %} image-parallax--target{% endif %}
 {% endcapture %}
@@ -436,9 +432,6 @@
   </script>
 {% endif %}
 
-{%- if block.settings.animation_type == 'fancybox' -%}
-{%- endif -%}
-
 {%- stylesheet -%}
   .image-block {
     display: flex;
@@ -651,7 +644,7 @@
     {
       "type": "url",
       "id": "link",
-      "label": "t:settings.link",
+      "label": "Link",
       "visible_if": "{{ block.settings.animation_type == 'fancybox' }}"
     },
     {
@@ -797,7 +790,7 @@
     },
     {
       "type": "header",
-      "content": "t:content.border"
+      "content": "t:settings_schema.global.settings.header__border.content"
     },
     {
       "type": "select",
@@ -806,11 +799,11 @@
       "options": [
         {
           "value": "none",
-          "label": "t:options.none"
+          "label": "None"
         },
         {
           "value": "solid",
-          "label": "t:options.solid"
+          "label": "Solid"
         }
       ],
       "default": "none"
@@ -822,7 +815,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:settings.thickness",
+      "label": "t:settings_schema.global.settings.thickness.label",
       "default": 1,
       "visible_if": "{{ block.settings.border != 'none' }}"
     },
@@ -833,14 +826,14 @@
       "max": 100,
       "step": 1,
       "unit": "%",
-      "label": "t:settings.opacity",
+      "label": "t:settings_schema.global.settings.opacity.label",
       "default": 100,
       "visible_if": "{{ block.settings.border != 'none' }}"
     },
     {
       "type": "range",
       "id": "border_radius",
-      "label": "t:settings.corner_radius",
+      "label": "t:settings_schema.global.settings.corner_radius.label",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -1091,7 +1084,7 @@
     {
       "type": "select",
       "id": "icon_custom",
-      "label": "t:settings.custom_icon",
+      "label": "Custom icon",
       "options": [
         {
           "value": "none",
@@ -1112,7 +1105,7 @@
       "type": "liquid",
       "id": "svg_upload",
       "label": "SVG icon",
-      "info": "t:info.svg_icon_info",
+      "info": "Go to this link [find your icon](https:\/\/fontawesome.com\/v5\/search). Find the icon you want, then copy the SVG code and paste it here.",
       "visible_if": "{{ block.settings.icon_custom == 'svg' }}"
     },
     {
@@ -1177,11 +1170,11 @@
       "options": [
         {
           "value": "left",
-          "label": "t:options.left"
+          "label": "Left"
         },
         {
           "value": "right",
-          "label": "t:options.right"
+          "label": "Right"
         }
       ],
       "default": "right",
@@ -1289,7 +1282,7 @@
       "label": "t:settings.center_button",
       "id": "center_button",
       "default": false,
-      "info": "t:info.center_button_info",
+      "info": "Button will be centered on the image when hover",
       "visible_if": "{{ block.settings.background_media == 'image' }}"
     },
     {
@@ -1398,7 +1391,7 @@
       "max": 100,
       "step": 1,
       "default": 0,
-      "label": "t:settings.top"
+      "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
     },
     {
       "type": "range",
@@ -1407,7 +1400,7 @@
       "max": 100,
       "step": 1,
       "default": 0,
-      "label": "t:settings.right"
+      "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
     },
     {
       "type": "range",
@@ -1416,7 +1409,7 @@
       "max": 100,
       "step": 1,
       "default": 0,
-      "label": "t:settings.bottom"
+      "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
     },
     {
       "type": "range",
@@ -1425,7 +1418,7 @@
       "max": 100,
       "step": 1,
       "default": 0,
-      "label": "t:settings.left"
+      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
     }
   ],
   "blocks": [
