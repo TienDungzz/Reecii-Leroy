@@ -13,8 +13,17 @@ class SideDrawerOpener extends HTMLElement {
         const urlStyle = drawer?.dataset.urlStyleSheet;
         if (urlStyle) buildStyleSheet(urlStyle, drawer);
       }
-
-      if (drawer) drawer.open(button);
+      if(button.closest('.header__icon--menu')) {
+        if(button.classList.contains('active')) {
+          button.classList.remove('active');
+          if (drawer) drawer.close();
+        } else {
+          button.classList.add('active');
+          if (drawer) drawer.open(button);
+        }
+      } else {
+        if (drawer) drawer.open(button);
+      }
     });
   }
 }
@@ -98,6 +107,11 @@ class SideDrawer extends HTMLElement {
     const contentElement = this.querySelector("[data-drawer-content]");
 
     this.classList.remove("open");
+
+    if (document.querySelector('.header__icon--menu button.active')) {
+      document.querySelector('.header__icon--menu button').classList.remove('active');
+    }
+
     await Motion.timeline([
       [
         contentElement,
@@ -151,7 +165,7 @@ class SideDrawer extends HTMLElement {
   trapFocus() {
     this.addEventListener('transitionend', () => {
       const containerToTrapFocusOn = this.querySelector('.drawer__inner, .popup__inner, .blog-posts__sidebar');
-      const focusElement = this.querySelector('.drawer__close, .search__input, .popup__input');
+      const focusElement = this.querySelector('.search__input, .popup__input, .drawer__close');
       trapFocus(containerToTrapFocusOn, focusElement);
     }, { once: true });
   }

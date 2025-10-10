@@ -57,7 +57,7 @@
               settings: block.settings,
               loop: false,
               slides_per_view: mobile_columns,
-              space_between: block.settings.gap
+              space_between: block.settings.column_gap
             -%}
           >
             <div class="swiper">
@@ -68,7 +68,7 @@
           class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
           role="list"
           aria-label="{{ 'content.grid.name' | t }}"
-          style="--grid-desktop-horizontal-spacing: {{ block.settings.gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.gap }}px;"
+          style="--grid-desktop-horizontal-spacing: {{ block.settings.column_gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.vertical_gap }}px;"
         >
           {{- list_items -}}
         </ul>
@@ -136,7 +136,7 @@
 
 {% schema %}
 {
-  "name": "Multicolumn",
+  "name": "t:names.multicolumn",
   "blocks": [
     {
       "type": "@theme"
@@ -160,15 +160,15 @@
     {
       "type": "select",
       "id": "layout_type",
-      "label": "t:settings_schema.global.settings.type.label",
+      "label": "t:settings.type",
       "options": [
         {
           "value": "grid",
-          "label": "Grid"
+          "label": "t:options.grid"
         },
         {
           "value": "carousel",
-          "label": "Carousel"
+          "label": "t:options.carousel" 
         }
       ],
       "default": "grid"
@@ -176,7 +176,7 @@
     {
       "type": "checkbox",
       "id": "carousel_on_mobile",
-      "label": "Carousel on mobile",
+      "label": "t:settings.carousel_on_mobile",
       "default": false,
       "visible_if": "{{ block.settings.layout_type == 'grid' }}"
     },
@@ -187,7 +187,7 @@
       "max": 6,
       "step": 1,
       "default": 4,
-      "label": "Columns",
+      "label": "t:settings.columns",
       "visible_if": "{{ block.settings.layout_type == 'grid' }}"
     },
     {
@@ -197,13 +197,13 @@
       "max": 9,
       "step": 1,
       "default": 4,
-      "label": "Columns",
+      "label": "t:settings.columns",
       "visible_if": "{{ block.settings.layout_type == 'carousel' }}"
     },
     {
       "type": "select",
       "id": "mobile_columns_grid",
-      "label": "Mobile columns",
+      "label": "t:settings.mobile_columns",
       "options": [
         {
           "value": "1",
@@ -220,7 +220,7 @@
     {
       "type": "select",
       "id": "mobile_columns_carousel",
-      "label": "Mobile columns",
+      "label": "t:settings.mobile_columns",
       "options": [
         {
           "value": "1",
@@ -260,35 +260,58 @@
     },
     {
       "type": "range",
+      "id": "vertical_gap",
+      "label": "t:settings.vertical_gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "t:settings.column_gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "range",
       "id": "gap",
       "label": "t:settings.gap",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 12
+      "default": 12,
+      "visible_if": "{{ block.settings.layout_type == 'carousel' }}"
     },
     {
       "type": "header",
-      "content": "Carousel layout",
+      "content": "t:content.carousel",
       "visible_if": "{{ block.settings.layout_type == 'carousel' }}"
     },
     {
       "type": "checkbox",
       "id": "loop",
-      "label": "Loop",
+      "label": "t:settings.loop",
       "default": false,
       "visible_if": "{{ block.settings.layout_type == 'carousel'}}"
     },
     {
       "type": "select",
       "id": "navigation",
-      "label": "Navigation",
+      "label": "t:settings.navigation",
       "visible_if": "{{ block.settings.layout_type == 'carousel' }}",
       "options": [
         {
           "value": "none",
-          "label": "None"
+          "label": "t:options.none"
         },
         {
           "value": "arrows",
@@ -296,7 +319,7 @@
         },
         {
           "value": "pagination",
-          "label": "Pagination"
+          "label": "t:options.pagination"
         },
         {
           "value": "arrows-pagination",
@@ -308,7 +331,7 @@
     {
       "type": "select",
       "id": "pagination_type",
-      "label": "Pagination type",
+      "label": "t:settings.pagination_type",
       "visible_if": "{{ block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' }}",
       "options": [
         {
@@ -317,11 +340,11 @@
         },
         {
           "value": "dynamic",
-          "label": "Dynamic"
+          "label": "t:options.dynamic"
         },
         {
           "value": "progressbar",
-          "label": "Progress"
+          "label": "t:options.progress"
         },
         {
           "value": "fraction",
@@ -497,7 +520,7 @@
     {
       "type": "color",
       "id": "scheme_background",
-      "label": "t:settings_schema.colors.settings.background.label",
+      "label": "t:settings.background",
       "default": "#FFFFFF",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -552,7 +575,7 @@
     {
       "type": "color",
       "id": "scheme_shadow",
-      "label": "t:settings_schema.colors.settings.shadow.label",
+      "label": "t:settings.shadow_color",
       "default": "#000000",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
@@ -933,7 +956,7 @@
   ],
 	"presets": [
 		{
-			"name": "Multicolumn",
+			"name": "t:names.multicolumn",
 			"category": "t:categories.storytelling",
 			"blocks": {
         "group_1": {

@@ -19,12 +19,71 @@
     aria-haspopup="dialog"
     aria-label="{{ 'sections.header.menu' | t }}"
   >
-    <span>
-      {{- 'icon-hamburger.svg' | inline_asset_content -}}
+    {% comment %}
+      <span>
+        {{- 'icon-hamburger.svg' | inline_asset_content -}}
+      </span>
+    {% endcomment %}
+    <span class="icon-hamburger-custom">
+      <span class="icon-hamburger-custom__line"></span>
+      <span class="icon-hamburger-custom__line"></span>
+      <span class="icon-hamburger-custom__line"></span>
     </span>
   </button>
 </side-drawer-opener>
 
 {% if settings.enable_multi_tab_layout_mobile == false %}
-  {% render 'header-drawer' %}
+  {% render 'header-drawer', color_scheme: section.settings.menu_mobile_color_scheme %}
 {% endif %}
+
+{% stylesheet %}
+  body:has(.drawer--menu) #MainContent  {
+    transition: transform var(--animation-speed-slow) var(--ease-out-smooth);
+  }
+
+  body:has(.drawer--menu.active) #MainContent {
+    transform: translateX(10rem);
+    transition-delay: var(--animation-speed-slow);
+  }
+
+  .header__icon .icon-hamburger-custom:not(.icon-flag) {
+    display: block;
+    height: auto;
+    width: 100%;
+    transition: transform var(--animation-speed-slow) var(--ease-out-smooth);
+    position: relative;
+
+    .icon-hamburger-custom__line {
+      width: var(--size-22);
+      height: var(--size-2);
+      display: block;
+      background-color: currentcolor;
+      margin: .6rem auto;
+      transition: transform var(--animation-speed-slow) var(--ease-out-smooth), width var(--animation-speed-slow) var(--ease-out-smooth);
+      border-radius: 8px;
+
+      &:nth-child(1) ,
+      &:nth-child(3) {
+        transition-delay: var(--animation-speed);
+      }
+    }
+  }
+
+  .header__icon--menu button.active .icon-hamburger-custom {
+    --translate-y: 8px;
+    transition-delay: var(--animation-speed-slowest);
+    transform: rotate(45deg);
+
+    .icon-hamburger-custom__line {
+      &:nth-child(1) {
+        transform: translateY(var(--translate-y));
+      }
+      &:nth-child(2) {
+        width: 0px;
+      }
+      &:nth-child(3) {
+        transform: translateY(calc(var(--translate-y) * -1)) rotate(90deg);
+      }
+    }
+  }
+{% endstylesheet %}

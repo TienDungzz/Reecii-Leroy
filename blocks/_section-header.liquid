@@ -30,11 +30,14 @@
   {%- if bl_stts.border != 'none' -%}
     {%- render 'border-override', settings: bl_stts -%}
   {%- endif -%}
+  {% if bl_stts.inherit_color_scheme == false %}
+    {% render 'color-scheme-style', settings: bl_stts %}
+  {% endif %}
   "
 {%- endcapture -%}
 
 {%- capture class -%}
-  section-header--block layout-panel-flex layout-panel-flex--{{ bl_stts.content_direction }} group-block group-block--{{block.id}} flex-section w-full color-{{ bl_stts.color_scheme }}
+  section-header--block layout-panel-flex layout-panel-flex--{{ bl_stts.content_direction }} group-block group-block--{{block.id}} flex-section w-full{% if bl_stts.inherit_color_scheme == false %} color-scheme-custom{% endif %}
   {% if bl_stts.border != 'none' %} border-style{% endif %}
 {%- endcapture -%}
 
@@ -54,7 +57,7 @@
 
 {% schema %}
 {
-  "name": "Group: Section header",
+  "name": "t:names.section_header",
   "blocks": [
     { "type": "@theme" },
     { "type": "@app" },
@@ -67,12 +70,12 @@
   "settings": [
     {
       "type": "header",
-      "content": "Size"
+      "content": "t:content.size"
     },
     {
       "type": "select",
       "id": "width_option",
-      "label": "Width Option",
+      "label": "t:settings.width_option",
       "options": [
         {
           "value": "full",
@@ -98,6 +101,295 @@
     },
     {
       "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    }, 
+    {
+      "type": "color",
+      "id": "scheme_background",
+      "label": "t:settings_schema.colors.settings.background.label",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color_background",
+      "id": "scheme_background_gradient",
+      "label": "t:content.background_gradient",
+      "info": "t:info.background_gradient_info",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_foreground_heading",
+      "label": "t:settings.headings",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_foreground",
+      "label": "t:settings.text",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary",
+      "label": "t:settings.primary_color",
+      "default": "#000F9F",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_hover",
+      "label": "t:settings.primary_hover_color",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_border",
+      "label": "t:settings.borders",
+      "default": "#E6E6E6",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_shadow",
+      "label": "t:settings_schema.colors.settings.shadow.label",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:names.primary_button",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_background",
+      "label": "t:settings.background",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color_background",
+      "id": "scheme_primary_button_background_gradient",
+      "label": "t:content.background_gradient",
+      "info": "t:info.background_gradient_info",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_text",
+      "label": "t:settings.text",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_border",
+      "label": "t:settings.borders",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_hover_background",
+      "label": "t:settings.hover_background",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color_background",
+      "id": "scheme_primary_button_hover_background_gradient",
+      "label": "t:settings.hover_background_gradient",
+      "info": "t:info.background_gradient_info",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_hover_text",
+      "label": "t:settings.hover_text",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_hover_border",
+      "label": "t:settings.hover_borders",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:names.secondary_button",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_background",
+      "label": "t:settings.background",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color_background",
+      "id": "scheme_secondary_button_background_gradient",
+      "label": "t:content.background_gradient",
+      "info": "t:info.background_gradient_info",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_text",
+      "label": "t:settings.text",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_border",
+      "label": "t:settings.borders",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_hover_background",
+      "label": "t:settings.hover_background",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color_background",
+      "id": "scheme_secondary_button_hover_background_gradient",
+      "label": "t:settings.hover_background_gradient",
+      "info": "t:info.background_gradient_info",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_hover_text",
+      "label": "t:settings.hover_text",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_hover_border",
+      "label": "t:settings.hover_borders",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:names.inputs",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_input_background",
+      "label": "t:settings.background",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_input_text_color",
+      "label": "t:settings.text",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_input_border_color",
+      "label": "t:settings.borders",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_input_hover_background",
+      "label": "t:settings.hover_background",
+      "default": "#F5F5F5",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "Carousel",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_arrow_color",
+      "label": "t:settings.arrow_color",
+      "default": "#333333",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_arrow_background",
+      "label": "t:settings.arrow_background",
+      "default": "#ffffff",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_arrow_border",
+      "label": "t:settings.arrow_border",
+      "default": "#333333",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_pagination_color",
+      "label": "t:settings.pagination_color",
+      "default": "#cecece",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_pagination_active_color",
+      "label": "t:settings.pagination_active_color",
+      "default": "#333333",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "header",
       "content": "t:content.margin"
     },
     {
@@ -117,7 +409,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label":"t:sections.all.margin.margin_bottom",
+      "label": "t:sections.all.margin.margin_bottom",
       "default": 0
     },
     {
@@ -131,7 +423,7 @@
       "max": 100,
       "step": 1,
       "default": 0,
-      "label": "t:settings_schema.global.settings.spacing.spacing_top.label"
+      "label": "t:settings.top"
     },
     {
       "type": "range",
@@ -140,7 +432,7 @@
       "max": 100,
       "step": 1,
       "default": 0,
-      "label": "t:settings_schema.global.settings.spacing.spacing_right.label"
+      "label": "t:settings.right"
     },
     {
       "type": "range",
@@ -149,7 +441,7 @@
       "max": 100,
       "step": 1,
       "default": 0,
-      "label": "t:settings_schema.global.settings.spacing.spacing_bottom.label"
+      "label": "t:settings.bottom"
     },
     {
       "type": "range",
@@ -158,7 +450,7 @@
       "max": 100,
       "step": 1,
       "default": 0,
-      "label": "t:settings_schema.global.settings.spacing.spacing_left.label"
+      "label": "t:settings.left"
     },
     {
       "type": "header",
@@ -188,11 +480,11 @@
       "options": [
         {
           "value": "no-wrap",
-          "label": "No"
+          "label": "t:options.no"
         },
         {
           "value": "wrap",
-          "label": "Yes"
+          "label": "t:options.yes"
         }
       ]
     },
@@ -202,7 +494,7 @@
       "options": [
         {
           "value": "stretch",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "flex-start",
@@ -226,11 +518,11 @@
       "options": [
         {
           "value": "flex-start",
-          "label": "Start"
+          "label": "t:options.start"
         },
         {
           "value": "center",
-          "label": "Center"
+          "label": "t:options.center"
         },
         {
           "value": "flex-end",
@@ -259,7 +551,7 @@
       "max": 100,
       "step": 1,
       "default": 10,
-      "label": "Gap"
+      "label": "t:settings.gap"  
     },
     {
       "type": "header",
@@ -295,7 +587,7 @@
   ],
   "presets": [
     {
-      "name": "Group: Section header"
+      "name": "t:names.section_header"
     }
   ]
 }

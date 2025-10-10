@@ -212,7 +212,13 @@
 
 <div
   class="section section--{{ page_width }} color-{{ sec_stts.color_scheme }} relative z-0 spacing-style"
-  style="{% render 'spacing-style', settings: sec_stts %}"
+  style="
+    {% render 'spacing-style', settings: sec_stts %}
+    {% if page_width == 'custom' %}
+      --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    {% endif %}
+  "
 >
   <div>
     {%- liquid
@@ -607,7 +613,16 @@
                 %}
               "
             >
-              <div class="swiper w-full">
+              <div 
+                class="swiper w-full"
+                style="
+                  {% if section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                  --dots-top-offset: {{ sec_stts.dots_top_offset }}px;
+                  {% elsif section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                  --progress-top-offset: {{ sec_stts.progress_top_offset }}px;
+                  {% endif %}
+                "
+              >
                 <ul
                   id="Slider-{{ sec_id }}"
                   data-id="{{ sec_id }}"
@@ -690,7 +705,7 @@
     {
       "type": "select",
       "id": "layout_type",
-      "label": "t:settings_schema.global.settings.type.label",
+      "label": "t:settings.type",
       "options": [
         {
           "value": "grid",
@@ -714,7 +729,7 @@
     {
       "type": "select",
       "id": "widget_layout",
-      "label": "Widget layout",
+      "label": "t:settings.widget_layout",
       "visible_if": "{{ section.settings.layout_type == 'widget' }}",
       "options": [
         {
@@ -810,8 +825,8 @@
     {
       "type": "image_picker",
       "id": "banner_image",
-      "label": "Image",
-      "info": "If you use a video, the image will be used as a poster"
+      "label": "t:settings.image",
+      "info": "t:info.banner_image_info"
     },
     {
       "type": "select",
@@ -846,17 +861,17 @@
     {
       "type": "select",
       "id": "video_display_mode",
-      "label": "Video display mode",
+      "label": "t:settings.video_type",
       "default": "inline",
-      "info": "Choose how the video appears on the page.",
+      "info": "t:info.video_display_mode_info",  
       "options": [
         {
           "value": "inline",
-          "label": "Play video within the section"
+          "label": "t:options.inline"
         },
         {
           "value": "popup",
-          "label": "Play video in a modal"
+          "label": "t:options.dialog"
         }
       ],
     },
@@ -885,15 +900,15 @@
     {
       "type": "select",
       "id": "position",
-      "label": "Position",
+      "label": "t:settings.position",
       "options": [
         {
           "value": "left",
-          "label": "Left"
+          "label": "t:options.left"
         },
         {
           "value": "right",
-          "label": "Right"
+          "label": "t:options.right"
         }
       ],
       "default": "left",
@@ -905,7 +920,7 @@
       "options": [
         {
           "value": "stretch",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "start",
@@ -926,7 +941,7 @@
     {
       "type": "select",
       "id": "media_ratio",
-      "label": "Ratio",
+      "label": "t:settings.ratio",
       "options": [
         {
           "value": "adapt",
@@ -934,15 +949,15 @@
         },
         {
           "value": "landscape",
-          "label": "Landscape"
+          "label": "t:options.landscape"
         },
         {
           "value": "portrait",
-          "label": "Portrait"
+          "label": "t:options.portrait"
         },
         {
           "value": "square",
-          "label": "Square"
+          "label": "t:options.square"
         }
       ],
       "default": "adapt"
@@ -955,23 +970,23 @@
       "options": [
         {
           "value": "cover",
-          "label": "Cover"
+          "label": "t:options.cover"
         },
         {
           "value": "contain",
-          "label": "Contain"
+          "label": "t:options.contain"
         }
       ],
       "default": "cover"
     },
     {
       "type": "header",
-      "content": "Content inside media",
+      "content": "t:content.content_inside_media"
     },
     {
       "type": "select",
       "id": "content_media_position",
-      "label": "Position",
+      "label": "t:settings.position",
       "options": [
         {
           "value": "top",
@@ -992,7 +1007,11 @@
       "type": "text_alignment",
       "id": "content_media_alignment",
       "label": "t:settings.alignment",
-      "default": "left",
+      "default": "left"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:content.heading"
     },
     {
       "type": "inline_richtext",
@@ -1083,7 +1102,7 @@
       "options": [
         {
           "value": "default",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "3xl",
@@ -1143,6 +1162,10 @@
       "visible_if": "{{ section.settings.heading_type_preset == 'custom' }}"
     },
     {
+      "type": "paragraph",
+      "content": "t:content.subheading"
+    },
+    {
       "type": "inline_richtext",
       "id": "content_subheading",
       "label": "t:settings.subheading"
@@ -1154,13 +1177,13 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "Subheading margin bottom",
+      "label": "t:settings.spacing_bottom",
       "default": 0
     },
     {
       "type": "select",
       "id": "subheading_type_preset",
-      "label": "Subheading type preset",
+      "label": "t:settings.preset",
       "options": [
         {
           "value": "rte",
@@ -1227,11 +1250,11 @@
     {
       "type": "select",
       "id": "subheading_font_size",
-      "label": "Subheading font size",
+      "label": "t:settings.size",
       "options": [
         {
           "value": "default",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "3xl",
@@ -1291,6 +1314,10 @@
       "visible_if": "{{ section.settings.text_type_preset == 'custom' }}"
     },
     {
+      "type": "paragraph",
+      "content": "t:content.text"
+    },
+    {
       "type": "inline_richtext",
       "id": "content_text",
       "label": "t:options.text"
@@ -1302,13 +1329,13 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "Text margin bottom",
+      "label": "t:settings.spacing_bottom",
       "default": 0
     },
     {
       "type": "select",
       "id": "text_type_preset",
-      "label": "Text type preset",
+      "label": "t:settings.preset",
       "options": [
         {
           "value": "rte",
@@ -1375,11 +1402,11 @@
     {
       "type": "select",
       "id": "text_font_size",
-      "label": "Text font size",
+      "label": "t:settings.size",
       "options": [
         {
           "value": "default",
-          "label": "Default"
+          "label": "t:options.default"
         },
         {
           "value": "3xl",
@@ -1489,13 +1516,13 @@
     },
     {
       "type": "header",
-      "content": "Carousel layout",
+      "content": "t:content.carousel",
       "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
     },
     {
       "type": "checkbox",
       "id": "loop",
-      "label": "Loop",
+      "label": "t:settings.loop",
       "default": false,
       "visible_if": "{{ section.settings.layout_type == 'carousel' }}"
     },
@@ -1509,12 +1536,12 @@
     {
       "type": "select",
       "id": "navigation",
-      "label": "Navigation",
+      "label": "t:settings.navigation",
       "visible_if": "{{ section.settings.layout_type == 'carousel'}}",
       "options": [
         {
           "value": "none",
-          "label": "None"
+          "label": "t:options.none"
         },
         {
           "value": "arrows",
@@ -1522,7 +1549,7 @@
         },
         {
           "value": "pagination",
-          "label": "Pagination"
+          "label": "t:options.pagination"
         },
         {
           "value": "arrows-pagination",
@@ -1538,7 +1565,7 @@
       "options": [
         {
           "value": "inside",
-          "label": "Inside slide"
+          "label": "t:options.inside_slide"
         },
         {
           "value": "bottom",
@@ -1551,7 +1578,7 @@
     {
       "type": "select",
       "id": "pagination_type",
-      "label": "Pagination type",
+      "label": "t:settings.pagination_type",
       "visible_if": "{{ section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
       "options": [
         {
@@ -1560,11 +1587,11 @@
         },
         {
           "value": "dynamic",
-          "label": "Dynamic"
+          "label": "t:options.dynamic"
         },
         {
           "value": "progressbar",
-          "label": "Progress"
+          "label": "t:options.progress"
         },
         {
           "value": "fraction",
@@ -1574,24 +1601,61 @@
       "default": "bullets"
     },
     {
+      "type": "range",
+      "id": "dots_top_offset",
+      "label": "Dots top offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "range",
+      "id": "progress_top_offset",
+      "label": "Progress top offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
       "type": "header",
-      "content": "Section layout"
+      "content": "t:content.section_layout"
     },
     {
       "type": "select",
       "id": "page_width",
-      "label": "Width",
+      "label": "t:settings.width",
       "options": [
         {
           "value": "page-width",
-          "label": "Page"
+          "label": "t:options.page"
         },
         {
           "value": "full-width",
-          "label": "Full"
+          "label": "t:options.full"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "page_width_custom",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "default": 1570,
+      "unit": "px",
+      "label": "t:settings_schema.layout.settings.page_width.label",
+      "visible_if": "{{ section.settings.page_width == 'custom' }}"
     },
     {
       "type": "color_scheme",
@@ -1677,7 +1741,7 @@
   ],
   "presets": [
     {
-      "name": "Product list: Grid",
+      "name": "t:names.product_list_grid",
       "category": "t:categories.products",
       "settings": {
         "layout_type": "grid",
@@ -1800,7 +1864,7 @@
       }
     },
     {
-      "name": "Product list: Carousel",
+      "name": "t:names.product_list_carousel",
       "category": "t:categories.products",
       "settings": {
         "layout_type": "carousel",
@@ -1924,7 +1988,7 @@
       }
     },
     {
-      "name": "Product list: Editorial",
+      "name": "t:names.product_list_editorial",
       "category": "t:categories.products",
       "settings": {
         "layout_type": "editorial",
@@ -2002,7 +2066,7 @@
       }
     },
     {
-      "name": "Product list: Widget",
+      "name": "t:names.product_list_widget",
       "category": "t:categories.products",
       "settings": {
         "layout_type": "widget",

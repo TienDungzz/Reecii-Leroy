@@ -32,13 +32,31 @@
   if element == 'drawer'
     assign element_tag = 'drawer-localization-component'
     assign element_class = 'drawer-localization relative'
-    assign open_class = 'drawer-localization__button t-button inline-flex items-center w-full'
+    assign open_class = 'drawer-localization__button t-button inline-flex items-center w-full cursor-pointer'
   else
     assign element_tag = 'dropdown-localization-component'
     assign element_class = 'dropdown-localization'
-    assign open_class = 'dropdown-localization__button t-button header__icon button svg-slide-up'
+    assign open_class = 'dropdown-localization__button t-button header__icon button svg-slide-up cursor-pointer'
   endif
 %}
+
+{%- capture icon_caret_forward -%}
+  <span class="svg-wrapper icon-caret icon-caret--forward">
+    {{- 'icon-caret.svg' | inline_asset_content -}}
+  </span>
+{%- endcapture -%}
+
+{%- capture icon_caret_backward -%}
+  <span class="svg-wrapper icon-caret icon-caret--backward">
+    {{- 'icon-caret.svg' | inline_asset_content -}}
+  </span>
+{%- endcapture -%}
+
+{%- capture icon_caret_up -%}
+  <span class="svg-wrapper icon-caret icon-caret--up">
+    {{- 'icon-caret.svg' | inline_asset_content -}}
+  </span>
+{%- endcapture -%}
 
 <{{ element_tag }} class="{{ element_class }}">
   <button
@@ -48,14 +66,6 @@
     aria-controls="{{ localPosition }}List"
     aria-describedby="{{ localPosition }}Label"
   >
-    {% comment %} <span class="icon-flag icon-flag--{{ localization.language.iso_code }}"></span> {% endcomment %}
-    {% comment %}
-      {% if country_style == true %}
-        <span class="icon-flag icon-flag--{{ localization.language.iso_code }}"></span>
-      {% endif %}
-      <span>{{ localization.language.endonym_name | capitalize }}</span>
-    {% endcomment %}
-    {% comment %} {{ 'icon-caret.svg' | inline_asset_content }} {% endcomment %}
     {%- if element == 'drawer' -%}
       <span class="drawer-localization__button--label h6 inline-flex items-center gap-xs" style="{{ form_style }}">
         {%- if show_country -%}
@@ -87,10 +97,7 @@
             </span>
           </div>
         {%- endif -%}
-
-        <span class="svg-wrapper icon-caret icon-caret--forward">
-          {{- 'icon-caret.svg' | inline_asset_content -}}
-        </span>
+        {{- icon_caret_forward -}}
       </span>
     {% else %}
       <span class="svg-wrapper">
@@ -115,9 +122,7 @@
             class="button selector__back-button menu-drawer__back-button link link--text focus-inset prevent-active"
             aria-expanded="true"
           >
-            <span class="svg-wrapper icon-caret icon-caret--backward">
-              {{- 'icon-caret.svg' | inline_asset_content -}}
-            </span>
+            {{- icon_caret_backward -}}
             {{ 'content.localization_region_and_language' | t }}
           </button>
         </div>
@@ -227,47 +232,6 @@
         </div>
       </localization-form>
       <div class="language-selector top-shadow relative">
-        {% comment %}
-          <div class="language-filler flex items-center justify-end p-0">
-            <button
-              class="selector__close-button button--small link"
-              type="button"
-              onclick="this.closest('localization-form').hidePanel()"
-              aria-label="{{ 'accessibility.close' | t }}"
-            >
-              {{- 'icon-close.svg' | inline_asset_content -}}
-            </button>
-          </div>
-          <ul
-            id="{{ localPosition }}List"
-            role="list"
-            class="disclosure__list language-selector__list list-unstyled cus-scrollbar"
-            style="{{ localization_font }} {{ localization_font_size }}"
-          >
-            {%- for language in localization.available_languages -%}
-              <li class="disclosure__item" tabindex="-1">
-                <a
-                  class="disclosure__link caption-large focus-inset"
-                  href="#"
-                  hreflang="{{ language.iso_code }}"
-                  lang="{{ language.iso_code }}"
-                  {% if language.iso_code == localization.language.iso_code %}
-                    aria-current="true"
-                  {% endif %}
-                  data-value="{{ language.iso_code }}"
-                >
-                  {% if country_style == true %}
-                    <span class="icon-flag icon-flag--{{ language.iso_code }}"></span>
-                  {% endif %}
-                  <span>
-                    {{ language.endonym_name | capitalize }}
-                  </span>
-                </a>
-              </li>
-            {%- endfor -%}
-          </ul>
-        {% endcomment %}
-
         <localization-form class="{{ hide_mobile }} block" data-prevent-hide activate-event="hover">
           {%- form 'localization', id: 'HeaderCountryForm', class: 'localization-form localization-form--language' -%}
             <h2
@@ -282,6 +246,7 @@
             <details class="details--dropdown disclosure-has-popup relative" is="dropdown-details" data-index="0">
               <summary class="details__summary relative">
                 <span>{{ localization.language.endonym_name | capitalize }}</span>
+                {{- icon_caret_up -}}
               </summary>
               <div class="details__list absolute top-full right-0 z-1 global-settings-popup color-scheme-1">
                 <ul
