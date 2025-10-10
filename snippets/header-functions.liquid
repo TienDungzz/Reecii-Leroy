@@ -9,6 +9,17 @@
   {% render 'header-functions', enable_cart: true, enable_wishlist: true %}
 {% endcomment %}
 
+{%- liquid
+  assign actions_type = section.settings.actions_type
+  assign gift_cards_enabled = section.settings.gift_cards_enabled
+-%}
+
+{%- if actions_type == 'both' -%}
+  {%- capture class_icon_type -%}
+    header__icon--both
+  {%- endcapture -%}
+{%- endif -%}
+
 {%- if enable_wishlist -%}
   {% capture wishlist_icon %}
     <svg
@@ -26,20 +37,78 @@
 
   <a
     href="{% if settings.link_wishlist != blank %}{{ settings.link_wishlist }}{% else %}{{ pages['wish-list'].url }}{% endif %}"
-    class="header__icon header-wishlist header__icon--wishlist button focus-inset max-md:hidden svg-slide-up"
+    class="
+      header__icon header-wishlist header__icon--wishlist button focus-inset max-md:hidden svg-slide-up
+      {{ class_icon_type }}
+    "
   >
-    <span class="svg-wrapper">
-      {{ wishlist_icon }}
-      {{ wishlist_icon }}
-    </span>
-    <span class="wishlist-text visually-hidden{% if block.settings.show_wishlist_number %} show_wishlist_number{% endif %}">
-      {{- 'content.wishlist' | t -}}
-    </span>
+    {%- if actions_type == 'icon' or actions_type == 'both' -%}
+      {%- if actions_type == 'text' -%}
+        <span class="lg:none">
+      {%- endif -%}
+      <span class="svg-wrapper">
+        {{ wishlist_icon }}
+        {{ wishlist_icon }}
+      </span>
+      {%- if actions_type == 'text' -%}
+        </span>
+      {%- endif -%}
+    {%- endif -%}
+    {%- if actions_type == 'text' or actions_type == 'both' -%}
+      <span
+        class="
+          wishlist-text max-md:hidden
+          {% if actions_type == 'icon' %} visually-hidden{% endif %}
+          {% if block.settings.show_wishlist_number %} show_wishlist_number{% endif %}
+        "
+      >
+        {{- 'content.wishlist' | t -}}
+      </span>
+    {%- endif -%}
+
     {%- if block.settings.show_wishlist_number -%}
       <div class="wishlist-count-bubble">
         <span class="text" aria-hidden="true" data-wishlist-count></span
         ><span class="visually-hidden">{{ 'content.wishlist' | t }}</span>
       </div>
+    {%- endif -%}
+  </a>
+{%- endif -%}
+
+{%- if gift_cards_enabled -%}
+  {%- capture gift_cards_icon -%}
+    <svg class="icon icon-gift-cards" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+      {% render 'icon', icon: 'gift-cards' %}
+    </svg>
+  {%- endcapture -%}
+
+  <a
+    {% if section.settings.link_giftcards == blank %}
+      role="link" aria-disabled="true"
+    {% else %}
+      href="{{ section.settings.link_giftcards }}"
+    {% endif %}
+    class="
+      header__icon header__icon--giftcards max-md:hidden button focus-inset focus-inset svg-slide-up
+      {{ class_icon_type }}
+    "
+  >
+    {%- if actions_type == 'text' or actions_type == 'both' -%}
+      {%- if actions_type == 'text' -%}
+        <span class="lg:none">
+      {%- endif -%}
+      <span class="svg-wrapper">
+        {{ gift_cards_icon }}
+        {{ gift_cards_icon }}
+      </span>
+      {%- if actions_type == 'text' -%}
+        </span>
+      {%- endif -%}
+    {%- endif -%}
+    {%- if actions_type == 'text' or actions_type == 'both' -%}
+      <span class="giftcards-text max-md:hidden{% if actions_type == 'icon' %} visually-hidden{% endif %}">
+        {{- 'gift_cards.title' | t -}}
+      </span>
     {%- endif -%}
   </a>
 {%- endif -%}
@@ -57,12 +126,26 @@
         aria-label="{{ 'content.cart_count' | t: count: cart.item_count }}"
         id="cart-icon-bubble"
       >
-        {% if cart == empty %}
-          <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
-        {% else %}
-          <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
-        {% endif %}
-        <span class="visually-hidden">{{ 'content.cart_title' | t }}</span>
+        {%- if actions_type == 'text' or actions_type == 'both' -%}
+          {%- if actions_type == 'text' -%}
+            <span class="lg:none">
+          {%- endif -%}
+          {% if cart == empty %}
+            <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
+          {% else %}
+            <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
+          {% endif %}
+          {%- if actions_type == 'text' -%}
+            </span>
+          {%- endif -%}
+        {%- endif -%}
+
+        {%- if actions_type == 'text' or actions_type == 'both' -%}
+          <span class="cart-text{% if actions_type == 'icon' %} visually-hidden{% endif %}">
+            {{- 'content.cart_title' | t -}}
+          </span>
+        {%- endif -%}
+
         {%- if cart != empty -%}
           <div class="cart-count-bubble">
             <span aria-hidden="true">
@@ -80,20 +163,36 @@
     <noscript>
       <a
         href="{{ routes.cart_url }}"
-        class="header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions svg-slide-up"
+        class="
+          header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions svg-slide-up
+          {{ class_icon_type }}
+        "
       >
-        {% if cart == empty %}
-          <span class="svg-wrapper">
-            {{ 'icon-cart-empty.svg' | inline_asset_content }}
-            {{ 'icon-cart-empty.svg' | inline_asset_content }}
+        {%- if actions_type == 'text' or actions_type == 'both' -%}
+          {%- if actions_type == 'text' -%}
+            <span class="lg:none">
+          {%- endif -%}
+          {% if cart == empty %}
+            <span class="svg-wrapper">
+              {{ 'icon-cart-empty.svg' | inline_asset_content }}
+              {{ 'icon-cart-empty.svg' | inline_asset_content }}
+            </span>
+          {% else %}
+            <span class="svg-wrapper">
+              {{ 'icon-cart.svg' | inline_asset_content }}
+              {{ 'icon-cart.svg' | inline_asset_content }}
+            </span>
+          {% endif %}
+          {%- if actions_type == 'text' -%}
+            </span>
+          {%- endif -%}
+        {%- endif -%}
+
+        {%- if actions_type == 'text' or actions_type == 'both' -%}
+          <span class="cart-text max-md:hidden{% if actions_type == 'icon' %} visually-hidden{% endif %}">
+            {{- 'content.cart_title' | t -}}
           </span>
-        {% else %}
-          <span class="svg-wrapper">
-            {{ 'icon-cart.svg' | inline_asset_content }}
-            {{ 'icon-cart.svg' | inline_asset_content }}
-          </span>
-        {% endif %}
-        <span class="visually-hidden">{{ 'content.cart_title' | t }}</span>
+        {%- endif -%}
         {%- if cart != empty -%}
           <div class="cart-count-bubble">
             <span aria-hidden="true">
@@ -111,21 +210,37 @@
   {%- else -%}
     <a
       href="{{ routes.cart_url }}"
-      class="header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions svg-slide-up"
+      class="
+        header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions svg-slide-up
+        {{ class_icon_type }}
+      "
       id="cart-icon-bubble"
     >
-      {% if cart == empty %}
-        <span class="svg-wrapper">
-          {{ 'icon-cart-empty.svg' | inline_asset_content }}
-          {{ 'icon-cart-empty.svg' | inline_asset_content }}
+      {%- if actions_type == 'text' or actions_type == 'both' -%}
+        {%- if actions_type == 'text' -%}
+          <span class="lg:none">
+        {%- endif -%}
+        {% if cart == empty %}
+          <span class="svg-wrapper">
+            {{ 'icon-cart-empty.svg' | inline_asset_content }}
+            {{ 'icon-cart-empty.svg' | inline_asset_content }}
+          </span>
+        {% else %}
+          <span class="svg-wrapper">
+            {{ 'icon-cart.svg' | inline_asset_content }}
+            {{ 'icon-cart.svg' | inline_asset_content }}
+          </span>
+        {% endif %}
+        {%- if actions_type == 'text' -%}
+          </span>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if actions_type == 'text' or actions_type == 'both' -%}
+        <span class="cart-text max-md:hidden{% if actions_type == 'icon' %} visually-hidden{% endif %}">
+          {{- 'content.cart_title' | t -}}
         </span>
-      {% else %}
-        <span class="svg-wrapper">
-          {{ 'icon-cart.svg' | inline_asset_content }}
-          {{ 'icon-cart.svg' | inline_asset_content }}
-        </span>
-      {% endif %}
-      <span class="visually-hidden">{{ 'content.cart_title' | t }}</span>
+      {%- endif -%}
       {%- if cart != empty -%}
         <div class="cart-count-bubble">
           <span aria-hidden="true">

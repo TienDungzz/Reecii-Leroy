@@ -58,7 +58,7 @@
   {% if show_left_categories and is_layout_masonry == false %} slideshow--has-categories{% endif %}
   {% if show_right_banner and is_layout_masonry == false %} slideshow--has-right-banner{% endif %}
   {% if is_layout_masonry %} {{ masonry_class }}{% endif %}
-  {% if settings.enable_multi_level_category %} slideshow--multicate{% endif %}
+  {% if sec_stts.enable_multi_level_category %} slideshow--multicate{% endif %}
   {% if sec_stts.stack_content_mobile %} slideshow--stack-mobile{% endif %}
 {%- endcapture -%}
 
@@ -233,9 +233,9 @@
       </div>
     </swiper-component>
 
-    {%- if settings.enable_multi_level_category -%}
+    {%- if sec_stts.enable_multi_level_category -%}
       <div class="home-category-filter-sections{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--fade-in{% endif %}">
-        {% render 'multi-level-category' %}
+        {% render 'multi-level-category', enable_multi_level_category: true %}
       </div>
     {%- endif -%}
 
@@ -602,6 +602,12 @@
       "default": "default"
     },
     {
+      "type": "checkbox",
+      "id": "enable_multi_level_category",
+      "label": "t:settings.enable_multi_level_categories",
+      "default": false
+    },
+    {
       "type": "header",
       "content": "t:content.size"
     },
@@ -620,7 +626,7 @@
         },
         {
           "value": "custom",
-          "label": "t:options.custom" 
+          "label": "t:options.custom"
         }
       ],
       "default": "page-width"
@@ -691,7 +697,7 @@
       "options": [
         {
           "value": "height_first_slide",
-          "label": "t:options.adapt_to_first_slide_height"  
+          "label": "t:options.adapt_to_first_slide_height"
         },
         {
           "value": "adapt_image",
@@ -921,7 +927,7 @@
       "options": [
         {
           "value": "horizontal",
-          "label": "t:options.horizontal" 
+          "label": "t:options.horizontal"
         },
         {
           "value": "vertical",
@@ -1077,7 +1083,7 @@
       "type": "checkbox",
       "id": "dot_appearance",
       "label": "t:settings.appearance",
-      "default": false, 
+      "default": false,
       "visible_if": "{{ section.settings.pagination_type == 'bullets' }}"
     },
     {
