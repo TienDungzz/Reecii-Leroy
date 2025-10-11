@@ -45,7 +45,7 @@
       "
       {{ block.shopify_attributes }}
     >
-      <summary class="menu__heading{% if heading == blank %} menu__heading--empty{% endif %} {{ bl_stts.heading_preset }}">
+      <summary class="menu__heading spacing-style{% if heading == blank %} menu__heading--empty{% endif %} {{ bl_stts.heading_preset }}" style="--padding-block-end: {{ block.settings.margin-block-end }}px;">
         <span class="menu__heading__default">{{ heading }}</span>
         <span class="menu__heading__accordion">
           {{ heading | default: menu.title }}
@@ -299,6 +299,16 @@
       "type": "text",
       "id": "heading",
       "label": "t:settings.heading"
+    },
+    {
+      "type": "range",
+      "id": "margin-block-end",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "label": "t:sections.all.margin.margin_bottom",
+      "default": 10
     },
     {
       "type": "header",

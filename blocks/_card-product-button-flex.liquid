@@ -146,7 +146,7 @@
               id="{{ product_form_id }}-submit"
               type="submit"
               name="add"
-              class="quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class == 'button' %} button--full-width{% endif %}"
+              class="quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class != 'link' %} button--full-width{% endif %}"
               aria-haspopup="dialog"
               aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
               data-product-url="{{ card_product.url }}"
@@ -184,7 +184,7 @@
                 id="{{ product_form_id }}-submit"
                 type="submit"
                 name="add"
-                class="quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class == 'button' %} button--full-width{% endif %}"
+                class="quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class != 'link' %} button--full-width{% endif %}"
                 aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                 data-sold-out-message="true"
                 disabled
@@ -295,7 +295,6 @@
   .quick-add__submit {
     box-sizing: border-box;
     line-height: 1;
-    text-transform: uppercase;
 
     &.button {
       min-width: 100%;
@@ -413,26 +412,26 @@
     {
       "type": "product",
       "id": "product",
-      "label": "t:sections.collage.blocks.product.settings.product.label"
+      "label": "t:settings.product"
     },
     {
       "type": "select",
       "id": "quick_add",
       "default": "none",
-      "label": "t:sections.main-collection-product-grid.settings.quick_add.label",
-      "info": "t:sections.main-collection-product-grid.settings.quick_add.info",
+      "label": "t:settings.quick_add",
+      "info": "t:info.quick_add_info",
       "options": [
         {
           "value": "none",
-          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_1"
+          "label": "t:options.none"
         },
         {
           "value": "standard",
-          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_2"
+          "label": "t:options.standard"
         },
         {
           "value": "bulk",
-          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_3"
+          "label": "t:options.bulk"
         }
       ]
     },
