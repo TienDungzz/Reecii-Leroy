@@ -1,6 +1,5 @@
 {%- liquid
   assign search_type = settings.search_type
-
 -%}
 
 {%- capture grid_layout -%}
@@ -10,13 +9,20 @@
   {% if search_type == 'full' %}
     grid-layout--3 max-sm:grid-layout--2
     gap-2xl
+  {% elsif search_type == 'drawer' %}
+    grid-layout--2
+    gap-xl
   {% else %}
-    grid-layout--1
+    predictive-search-results__list-inline
+    grid-layout--2
     gap-md
   {% endif %}
   list-unstyled
 {%- endcapture -%}
 
+<h6 class="predictive-search__heading body-m-font-size">
+  {{ title }}
+</h6>
 <div
   id="predictive-search-products"
   class="predictive-search-results__products"
@@ -24,9 +30,6 @@
     data-testid="{{ products_test_id }}"
   {% endif %}
 >
-  <h6 class="predictive-search__heading body-m-font-size">
-    {{ title }}
-  </h6>
   <ul
     class="{{ grid_layout }}"
     role="listbox"
@@ -50,8 +53,9 @@
 </div>
 
 {% stylesheet %}
-  @media screen and (max-width: 749px) {
-    .predictive-search-results__wrapper-products {
+  .predictive-search-results__wrapper-products {
+
+    @media screen and (max-width: 749px) {
       gap: var(--gap-xs);
     }
   }

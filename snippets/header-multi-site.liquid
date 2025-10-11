@@ -7,12 +7,11 @@
     class="header-multi-site{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
   >
     <div
-      class="flex flex-wrap"
+      class="flex overflow-x-a disable-srollbar"
       data-menu-tab
     >
       {%- for block in blocks -%}
         {% liquid
-          assign sec_stts = section.settings
           assign bl_stts = block.settings
 
           assign text_color = bl_stts.text_color.rgb
@@ -34,7 +33,11 @@
             {% render block %}
           {%- when 'menu_tab' -%}
             <div
-              class="{{ bl_stts | class_list }}{% if bl_stts.divider %} divider--right{% endif %}"
+              class="
+                shrink-0
+                {{ bl_stts | class_list }}
+                {% if bl_stts.divider %} divider--right{% endif %}
+              "
               style="{{ text_style }}"
             >
               {%- liquid
@@ -110,7 +113,8 @@
     color: rgb(var(--color));
     background-color: var(--background-color);
     padding: var(--padding-lg) var(--padding-xl);
-    transition: color var(--animation-speed) var(--animation-timing-hover), background-color var(--animation-speed) var(--animation-timing-hover);
+    transition: color var(--animation-speed) var(--animation-timing-hover),
+      background-color var(--animation-speed) var(--animation-timing-hover);
     display: block;
     height: 100%;
     &.link--multi-site--active {
@@ -119,7 +123,7 @@
     }
 
     svg {
-      height: 16px;
+      height: var(--size-16);
       width: auto;
       fill: currentColor;
     }
@@ -131,13 +135,13 @@
   }
 
   .header-multi-site .divider--right .link--multi-site:not(.link--multi-site--active)::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 50%;
     right: 0;
     transform: translateY(-50%);
-    width: 1px;
-    height: 30px;
+    width: var(--size-1);
+    height: var(--size-30);
     background-color: rgba(var(--color) / var(--opacity-30));
   }
 {%- endstylesheet -%}

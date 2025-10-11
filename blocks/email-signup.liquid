@@ -122,7 +122,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
       <button
         id="EmailSignup-submit-{{ block.id }}"
         type="submit"
-        class="size-style test2121212121212 email-signup__button{% if block.settings.integrated_button %} email-signup__button--integrated{% endif %} email-signup__button--{{ block.settings.display_type }} {{ submit_class }}{% if block.settings.display_type == 'icon' and block.settings.background_button == false %} email-signup__button--icon-fill{% endif %}{% if block.settings.display_type == 'icon' %} submit-icon-size{% endif %} {{ submit_class }}"
+        class="size-style email-signup__button{% if block.settings.integrated_button %} email-signup__button--integrated{% endif %} email-signup__button--{{ block.settings.display_type }} {{ submit_class }}{% if block.settings.display_type == 'icon' and block.settings.background_button == false %} email-signup__button--icon-fill{% endif %}{% if block.settings.display_type == 'icon' %} submit-icon-size{% endif %} {{ submit_class }}"
         {% if block.settings.display_type != 'text' %}
           aria-label="{{ 'content.button_label' | t }}"
         {% endif %}
@@ -216,6 +216,11 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
     }
   }
 
+  .email-signup__button {
+  white-space: nowrap;
+  padding: 0;
+}
+
   .email-signup__form {
     display: flex;
     flex-direction: column;
@@ -224,8 +229,8 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
   .email-signup__input-groups {
     position: relative;
     display: grid;
+    align-items: stretch;
     grid-template-columns: 1fr auto;
-    align-items: start;
     background-color: transparent;
 
     &:has(.email-signup__button--size-custom):not(:has(.email-signup__button--icon)) {
@@ -263,11 +268,6 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
   .email-signup__input.paragraph {
     color: var(--color-input-text);
     outline-color: var(--color-input-background);
-  }
-
-  .email-signup__button {
-    white-space: nowrap;
-    padding: 0;
   }
 
   .email-signup__input,

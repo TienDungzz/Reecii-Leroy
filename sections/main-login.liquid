@@ -1,4 +1,4 @@
-{{ 'customer.css' | asset_url | stylesheet_tag }}
+{{ 'customer.css' | asset_url | stylesheet_tag: preload: true }}
 
 {%- if section.settings.enable_shop_login_button == false -%}
   {%- assign hide_shop_login_button = true -%}
@@ -306,7 +306,7 @@
     },
     {
       "type": "header",
-      "content": "t:sections.all.padding.name"
+      "content": "t:content.section_padding"
     },
     {
       "type": "range",
@@ -315,7 +315,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_top",
+      "label": "t:settings.top",
       "default": 36
     },
     {
@@ -325,7 +325,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:sections.all.padding.padding_bottom",
+      "label": "t:settings.bottom",
       "default": 36
     }
   ]

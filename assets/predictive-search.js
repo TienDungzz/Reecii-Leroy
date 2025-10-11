@@ -48,6 +48,7 @@ class PredictiveSearch extends SearchForm {
   }
 
   onFormSubmit(event) {
+    console.log('onFormSubmit', event);
     if (!this.getQuery().length || this.querySelector('[aria-selected="true"] a')) event.preventDefault();
   }
 

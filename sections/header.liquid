@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
 
-{{ 'section-header.css' | asset_url | stylesheet_tag }}
+{{ 'section-header.css' | asset_url | stylesheet_tag: preload: true }}
 
 {%- liquid
   assign sec_stts = section.settings
@@ -133,7 +133,7 @@
   if sec_stts.search_row == 'bottom' or search_style != 'none' and skip_mobile_search == false
     # Mobile search duplicate for when search is not in the right order for mobile layout
     capture mobile_search
-      render 'header-search', class: 'lg:none', input_id: 'Search-In-Modal-Mobile', style: search_style
+      render 'header-search', class: 'lg:none', input_id: 'Search-In-Modal-Mobile', style: search_style, variant: 'mobile'
     endcapture
   endif
 
@@ -459,6 +459,10 @@
     &:has(.header__row--top) .header__row--bottom {
       padding-block-start: var(--padding-block-end);
     }
+
+    &:has(.header__row--bottom) .header__row--top {
+      padding-block-end: var(--padding-block-start);
+    }
   }
 
   /* Animated Sticky Header */
@@ -477,6 +481,10 @@
 
       &:not(:has(.header__row--top)) .header__row--bottom {
         padding-block-start: calc(var(--padding-block-start) * 0.5);
+      }
+
+      &:has(.header__row--bottom) .header__row--top {
+        padding-block-end: calc(var(--padding-block-start) * 0.5);
       }
     }
   }
@@ -571,6 +579,47 @@
       --header-center: auto;
       --header-left: minmax(max-content, 1fr);
       --header-right: minmax(max-content, 1fr);
+    }
+
+    /* If search is in center column */
+    &:has(.header__column--center .header__search) {
+      --header-center: minmax(max-content, 1fr);
+      --header-left: minmax(max-content, 1fr);
+      --header-right: minmax(max-content, 1fr);
+
+      .header__search,
+      .search-action {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .header__search .predictive-search--center {
+        width: 100%;
+      }
+
+      .header__search .svg-wrapper {
+        margin-inline-start: 0;
+      }
+
+      .search__input.field__input {
+        padding: 1.5rem 0 1.5rem 2rem;
+      }
+
+      .header__search .details__list {
+        left: 50%;
+        transform: translate(-50%, 5rem);
+        opacity: 0;
+        transition: opacity var(--animation-speed) var(--animation-easing), transform var(--animation-speed) var(--animation-easing);
+      }
+
+      .header__search .search-modal__form[open] .details__list {
+        opacity: 1;
+        transform: translate(-50%, 1rem);
+      }
+
+      .predictive-search {
+        padding-inline: var(--padding-2xl);
+      }
     }
 
     /* If there is no center column, make the column the menu is in grow eagerly */
@@ -963,7 +1012,7 @@
         {
           "type": "image_picker",
           "id": "image_1",
-          "label": "t:sections.all.image.name"
+          "label": "t:settings.image"
         },
         {
           "type": "url",
@@ -977,7 +1026,7 @@
         {
           "type": "image_picker",
           "id": "image_2",
-          "label": "t:sections.all.image.name"
+          "label": "t:settings.image"
         },
         {
           "type": "url",
@@ -991,7 +1040,7 @@
         {
           "type": "image_picker",
           "id": "image_3",
-          "label": "t:sections.all.image.name"
+          "label": "t:settings.image"
         },
         {
           "type": "url",
@@ -1111,7 +1160,7 @@
         {
           "type": "image_picker",
           "id": "image_1",
-          "label": "t:sections.all.image.name"
+          "label": "t:settings.image"
         },
         {
           "type": "url",
@@ -1125,7 +1174,7 @@
         {
           "type": "image_picker",
           "id": "image_2",
-          "label": "t:sections.all.image.name"
+          "label": "t:settings.image"
         },
         {
           "type": "url",
@@ -1152,14 +1201,14 @@
         {
           "type": "text",
           "id": "brand_text",
-          "label": "t:settings_schema.global.settings.button.button_label.label",
+          "label": "t:settings.button_label",
           "default": "See All Brands",
           "visible_if": "{{ block.settings.show_brand == true }}"
         },
         {
           "type": "url",
           "id": "brand_url",
-          "label": "t:settings_schema.global.settings.button.link.label",
+          "label": "t:settings.button_link",
           "visible_if": "{{ block.settings.show_brand == true }}"
         }
       ]
@@ -1324,7 +1373,7 @@
         {
           "type": "image_picker",
           "id": "image_1",
-          "label": "t:sections.all.image.name",
+          "label": "t:settings.image",
           "visible_if": "{{ block.settings.show_promotion_banner == true }}"
         },
         {
@@ -1374,13 +1423,13 @@
         {
           "type": "text",
           "id": "brand_text",
-          "label": "t:settings_schema.global.settings.button.button_label.label",
+          "label": "t:settings.button_label",
           "default": "See All Brands"
         },
         {
           "type": "url",
           "id": "brand_url",
-          "label": "t:settings_schema.global.settings.button.link.label"
+          "label": "t:settings.button_link"
         },
         {
           "type": "header",
@@ -1479,7 +1528,7 @@
         {
           "type": "image_picker",
           "id": "image_1",
-          "label": "t:sections.all.image.name"
+          "label": "t:settings.image"
         },
         {
           "type": "url",
@@ -1493,7 +1542,7 @@
         {
           "type": "image_picker",
           "id": "image_2",
-          "label": "t:sections.all.image.name"
+          "label": "t:settings.image"
         },
         {
           "type": "url",
@@ -1519,13 +1568,13 @@
         {
           "type": "text",
           "id": "brand_text",
-          "label": "t:settings_schema.global.settings.button.button_label.label",
+          "label": "t:settings.button_label",
           "default": "See All Brands"
         },
         {
           "type": "url",
           "id": "brand_url",
-          "label": "t:settings_schema.global.settings.button.link.label"
+          "label": "t:settings.button_link"
         }
       ]
     },
@@ -1607,7 +1656,7 @@
         {
           "type": "image_picker",
           "id": "image_1",
-          "label": "t:sections.all.image.name"
+          "label": "t:settings.image"
         },
         {
           "type": "url",
@@ -1621,7 +1670,7 @@
         {
           "type": "image_picker",
           "id": "image_2",
-          "label": "t:sections.all.image.name"
+          "label": "t:settings.image"
         },
         {
           "type": "url",
@@ -1647,13 +1696,13 @@
         {
           "type": "text",
           "id": "brand_text",
-          "label": "t:settings_schema.global.settings.button.button_label.label",
+          "label": "t:settings.button_label",
           "default": "See All Brands"
         },
         {
           "type": "url",
           "id": "brand_url",
-          "label": "t:settings_schema.global.settings.button.link.label"
+          "label": "t:settings.button_link"
         }
       ]
     },
@@ -1706,7 +1755,7 @@
       "step": 5,
       "default": 100,
       "unit": "px",
-      "label": "t:settings_schema.logo.settings.logo_width.label",
+      "label": "t:settings.logo_width",
       "visible_if": "{{ settings.logo != blank }}"
     },
     {
@@ -1888,6 +1937,22 @@
     {
       "type": "select",
       "id": "message_position",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "message_row",
       "label": "t:settings.row",
       "options": [
         {
@@ -1928,6 +1993,10 @@
         {
           "value": "icon",
           "label": "t:options.icon"
+        },
+        {
+          "value": "both",
+          "label": "Both"
         }
       ],
       "default": "icon"
@@ -1967,6 +2036,10 @@
         {
           "value": "left",
           "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
         },
         {
           "value": "right",
@@ -2126,6 +2199,38 @@
       "content": "t:content.actions"
     },
     {
+      "type": "checkbox",
+      "id": "gift_cards_enabled",
+      "label": "Gift cards icon",
+      "default": false
+    },
+    {
+      "type": "url",
+      "id": "link_giftcards",
+      "label": "Gift cards link",
+      "visible_if": "{{ section.settings.gift_cards_enabled }}"
+    },
+    {
+      "type": "select",
+      "id": "actions_type",
+      "label": "t:settings.account_type",
+      "options": [
+        {
+          "value": "text",
+          "label": "t:options.text"
+        },
+        {
+          "value": "icon",
+          "label": "t:options.icon"
+        },
+        {
+          "value": "both",
+          "label": "Both"
+        }
+      ],
+      "default": "icon"
+    },
+    {
       "type": "select",
       "id": "actions_row",
       "label": "t:settings.row",
@@ -2227,6 +2332,13 @@
       "id": "color_scheme_top",
       "label": "t:settings.default",
       "default": "primary"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme_search_inline",
+      "label": "t:settings.search",
+      "default": "primary",
+      "visible_if": "{{ settings.search_type == 'inline' }}"
     },
     {
       "type": "color_scheme",
