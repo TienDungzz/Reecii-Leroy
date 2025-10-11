@@ -7,6 +7,12 @@
     section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}
     {% if section.settings.section_height != "" %} {{ section.settings.section_height | prepend: "section--height-" }}{% endif %}
   "
+  style="
+    {% if section.settings.section_width == 'custom' %}
+      --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    {% endif %}
+  "
 >
   {% render 'background-media',
     background_media: section.settings.background_media,
@@ -241,9 +247,24 @@
         {
           "value": "full-width",
           "label": "t:options.full"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "page_width_custom",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "default": 1570,
+      "unit": "px",
+      "label": "t:settings.page_width",
+      "visible_if": "{{ section.settings.section_width == 'custom' }}"
     },
     {
       "type": "select",
