@@ -35,7 +35,7 @@
 {%- endcapture -%}
 
 <div
-  class="section section--{{ sec_stts.section_width }} color-{{ sec_stts.color_scheme }}"
+  class="section spacing-style section--{{ sec_stts.section_width }} color-{{ sec_stts.color_scheme }}"
   style="{% render 'spacing-style', settings: sec_stts %}"
 >
   <tabs-component class="sec-tab w-full flex flex-column" style="--gap-y: {{ sec_stts.rows_gap }}px;">
@@ -80,15 +80,16 @@
               -%}
 
               <div
-                class="tab-item flex flex-column{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
+                class="tab-item flex flex-column border-style{% if sec_stts.border_radius > 0 %} has-border-radius{% endif %}{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
                 style="
-                   --gap-y: {{ sec_stts.content_vertical_gap | times: 0.5 }}px;
+                  --gap-y: {{ sec_stts.content_vertical_gap | times: 0.5 }}px;
                   {% if scroll_reveal %}
                     --animation-order: {{ forloop.index }};
                   {% endif %}
+                  {% render 'border-override', settings: section.settings %}
                 "
               >
-                <a href="{{ link.url }}" class="tab-item__image">
+                <a href="{{ link.url }}" class="tab-item__image spacing-style" style="{% render 'spacing-style', settings: section.settings, suffix: 'img', scale_min: 10 %}">
                   {% for ext in extensions %}
                     {% assign filename = base_name | append: '.' | append: ext | file_url %}
                     <img
@@ -106,9 +107,11 @@
                     >
                   {% endfor %}
                 </a>
-                <div class="tab-item__content">
-                  <a href="{{ link.url }}" class="link link--text body-m-font-size subheading">{{ link.title }}</a>
-                </div>
+                {%- if section.settings.show_tab_item_content == nil or section.settings.show_tab_item_content == true -%}
+                  <div class="tab-item__content">
+                    <a href="{{ link.url }}" class="link link--text body-m-font-size subheading">{{ link.title }}</a>
+                  </div>
+                {%- endif -%}
               </div>
             {%- endfor -%}
           </div>
@@ -199,6 +202,28 @@
       "content": "t:content.buttons"
     },
     {
+      "type": "header",
+      "content": "t:content.typography"
+    },
+    {
+      "type": "select",
+      "id": "tab_header_type_preset",
+      "label": "t:settings.preset",
+      "options": [
+        { "value": "rte", "label": "t:options.default" },
+        { "value": "paragraph", "label": "t:options.paragraph" },
+        { "value": "h1", "label": "t:options.h1" },
+        { "value": "h2", "label": "t:options.h2" },
+        { "value": "h3", "label": "t:options.h3" },
+        { "value": "h4", "label": "t:options.h4" },
+        { "value": "h5", "label": "t:options.h5" },
+        { "value": "h6", "label": "t:options.h6" },
+        { "value": "custom", "label": "t:options.custom" }
+      ],
+      "default": "rte",
+      "info": "t:info.edit_presets_in_theme_settings"
+    },
+    {
       "type": "text_alignment",
       "id": "button_alignment",
       "label": "t:settings.alignment",
@@ -253,93 +278,6 @@
     },
     {
       "type": "header",
-      "content": "t:content.link",
-      "visible_if": "{{ section.settings.style_class == 'link' }}"
-    },
-    {
-      "type": "select",
-      "id": "button_type_size_link",
-      "label": "t:settings.size",
-      "visible_if": "{{ section.settings.style_class == 'link' }}",
-      "options": [
-        {
-          "value": "",
-          "label": "t:options.default"
-        },
-        {
-          "value": "1.0rem",
-          "label": "10px"
-        },
-        {
-          "value": "1.2rem",
-          "label": "12px"
-        },
-        {
-          "value": "1.4rem",
-          "label": "14px"
-        },
-        {
-          "value": "1.6rem",
-          "label": "16px"
-        },
-        {
-          "value": "1.8rem",
-          "label": "18px"
-        },
-        {
-          "value": "2.0rem",
-          "label": "20px"
-        },
-        {
-          "value": "2.2rem",
-          "label": "22px"
-        },
-        {
-          "value": "2.4rem",
-          "label": "24px"
-        },
-        {
-          "value": "2.6rem",
-          "label": "26px"
-        },
-        {
-          "value": "2.8rem",
-          "label": "28px"
-        }
-      ],
-      "default": "1.2rem"
-    },
-    {
-      "type": "checkbox",
-      "id": "link_underline",
-      "label": "t:options.underline",
-      "default": false,
-      "visible_if": "{{ section.settings.style_class == 'link' }}"
-    },
-    {
-      "type": "checkbox",
-      "id": "link_reveal",
-      "label": "t:settings.reveal_on_hover",
-      "default": false,
-      "info": "t:info.link_reveal_info",  
-      "visible_if": "{{ section.settings.style_class == 'link' }}"
-    },
-    {
-      "type": "color",
-      "id": "color_tab_active",
-      "label": "t:settings.color_active",
-      "alpha": true,
-      "default": "#fff"
-    },
-    {
-      "type": "color",
-      "id": "background_tab_active",
-      "label": "t:settings.background_color_active",
-      "alpha": true,
-      "default": "#E1732C"
-    },
-    {
-      "type": "header",
       "content": "t:names.content"
     },
     {
@@ -361,6 +299,108 @@
       "step": 1,
       "unit": "px",
       "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tab_item_content",
+      "label": "Show item content",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Padding: Image"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start-img",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end-img",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start-img",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end-img",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.border"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.borders",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "label": "t:settings.border_width",
+      "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.border_opacity",
+      "default": 100,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",
