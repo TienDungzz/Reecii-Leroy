@@ -34,18 +34,16 @@ function handleViewLookbook() {
 function lookbookViewPopup() {
     const lookbookPopup = `
         <div class="lookbook-popup">
-            <div class="lookbook-popup-wrapper">
-                <div class="lookbook-popup-title">
-                    <h5 class="title w-full">All products</h5>
-                    <a href="#" class="close lookbook-close">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
-                </div>
-                <div class="lookbook-popup-content"></div>
-                </div>
+            <div class="lookbook-popup-title">
+                <h5 class="title w-full">All products</h5>
+                <a href="#" class="close lookbook-close">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="lookbook-popup-content"></div>
             </div>
         </div>
     `;
@@ -71,10 +69,36 @@ function lookbookViewPopup() {
 
     function initPopupSwiper(container) {
         if (typeof window.Swiper === 'undefined') return;
+
         const swiperEl = container.querySelector('.swiper');
         if (!swiperEl) return;
+
+        const slideCount = swiperEl.querySelectorAll('.swiper-slide').length;
+
+        const desktopView = Math.min(slideCount, 4);
+        const tabletView = Math.min(slideCount, Math.max(2, desktopView - 1));
+        const mobileView = Math.min(slideCount, Math.max(1.3, desktopView - 2));
+
+        const popupRoot = document.querySelector('.lookbook-popup');
+
+        popupRoot.classList.forEach((cls) => {
+            if (
+                cls.startsWith('column-') ||
+                cls.startsWith('md-column-') ||
+                cls.startsWith('sm-column-')
+            ) {
+                popupRoot.classList.remove(cls);
+            }
+        });
+
+        popupRoot.classList.add(
+            `column-${desktopView}`,
+            `md-column-${tabletView}`,
+            `sm-column-${mobileView}`
+        );
+
         popupSwiper = new window.Swiper(swiperEl, {
-            slidesPerView: 4,
+            slidesPerView: desktopView,
             spaceBetween: 12,
             pagination: {
                 el: container.querySelector('.swiper-pagination'),
@@ -85,9 +109,9 @@ function lookbookViewPopup() {
                 prevEl: container.querySelector('.swiper-button-prev'),
             },
             breakpoints: {
-                0: { slidesPerView: 1.3 },
-                640: { slidesPerView: 3 },
-                1024: { slidesPerView: 4 },
+                0: { slidesPerView: mobileView },
+                640: { slidesPerView: tabletView },
+                1024: { slidesPerView: desktopView },
             },
         });
     }
