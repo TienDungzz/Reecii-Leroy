@@ -81,14 +81,10 @@
 		constructor() {
 			super();
 			this.drawer = this.closest('.drawer');
-			this.cookieName = '_halo_promotion_popup';
-			this.dismissTodayCookieName = '_halo_promotion_popup_dismiss_today';
+			this.dismissTodayCookie = '_halo_promotion_popup_dismiss_today';
 			this.expiresDate = this.getAttribute('data-expire');
 			this.timeToShow = parseInt(this.getAttribute('data-delay')) || 0;
 			this._storage = this.getBestStorage();
-
-			// this.querySelector('.popup__close').addEventListener('click', this.setClosePopup.bind(this));
-			// this.drawer.querySelector('[id^="Drawer-Overlay-"]').addEventListener('click', this.setClosePopup.bind(this));
 
 			this.querySelector('.popup__close')?.addEventListener('click', this.dismissUntilTomorrow.bind(this));
 			this.drawer.querySelector('[id^="Drawer-Overlay-"]')?.addEventListener('click', this.dismissUntilTomorrow.bind(this));
@@ -106,15 +102,15 @@
 
 		connectedCallback() {
 			// Run load after element is attached to DOM for reliability across browsers/private modes
-			try { this.load(); } catch (_) { this.setOpenPopup(this.timeToShow || 0); }
+			try { this.load(); } catch (_) { this.setOpenPopup(this.timeToShow); }
 		}
 
 		load() {
 			// If user dismissed for today, do not open
-			if (this.getStore(this.dismissTodayCookieName)) return;
+			if (this.getStore(this.dismissTodayCookie)) return;
 
-			if (!this.getStore(this.cookieName)) this.drawer.classList.add('active');
-			if (!this.getStore(this.cookieName) && !Shopify.designMode) this.setOpenPopup(this.timeToShow);
+			if (this.querySelector('.email-signup__message')) this.drawer.classList.add('active');
+			if (!Shopify.designMode) this.setOpenPopup(this.timeToShow);
 		}
 
 		setOpenPopup(timeToShow) {
@@ -131,7 +127,7 @@
 		}
 
 		setClosePopup() {
-			this.setStoreDays(this.cookieName, 'closed', this.expiresDate);
+			this.setStoreDays(this.dismissTodayCookie, 'closed', this.expiresDate);
 			this.drawer.classList.remove('active');
 			document.body.classList.remove('overflow-hidden');
 			removeTrapFocus(this.activeElement);
@@ -148,7 +144,7 @@
 		dismissUntilTomorrow() {
 			const now = new Date();
 			const tomorrowMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
-			this.setStoreUntil(this.dismissTodayCookieName, '1', tomorrowMidnight);
+			this.setStoreUntil(this.dismissTodayCookie, '1', tomorrowMidnight);
 			this.tempClose();
 		}
 
@@ -208,7 +204,7 @@
 
 {% schema %}
 {
-	"name": "t:names.promotion_popup",	
+	"name": "t:names.promotion_popup",
 	"tag": "section",
 	"class": "section-promotion-popup",
 	"enabled_on": {
@@ -221,10 +217,14 @@
 	],
 	"settings": [
 		{
-			"type": "color_scheme",
-			"id": "color_scheme",
-			"label": "t:settings.color_scheme",
-			"default": "scheme-1"
+			"type": "range",
+			"id": "popup_expire",
+			"max": 30,
+			"min": 1,
+			"step": 1,
+			"unit": "day",
+			"label": "t:settings.show_again_after",
+			"default": 1
 		},
 		{
 			"type": "range",
@@ -237,14 +237,14 @@
 			"default": 5
 		},
 		{
-			"type": "range",
-			"id": "popup_expire",
-			"max": 30,
-			"min": 1,
-			"step": 1,
-			"unit": "day",
-			"label": "t:settings.show_again_after",
-			"default": 1
+			"type": "header",
+			"content": "t:content.appearance"
+		},
+		{
+			"type": "color_scheme",
+			"id": "color_scheme",
+			"label": "t:settings.color_scheme",
+			"default": "scheme-1"
 		},
 		{
 			"type": "image_picker",

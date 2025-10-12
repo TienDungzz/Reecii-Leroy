@@ -17,13 +17,6 @@
   endif
 
   assign image = block.settings.background_image
-  assign image_height = image.height
-  assign image_width = image.width
-
-  assign dots_style_type = block.settings.dots_style_type
-  assign show_products_button = block.settings.show_products_button
-  assign products_button_text = block.settings.products_button_text
-  assign products_button_text_hide = block.settings.products_button_text_hide
 %}
 
 {% capture class %}
@@ -59,8 +52,8 @@
   href="{{ image | image_url: width: 1200 }}"
   data-fancybox="{{ section.id }}-instagram-gallery"
   data-caption="{{ image.alt | default: 'Instagram Image' }}"
-  data-fancybox-width="{{ image_width | default: 1200 }}"
-  data-fancybox-height="{{ image_height | default: 800 }}"
+  data-fancybox-width="{{ image.width | default: 1200 }}"
+  data-fancybox-height="{{ image.height | default: 800 }}"
 {% endcapture %}
 
 {% capture attributes_parllax %}
@@ -78,7 +71,7 @@
   {% endif %}
 {% endcapture %}
 
-<div class="lookbook-item relative size-style dots-style-{{ dots_style_type }}" style="{{ style }}">
+<div class="lookbook-item relative size-style dots-style-{{ block.settings.dots_style_type }}" style="{{ style }}">
   <div class="lookbook-item__image relative">
     <{{ element }}
       class="{{ class }}"
@@ -101,11 +94,11 @@
     {%- content_for 'blocks' -%}
   </div>
 
-  {%- if show_products_button -%}
+  {%- if block.settings.show_products_button -%}
     <div class="lookBook__btnShowProducts">
       <span class="icon_plus_2"></span>
-      <a class="show_products" href="#" aria-label="Show Products" tabindex="0">{{ products_button_text }}</a>
-      <a class="hide_products" href="#" aria-label="Hide Products" tabindex="0">{{ products_button_text_hide }}</a>
+      <a class="show_products" href="#" aria-label="Show Products" tabindex="0">{{ block.settings.products_button_text }}</a>
+      <a class="hide_products" href="#" aria-label="Hide Products" tabindex="0">{{ block.settings.products_button_text_hide }}</a>
     </div>
   {%- endif -%}
 </div>

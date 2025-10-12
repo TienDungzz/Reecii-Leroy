@@ -1,6 +1,5 @@
 <before-you-leave
-  data-expire="{{ section.settings.popup_expire }}"
-  data-delay="{{ section.settings.popup_delay | times: 1000 }}"
+  data-expire-minutes="{{ section.settings.popup_expire_minutes }}"
 >
   <div
     class="modal--popup fixed top-0 left-0 z-9 w-screen h-full flex-center no-js-hidden"
@@ -11,7 +10,6 @@
       <button
         type="button"
         class="popup__close"
-        data-close-popup
         aria-label="{{ 'accessibility.close' | t }}"
       >
         {{- 'icon-close.svg' | inline_asset_content -}}
@@ -41,69 +39,73 @@
     constructor() {
       super();
       this.popup = this.querySelector('.modal--popup');
-      this.expiresDate = this.getAttribute('data-expire');
-      this.timeToShow = parseInt(this.getAttribute('data-delay')) || 0;
+      this.expiresMinutes = Number(this.dataset.expireMinutes) || 0;
+      this.timeToShow = this.expiresMinutes * 60 * 1000;
 
-      if (!this.getCookie('before-you-leave-popup') && !Shopify.designMode) this.setOpenPopup(this.timeToShow);
-
-      this.querySelector('[data-close-popup]')?.addEventListener('click', this.setClosePopup.bind(this));
-      this.querySelector('[id^="Modal-Overlay-"]')?.addEventListener('click', this.setClosePopup.bind(this));
-      this.querySelector('label[for="dismiss"]')?.addEventListener('click', this.setClosePopup.bind(this));
-
-      if (Shopify.designMode) {
-				document.addEventListener('shopify:section:select', (e) => {
-					if (e.target.matches('.section-before-you-leave')) this.setOpenPopup(0);
-				});
-
-				document.addEventListener('shopify:section:deselect', (e) => {
-					if (e.target.matches('.section-before-you-leave')) this.setClosePopup();
-				});
-			}
+      this.idleTimer = null;
+      this.boundReset = this.resetTimer.bind(this);
+      this.boundCheck = this.checkIdle.bind(this);
     }
 
-		setOpenPopup(timeToShow) {
-      setTimeout(() => {
-        if (this.popup) {
-          this.popup.setAttribute('open', 'true');
-          document.body.classList.add('overflow-hidden');
-        }
-      }, timeToShow);
-		}
+    connectedCallback() {
+      if (!this.popup) return;
 
-    setClosePopup() {
-      this.setCookie('before-you-leave-popup', 'closed', this.expiresDate);
-      this.popup.removeAttribute('open');
-      document.body.classList.remove('overflow-hidden');
-    }
-
-    setCookie(cname, cvalue, exdays) {
-      const d = new Date();
-      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-      const expires = 'expires=' + d.toUTCString();
-      document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
-    }
-
-    getCookie(cname) {
-      const name = cname + '=';
-      const ca = document.cookie.split(';');
-
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) === ' ') {
-          c = c.substring(1);
-        }
-        if (c.indexOf(name) === 0) {
-          return c.substring(name.length, c.length);
-        }
+      if (!Shopify.designMode) {
+        ['mousemove', 'keydown', 'scroll'].forEach(evt =>
+          document.addEventListener(evt, this.boundReset)
+        );
+        this.startIdleTimer();
       }
 
-      return '';
+      this.querySelector('.popup__close')?.addEventListener('click', () => this.setClosePopup());
+      this.querySelector('[id^="Modal-Overlay-"]')?.addEventListener('click', () => this.setClosePopup());
+
+      if (Shopify.designMode) {
+        document.addEventListener('shopify:section:select', e => {
+          if (e.target.matches('.section-before-you-leave')) this.setOpenPopup();
+        });
+        document.addEventListener('shopify:section:deselect', e => {
+          if (e.target.matches('.section-before-you-leave')) this.setClosePopup();
+        });
+      }
     }
 
-    deleteCookie(name) {
-      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    disconnectedCallback() {
+      if (Shopify.designMode) return;
+      ['mousemove', 'keydown', 'scroll'].forEach(evt =>
+        document.removeEventListener(evt, this.boundReset)
+      );
+      clearTimeout(this.idleTimer);
+    }
+
+    startIdleTimer() {
+      clearTimeout(this.idleTimer);
+      this.idleTimer = setTimeout(this.boundCheck, this.timeToShow);
+    }
+
+    resetTimer() {
+      clearTimeout(this.idleTimer);
+      this.startIdleTimer();
+    }
+
+    checkIdle() {
+      if (!document.body.classList.contains('overflow-hidden')) this.setOpenPopup();
+    }
+
+    setOpenPopup() {
+      if (!this.popup) return;
+      this.popup.setAttribute('open', 'true');
+      document.body.classList.add('overflow-hidden');
+    }
+
+    setClosePopup() {
+      if (!this.popup) return;
+      this.popup.removeAttribute('open');
+      document.body.classList.remove('overflow-hidden');
+      this.startIdleTimer();
     }
   }
+
   if (!customElements.get('before-you-leave')) customElements.define('before-you-leave', BeforeYouLeave);
 </script>
 
@@ -123,23 +125,13 @@
   "settings": [
 		{
 			"type": "range",
-			"id": "popup_expire",
-			"max": 30,
+			"id": "popup_expire_minutes",
+			"max": 100,
 			"min": 1,
 			"step": 1,
-			"unit": "day",
-			"label": "t:settings.show_again_after",
+			"unit": "min",
+			"label": "Show after (minutes)",
 			"default": 1
-		},
-		{
-			"type": "range",
-			"id": "popup_delay",
-			"max": 60,
-			"min": 1,
-			"step": 1,
-			"unit": "s",
-			"label": "t:settings.delay_time",
-			"default": 5
 		},
     {
       "type": "header",
