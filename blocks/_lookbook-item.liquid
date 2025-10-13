@@ -1,22 +1,21 @@
-{% comment %} add liquid code to change position of icon and button  {% endcomment %}
+{% comment %} add liquid code to change position of icon and button {% endcomment %}
 
 {% liquid
   assign ratio = 1
 
+  assign image = block.settings.background_image
   case block.settings.image_ratio
     when 'landscape'
       assign ratio = '16 / 9'
     when 'portrait'
       assign ratio = '4 / 5'
     when 'adapt'
-      assign ratio = block.settings.background_image.aspect_ratio
+      assign ratio = image.aspect_ratio
   endcase
 
   if ratio == 0 or ratio == null
     assign ratio = 1
   endif
-
-  assign image = block.settings.background_image
 %}
 
 {% capture class %}
@@ -94,13 +93,30 @@
     {%- content_for 'blocks' -%}
   </div>
 
-  {%- if block.settings.show_products_button -%}
-    <div class="lookBook__btnShowProducts">
-      <span class="icon_plus_2"></span>
-      <a class="show_products" href="#" aria-label="Show Products" tabindex="0">{{ block.settings.products_button_text }}</a>
-      <a class="hide_products" href="#" aria-label="Hide Products" tabindex="0">{{ block.settings.products_button_text_hide }}</a>
-    </div>
-  {%- endif -%}
+  <button
+    class="
+      lookBook__btnShowProducts{% unless block.settings.show_products_button %} hidden{% endunless %}
+      {{ block.settings.style_class }}
+      {% if block.settings.link_reveal and block.settings.style_class == 'link' %}link--reveal{% endif %}
+      {% if block.settings.link_underline %}link--underline{% endif %}
+      {% if block.settings.link_hover_underline and block.settings.style_class == 'link' and block.settings.link_underline == false %}link--hover-underline{% endif %}
+      {% if block.settings.button_style == 'outline' %}button--outline{% endif %}
+    "
+    type="button"
+    aria-expanded="false"
+    style="
+      {% render 'button-style', settings: block.settings %}
+      {% if block.settings.style_class == 'link' %}
+        {% render 'typography-style', settings: block.settings, button_link: true, font_style: block.settings.font_style %}
+      {% endif %}
+    "
+  >
+    <span class="svg-wrapper icon-plus-wrapper">
+      {{- 'icon-plus.svg' | inline_asset_content -}}
+    </span>
+    <span class="show_products">{{ block.settings.products_button_text }}</span>
+    <span class="hide_products hidden">{{ block.settings.products_button_text_hide }}</span>
+  </button>
 </div>
 
 {%- stylesheet -%}
@@ -109,11 +125,11 @@
     justify-content: var(--horizontal-alignment, 'inline-start');
   }
 
-  .image-block--height-fill .image-block__image{
+  .image-block--height-fill .image-block__image {
     height: 100%;
   }
 
-  .image-block__image{
+  .image-block__image {
     object-fit: cover;
     aspect-ratio: var(--ratio);
   }
@@ -125,21 +141,29 @@
     bottom: 1.5rem;
     left: 1.5rem;
     z-index: 5;
-    font-size: 1.4rem;
-    font-weight: 400;
     height: 3rem;
     min-width: 14rem;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 0.5rem;
+    letter-spacing: normal;
+    padding: 0.5rem 1rem;
 
-    & a {
-      color: #ffffff;
-      text-decoration: none;
+    & .icon-plus-wrapper {
+      width: 1.4rem;
+      height: 1.4rem;
+      margin-right: 0.5rem;
+      transition: transform 0.3s ease;
+
+      & svg {
+        color: currentColor !important;
+      }
+    }
+
+    &.is-open .icon-plus-wrapper {
+      transform: rotate(45deg);
     }
   }
 
   @media screen and (min-width: 1025px) {
-    .lookBook__btnShowProducts {
+    .lookbook-item .lookBook__btnShowProducts {
       bottom: 2.5rem;
       left: 4rem;
       opacity: 0;
@@ -179,41 +203,6 @@
   }
 
   .dots-style-plus .lookbook-dot.is-active .icon-plus-wrapper {
-    transform: rotate(45deg);
-  }
-
-  .lookBook__btnShowProducts .icon_plus_2 {
-    position: relative;
-    font-size: 0px;
-    width: 11px;
-    height: 30px;
-    padding: 0px 15px;
-    transition: transform 0.3s, -webkit-transform 0.3s;
-  }
-
-  .lookBook__btnShowProducts .icon_plus_2::before {
-    position: absolute;
-    content: "";
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 2px;
-    height: 12px;
-    background: #ffffff;
-  }
-
-  .lookBook__btnShowProducts .icon_plus_2::after {
-    position: absolute;
-    content: "";
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 12px;
-    height: 2px;
-    background: #ffffff;
-  }
-
-  .lookBook__btnShowProducts.is-open .icon_plus_2 {
     transform: rotate(45deg);
   }
 {%- endstylesheet -%}
@@ -328,6 +317,417 @@
       "label": "t:settings.products_button_text_hide",
       "default": "Hide Products",
       "visible_if": "{{ block.settings.show_products_button }}"
+    },
+    {
+      "type": "select",
+      "id": "style_class",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "button",
+          "label": "t:options.primary"
+        },
+        {
+          "value": "button-secondary",
+          "label": "t:options.secondary"
+        },
+        {
+          "value": "link",
+          "label": "t:options.link"
+        }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "t:settings.type",
+      "visible_if": "{{ block.settings.style_class == 'button' or block.settings.style_class == 'button-secondary' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "outline",
+          "label": "t:options.outline"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "custom"
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_width",
+      "default": 1,
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_radius",
+      "default": 5,
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "button_type_font",
+      "label": "t:settings.font",
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "var(--font-body--family)",
+          "label": "t:options.body"
+        },
+        {
+          "value": "var(--font-subheading--family)",
+          "label": "t:options.subheading"
+        },
+        {
+          "value": "var(--font-heading--family)",
+          "label": "t:options.heading"
+        }
+      ],
+      "default": "var(--font-body--family)"
+    },
+    {
+      "type": "select",
+      "id": "button_type_size",
+      "label": "t:settings.size",
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        }
+      ],
+      "default": "1.4rem"
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "t:settings.button_text_weight",
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "100",
+          "label": "t:options.thin"
+        },
+        {
+          "value": "300",
+          "label": "t:options.light"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "500",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        },
+        {
+          "value": "900",
+          "label": "t:options.black"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "button_text_case",
+      "label": "t:settings.button_text_case",
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "buttons_shadow_horizontal_offset",
+      "min": -12,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.shadow_horizontal_offset",
+      "default": 0,
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "buttons_shadow_vertical_offset",
+      "min": -12,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.shadow_vertical_offset",
+      "default": 0,
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "buttons_shadow_blur",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "t:settings.shadow_blur",
+      "default": 0,
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.link",
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "button_type_size_link",
+      "label": "t:settings.size",
+      "visible_if": "{{ block.settings.style_class == 'link' }}",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        }
+      ],
+      "default": "1.2rem"
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight_link",
+      "label": "t:settings.button_text_weight",
+      "visible_if": "{{ block.settings.style_class == 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "100",
+          "label": "t:options.thin"
+        },
+        {
+          "value": "300",
+          "label": "t:options.light"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "500",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        },
+        {
+          "value": "900",
+          "label": "t:options.black"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "t:settings.case",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "t:options.capitalize"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "wrap",
+      "label": "t:settings.wrap",
+      "options": [
+        {
+          "value": "pretty",
+          "label": "t:options.pretty"
+        },
+        {
+          "value": "balance",
+          "label": "t:options.balance"
+        },
+        {
+          "value": "nowrap",
+          "label": "t:options.none"
+        }
+      ],
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "font_style",
+      "label": "Font style",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "italic",
+          "label": "Italic"
+        },
+        {
+          "value": "oblique",
+          "label": "Oblique"
+        }
+      ],
+      "default": "normal",
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_underline",
+      "label": "t:options.underline",
+      "default": false,
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_hover_underline",
+      "label": "t:options.hover_underline",
+      "default": true,
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_reveal",
+      "label": "t:settings.reveal_on_hover",
+      "default": false,
+      "info": "t:info.link_reveal_info",
+      "visible_if": "{{ block.settings.style_class == 'link' }}"
     },
     {
       "type": "header",

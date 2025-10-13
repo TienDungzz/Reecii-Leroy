@@ -1,0 +1,66 @@
+quantity
+
+
+<quantity-popover>
+                        <div class="cart-item__quantity-wrapper quantity-popover-wrapper">
+                          <label class="visually-hidden" for="Quantity-{{ item.index | plus: 1 }}">
+                            {{ 'products.product.quantity.label' | t }}
+                          </label>
+                          <div class="quantity-popover-container">
+                            <quantity-input class="quantity cart-quantity">
+                              <button
+                                class="quantity__button" 
+                                name="minus" 
+                                type="button"
+                                onclick="this.closest('quantity-input').dispatchEvent(new CustomEvent('decreaseQuantity', { bubbles: true }))"
+                                data-index="{{ item.index | plus: 1 }}"
+                              >
+                                <span class="visually-hidden">
+                                  {{- 'products.product.quantity.decrease' | t: product: item.product.title | escape -}}
+                                </span>
+                                <span class="svg-wrapper">
+                                  {{- 'icon-minus.svg' | inline_asset_content -}}
+                                </span>
+                              </button>
+                              <input
+                                class="quantity__input"
+                                data-quantity-variant-id="{{ item.variant.id }}"
+                                type="number"
+                                name="updates[]"
+                                value="{{ item.quantity }}"
+                                {% # theme-check-disable %}
+                                data-cart-quantity="{{ cart | item_count_for_variant: item.variant.id }}"
+                                min="0"
+                                data-min="0"
+                                {% if item.variant.inventory_management != blank and item.variant.inventory_quantity > 0 %} max="{{ item.variant.inventory_quantity }}"{% endif %}
+                                step="{{ item.variant.quantity_rule.increment }}"
+                                {% # theme-check-enable %}
+                                aria-label="{{ 'products.product.quantity.input_label' | t: product: item.product.title | escape }}"
+                                inputmode="numeric"
+                                id="Quantity-{{ item.index | plus: 1 }}"
+                                data-index="{{ item.index | plus: 1 }}"
+                              >
+                              <button 
+                                class="quantity__button" 
+                                name="plus" 
+                                type="button"
+                                onclick="this.closest('quantity-input').dispatchEvent(new CustomEvent('increaseQuantity', { bubbles: true }))"
+                                data-index="{{ item.index | plus: 1 }}"
+                              >
+                                <span class="visually-hidden">
+                                  {{- 'products.product.quantity.increase' | t: product: item.product.title | escape -}}
+                                </span>
+                                <span class="svg-wrapper">
+                                  {{- 'icon-plus.svg' | inline_asset_content -}}
+                                </span>
+                              </button>
+                            </quantity-input>
+                          </div>
+                        </div>
+                        <div class="cart-item__error" id="Line-item-error-{{ item.index | plus: 1 }}" role="alert">
+                          <small class="cart-item__error-text"></small>
+                          <span class="svg-wrapper">
+                            {{- 'icon-error.svg' | inline_asset_content -}}
+                          </span>
+                        </div>
+                      </quantity-popover>
