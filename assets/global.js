@@ -1,3 +1,49 @@
+// Get Lenis and init
+function initLenis() {
+  if (window.LenisInstance || !window.Lenis) return;
+  window.LenisInstance = new window.Lenis({
+    lerp: 0.1
+    // Add more options here
+  });
+  function raf(time) {
+    window.LenisInstance.raf(time);
+    window.LenisInstance._rafId = requestAnimationFrame(raf);
+  }
+  window.LenisInstance._rafId = requestAnimationFrame(raf);
+}
+
+// Stop Lenis
+function stopLenis() {
+  if (window.LenisInstance && window.LenisInstance._rafId) {
+    cancelAnimationFrame(window.LenisInstance._rafId);
+    window.LenisInstance._rafId = null;
+  }
+}
+
+// Start Lenis
+function startLenis() {
+  if (window.LenisInstance && !window.LenisInstance._rafId) {
+    function raf(time) {
+      window.LenisInstance.raf(time);
+      window.LenisInstance._rafId = requestAnimationFrame(raf);
+    }
+    window.LenisInstance._rafId = requestAnimationFrame(raf);
+  }
+}
+
+// Auto init Lenis after document load
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.Lenis && window.innerWidth > 750) {
+    initLenis();
+  }
+});
+
+// How to use:
+// Call stopLenis() when you need to stop the smooth scroll effect of Lenis, for example when opening drawer:
+//   stopLenis();
+// To activate again after closing drawer, call startLenis():
+//   startLenis();
+
 function getScrollbarWidth() {
   const width = window.innerWidth - document.documentElement.clientWidth;
 

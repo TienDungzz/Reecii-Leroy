@@ -14,11 +14,9 @@
   assign gift_cards_enabled = section.settings.gift_cards_enabled
 -%}
 
-{%- if actions_type == 'both' -%}
-  {%- capture class_icon_type -%}
-    header__icon--both
-  {%- endcapture -%}
-{%- endif -%}
+{%- capture class_icon_type -%}
+    header__icon--{{ actions_type }}
+{%- endcapture -%}
 
 {%- if enable_wishlist -%}
   {% capture wishlist_icon %}
@@ -43,14 +41,14 @@
     "
   >
     {%- if actions_type == 'icon' or actions_type == 'both' -%}
-      {%- if actions_type == 'text' -%}
+      {%- if actions_type == 'both' -%}
         <span class="lg:none">
       {%- endif -%}
       <span class="svg-wrapper">
         {{ wishlist_icon }}
         {{ wishlist_icon }}
       </span>
-      {%- if actions_type == 'text' -%}
+      {%- if actions_type == 'both' -%}
         </span>
       {%- endif -%}
     {%- endif -%}
@@ -89,19 +87,21 @@
       href="{{ section.settings.link_giftcards }}"
     {% endif %}
     class="
-      header__icon header__icon--giftcards max-md:hidden button focus-inset focus-inset svg-slide-up
+      header__icon header__icon--giftcards
+      max-md:hidden
+      button focus-inset focus-inset svg-slide-up
       {{ class_icon_type }}
     "
   >
-    {%- if actions_type == 'text' or actions_type == 'both' -%}
-      {%- if actions_type == 'text' -%}
+    {%- if actions_type == 'icon' or actions_type == 'both' -%}
+      {%- if actions_type == 'both' -%}
         <span class="lg:none">
       {%- endif -%}
       <span class="svg-wrapper">
         {{ gift_cards_icon }}
         {{ gift_cards_icon }}
       </span>
-      {%- if actions_type == 'text' -%}
+      {%- if actions_type == 'both' -%}
         </span>
       {%- endif -%}
     {%- endif -%}
@@ -126,16 +126,16 @@
         aria-label="{{ 'content.cart_count' | t: count: cart.item_count }}"
         id="cart-icon-bubble"
       >
-        {%- if actions_type == 'text' or actions_type == 'both' -%}
-          {%- if actions_type == 'text' -%}
+        {%- if actions_type == 'icon' or actions_type == 'both' -%}
+          {%- if actions_type == 'both' -%}
             <span class="lg:none">
           {%- endif -%}
           {% if cart == empty %}
-            <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
+            <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
           {% else %}
             <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
           {% endif %}
-          {%- if actions_type == 'text' -%}
+          {%- if actions_type == 'both' -%}
             </span>
           {%- endif -%}
         {%- endif -%}
@@ -174,8 +174,8 @@
           {%- endif -%}
           {% if cart == empty %}
             <span class="svg-wrapper">
-              {{ 'icon-cart-empty.svg' | inline_asset_content }}
-              {{ 'icon-cart-empty.svg' | inline_asset_content }}
+              {{ 'icon-cart.svg' | inline_asset_content }}
+              {{ 'icon-cart.svg' | inline_asset_content }}
             </span>
           {% else %}
             <span class="svg-wrapper">
@@ -216,14 +216,14 @@
       "
       id="cart-icon-bubble"
     >
-      {%- if actions_type == 'text' or actions_type == 'both' -%}
-        {%- if actions_type == 'text' -%}
+      {%- if actions_type == 'icon' or actions_type == 'both' -%}
+        {%- if actions_type == 'both' -%}
           <span class="lg:none">
         {%- endif -%}
         {% if cart == empty %}
           <span class="svg-wrapper">
-            {{ 'icon-cart-empty.svg' | inline_asset_content }}
-            {{ 'icon-cart-empty.svg' | inline_asset_content }}
+            {{ 'icon-cart.svg' | inline_asset_content }}
+            {{ 'icon-cart.svg' | inline_asset_content }}
           </span>
         {% else %}
           <span class="svg-wrapper">
@@ -231,7 +231,7 @@
             {{ 'icon-cart.svg' | inline_asset_content }}
           </span>
         {% endif %}
-        {%- if actions_type == 'text' -%}
+        {%- if actions_type == 'both' -%}
           </span>
         {%- endif -%}
       {%- endif -%}

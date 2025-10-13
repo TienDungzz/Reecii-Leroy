@@ -18,6 +18,7 @@ class SideDrawerOpener extends HTMLElement {
           button.classList.remove('active');
           if (drawer) drawer.close();
         } else {
+          document.documentElement.style.setProperty('--header-height', `${document.querySelector(".header").offsetHeight}px`);
           button.classList.add('active');
           if (drawer) drawer.open(button);
         }
@@ -94,6 +95,9 @@ class SideDrawer extends HTMLElement {
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.05" },
       ],
     ]);
+
+    // Stop Lenis smooth scroll
+    stopLenis();
   }
 
   async close() {
@@ -141,6 +145,9 @@ class SideDrawer extends HTMLElement {
       detailsElement.classList.remove("menu-opening");
       document.body.classList.remove('overflow-hidden-mobile')
     }
+
+    // Start Lenis smooth scroll
+    startLenis();
   }
 
   handleTransition(checkOpen, startClass, endClass = '') {
