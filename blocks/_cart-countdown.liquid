@@ -15,9 +15,22 @@
     role="alert" 
     aria-live="assertive"
   >
-    {%- capture icon -%}
-      {% render 'icon-accordion', icon: bl_stts.icon %}
-    {%- endcapture -%}
+    {% capture icon %}
+      <svg
+        class="svg-wrapper"
+        aria-hidden="true"
+        focusable="false"
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        stroke="none"
+        fill="currentColor"
+        {{ block.shopify_attributes }}
+      >
+        {%- render 'icon', icon: bl_stts.icon -%}
+      </svg>
+    {% endcapture %}
 
     {%- capture time -%}
       <span class="time font-bold">{{ bl_stts.countdown_time | prepend: '0' | slice: -2, 2 }}:00</span>
@@ -150,17 +163,15 @@
 {% endjavascript %}
 
 {% stylesheet %}
-  .cart-countdown-message {
-    .svg-wrapper {
-      width: var(--size-24);
-      height: var(--size-24);
-      margin-right: var(--size-5);
-    }
+  .cart-countdown-message  .svg-wrapper {
+    width: var(--size-24);
+    height: var(--size-24);
+    margin-right: var(--size-5);
+  }
 
-    svg {
-      position: relative;
-      top: var(--size-6);
-    }
+  .cart-countdown-message  svg {
+    position: relative;
+    top: var(--size-6);
   }
 {% endstylesheet %}
 
@@ -190,14 +201,31 @@
     {
       "type": "select",
       "id": "icon",
+      "label": "t:settings.icon",
       "options": [
         {
           "value": "none",
           "label": "t:options.none"
         },
         {
+          "value": "alert",
+          "label": "t:options.alert"
+        },
+        {
+          "value": "shopping-bag",
+          "label": "t:options.shopping_bag"
+        },
+        {
+          "value": "cart",
+          "label": "t:options.cart"
+        },
+        {
           "value": "apple",
           "label": "t:options.apple"
+        },
+        {
+          "value": "arrow",
+          "label": "t:options.arrow"
         },
         {
           "value": "banana",
@@ -214,6 +242,10 @@
         {
           "value": "carrot",
           "label": "t:options.carrot"
+        },
+        {
+          "value": "circle",
+          "label": "t:options.circle"
         },
         {
           "value": "chat_bubble",
@@ -236,16 +268,16 @@
           "label": "t:options.dairy_free"
         },
         {
-          "value": "info",
-          "label": "t:options.info"
-        },
-        {
           "value": "dryer",
           "label": "t:options.dryer"
         },
         {
           "value": "eye",
-          "label": "t:options.eye"
+          "label": "t:options.eye"  
+        },
+        {
+          "value": "facebook",
+          "label": "t:options.facebook"
         },
         {
           "value": "fire",
@@ -258,6 +290,10 @@
         {
           "value": "heart",
           "label": "t:options.heart"
+        },
+        {
+          "value": "instagram",
+          "label": "t:options.instagram"
         },
         {
           "value": "iron",
@@ -308,6 +344,10 @@
           "label": "t:options.perfume"
         },
         {
+          "value": "pinterest",
+          "label": "t:options.pinterest"
+        },
+        {
           "value": "plane",
           "label": "t:options.plane"
         },
@@ -352,6 +392,10 @@
           "label": "t:options.silhouette"
         },
         {
+          "value": "snapchat",
+          "label": "t:options.snapchat"
+        },
+        {
           "value": "snowflake",
           "label": "t:options.snowflake"
         },
@@ -364,16 +408,31 @@
           "label": "t:options.stopwatch"
         },
         {
+          "value": "tiktok",
+          "label": "t:options.tiktok"
+        },
+        {
           "value": "truck",
           "label": "t:options.truck"
+        },
+        {
+          "value": "tumblr",
+          "label": "t:options.tumblr"
+        },
+        {
+          "value": "twitter",
+          "label": "t:options.twitter"
+        },
+        {
+          "value": "vimeo",
+          "label": "t:options.vimeo"
         },
         {
           "value": "washing",
           "label": "t:options.washing"
         }
       ],
-      "default": "check_mark",
-      "label": "t:settings.icon"
+      "default": "alert"
     },
     {
       "type": "product",

@@ -748,15 +748,15 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
 
 /* Quantity selector */
 .quantity-selector {
-  --quantity-selector-width: 110px;
+  --quantity-selector-width: 4.5rem;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: var(--color-input-text);
   background-color: var(--color-input-background);
-  border: var(--style-border-width-inputs) solid var(--color-input-border);
-  border-radius: var(--style-border-radius-inputs);
+  border: var(--inputs-border-width) solid rgb(var(--color-input-border-rgb) / var(--opacity-20));
+  border-radius: var(--inputs-radius);
   flex: 1 1 var(--quantity-selector-width);
   align-self: stretch;
   transition: background-color var(--animation-speed) var(--animation-easing);
@@ -778,20 +778,20 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  width: var(--size-30);
-  height: var(--size-30);
+  width: var(--size-45);
+  height: var(--size-45);
   flex-shrink: 0;
   color: var(--color-input-text);
 }
 
 .quantity-selector .quantity-minus {
-  border-start-start-radius: var(--style-border-radius-inputs);
-  border-end-start-radius: var(--style-border-radius-inputs);
+  border-start-start-radius: var(--inputs-radius);
+  border-end-start-radius: var(--inputs-radius);
 }
 
 .quantity-selector .quantity-plus {
-  border-start-end-radius: var(--style-border-radius-inputs);
-  border-end-end-radius: var(--style-border-radius-inputs);
+  border-start-end-radius: var(--inputs-radius);
+  border-end-end-radius: var(--inputs-radius);
 }
 
 .product-details .quantity-selector {
@@ -826,7 +826,7 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
   text-align: center;
   border: none;
   appearance: none;
-  max-width: calc(var(--quantity-selector-width) - var(--minimum-touch-target) * 2);
+  max-width: 100%;
   border-radius: var(--style-border-radius-buttons);
   color: var(--color-input-text);
   background-color: transparent;
@@ -1012,7 +1012,7 @@ swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
 
 .alertBox {
   padding: var(--size-20) var(--size-17);
-  border-radius: var(--style-border-radius-inputs);
+  border-radius: var(--inputs-radius);
 }
 
 .alertBox--success {
@@ -1033,4 +1033,54 @@ swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
 .alertBox--warning {
   color: var(--color-warning-text);
   background-color: var(--color-warning-background);
+}
+
+text-loader-component {
+  --shimmer-text-color: rgb(var(--color-foreground-rgb) / var(--opacity-50));
+  --shimmer-color-light: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+  --shimmer-speed: 1.25s;
+
+  display: inline-block;
+  position: relative;
+  transition: color var(--animation-speed-slow) ease;
+  line-height: 1;
+
+  &::after {
+    content: attr(value);
+    position: absolute;
+    inset: 0;
+    color: transparent;
+    opacity: 0;
+    transition: opacity var(--animation-speed-slow) var(--animation-easing);
+    pointer-events: none;
+    background-image: linear-gradient(
+      -85deg,
+      var(--shimmer-text-color) 10%,
+      var(--shimmer-color-light) 50%,
+      var(--shimmer-text-color) 90%
+    );
+    background-clip: text;
+    background-size: 200% 100%;
+    background-position: 100% 0;
+    place-content: center;
+  }
+
+  &[shimmer] {
+    color: transparent;
+
+    &::after {
+      opacity: 1;
+      animation: text-shimmer var(--shimmer-speed) infinite linear;
+    }
+  }
+}
+
+@keyframes text-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: -100% 0;
+  }
 }

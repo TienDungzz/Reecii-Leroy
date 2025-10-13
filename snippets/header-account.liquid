@@ -4,32 +4,35 @@
 {%- if enable_account and shop.customer_accounts_enabled -%}
   <a
     href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}"
-    class="header__icon header__icon--account header__icon--account--{{ account_type }}{% if account_type == 'both' %} header__icon--both{% endif %} button focus-inset account-actions svg-slide-up"
+    class="
+      button focus-inset account-actions svg-slide-up
+      header__icon
+      header__icon--account
+      header__icon--{{ account_type }}
+    "
   >
     {%- if account_type == 'text' or account_type == 'both' -%}
-      {%- if account_type == 'text' -%}
-        <span class="lg:none">
-      {%- endif -%}
-      {%- if section.settings.enable_customer_avatar -%}
-        <account-icon>
-          {%- if customer and customer.has_avatar? -%}
-            {{ customer | avatar }}
-          {%- else -%}
-            <span class="svg-wrapper">
-              {{- 'icon-account.svg' | inline_asset_content -}}
-              {{- 'icon-account.svg' | inline_asset_content -}}
-            </span>
-          {%- endif -%}
-        </account-icon>
-      {%- else -%}
-        <span class="svg-wrapper">
-          {{- 'icon-account.svg' | inline_asset_content -}}
-          {{- 'icon-account.svg' | inline_asset_content -}}
-        </span>
-      {%- endif -%}
-      {%- if account_type == 'text' -%}
-        </span>
-      {%- endif -%}
+      <span class="lg:none">
+    {%- endif -%}
+    {%- if section.settings.enable_customer_avatar -%}
+      <account-icon>
+        {%- if customer and customer.has_avatar? -%}
+          {{ customer | avatar }}
+        {%- else -%}
+          <span class="svg-wrapper">
+            {{- 'icon-account.svg' | inline_asset_content -}}
+            {{- 'icon-account.svg' | inline_asset_content -}}
+          </span>
+        {%- endif -%}
+      </account-icon>
+    {%- else -%}
+      <span class="svg-wrapper">
+        {{- 'icon-account.svg' | inline_asset_content -}}
+        {{- 'icon-account.svg' | inline_asset_content -}}
+      </span>
+    {%- endif -%}
+    {%- if account_type == 'text' or account_type == 'both' -%}
+      </span>
     {%- endif -%}
 
     {%- if account_type == 'text' or account_type == 'both' -%}

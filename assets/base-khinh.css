@@ -544,38 +544,43 @@ h6,
 }
 
 @media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .card-hover--lift .header .product-card-wrapper .card,
+  .card-hover--scale .product-card-wrapper .card {
+    transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+  }
+
   .card-hover--lift
     .group-block:hover
     > .group-block__media-wrapper
     .background-image-container:has(> img),
-  .card-hover--lift .product-card:hover,
+  .card-hover--lift .product-card-wrapper .card:hover,
   .card-hover--lift .collection-card:hover,
   .card-hover--lift .resource-card:hover,
   .card-hover--lift .predictive-search-results__card:hover {
     transform: translateY(calc(-1 * var(--hover-lift-amount)));
   }
 
-  .card-hover--lift .header .product-card:hover,
+  .card-hover--lift .header .product-card-wrapper .card:hover,
   .card-hover--lift .header .collection-card:hover,
   .card-hover--lift .header .resource-card:hover,
-  .card-hover--lift .header-drawer .product-card:hover,
+  .card-hover--lift .header-drawer .product-card-wrapper .card:hover,
   .card-hover--lift .header-drawer .collection-card:hover,
   .card-hover--lift .header-drawer .resource-card:hover {
     transform: none;
   }
 
   .card-hover--scale .group-block:hover .background-image-container,
-  .card-hover--scale .product-card:hover,
+  .card-hover--scale .product-card-wrapper .card:hover,
   .card-hover--scale .collection-card:hover,
   .card-hover--scale .resource-card:hover,
   .card-hover--scale .predictive-search-results__card:hover {
     transform: scale(var(--hover-scale-amount));
   }
 
-  .card-hover--scale .header .product-card:hover,
+  .card-hover--scale .header .product-card-wrapper .card:hover,
   .card-hover--scale .header .collection-card:hover,
   .card-hover--scale .header .resource-card:hover,
-  .card-hover--scale .header-drawer .product-card:hover,
+  .card-hover--scale .header-drawer .product-card-wrapper .card:hover,
   .card-hover--scale .header-drawer .collection-card:hover,
   .card-hover--scale .header-drawer .resource-card:hover {
     transform: none;
@@ -584,7 +589,7 @@ h6,
   .card-hover--subtle-zoom .background-image-container img:not(.parallax-image),
   .card-hover--subtle-zoom .card-gallery,
   .card-hover--subtle-zoom .collection-card__image,
-  .card-hover--subtle-zoom .product-card__image,
+  .card-hover--subtle-zoom .card__media,
   .card-hover--subtle-zoom .resource-card__image {
     overflow: hidden;
     transition: transform var(--hover-transition-duration)
@@ -593,36 +598,36 @@ h6,
 
   .predictive-search-results__card .card-gallery,
   .predictive-search-results__card .collection-card__image,
-  .predictive-search-results__card .product-card__image,
+  .predictive-search-results__card .card__media,
   .predictive-search-results__card .resource-card__image {
     transition: none;
   }
 
   .card-hover--subtle-zoom .group-block:hover .background-image-container img,
-  .card-hover--subtle-zoom .product-card:hover .card-gallery,
+  .card-hover--subtle-zoom .product-card-wrapper .card:hover .card-gallery,
   .card-hover--subtle-zoom .collection-card:hover .collection-card__image,
-  .card-hover--subtle-zoom .product-card:hover .product-card__image,
+  .card-hover--subtle-zoom .product-card-wrapper .card:hover .card__media,
   .card-hover--subtle-zoom .resource-card:hover .resource-card__image,
   .card-hover--subtle-zoom .predictive-search-results__card:hover {
     transform: scale(var(--hover-subtle-zoom-amount));
   }
 
-  .card-hover--subtle-zoom .header .product-card:hover .card-gallery,
+  .card-hover--subtle-zoom .header .product-card-wrapper .card:hover .card-gallery,
   .card-hover--subtle-zoom
     .header
     .collection-card:hover
     .collection-card__image,
-  .card-hover--subtle-zoom .header .product-card:hover .product-card__image,
+  .card-hover--subtle-zoom .header .product-card-wrapper .card:hover .card__media,
   .card-hover--subtle-zoom .header .resource-card:hover .resource-card__image,
-  .card-hover--subtle-zoom .header-drawer .product-card:hover .card-gallery,
+  .card-hover--subtle-zoom .header-drawer .product-card-wrapper .card:hover .card-gallery,
   .card-hover--subtle-zoom
     .header-drawer
     .collection-card:hover
     .collection-card__image,
   .card-hover--subtle-zoom
     .header-drawer
-    .product-card:hover
-    .product-card__image,
+    .product-card-wrapper .card:hover
+    .card__media,
   .card-hover--subtle-zoom
     .header-drawer
     .resource-card:hover
@@ -1037,6 +1042,15 @@ summary {
     width: 100%;
     padding: var(--padding-md);
   }
+
+  &:has( > button) {
+    padding: 0;
+    > button {
+      height: 100%;
+      width: 100%;
+      padding: var(--padding-md);
+    }
+  }
 }
 
 @media screen and (min-width: 1025px) {
@@ -1144,6 +1158,7 @@ summary {
 /* field */
 .field:after {
   box-shadow: 0 0 0 var(--inputs-border-width) var(--color-input-border);
+  inset: 0;
 }
 .field:hover.field:after, .select:hover.select:after, .select__select:hover.select__select:after, .customer .field:hover.field:after, .customer select:hover.select:after {
   box-shadow: 0 0 0 calc(0.1rem + var(--inputs-border-width)) var(--color-foreground);

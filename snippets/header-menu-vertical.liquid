@@ -5,15 +5,52 @@
   {% render 'header-menu-vertical' %}
 {% endcomment %}
 
-<details class="header__vertical-menu relative lg:block w-fit">
-  <summary>
+{%- liquid
+  assign button_width = bl_stts.button_width
+  assign button_divider = bl_stts.button_divider
+  assign button_inherit_color_scheme = bl_stts.inherit_color_scheme
+  assign button_style_class = 'header__vertical-menu__summary-custom'
+  assign button_border_radius = bl_stts.button_border_radius
+-%}
+
+<details
+  class="details--dropdown header__vertical-menu relative none lg:block w-fit"
+  style="
+    {% if button_border_radius > 0 %}
+      --border-radius: {{ button_border_radius }}px;
+    {% endif %}
+  "
+  is="dropdown-details"
+>
+  <summary
+    class="
+     details__summary
+      gap-xl
+      header__vertical-menu__summary
+      header__vertical-menu__summary--{{ button_width }}
+      {% if button_divider %}header__vertical-menu__summary--divider{% endif %}
+      {% if button_inherit_color_scheme == false %}{{ button_style_class }}{% endif %}
+      {% if button_border_radius > 0 %}header__vertical-menu__summary--radius{% endif %}
+    "
+    style="
+      {% if button_inherit_color_scheme == false %}
+          {% render 'color-scheme-style', settings: bl_stts %}
+      {% endif %}
+    "
+  >
     <span class="svg-wrapper">
-      {{- 'icon-hamburger.svg' | inline_asset_content -}}
+      {{- 'icon-categories.svg' | inline_asset_content -}}
     </span>
     <span>{{ bl_stts.vertical_menu_title }}</span>
+    <span class="svg-wrapper">
+      {{- 'icon-caret.svg' | inline_asset_content -}}
+    </span>
   </summary>
 
-  <nav class="vertical-menu absolute top-full left-0 z-100 bg-white w-full details__list color-{{bl_stts.color_scheme_vertical_menu}} global-settings-popup">
+  <nav
+    class="vertical-menu details__list absolute top-full left-0 z-100 w-full details__list global-settings-popup color-{{ bl_stts.color_scheme_vertical_menu }}"
+    tabindex="-1"
+>
     <ul
       class="list-unstyled relative"
       style="--p: 20px 0; "
@@ -72,13 +109,13 @@
               assign icon_type = section.settings.icon_type
 
               if check_mega_menu_1 and has_mega_menu_1
-                render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
+                render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings, is_vertical_menu: true
               elsif check_mega_menu_2 and has_mega_menu_2
-                render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
+                render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings, is_vertical_menu: true
               elsif check_mega_menu_3 and has_mega_menu_3
-                render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
+                render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings, is_vertical_menu: true
               else
-                render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type, settings: section.settings
+                render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type, settings: section.settings, is_vertical_menu: true
               endif
             -%}
           {%- else -%}
@@ -104,3 +141,75 @@
     </ul>
   </nav>
 </details>
+
+{%- stylesheet -%}
+  .header__vertical-menu {
+    --width-vertical-menu: 26rem;
+
+    &:has(.header__vertical-menu__summary--radius) {
+      .vertical-menu {
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+      }
+    }
+
+    .header__vertical-menu__summary {
+      padding-inline: var(--padding-xl);
+    }
+
+    .header__vertical-menu__summary--radius {
+      border-top-right-radius: var(--border-radius);
+      border-top-left-radius: var(--border-radius);
+    }
+
+    .header__vertical-menu__summary-custom {
+      background: var(--color-background);
+      color: var(--color-foreground);
+    }
+
+    .header__vertical-menu__summary--divider {
+      border-right: 1px solid rgb(var(--color-border-rgb) / var(--opacity-20));
+    }
+
+    .header__vertical-menu__summary--large {
+      min-width: var(--width-vertical-menu);
+    }
+
+    &[open] .header__vertical-menu__summary .svg-wrapper {
+      transform: rotate(-180deg);
+    }
+
+    .vertical-menu {
+      width: var(--width-vertical-menu);
+
+      &:hover {
+        overflow: visible;
+      }
+    }
+
+    .details--dropdown {
+      padding-inline: 10px;
+    }
+
+    .list-menu--disclosure {
+      left: 100%;
+      top: 0;
+      padding-inline: 10px;
+    }
+  }
+  .header__vertical-menu .mega-menu__content {
+    left: calc(100% + var(--style-border-width-popover));
+    top: 0;
+    width: min(
+      calc(var(--page-content-width) - var(--width-vertical-menu) + var(--last-item-minus-margin)),
+      calc(
+        100vw - var(--width-vertical-menu) - (var(--page-margin) * 2) - (var(--style-border-width-popover) * 2) +
+          var(--last-item-minus-margin)
+      )
+    );
+    overflow: visible;
+    margin-top: 0;
+    border: none;
+    border-radius: var(--style-border-radius-popover);
+  }
+{%- endstylesheet -%}
