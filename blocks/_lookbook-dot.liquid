@@ -21,71 +21,20 @@
     <span class="svg-wrapper icon-plus-wrapper">
       {{- 'icon-plus.svg' | inline_asset_content -}}
     </span>
-  </div>
-  <div class="lookbook-dot__content">
-    {% render 'card-lookbook', card_product: card_product, show_product_image: show_product_image, show_product_title: show_product_title, show_product_price: show_product_price, show_product_variant: show_product_variant, show_product_button: show_product_button, option: card_product_option %}
+
+    <div class="lookbook-dot__content">
+      {% render 'card-lookbook',
+        card_product: card_product,
+        show_product_image: show_product_image,
+        show_product_title: show_product_title,
+        show_product_price: show_product_price,
+        show_product_variant: show_product_variant,
+        show_product_button: show_product_button,
+        option: card_product_option
+      %}
     </div>
+  </div>
 </lookbook-dot>
-
-{% javascript %}
-  document.addEventListener('DOMContentLoaded', function() {
-    const lookbookDots = document.querySelectorAll('lookbook-dot');
-
-    lookbookDots.forEach(dot => {
-
-      dot.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const content = this.querySelector('.lookbook-dot__content');
-
-        if (content) {
-          if (window.innerWidth > 1024) {
-            // Remove active class from all dots
-            lookbookDots.forEach(d => d.classList.remove('is-active'));
-            
-            // Toggle content visibility
-            const isOpen = content.classList.toggle('is-open');
-            
-            // Add active class if content is open
-            if (isOpen) {
-              this.classList.add('is-active');
-            }
-          } else {
-            // Remove active class from all dots
-            lookbookDots.forEach(d => d.classList.remove('is-active'));
-            
-            // Add active class to current dot
-            this.classList.add('is-active');
-            
-            // open popup
-            content.closest('.lookbook-item').querySelector('.lookBook__btnShowProducts .show_products')?.click();
-
-            // scroll to product the same as index of dot
-            const index = Array.from(lookbookDots).indexOf(this);
-            const swiperEl = document.querySelector('.lookbook-popup .swiper');
-
-            if (swiperEl) {
-              swiperEl.swiper.slideTo(index, 600); 
-            }
-          }
-        }
-      });
-    });
-
-    // remove when click outside
-    document.addEventListener('click', function(e) {
-      if (! e.target.closest('lookbook-dot')) {
-        lookbookDots.forEach(dot => {
-          const content = dot.querySelector('.lookbook-dot__content');
-          if (content) {
-            content.classList.remove('is-open');
-          }
-          dot.classList.remove('is-active');
-        });
-      }
-    });
-  });
-{% endjavascript %}
 
 {% schema %}
   {
@@ -113,7 +62,7 @@
       {
         "type": "range",
         "id": "dot_size_desktop",
-        "label": "t:settings.desktop_size",  
+        "label": "t:settings.desktop_size",
         "default": 12,
         "min": 1,
         "max": 100,
@@ -160,13 +109,13 @@
         "id": "card_product_option",
         "label": "t:settings.card_product_option",
         "options": [
-          { 
+          {
             "value": "vertical",
             "label": "t:options.vertical"
           },
-          { 
+          {
             "value": "horizontal",
-            "label": "t:options.horizontal" 
+            "label": "t:options.horizontal"
           }
         ],
         "default": "horizontal"
