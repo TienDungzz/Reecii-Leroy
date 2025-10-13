@@ -6,9 +6,12 @@
   endif
 -%}
 <div
-  class="card--block-title size-style"
+  class="card--block-title size-style{% if block.settings.clamp == true %} text-clamp-style{% endif %}"
   style="
     --text-align: {{ block.settings.alignment }};
+    {% if block.settings.clamp == true %}
+      --text-clamp: {{ block.settings.clamp_row }};
+    {% endif %}
     {% render 'size-style', settings: block.settings %}
   "
 >
@@ -102,6 +105,22 @@
       "label": "t:settings.alignment",
       "default": "left",
       "visible_if": "{{ block.settings.width == '100%' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "clamp",
+      "label": "Clamp",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "clamp_row",
+      "label": "Clamp Row",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 2,
+      "visible_if": "{{ block.settings.clamp == true }}"
     },
     {
       "type": "header",
