@@ -17,15 +17,27 @@
   assign inherit_text_alignment_tablet = bl_stts.inherit_text_alignment_tablet
   assign inherit_text_alignment_mobile = bl_stts.inherit_text_alignment_mobile
   if inherit_text_alignment == false
-    assign alignment = bl_stts.alignment
+    if bl_stts.justify_alignment == true
+      assign alignment = 'justify'
+    else
+      assign alignment = bl_stts.alignment
+    endif
     assign text_align = ' --text-align: ' | append: alignment | append: ';'
   endif
   if inherit_text_alignment_tablet == false
-    assign alignment_tablet = bl_stts.alignment_tablet
+    if bl_stts.justify_alignment_tablet == true
+      assign alignment_tablet = 'justify'
+    else
+      assign alignment_tablet = bl_stts.alignment_tablet
+    endif
     assign text_align_tablet = ' --text-align-tablet: ' | append: alignment_tablet | append: ';'
   endif
   if inherit_text_alignment_mobile == false
-    assign alignment_mobile = bl_stts.alignment_mobile
+    if bl_stts.justify_alignment_mobile == true
+      assign alignment_mobile = 'justify'
+    else
+      assign alignment_mobile = bl_stts.alignment_mobile
+    endif
     assign text_align_mobile = ' --text-align-mobile: ' | append: alignment_mobile | append: ';'
   endif
   assign text_width = width | default: bl_stts.width
