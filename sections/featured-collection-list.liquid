@@ -77,11 +77,14 @@
 {% comment %} For layout type tabs-grid and tabs-carousel {% endcomment %}
 {%- liquid
   assign class_tabs_product_header_item = 'border-style tabs-product-header__item tabs-component-panel-trigger full-unstyled-link shrink-0' | append: ' ' | append: sec_stts.style_class
+  if sec_stts.link_underline
+    assign class_tabs_product_header_item = class_tabs_product_header_item | append: ' link--underline'
+  endif
   assign class_tabs_product_grid = 'tabs-product-grid tabs-component-content'
 -%}
 
 {%- capture attr_tabs_header -%}
-  class="tabs-product-header flex xl:justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }} overflow-x-a"
+  class="tabs-product-header flex md:justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }} overflow-x-a"
   style="
     --gap-x: {{ sec_stts.tabs_header_gap }}px;
     --pt: {{ sec_stts.tabs_header_padding_top | times: 0.1 }}rem;
@@ -97,7 +100,13 @@
   --border-radius: {{ sec_stts.tabs_header_corner_radius }}px;
   --border-width: {{ sec_stts.tabs_header_border_thickness }}px;
   --border-style: solid;
-  --border-color: var(--color-border);
+  {%- if sec_stts.style_class == 'link' and sec_stts.button_type_size_link != blank -%}
+    --button-font-size-link: {{ sec_stts.button_type_size_link }};
+    --border-color: transparent;
+  {% else %}
+    --border-color: var(--color-border);
+  {%- endif-%}
+
 {%- endcapture -%}
 {% comment %} End For layout type tabs-grid and tabs-carousel {% endcomment %}
 
@@ -404,7 +413,7 @@
             style="--grid-desktop-horizontal-spacing: {{ columns_gap }}px; --grid-desktop-vertical-spacing: {{ rows_gap }}px;"
           {%- endcapture -%}
 
-            <tabs-component class="{% if has_media_banner %}block overflow-hidden{% endif %}">
+            <tabs-component class="{% if has_media_banner %}block overflow-hidden{% endif %} ">
               {%- if section_collections_list != blank -%}
                 <div {{ attr_tabs_header }}>
                   {% comment %} {% for collection in section_collections_list %}
@@ -424,7 +433,6 @@
                       {%- endunless -%}
                     {%- endfor -%}
                   {%- endcapture -%}
-
                   {%- render 'tab-header-item',
                     settings: sec_stts,
                     id: sec_id,
