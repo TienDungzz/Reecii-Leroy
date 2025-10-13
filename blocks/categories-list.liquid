@@ -14,7 +14,6 @@
   endcase
 
   if ratio == 0 or ratio == null
-    {% comment %} assign ratio = 1 {% endcomment %}
   endif
 
   if bl_stts.content_direction_tablet == true
@@ -25,6 +24,8 @@
     assign content_direction_mobile = 'row'
   endif
 -%}
+
+{% comment %} assign ratio = 1 {% endcomment %}
 
 <span class="tetse121212121212">{{ bl_stts.image.aspect_ratio }}</span>
 
@@ -123,7 +124,7 @@
         },
         {
           "value": "fill",
-          "label": "t:options.fill" 
+          "label": "t:options.fill"
         },
         {
           "value": "custom",
@@ -388,7 +389,7 @@
     {
       "type": "select",
       "id": "column_mobile",
-      "label": "t:settings.column",  
+      "label": "t:settings.column",
       "visible_if": "{{ block.settings.content_direction_mobile == 'row' }}",
       "options": [
         {

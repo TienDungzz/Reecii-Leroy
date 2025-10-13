@@ -29,7 +29,7 @@
 </div>
 
 <script defer="defer">
-  document.addEventListener('DOMContentLoaded', () => {
+  {% comment %} document.addEventListener('DOMContentLoaded', () => {
     var progressPath = document.querySelector('.button__back-to-top .progress-circle-fill path');
     if (!progressPath) return;
     var pathLength = progressPath.getTotalLength();
@@ -52,6 +52,63 @@
 
     updateProgress();
     window.addEventListener('scroll', updateProgress);
+  }); {% endcomment %}
+
+  {% comment %} Sử dụng scrollY của Lenis (window.LenisInstance), nếu không thì dùng scrollY mặc định {% endcomment %}
+  {% comment %}
+    Optimize để khi scroll progressPath không bị giật/lag bằng cách:
+    - Dùng requestAnimationFrame liên tục để update progress, không phụ thuộc vào sự kiện scroll (loop animation).
+    - Chỉ update strokeDashoffset khi thực sự thay đổi (so sánh giá trị).
+    - Loại bỏ ticking/rAF chồng lặp, tránh drop frame.
+  {% endcomment %}
+  document.addEventListener('DOMContentLoaded', () => {
+    var progressPath = document.querySelector('.button__back-to-top .progress-circle-fill path');
+    if (!progressPath) return;
+    var pathLength = progressPath.getTotalLength();
+
+    // Set initial style for path
+    progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
+    progressPath.style.strokeDasharray = pathLength + ' ' + pathLength;
+    progressPath.style.strokeDashoffset = pathLength;
+    progressPath.getBoundingClientRect();
+    // Mặc định không cần animation vì chúng ta tự animate theo rAF
+    progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
+
+    var lastProgress = null;
+
+    function getScrollY() {
+      if (window.LenisInstance && typeof window.LenisInstance.scroll === 'number') {
+        return window.LenisInstance.scroll;
+      } else if (window.LenisInstance && window.LenisInstance.targetScroll != null) {
+        return window.LenisInstance.targetScroll;
+      }
+      return window.scrollY || window.pageYOffset;
+    }
+
+    function updateProgress() {
+      var scroll = getScrollY();
+      var height = document.documentElement.scrollHeight - window.innerHeight;
+      if (height <= 0) height = 1;
+      var progress = pathLength - (scroll * pathLength) / height;
+      // Only update strokeDashoffset if changed (avoid repaints)
+      if (lastProgress !== progress) {
+        progressPath.style.strokeDashoffset = progress;
+        lastProgress = progress;
+      }
+    }
+
+    // Use rAF loop for best performance
+    function rafLoop() {
+      updateProgress();
+      window.requestAnimationFrame(rafLoop);
+    }
+
+    // On resize/document height change, force update
+    window.addEventListener('resize', updateProgress);
+    // Also recalc immediately, in case load in scrolled state
+    updateProgress();
+    // Start the rAF loop
+    rafLoop();
   });
 </script>
 

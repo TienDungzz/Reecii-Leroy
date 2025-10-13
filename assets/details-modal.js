@@ -7,7 +7,7 @@ class DetailsModal extends HTMLElement {
     if (this.detailsContainer) {
       this.detailsContainer.addEventListener('keyup', (event) => event.code === 'Escape' && this.close());
     }
-    
+
     if (this.summaryToggle) {
       this.summaryToggle.addEventListener('click', this.onSummaryClick.bind(this));
       this.summaryToggle.setAttribute('role', 'button');
@@ -44,6 +44,15 @@ class DetailsModal extends HTMLElement {
         this.detailsContainer.querySelector('input:not([type="hidden"])')
       );
     }
+
+    if (window.LenisInstance && typeof window.LenisInstance.scrollTo === 'function') {
+      window.LenisInstance.scrollTo(0, { lock: true, immediate: false, lerp: 0.07 });
+    } else {
+      window.scroll({ top: 0, behavior: 'smooth' });
+    }
+
+    // Stop Lenis smooth scroll
+    stopLenis();
   }
 
   close(focusToggle = true) {
@@ -53,6 +62,9 @@ class DetailsModal extends HTMLElement {
     }
     document.body.removeEventListener('click', this.onBodyClickEvent);
     document.body.classList.remove('overflow-hidden');
+
+    // Start Lenis smooth scroll
+    startLenis();
   }
 }
 if (!customElements.get('details-modal')) customElements.define('details-modal', DetailsModal);

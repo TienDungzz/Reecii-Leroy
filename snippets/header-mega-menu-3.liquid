@@ -88,6 +88,39 @@
       {%- endif -%}
       style="{%  render 'highlight-style', order: '1', keys: keys, compare: link.title, settings: section.settings %}"
     >
+
+      {% if is_vertical_menu %}
+        {% liquid
+          assign width = 20
+
+          assign ratio = 1
+
+          assign image_style = 'width: ' | append: width | append: 'px;' | append: ';' | append: '--media-adapt-ratio:' | append: ratio | append: ';'
+
+          assign image_sources = 'jpg,png,webp,avif' | split: ','
+          assign found_image = false
+        -%}
+
+        {% for ext in image_sources %}
+          {% assign ext = ext | strip %}
+          {% assign item_image = link.handle | downcase | replace: ' ', '-'  | append: '.' | append: ext %}
+          {% if images[item_image] != blank and found_image == false %}
+            {% assign found_image = true %}
+            {% assign image = item_image | file_url %}
+            <span class="icon-image" style="{{ image_style }}">
+              <img
+                src="{{ image }}"
+                srcset="{{ image }} 450w, {{ image }} 900w"
+                width="450"
+                height="450"
+                sizes="{{ sizes }}"
+                loading="lazy"
+                alt="{{ shop.name | escape }}"
+              >
+            </span>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
       <a
         {%- if link.child_active %}
           class="header__active-menu-item"

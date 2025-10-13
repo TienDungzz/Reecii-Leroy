@@ -1,4 +1,4 @@
-<div class="header__search">
+<div class="header__search header__search--{{ search_type }}">
   {%- if settings.predictive_search_enabled -%}
     <predictive-search class="search-modal__form" data-loading-text="{{ 'accessibility.loading' | t }}">
   {%- else -%}
@@ -80,6 +80,23 @@
 {% stylesheet %}
   .search--inline.search-modal__form {
     background-color: transparent;
+  }
+
+  .header__search--underline {
+    --inputs-radius: 0;
+
+    .search__input.field__input {
+      padding-left: 0;
+    }
+
+    .predictive-search--center .field:after {
+      top: unset;
+      border: none;
+    }
+
+    .predictive-search--center .field__input:focus {
+      box-shadow: none;
+    }
   }
 
   @media screen and (min-width: 1600px) {

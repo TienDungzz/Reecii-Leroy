@@ -134,6 +134,24 @@
     </{{ details_wrapper }}>
 
   {% else %}
-      {%- render 'predictive-search-inline', color_scheme: search_color_scheme -%}
+    {%- render 'predictive-search-inline', color_scheme: search_color_scheme, search_type: section.settings.search_type -%}
   {% endunless %}
 </div>
+
+{%- stylesheet -%}
+  summary.header__icon--search:hover {
+    background: inherit;
+  }
+
+  .header__search .search--inline .predictive-search--center .search__button {
+    right: 0;
+    top: 0;
+    border-top-right-radius: var(--inputs-radius);
+    border-bottom-right-radius: var(--inputs-radius);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  .header__search .search--inline .predictive-search--center .search__button:not(:focus-visible):not(.focused) {
+    background-color: var(--color-primary-button-background);
+  }
+{%- endstylesheet -%}

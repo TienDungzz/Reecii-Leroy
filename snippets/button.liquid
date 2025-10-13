@@ -32,7 +32,8 @@
   assign font_style = font_style | default: block.settings.font_style
 -%}
 <a
-  {% if link == blank %}role="link"
+  {% if link == blank %}
+    role="link"
     aria-disabled="true"
   {% else %}
     href="{{ link }}"
@@ -66,7 +67,19 @@
   {% endif %}
   {{ shopify_attributes }}
 >
-  {{ label }}
+  {%- if style_class == 'button' -%}
+    <span class="button-overflow relative overflow-hidden">
+      <span class="button-text-main inline-block relative z-1">
+        {{ label }}
+      </span>
+      <span class="button-text-hover absolute top-0 left-0 w-full h-full inline-block">
+        {{ label }}
+      </span>
+    </span>
+  {%- else -%}
+    {{ label }}
+  {%- endif -%}
+
   {% if link_reveal and style_class == 'link' %}
     <span class="text-mask none" data-text="{{ label }}">{{ label }}</span>
   {% endif %}
@@ -85,9 +98,55 @@
   }
 
   .button {
-    transition: color var(--animation-speed) var(--animation-easing), box-shadow var(--animation-speed) var(--animation-easing), background-color var(--animation-speed) var(--animation-easing), transform var(--animation-speed) var(--animation-easing);
-    &:not(.deferred-media__poster,.prevent-active):active {
+    --tss: transform var(--animation-slowest-smooth);
+    transition: color var(--animation-speed) var(--animation-easing),
+      box-shadow var(--animation-speed) var(--animation-easing),
+      background-color var(--animation-speed) var(--animation-easing),
+      transform var(--animation-speed) var(--animation-easing);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background-color: var(--color-primary-button-background);
+
+    &:not(.deferred-media__poster, .prevent-active):active {
       transform: scale(0.9);
+    }
+
+    .button-text-main {
+      transition: var(--tss);
+    }
+
+    .button-text-hover {
+      transform: translateY(100%);
+      transition: var(--tss);
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      width: 120%;
+      height: 100%;
+      background-color: var(--color-primary-button-hover-background);
+      backface-visibility: hidden;
+      will-change: transform;
+      transform: rotate3d(0, 0, 2, 20deg) translate3d(-1.2em, 105%, 0);
+      transform-origin: 0% 100%;
+      transition: var(--tss);
+      z-index: -1;
+    }
+
+    &:hover {
+      .button-text-hover {
+        transform: translateY(0);
+      }
+      .button-text-main {
+        transform: translateY(-100%);
+      }
+      &:after {
+        transform: rotate3d(0, 0, 1, 0) translateZ(0);
+        transition: var(--tss);
+      }
     }
   }
 
@@ -98,14 +157,13 @@
     text-decoration-color: currentcolor;
     text-wrap: var(--text-wrap);
     text-transform: var(--text-transform);
-    &[style*="--button-font-size-link"] {
+    &[style*='--button-font-size-link'] {
       font-size: var(--button-font-size-link);
     }
 
     &:hover {
       text-decoration-color: transparent;
     }
-
   }
 
   .link--underline,
@@ -131,7 +189,7 @@
   }
 
   @media (prefers-reduced-motion: no-preference) and (hover: hover) {
-    .instagram-item .link--reveal ,
+    .instagram-item .link--reveal,
     .group-block-content .link--reveal {
       position: relative;
       overflow: hidden;
