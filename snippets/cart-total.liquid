@@ -1,7 +1,14 @@
+{% assign total_compare_at_price = 0 %}
 {% assign total_line_discounts = 0 %}
 {% assign total_cart_discounts = 0 %}
 
 {% for item in cart.items %}
+  {% if item.variant.compare_at_price > item.original_price %}
+    {% assign compare_discount = item.variant.compare_at_price | minus: item.original_price %}
+    {% assign compare_discount_total = compare_discount | times: item.quantity %}
+    {% assign total_compare_at_price = total_compare_at_price | plus: compare_discount_total %}
+  {% endif %}
+
   {% for discount_allocation in item.line_level_discount_allocations %}
     {% assign total_line_discounts = total_line_discounts | plus: discount_allocation.amount %}
   {% endfor %}
@@ -11,21 +18,23 @@
   {% assign total_cart_discounts = total_cart_discounts | plus: discount_application.total_allocated_amount %}
 {% endfor %}
 
-{% assign total_discounts = total_line_discounts | plus: total_cart_discounts %}
+{% assign total_discounts = total_compare_at_price | plus: total_line_discounts | plus: total_cart_discounts %}
 
 {% if total_discounts > 0 %}
   <div class="cart-total-discount discounts">
     <div class="discounts__discount discounts__discount--position">
-      <span class="svg-wrapper">
-      {{- 'icon-discount.svg' | inline_asset_content -}}
+      <span class="discounts__discount-text font-medium">
+        <span class="svg-wrapper">
+        {{- 'icon-discount.svg' | inline_asset_content -}}
+        </span>
+        <text-loader-component 
+          class="discounts__discount discounts__discount--position"
+          value="{{ 'customer.order.discount' | t }} ({{ total_discounts | money }})"
+        >
+          {{ 'customer.order.discount' | t }}
+          (-{{ total_discounts | money }})
+        </text-loader-component>
       </span>
-      <text-loader-component 
-        class="discounts__discount discounts__discount--position"
-        value="{{ 'customer.order.discount' | t }} ({{ total_discounts | money }})"
-      >
-        {{ 'customer.order.discount' | t }}
-        (-{{ total_discounts | money }})
-      </text-loader-component>
     </div>
   </div>
 {% endif %}

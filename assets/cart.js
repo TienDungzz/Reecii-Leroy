@@ -304,12 +304,13 @@ class CartItemsComponent extends HTMLElement {
   async updateQuantity(config) {
     // Use CartPerformance from global.js if available
     let cartPerformanceUpdateMarker = null;
+    const cartPerf = /** @type {any} */ (window).cartPerformance || {};
     if (
-      typeof CartPerformance !== 'undefined' &&
-      CartPerformance &&
-      typeof CartPerformance.createStartingMarker === 'function'
+      typeof cartPerf !== 'undefined' &&
+      cartPerf &&
+      typeof cartPerf.createStartingMarker === 'function'
     ) {
-      cartPerformanceUpdateMarker = CartPerformance.createStartingMarker(`${config.action}:user-action`);
+      cartPerformanceUpdateMarker = cartPerf.createStartingMarker(`${config.action}:user-action`);
     }
 
     this.classList.add('cart-items-disabled');
@@ -379,13 +380,14 @@ class CartItemsComponent extends HTMLElement {
       console.error(err);
     } finally {
       this.classList.remove('cart-items-disabled');
+      const cartPerf = /** @type {any} */ (window).cartPerformance || {};
       if (
-        typeof CartPerformance !== 'undefined' &&
-        CartPerformance &&
-        typeof CartPerformance.measureFromMarker === 'function' &&
+        typeof cartPerf !== 'undefined' &&
+        cartPerf &&
+        typeof cartPerf.measureFromMarker === 'function' &&
         cartPerformanceUpdateMarker
       ) {
-        CartPerformance.measureFromMarker(`${config.action}:user-action`, cartPerformanceUpdateMarker);
+        cartPerf.measureFromMarker(`${config.action}:user-action`, cartPerformanceUpdateMarker);
       }
     }
   }
@@ -563,6 +565,11 @@ class QuantitySelectorComponent extends HTMLElement {
     this.dispatchQuantityUpdate();
   }
 
+  selectInputValue() {
+    const input = this.refs.input;
+    input.select();
+  }
+
   setQuantity() {
     this.dispatchQuantityUpdate();
   }
@@ -574,7 +581,6 @@ class QuantitySelectorComponent extends HTMLElement {
 
     this.#checkQuantityRules();
 
-    // Dispatch global event để Cart component xử lý
     const event = new CustomEvent('quantity-selector:update', {
       bubbles: true,
       detail: { quantity, cartLine },
@@ -697,6 +703,14 @@ class CartDiscountComponent extends HTMLElement {
 
     const abortController = this.createAbortController();
 
+    const spinner = this.querySelector('.loading__spinner');
+    const submitDiscountButton = this.querySelector('.cart-discount__button');
+    if (spinner && submitDiscountButton) {
+      submitDiscountButton.setAttribute('aria-busy', 'true');
+      submitDiscountButton.classList.add('loading');
+      spinner.classList.remove('hidden');
+    }
+
     try {
       const existingDiscounts = this.existingDiscounts();
       if (existingDiscounts.includes(discountCodeValue)) return;
@@ -769,8 +783,14 @@ class CartDiscountComponent extends HTMLElement {
     } catch (error) {
     } finally {
       this.activeFetch = null;
-      if (window.cartPerformance && typeof cartPerformance.measureFromEvent === 'function') {
-        cartPerformance.measureFromEvent('discount-update:user-action', event);
+      if (spinner && submitDiscountButton) {
+        submitDiscountButton.removeAttribute('aria-busy');
+        submitDiscountButton.classList.remove('loading');
+        spinner.classList.add('hidden');
+      }
+      const cartPerf = /** @type {any} */ (window).cartPerformance || {};
+      if (typeof cartPerf.measureFromEvent === 'function') {
+        cartPerf.measureFromEvent('discount-update:user-action', event);
       }
     }
   }
@@ -856,9 +876,12 @@ if (!customElements.get('cart-note')) {
           'input',
           debounce((event) => {
             const body = JSON.stringify({ note: event.target.value });
-            fetch(`${routes.cart_update_url}`, { ...fetchConfig(), ...{ body } }).then(() =>
-              CartPerformance.measureFromEvent('note-update:user-action', event)
-            );
+            fetch(`${routes.cart_update_url}`, { ...fetchConfig(), ...{ body } }).then(() => {
+              const cartPerf = /** @type {any} */ (window).cartPerformance || {};
+              if (typeof cartPerf.measureFromEvent === 'function') {
+                cartPerf.measureFromEvent('note-update:user-action', event);
+              }
+            });
           }, ON_CHANGE_DEBOUNCE_TIMER)
         );
       }
@@ -976,7 +999,7 @@ class ShippingCalculatorComponent extends HTMLFormElement {
       return `<li>${presentment_name}: ${currency} ${price}</li>`;
     });
     this.resultsElement.innerHTML = `
-      <div class="alertBox alertBox--${shippingRates.length === 0 ? 'error' : 'warning'} grid gap-xl">
+      <div class="alertBox alertBox--${shippingRates.length === 0 ? 'error' : 'success'} grid gap-xl">
         <p>${shippingRates.length === 0 ? window.shippingCalculatorStrings.not_found : shippingRates.length === 1 ? window.shippingCalculatorStrings.one_result : window.shippingCalculatorStrings.multiple_results}</p>
         ${shippingRatesList.length === 0 ? '' : `<ul class="list-disc grid gap-xl p-0 m-0" role="list">${shippingRatesList.join('')}</ul>`}
       </div>

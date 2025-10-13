@@ -97,7 +97,6 @@
   }
 
   .button {
-    --tss: transform var(--animation-slowest-smooth);
     transition: color var(--animation-speed) var(--animation-easing),
       box-shadow var(--animation-speed) var(--animation-easing),
       background-color var(--animation-speed) var(--animation-easing),
@@ -105,7 +104,11 @@
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    background-color: var(--color-primary-button-background);
+
+    &:not(.button-unstyled) {
+      --tss: transform var(--animation-slowest-smooth);
+      background-color: var(--color-primary-button-background);
+    }
 
     &:not(.deferred-media__poster, .prevent-active):active {
       transform: scale(0.9);
