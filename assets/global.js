@@ -4013,13 +4013,22 @@ class TextLoaderComponent extends HTMLElement {
 if (!customElements.get('text-loader-component')) customElements.define('text-loader-component', TextLoaderComponent);
 
 function resetSpinner(container = document.body) {
-  const spinner = container.querySelectorAll('text-loader-component');
-  spinner.forEach((item) => item.querySelector('.loading__spinner').classList.add('hidden'));
+  const spinners = container.querySelectorAll('text-loader-component');
+  spinners.forEach((item) => {
+    const spinner = item.querySelector('.loading__spinner');
+    if (spinner) {
+      spinner.classList.add('hidden');
+    }
+  });
 }
 
 function resetShimmer(container = document.body) {
-  const shimmer = container.querySelectorAll('text-loader-component');
-  shimmer.forEach((item) => item.removeAttribute('shimmer'));
+  const shimmers = container.querySelectorAll('text-loader-component');
+  shimmers.forEach((item) => {
+    if (item) {
+      item.removeAttribute('shimmer');
+    }
+  });
 }
 
 // header tab

@@ -93,7 +93,6 @@
     icon_custom: block.settings.icon_custom,
     svg_upload: block.settings.svg_upload,
     image_upload: block.settings.image_upload,
-    width: block.settings.icon_width,
     attributes: block.shopify_attributes
   %}
 {% endcapture %}
@@ -854,8 +853,12 @@
           "label": "t:options.none"
         },
         {
-          "value": "instagram-cart",
-          "label": "t:options.instagram_cart"
+          "value": "alert",
+          "label": "t:options.alert"
+        },
+        {
+          "value": "shopping-bag",
+          "label": "t:options.shopping_bag"
         },
         {
           "value": "cart",
@@ -936,10 +939,6 @@
         {
           "value": "instagram",
           "label": "t:options.instagram"
-        },
-        {
-          "value": "instagram-black",
-          "label": "t:options.instagram_black"
         },
         {
           "value": "iron",
@@ -1078,7 +1077,7 @@
           "label": "t:options.washing"
         }
       ],
-      "default": "instagram-cart",
+      "default": "shopping-bag",
       "visible_if": "{{ block.settings.icon_custom == 'none' }}"
     },
     {
@@ -1113,17 +1112,6 @@
       "id": "image_upload",
       "label": "t:settings.image_icon",
       "visible_if": "{{ block.settings.icon_custom == 'image' }}"
-    },
-    {
-      "type": "range",
-      "id": "icon_width",
-      "label": "t:settings.width",
-      "min": 12,
-      "max": 200,
-      "step": 2,
-      "unit": "px",
-      "default": 40,
-      "visible_if": "{{ block.settings.icon_custom != 'svg' and block.settings.icon == 'custom' }}"
     },
     {
       "type": "url",
