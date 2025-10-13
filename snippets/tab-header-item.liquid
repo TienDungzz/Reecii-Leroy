@@ -9,7 +9,17 @@
   {%- capture link -%}#tabs-{{ id }}-{{ forloop.index }}{%- endcapture -%}
 
   {%- if settings.style_class == 'link' -%}
-    {%- assign style_tabs_header_item = '' -%}
+    {%- capture style_tabs_header_item -%}
+      {%- if settings.button_type_size_link != blank -%}
+        --button-font-size-link: {{ settings.button_type_size_link }};
+      {%- endif -%}
+      {%- if settings.button_font_weight_link != blank and settings.button_font_weight_link != 'default' -%}
+        --button-font-weight-link: {{ settings.button_font_weight_link }};
+      {%- endif -%}
+      --text-transform: {{ settings.case }};
+      --text-wrap: {{ settings.wrap }};
+      --font-style: {{ settings.font_style }};
+    {%- endcapture -%}
   {%- endif-%}
 
   {% render 'button',
