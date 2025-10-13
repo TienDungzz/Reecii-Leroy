@@ -4,12 +4,6 @@
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag: preload: true }}
 {%- endif -%}
 
-{% comment %}
-  {%- if section.settings.quick_add != 'none' -%}
-    {{ 'quick-add.css' | asset_url | stylesheet_tag: preload: true }}
-  {%- endif -%}
-{% endcomment %}
-
 {%- liquid
   assign sec_id = section.id
   assign sec_stts = section.settings
@@ -107,86 +101,6 @@
 {%- endcapture -%}
 {% comment %} End For layout type tabs-grid and tabs-carousel {% endcomment %}
 
-{%- stylesheet -%}
-  @media screen and (max-width: 749px) {
-    .swiper-component-mobile .swiper-wrapper {
-      flex-wrap: nowrap;
-      gap: 0px;
-    }
-
-    .swiper-component-mobile .grid__item.swiper-slide {
-      max-width: 100%;
-    }
-  }
-  .collection-carousel-swiper-component.full-width .swiper {
-    overflow: visible;
-  }
-
-  .collection-carousel-swiper-component.full-width .swiper-btns-wrap:not(.swiper-btns-wrap--bottom) {
-    position: absolute;
-    width: 100%;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    z-index: 1;
-  }
-
-  .product-infinite-scroll {
-    margin-top: 5.5rem;
-  }
-
-  .section--featured-collection .content-inside-media {
-    padding: 3rem 1rem;
-
-    .content-inside-media__inner {
-      max-width: 500px;
-    }
-  }
-
-  .collection-banner .video-wrapper {
-    .content-inside-media,
-    .deferred-media__poster {
-      pointer-events: none;
-    }
-
-    .content-inside-media__inner {
-      pointer-events: visible;
-    }
-
-    .deferred-media__poster-icon {
-      pointer-events: visible;
-      cursor: pointer;
-    }
-
-    &:has(.deferred-media[loaded='true']) {
-      .video-wrapper__caption {
-        display: none;
-      }
-    }
-  }
-
-  .collection-banner .video-poster-button {
-    width: 6.4rem;
-    height: 6.4rem;
-
-    .button {
-      height: 100%;
-      min-width: 100%;
-    }
-  }
-
-  @media screen and (min-width: 750px) {
-    .section--featured-collection .has-media-banner {
-      grid-template-columns: var(--columns-vertical-int, 1fr 2fr);
-      grid-template-areas: var(--grid-template-areas, 'banner content');
-
-      .collection-banner {
-        grid-area: banner;
-      }
-    }
-  }
-{%- endstylesheet -%}
-
 <div
   class="section section--{{ page_width }} color-{{ sec_stts.color_scheme }} relative z-0 spacing"
   style=" --p-spacing-t: {{ sec_stts.padding_top }}px;--p-spacing-b: {{ sec_stts.padding_bottom }}px;"
@@ -270,7 +184,7 @@
         echo ' rte ';
       {% endif %}
     {% endcapture %}
-    
+
     {% capture subheading_block_classes %}
       {% if subheading_type_preset == 'custom' %}
         echo ' custom-typography ';
@@ -343,7 +257,7 @@
           </div>
         </div>
       {% endif %}
-    {%- endcapture -%}
+      {%- endcapture -%}
 
     {%- capture banner_image_html -%}
       {%- liquid
@@ -365,7 +279,7 @@
           </figcaption>
         </figure>
       {% endif %}
-    {%- endcapture -%}
+      {%- endcapture -%}
 
     {%- capture banner_video_html -%}
       {%- liquid
@@ -381,7 +295,6 @@
         {% endif %}
       {% endcapture %}
       <div class="collection-banner">
-
         {%- if sec_stts.video_display_mode == 'inline' -%}
           <figure class="video-wrapper m-0 relative">
             <div class="video-inner">
@@ -437,9 +350,8 @@
             {{banner_image_html }}
           </div>
         {%- endif -%}
-
       </div>
-    {%- endcapture -%}
+      {%- endcapture -%}
 
     <div
       class="collection{% if sec_stts.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %}{% if sec_stts.full_width %} collection--full-width{% endif %}"
@@ -1148,6 +1060,87 @@
     render 'theme-loader', files: files
   -%}
 {%- endif -%}
+
+{%- stylesheet -%}
+  @media screen and (max-width: 749px) {
+    .swiper-component-mobile .swiper-wrapper {
+      flex-wrap: nowrap;
+      gap: 0px;
+    }
+
+    .swiper-component-mobile .grid__item.swiper-slide {
+      max-width: 100%;
+    }
+  }
+
+  .collection-carousel-swiper-component.full-width .swiper {
+    overflow: visible;
+  }
+
+  .collection-carousel-swiper-component.full-width .swiper-btns-wrap:not(.swiper-btns-wrap--bottom) {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+
+  .product-infinite-scroll {
+    margin-top: 5.5rem;
+  }
+
+  .section--featured-collection .content-inside-media {
+    padding: 3rem 1rem;
+
+    .content-inside-media__inner {
+      max-width: 500px;
+    }
+  }
+
+  .collection-banner .video-wrapper {
+    .content-inside-media,
+    .deferred-media__poster {
+      pointer-events: none;
+    }
+
+    .content-inside-media__inner {
+      pointer-events: visible;
+    }
+
+    .deferred-media__poster-icon {
+      pointer-events: visible;
+      cursor: pointer;
+    }
+
+    &:has(.deferred-media[loaded='true']) {
+      .video-wrapper__caption {
+        display: none;
+      }
+    }
+  }
+
+  .collection-banner .video-poster-button {
+    width: 6.4rem;
+    height: 6.4rem;
+
+    .button {
+      height: 100%;
+      min-width: 100%;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .section--featured-collection .has-media-banner {
+      grid-template-columns: var(--columns-vertical-int, 1fr 2fr);
+      grid-template-areas: var(--grid-template-areas, 'banner content');
+
+      .collection-banner {
+        grid-area: banner;
+      }
+    }
+  }
+{%- endstylesheet -%}
 
 {% schema %}
 {
