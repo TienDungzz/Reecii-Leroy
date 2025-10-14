@@ -109,8 +109,22 @@
               slides_per_view: mobile_columns,
               space_between: block.settings.gap
             -%}
+            style="
+              {% render 'swiper-style',
+                columns_mobile: mobile_columns,
+                columns_tablet: columns_tablet,
+                columns_desktop: columns_desktop,
+                columns_gap: block.settings.gap,
+              %}
+            "
           >
-            <div class="swiper">
+            <div class="swiper" style="
+            {% if block.settings.pagination_type == 'bullets' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' %}
+              --dots-top-offset: {{ block.settings.dots_top_offset }}px;
+            {% elsif block.settings.pagination_type == 'progressbar' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' %}
+              --progress-top-offset: {{ block.settings.progress_top_offset }}px;
+            {% endif %}
+          ">
         {%- endif -%}
         <ul
           id="Grid-{{ block.id }}"
@@ -145,8 +159,22 @@
           watch_slides_progress: true,
           breakpoints: breakpoints
         -%}
+        style="
+          {% render 'swiper-style',
+            columns_mobile: mobile_columns,
+            columns_tablet: columns_tablet,
+            columns_desktop: columns_desktop,
+            columns_gap: block.settings.gap,
+          %}
+        "
       >
-        <div class="swiper w-full" style="--swiper-navigation-top-offset: 50%;">
+        <div class="swiper w-full" style="
+            {% if block.settings.pagination_type == 'bullets' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' %}
+              --dots-top-offset: {{ block.settings.dots_top_offset }}px;
+            {% elsif block.settings.pagination_type == 'progressbar' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' %}
+              --progress-top-offset: {{ block.settings.progress_top_offset }}px;
+            {% endif %}
+          ">
           <ul
             id="Slider-{{ block.id }}"
             data-id="{{ block.id }}"
@@ -363,6 +391,28 @@
         }
       ],
       "default": "bullets"
+    },
+    {
+      "type": "range",
+      "id": "dots_top_offset",
+      "label": "Dots top offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ block.settings.pagination_type == 'bullets' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "range",
+      "id": "progress_top_offset",
+      "label": "Progress top offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ block.settings.pagination_type == 'progressbar' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "header",

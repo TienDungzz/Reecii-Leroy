@@ -9,7 +9,12 @@
 {%- endcapture -%}
 
 <div class="{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}" style="{{ style }}">
-  <a href="{{ block.settings.url }}" class="{{ class }}">
+  <a href="{{ block.settings.url }}" class="{{ class }}"
+    {%- if block.settings.open_in_new_tab -%}
+      target="_blank"
+      rel="noopener noreferrer"
+    {%- endif -%}
+  >
     {{- block.settings.url_label -}}
   </a>
 </div>
@@ -21,12 +26,28 @@
   }
 {%- endstylesheet -%}
 
-
 {% schema %}
 {
   "name": "t:names.category_view_all",
   "tag": null,
   "settings": [
+    {
+      "type": "text",
+      "id": "url_label",
+      "label": "t:settings.label",
+      "default": "View all categories"
+    },
+    {
+      "type": "url",
+      "id": "url",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": false
+    },
     {
       "type": "header",
       "content": "t:content.appearance"
@@ -99,17 +120,6 @@
       "default": "#000000",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "url",
-      "id": "url",
-      "label": "t:settings.link"
-    },
-    {
-      "type": "text",
-      "id": "url_label",
-      "label": "t:settings.url_label",
-      "default": "View all categories"
     }
   ],
   "presets": [

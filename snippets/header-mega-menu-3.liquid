@@ -24,7 +24,10 @@
       assign link_url = bl_stts.link_url_1
     -%}
     {%- if image != blank -%}
-      <div class="collage__item collage__item--2 overflow-hidden">
+      <div class="collage__item collage__item--2 overflow-hidden
+      collage__item--image
+      {{ class_item_hover_reveal }} "
+      >
         <a
           class="block relative h-full"
           {% if link_url != blank %}
@@ -33,9 +36,6 @@
             role="link" aria-disabled="true"
           {% endif %}
         >
-          {%- if settings.animations_reveal_on_scroll -%}
-            <div data-animate="zoom-fade-in" class="theme-animate block overflow-hidden relative h-full">
-          {%- endif -%}
           {%- liquid
             assign ratio = image.aspect_ratio | default: 1
             assign image_alt = image.alt | default: shop.name | escape
@@ -46,20 +46,8 @@
             class="media media--transparent media--adapt"
             style="--media-adapt-ratio: {{ ratio }};"
           >
-            {{
-              image
-              | image_url: width: 1950
-              | image_tag:
-                loading: 'lazy',
-                widths: widths,
-                sizes: sizes,
-                alt: image_alt,
-                class: 'motion-reduce'
-            }}
+            {%- render 'image', image: image, sizes: sizes, widths: widths, loading: 'lazy', alt: image_alt, class: 'motion-reduce' -%}
           </div>
-          {%- if settings.animations_reveal_on_scroll -%}
-            </div>
-          {%- endif -%}
         </a>
       </div>
     {%- endif -%}
@@ -67,15 +55,12 @@
 {%- endcapture -%}
 
 <header-menu class="{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-  <details
+  <div
     id="Details-HeaderMenu-{{ forloopIndex }}"
     class="details--dropdown mega-menu mega-menu-style-3"
-    is="dropdown-details"
-    activate-event="hover"
-    check-shopify-design-mode
     {{ block.shopify_attributes }}
   >
-    <summary
+    <div
       id="HeaderMenu-{{ link.handle }}"
       class="
         details__summary list-menu__item menu__link--level-1 header__menu-item list-menu__item link focus-inset link--hover-underline
@@ -88,7 +73,6 @@
       {%- endif -%}
       style="{%  render 'highlight-style', order: '1', keys: keys, compare: link.title, settings: section.settings %}"
     >
-
       {% if is_vertical_menu %}
         {% liquid
           assign width = 20
@@ -103,7 +87,7 @@
 
         {% for ext in image_sources %}
           {% assign ext = ext | strip %}
-          {% assign item_image = link.handle | downcase | replace: ' ', '-'  | append: '.' | append: ext %}
+          {% assign item_image = link.handle | downcase | replace: ' ', '-' | append: '.' | append: ext %}
           {% if images[item_image] != blank and found_image == false %}
             {% assign found_image = true %}
             {% assign image = item_image | file_url %}
@@ -141,7 +125,7 @@
           {{- 'icon-caret.svg' | inline_asset_content -}}
         </span>
       {% endif %}
-    </summary>
+    </div>
     <div
       id="MegaMenu-Content-{{ forloopIndex }}"
       class="details__list list-menu--wrapper mega-menu__content z-1 color-{{ section.settings.menu_color_scheme }} motion-reduce global-settings-popup"
@@ -169,7 +153,9 @@
                       <a
                         href="{{ link.url }}"
                         title="{{ link.title | escape }}"
-                        class="header__menu-item mega-menu__link mega-menu__link--level-2 link
+                        class="
+                          header__menu-item mega-menu__link mega-menu__link--level-2 link
+                          {{ class_item_hover_reveal }}
                           {% render 'highlight-class', order: '2', keys: keys, compare: link.title, settings: section.settings %}
                         "
                         style="{%  render 'highlight-style', order: '2', keys: keys, compare: link.title, color: highlight_color, settings: section.settings %}"
@@ -196,6 +182,7 @@
                   href="{{ childlink.url }}"
                   class="
                     header__menu-item mega-menu__link mega-menu__link--level-2 link
+                    {{ class_item_hover_reveal }}
                     {% if childlink.current %} list-menu__item--active{% endif %}
                     {% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: section.settings %}
                   "
@@ -204,7 +191,9 @@
                     aria-current="page"
                   {% endif %}
                 >
-                  {{ childlink.title | escape }}
+                  <span class="text">
+                    {{ childlink.title | escape }}
+                  </span>
                 </a>
                 {%- if childlink.links != blank -%}
                   <ul class="list-unstyled" role="list">
@@ -214,7 +203,9 @@
                           id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
                           href="{{ grandchildlink.url }}"
                           class="
-                            header__menu-item mega-menu__link link link--hover-underline{% if grandchildlink.current %} list-menu__item--active{% endif %}
+                            header__menu-item mega-menu__link link link--hover-underline
+                            {{ class_item_hover_reveal }}
+                            {% if grandchildlink.current %} list-menu__item--active{% endif %}
                             {% render 'highlight-class', order: '3', keys: keys, compare: grandchildlink.title, settings: section.settings %}
                           "
                           {% if grandchildlink.current %}
@@ -309,7 +300,7 @@
                       {% for product in collection.products limit: max_items %}
                         <li
                           id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}"
-                          class="mega-menu__collection--item grid__item swiper-slide"
+                          class="mega-menu__collection--item grid__item swiper-slide {{ class_item_hover_reveal }}"
                         >
                           {% render 'resource-card',
                             resource_type: 'product',
@@ -320,7 +311,8 @@
                             image_width: 500,
                             image_hover: true,
                             image_aspect_ratio: '4 / 5',
-                            show_variant_swatches: true
+                            show_variant_swatches: true,
+                            index: forloop.index
                           %}
                         </li>
                       {% endfor %}
@@ -336,7 +328,7 @@
         </div>
       </div>
     </div>
-  </details>
+  </div>
 </header-menu>
 
 {%- stylesheet -%}

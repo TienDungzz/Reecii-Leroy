@@ -1,8 +1,26 @@
+// Detect events when page has loaded
+window.addEventListener('beforeunload', () => {
+  document.body.classList.add('u-p-loaded');
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.body.classList.add('p-loaded');
+
+  document.dispatchEvent(new CustomEvent('page:loaded'));
+});
+
+window.addEventListener('pageshow', (event) => {
+  // Removes unload class when the page was cached by the browser
+  if (event.persisted) {
+    document.body.classList.remove('u-p-loaded');
+  }
+});
+
 // Get Lenis and init
 function initLenis() {
   if (window.LenisInstance || !window.Lenis) return;
   window.LenisInstance = new window.Lenis({
-    lerp: 0.1
+    lerp: 0.07
     // Add more options here
   });
   function raf(time) {
@@ -44,6 +62,119 @@ document.addEventListener('DOMContentLoaded', () => {
 // To activate again after closing drawer, call startLenis():
 //   startLenis();
 
+
+
+// header tab
+
+class HeaderMultiSite extends HTMLElement {
+  constructor() {
+    super();
+  }
+}
+if (!customElements.get('header-multi-site')) customElements.define('header-multi-site', HeaderMultiSite);
+
+function setCookie(name, value, days) {
+  let expires = '';
+  if (days) {
+    let date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = '; expires=' + date.toUTCString();
+  }
+  document.cookie = name + '=' + value + '; path=/' + expires;
+}
+
+function getCookie(name) {
+  let matches = document.cookie.match(
+    new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
+  );
+  return matches ? decodeURIComponent(matches[1]) : null;
+}
+
+function menuTab() {
+  const menuTabs = document.querySelector('[data-menu-tab]');
+  if (!menuTabs) return;
+
+  document.addEventListener('click', (event) => {
+    const target = event.target.closest('[data-menu-tab] a');
+    if (!target) return;
+
+    const activePage = target.dataset.loadPage;
+    setCookie('page-url', activePage, 1);
+  });
+
+  const canonical = document.querySelector('[canonical-url]')?.getAttribute('canonical-url');
+  let handlePageUrl = getCookie('page-url');
+  let menuTabItem, logoTabItem, menuItem;
+
+  if (window.location.pathname.includes('/pages/') && window.page_active && window.page_active !== handlePageUrl) {
+    setCookie('page-url', window.page_active, 1);
+    handlePageUrl = window.page_active;
+  }
+  if (handlePageUrl) {
+    menuTabItem = document.querySelector(`[data-handle-page='${handlePageUrl}']`);
+    logoTabItem = document
+      .querySelector('.header__heading-link')
+      .setAttribute('data-logo-page', `${handlePageUrl}`);
+    menuItem = document
+      .querySelector(`[data-handle-page='${handlePageUrl}']~.header__inline-menu`)
+      ?.setAttribute('data-menu-page', `${handlePageUrl}`);
+
+  } else {
+    menuTabItem = document.querySelector('[data-handle-page].link--multi-site--active');
+    logoTabItem = document.querySelector('[data-logo-page].first');
+    menuItem = document.querySelector('[data-menu-page].link--multi-site--active');
+  }
+
+  const menuTab = menuTabItem?.closest('[data-menu-tab]');
+  if (menuTab) {
+    menuTab.querySelectorAll('[data-handle-page]').forEach((el) => el.classList.remove('link--multi-site--active'));
+    logoTabItem?.parentElement
+      ?.querySelectorAll('[data-logo-page]')
+      .forEach((el) => el.classList.remove('link--multi-site--active'));
+    menuItem?.parentElement?.querySelectorAll('[data-menu-page]').forEach((el) => el.classList.remove('link--multi-site--active'));
+  }
+
+  if (handlePageUrl) {
+    logoTabItem?.classList.add('link--multi-site--active');
+    menuTabItem?.classList.add('link--multi-site--active');
+    menuItem?.classList.add('link--multi-site--active');
+  } else {
+    document.querySelector('[data-handle-page]:nth-child(1)')?.classList.add('link--multi-site--active');
+    document.querySelector('[data-logo-page]:nth-child(1)')?.classList.add('link--multi-site--active');
+    document.querySelector('[data-menu-page]:nth-child(1)')?.classList.add('link--multi-site--active');
+  }
+}
+menuTab();
+
+function appendTabMenuToMainMenu() {
+  const handle = getCookie('page-url') || window.page_active;
+  const mainMenu = document.querySelector('[data-main-menu]');
+  const tabMenu = document.querySelector(`[data-menu-page='${handle}']`);
+
+  if (!mainMenu) {
+    // Cannot find main menu element, nothing to do
+    return;
+  }
+
+  if (!handle || handle === 'undefined') {
+    const inlineMenu = mainMenu.querySelector('.list-menu--inline');
+    if (inlineMenu) {
+      inlineMenu.classList.remove('hidden');
+    }
+    return;
+  }
+
+  if (tabMenu) {
+    const template = tabMenu.querySelector('template');
+    if (template) {
+      const templateContent = template.content.cloneNode(true);
+      mainMenu.innerHTML = '';
+      mainMenu.appendChild(templateContent);
+    }
+  }
+}
+appendTabMenuToMainMenu();
+
 function getScrollbarWidth() {
   const width = window.innerWidth - document.documentElement.clientWidth;
 
@@ -73,18 +204,17 @@ function headerHeight() {
     if (sectionHeader > 52) {
       listMenuWrapper.forEach((summary) => {
         summary.style.setProperty("--top-position", "auto");
-        summary.style.setProperty("--margin-top", "3.1rem");
       });
       listMenu.style.setProperty("--list-menu-height", "4rem");
     } else {
       listMenuWrapper.forEach((summary) => {
         summary.style.setProperty("--top-position", headerHeight);
-        summary.style.setProperty("--margin-top", "0");
       });
       listMenu.style.setProperty("--list-menu-height", headerHeight);
     }
 
     const stickyHeader = header.closest('sticky-header');
+
     if (stickyHeader) {
       header.addEventListener("mouseenter", function () {
         const newHeight = header.offsetHeight - 1 + "px";
@@ -95,6 +225,7 @@ function headerHeight() {
           });
         }
       });
+
       header.addEventListener("mouseleave", function () {
         const newHeight = header.offsetHeight - 1 + "px";
         if (sectionHeader > 52) {
@@ -147,6 +278,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
 window.addEventListener("resize", () => {
   headerHeight();
+});
+
+window.addEventListener("scroll", () => {
+  setTimeout(() => {
+    headerHeight();
+  }, 200);
 });
 
 function getFocusableElements(container) {
@@ -3816,129 +3953,6 @@ function updateSidebarCart(cart) {
 Shopify.onCartUpdate = function(cart) {
 }
 
-class HoverButton extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.addEventListener('mouseenter', this.onMouseEnter);
-    this.addEventListener('mouseleave', this.onMouseLeave);
-  }
-
-  disconnectedCallback() {
-    this.removeEventListener('mouseenter', this.onMouseEnter);
-    this.removeEventListener('mouseleave', this.onMouseLeave);
-  }
-
-  onMouseEnter() {
-    const hoverButton = event.currentTarget;
-    const btnFill = hoverButton.querySelector('[data-fill-bg]');
-    const dir = this.classList.contains('swiper-button-prev') ? 'left' : 'right';
-
-    if (btnFill) {
-      Motion.animate(btnFill, {x: dir === 'left' ? ['100%', '0%'] : ['-100%', '0%']}, { duration: 0.35 });
-    }
-  }
-
-  onMouseLeave() {
-    const hoverButton = event.currentTarget;
-    const btnFill = hoverButton.querySelector('[data-fill-bg]');
-    const dir = this.classList.contains('swiper-button-prev') ? 'left' : 'right';
-
-    if (btnFill) {
-      Motion.animate(btnFill, {x: dir === 'left' ? ['-100%'] : ['100%']}, { duration: 0.35 });
-
-    }
-  }
-}
-
-if (!customElements.get('hover-button')) customElements.define('hover-button', HoverButton);
-
-
-// class ParallaxScroll extends HTMLElement {
-//   constructor() {
-//     super();
-//     this._target = null;
-//   }
-
-//   connectedCallback() {
-//     if (!window.Motion || !Motion.animate || !Motion.scroll) return;
-
-//     const selector = this.getAttribute('data-target') || '.target';
-//     this._target = this.querySelector(selector) || this.firstElementChild;
-//     if (!this._target) return;
-
-//     const axis = (this.getAttribute('data-axis') || 'y').toLowerCase(); // 'y' | 'x'
-//     const speed = parseFloat(this.getAttribute('data-speed')) || 0.5;    // 0..1+
-//     const mobileFactor = parseFloat(this.getAttribute('data-mobile-factor')) || 0.5;
-//     const disableOnMobile = this.getAttribute('data-disable-mobile') === 'true';
-//     const isMobile = window.innerWidth < 750;
-
-//     if (disableOnMobile && isMobile) return;
-
-//     const effectiveSpeed = isMobile ? speed * mobileFactor : speed;
-
-//     // Offsets syntax follows Motion One scroll offset
-//     const offsetAttr = this.getAttribute('data-offset');
-//     const offset = offsetAttr
-//       ? offsetAttr.split(',').map(s => s.trim())
-//       : ['start end', 'end start'];
-
-//     // Range in px or % for axis
-//     const rangeAttr = this.getAttribute('data-range'); // e.g. "40" or "20%" (applies symmetrically)
-//     const ease = this.getAttribute('data-ease');       // e.g. "0.25,0.1,0.25,1"
-//     const duration = parseFloat(this.getAttribute('data-duration')) || 0.3;
-
-//     const parseRange = () => {
-//       if (!rangeAttr) return 40; // px baseline
-//       if (rangeAttr.endsWith('%')) return (parseFloat(rangeAttr) || 0);
-//       return parseFloat(rangeAttr) || 40;
-//     };
-
-//     const rawRange = parseRange();
-//     const toValue = (val) =>
-//       typeof val === 'number' ? val : `${val}`;
-
-//     const usePercent = typeof rawRange !== 'number' || (rangeAttr && rangeAttr.endsWith('%'));
-//     const dist = rawRange * effectiveSpeed;
-
-//     const from = usePercent ? `-${dist}%` : -dist;
-//     const to = usePercent ? `${dist}%` : dist;
-
-//     const easing = ease
-//       ? ease.split(',').map(n => parseFloat(n.trim())).slice(0, 4)
-//       : [0.33, 1, 0.68, 1];
-
-//     Object.assign(this._target.style, {
-//       willChange: 'transform',
-//       transform: 'translate3d(0,0,0)',
-//       backfaceVisibility: 'hidden',
-//     });
-
-//     const keyframes = axis === 'x'
-//       ? { x: [toValue(from), toValue(to)] }
-//       : { y: [toValue(from), toValue(to)] };
-
-//     Motion.scroll(
-//       Motion.animate(
-//         this._target,
-//         keyframes,
-//         { ease: easing, duration: duration }
-//       ),
-//       {
-//         target: this,
-//         smooth: true,
-//         offset
-//       }
-//     );
-//   }
-// }
-
-// if (!customElements.get('parallax-background')) {
-//   customElements.define('parallax-background', ParallaxScroll);
-// }
-
 class FilterFAQs extends HTMLElement {
   constructor() {
     super();
@@ -4094,118 +4108,6 @@ function resetShimmer(container = document.body) {
   });
 }
 
-// header tab
-
-class HeaderMultiSite extends HTMLElement {
-  constructor() {
-    super();
-  }
-}
-if (!customElements.get('header-multi-site')) customElements.define('header-multi-site', HeaderMultiSite);
-
-function setCookie(name, value, days) {
-  let expires = '';
-  if (days) {
-    let date = new Date();
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-    expires = '; expires=' + date.toUTCString();
-  }
-  document.cookie = name + '=' + value + '; path=/' + expires;
-}
-
-function getCookie(name) {
-  let matches = document.cookie.match(
-    new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
-  );
-  return matches ? decodeURIComponent(matches[1]) : null;
-}
-
-function menuTab() {
-  const menuTabs = document.querySelector('[data-menu-tab]');
-  if (!menuTabs) return;
-
-  document.addEventListener('click', (event) => {
-    const target = event.target.closest('[data-menu-tab] a');
-    if (!target) return;
-
-    const activePage = target.dataset.loadPage;
-    setCookie('page-url', activePage, 1);
-  });
-
-  const canonical = document.querySelector('[canonical-url]')?.getAttribute('canonical-url');
-  let handlePageUrl = getCookie('page-url');
-  let menuTabItem, logoTabItem, menuItem;
-
-  if (window.location.pathname.includes('/pages/') && window.page_active && window.page_active !== handlePageUrl) {
-    setCookie('page-url', window.page_active, 1);
-    handlePageUrl = window.page_active;
-  }
-  if (handlePageUrl) {
-    menuTabItem = document.querySelector(`[data-handle-page='${handlePageUrl}']`);
-    logoTabItem = document
-      .querySelector('.header__heading-link')
-      .setAttribute('data-logo-page', `${handlePageUrl}`);
-    menuItem = document
-      .querySelector(`[data-handle-page='${handlePageUrl}']~.header__inline-menu`)
-      ?.setAttribute('data-menu-page', `${handlePageUrl}`);
-
-  } else {
-    menuTabItem = document.querySelector('[data-handle-page].link--multi-site--active');
-    logoTabItem = document.querySelector('[data-logo-page].first');
-    menuItem = document.querySelector('[data-menu-page].link--multi-site--active');
-  }
-
-  const menuTab = menuTabItem?.closest('[data-menu-tab]');
-  if (menuTab) {
-    menuTab.querySelectorAll('[data-handle-page]').forEach((el) => el.classList.remove('link--multi-site--active'));
-    logoTabItem?.parentElement
-      ?.querySelectorAll('[data-logo-page]')
-      .forEach((el) => el.classList.remove('link--multi-site--active'));
-    menuItem?.parentElement?.querySelectorAll('[data-menu-page]').forEach((el) => el.classList.remove('link--multi-site--active'));
-  }
-
-  if (handlePageUrl) {
-    logoTabItem?.classList.add('link--multi-site--active');
-    menuTabItem?.classList.add('link--multi-site--active');
-    menuItem?.classList.add('link--multi-site--active');
-  } else {
-    document.querySelector('[data-handle-page]:nth-child(1)')?.classList.add('link--multi-site--active');
-    document.querySelector('[data-logo-page]:nth-child(1)')?.classList.add('link--multi-site--active');
-    document.querySelector('[data-menu-page]:nth-child(1)')?.classList.add('link--multi-site--active');
-  }
-}
-menuTab();
-
-function appendTabMenuToMainMenu() {
-  const handle = getCookie('page-url') || window.page_active;
-  const mainMenu = document.querySelector('[data-main-menu]');
-  const tabMenu = document.querySelector(`[data-menu-page='${handle}']`);
-
-  if (!mainMenu) {
-    // Cannot find main menu element, nothing to do
-    return;
-  }
-
-  if (!handle || handle === 'undefined') {
-    const inlineMenu = mainMenu.querySelector('.list-menu--inline');
-    if (inlineMenu) {
-      inlineMenu.classList.remove('hidden');
-    }
-    return;
-  }
-
-  if (tabMenu) {
-    const template = tabMenu.querySelector('template');
-    if (template) {
-      const templateContent = template.content.cloneNode(true);
-      mainMenu.innerHTML = '';
-      mainMenu.appendChild(templateContent);
-    }
-  }
-}
-appendTabMenuToMainMenu();
-
-
 (function() {
   if (typeof Fancybox === 'undefined') {
     console.error('Fancybox library not loaded');
@@ -4260,3 +4162,31 @@ appendTabMenuToMainMenu();
     }, 100);
   }
 })();
+
+class SlideshowAnimated extends HTMLElement {
+  constructor() {
+    super();
+
+    this.image = this.querySelector('[data-image-trans]')
+    this.speed = parseFloat(this.dataset.speed) || 0.5;
+  }
+
+  connectedCallback() {
+    this.initAnimate()
+  }
+
+  initAnimate() {
+    let n = this.image.offsetHeight - this.offsetHeight;
+    let yUp = Math.round(n * this.speed)
+    let yDown = Math.round(n * this.speed) * -1
+    Motion.scroll(
+      Motion.animate(
+        this.image,
+        { y: [yDown, yUp] },
+        { easing: 'linear' },
+      ),
+      { target: this, offset: ["center start", "end start"] }
+    );
+  }
+}
+if (!customElements.get('slideshow-animated')) customElements.define('slideshow-animated', SlideshowAnimated);

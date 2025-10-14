@@ -194,17 +194,20 @@
                             {%- endif -%}
                           </div>
                         {%- endif -%}
-
-                        <p class="product-option">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                        {% if item.selling_plan_allocation != null %}
+                          <p class="product-option">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                        {% endif %}
                       {%- endif -%}
 
                       <ul class="discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">
                         {%- for discount in item.line_level_discount_allocations -%}
                           <li class="discounts__discount">
-                            <span class="svg-wrapper">
-                              {{- 'icon-discount.svg' | inline_asset_content -}}
+                            <span class="discounts__discount-text font-medium">
+                              <span class="svg-wrapper">
+                                {{- 'icon-discount.svg' | inline_asset_content -}}
+                              </span>
+                              {{ discount.discount_application.title | escape }}
                             </span>
-                            {{ discount.discount_application.title | escape }}
                           </li>
                         {%- endfor -%}
                       </ul>
@@ -217,26 +220,30 @@
                       <text-loader-component>
                         {%- render 'loading-spinner' -%}
                         <div class="cart-item__price-wrapper">
-                          {%- if item.original_price != item.final_price -%}
+                          {%- assign compare_price = item.variant.compare_at_price -%}
+                          {%- assign regular_price = item.original_price -%}
+                          {%- assign final_price = item.final_price -%}
+
+                          {%- if compare_price > regular_price or regular_price > final_price -%}
                             <dl class="cart-item__discounted-prices">
                               <dt class="visually-hidden">
                                 {{ 'products.product.price.regular_price' | t }}
                               </dt>
                               <dd class="center">
                                 <s class="cart-item__old-price price price--end">
-                                  {{ item.original_price | money }}
+                                  {{ compare_price | default: regular_price | money }}
                                 </s>
                               </dd>
                               <dt class="visually-hidden">
                                 {{ 'products.product.price.sale_price' | t }}
                               </dt>
                               <dd class="price price--end center">
-                                {{ item.final_price | money }}
+                                {{ final_price | money }}
                               </dd>
                             </dl>
                           {%- else -%}
                             <span class="price price--end center">
-                              {{ item.original_price | money }}
+                              {{ final_price | money }}
                             </span>
                           {%- endif -%}
 
@@ -265,28 +272,32 @@
                       <text-loader-component>
                         {%- render 'loading-spinner' -%}
                         <div class="cart-item__price-wrapper">
-                          {%- if item.original_line_price != item.final_line_price -%}
+                          {% assign compare_line_price = item.variant.compare_at_price | times: item.quantity %}
+                          {% assign regular_line_price = item.original_line_price %}
+                          {% assign final_line_price = item.final_line_price %}
+
+                          {% if compare_line_price > final_line_price or regular_line_price > final_line_price %}
                             <dl class="cart-item__discounted-prices">
                               <dt class="visually-hidden">
                                 {{ 'products.product.price.regular_price' | t }}
                               </dt>
                               <dd class="center">
                                 <s class="cart-item__old-price price price--end">
-                                  {{ item.original_line_price | money }}
+                                  {{ compare_line_price | default: regular_line_price | money }}
                                 </s>
                               </dd>
                               <dt class="visually-hidden">
                                 {{ 'products.product.price.sale_price' | t }}
                               </dt>
                               <dd class="price price--end center">
-                                {{ item.final_line_price | money }}
+                                {{ final_line_price | money }}
                               </dd>
                             </dl>
-                          {%- else -%}
+                          {% else %}
                             <span class="price price--end center">
-                              {{ item.original_line_price | money }}
+                              {{ final_line_price | money }}
                             </span>
-                          {%- endif -%}
+                          {% endif %}
 
                           {%- if item.variant.available and item.unit_price_measurement -%}
                             <div class="unit-price caption center">
@@ -342,6 +353,8 @@
                           name="{% if item.index %}updates[]{% else %}quantity{% endif %}"
                           value="{{ item.quantity | default: 1 }}"
                           min="0"
+                          onblur="this.closest('quantity-selector-component').dispatchEvent(new CustomEvent('setQuantity', { bubbles: true }))"
+                          onfocus="this.closest('quantity-selector-component').selectInputValue()"
                           data-index="{{ item.index | plus: 1 }}"
                           aria-label="{{ 'products.product.quantity.input_label' | t: product: item.product.title | escape }}"
                           inputmode="numeric"
@@ -388,28 +401,32 @@
                       <text-loader-component>
                         {%- render 'loading-spinner' -%}
                         <div class="cart-item__price-wrapper">
-                          {%- if item.original_line_price != item.final_line_price -%}
+                          {% assign compare_line_price = item.variant.compare_at_price | times: item.quantity %}
+                          {% assign regular_line_price = item.original_line_price %}
+                          {% assign final_line_price = item.final_line_price %}
+
+                          {% if compare_line_price > final_line_price or regular_line_price > final_line_price %}
                             <dl class="cart-item__discounted-prices">
                               <dt class="visually-hidden">
                                 {{ 'products.product.price.regular_price' | t }}
                               </dt>
                               <dd class="center">
                                 <s class="cart-item__old-price price price--end">
-                                  {{ item.original_line_price | money }}
+                                  {{ compare_line_price | default: regular_line_price | money }}
                                 </s>
                               </dd>
                               <dt class="visually-hidden">
                                 {{ 'products.product.price.sale_price' | t }}
                               </dt>
                               <dd class="price price--end center">
-                                {{ item.final_line_price | money }}
+                                {{ final_line_price | money }}
                               </dd>
                             </dl>
-                          {%- else -%}
+                          {% else %}
                             <span class="price price--end center">
-                              {{ item.original_line_price | money }}
+                              {{ final_line_price | money }}
                             </span>
-                          {%- endif -%}
+                          {% endif %}
 
                           {%- if item.variant.available and item.unit_price_measurement -%}
                             <div class="unit-price caption center">

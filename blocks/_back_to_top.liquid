@@ -12,7 +12,7 @@
     <span class="svg-wrapper">
       {{- 'icon-arrow.svg' | inline_asset_content -}}
 
-      <svg class="progress-circle absolute inset-0" width="100%" height="100%" viewBox="-1 -1 102 102">
+      {% comment %} <svg class="progress-circle absolute inset-0" width="100%" height="100%" viewBox="-1 -1 102 102">
         <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
       </svg>
       <svg
@@ -22,6 +22,10 @@
         viewBox="-1 -1 102 102"
       >
         <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
+      </svg> {% endcomment %}
+
+      <svg class="progress-circle progress-circle-fill svg-content absolute inset-0" width="100%" height="100%" viewBox="-1 -1 102 102">
+        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" style="transition: stroke-dashoffset 10ms linear; stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 307.919;"></path>
       </svg>
     </span>
   </button>
@@ -29,40 +33,8 @@
 </div>
 
 <script defer="defer">
-  {% comment %} document.addEventListener('DOMContentLoaded', () => {
-    var progressPath = document.querySelector('.button__back-to-top .progress-circle-fill path');
-    if (!progressPath) return;
-    var pathLength = progressPath.getTotalLength();
-
-    progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
-
-    progressPath.style.strokeDasharray = pathLength + ' ' + pathLength;
-    progressPath.style.strokeDashoffset = pathLength;
-
-    progressPath.getBoundingClientRect();
-
-    progressPath.style.transition = progressPath.style.WebkitTransition = 'stroke-dashoffset 10ms linear';
-
-    var updateProgress = function () {
-      var scroll = window.scrollY || window.pageYOffset;
-      var height = document.documentElement.scrollHeight - window.innerHeight;
-      var progress = pathLength - (scroll * pathLength) / height;
-      progressPath.style.strokeDashoffset = progress;
-    };
-
-    updateProgress();
-    window.addEventListener('scroll', updateProgress);
-  }); {% endcomment %}
-
-  {% comment %} Sử dụng scrollY của Lenis (window.LenisInstance), nếu không thì dùng scrollY mặc định {% endcomment %}
-  {% comment %}
-    Optimize để khi scroll progressPath không bị giật/lag bằng cách:
-    - Dùng requestAnimationFrame liên tục để update progress, không phụ thuộc vào sự kiện scroll (loop animation).
-    - Chỉ update strokeDashoffset khi thực sự thay đổi (so sánh giá trị).
-    - Loại bỏ ticking/rAF chồng lặp, tránh drop frame.
-  {% endcomment %}
   document.addEventListener('DOMContentLoaded', () => {
-    var progressPath = document.querySelector('.button__back-to-top .progress-circle-fill path');
+    var progressPath = document.querySelector('.button__back-to-top .progress-circle path');
     if (!progressPath) return;
     var pathLength = progressPath.getTotalLength();
 
@@ -110,6 +82,7 @@
     // Start the rAF loop
     rafLoop();
   });
+
 </script>
 
 {% schema %}

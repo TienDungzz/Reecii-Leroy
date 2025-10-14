@@ -42,6 +42,7 @@
         type="submit"
         class="button button--primary cart-discount__button"
       >
+        {%- render 'loading-spinner' -%}
         {{ 'actions.apply' | t }}
       </button>
     </form>
@@ -53,12 +54,12 @@
     <span class="svg-wrapper">
       {{- 'icon-error.svg' | inline_asset_content -}}
     </span>
-    <small class="cart-discount__error-text cart-primary-typography cart-discount__error-discount-code hidden">
+    <div class="cart-discount__error-text cart-primary-typography cart-discount__error-discount-code hidden">
       {{ 'content.discount_code_error' | t }}
-    </small>
-    <small class="cart-discount__error-text cart-primary-typography cart-discount__error-shipping hidden">
+    </div>
+    <div class="cart-discount__error-text cart-primary-typography cart-discount__error-shipping hidden">
       {{ 'content.shipping_discount_error' | t }}
-    </small>
+    </div>
   </div>
   <ul class="cart-discount__codes">
     {% for discount_code in discount_codes %}
@@ -131,21 +132,38 @@
     gap: var(--padding-xs);
     align-items: center;
     padding: var(--padding-2xs) var(--padding-sm);
-    border-radius: var(--variant-pills-radius);
+    border-radius: var(--style-border-radius-md);
     background-color: var(--bg-medium-gray);
+    font-size: var(--font-size--sm);
     text-transform: uppercase;
+
+    .svg-wrapper {
+      width: var(--size-16);
+      height: var(--size-16);
+    }
   }
 
   .cart-discount__form {
     display: flex;
     gap: var(--padding-md);
-    align-items: center;
+    align-items: stretch;
     height: 100%;
+
+    .button {
+      min-width: 10rem;
+    }
+
+    .field .cart-discount__input {
+      height: 100%;
+    }
   }
 
   :is(.cart-discount__pill-remove, .cart-discount__pill-remove:hover) {
     --close-icon-opacity: 0.4;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--color-foreground);
     background-color: transparent;
     pointer-events: all;
@@ -157,13 +175,11 @@
     display: flex;
     align-items: center;
     width: 100%;
-    padding-block: var(--padding-2xs) var(--padding-sm);
+    padding-block: var(--padding-sm);
   }
 
   .cart-discount__error .svg-wrapper {
     flex-shrink: 0;
-    width: var(--icon-size-xs);
-    height: var(--icon-size-xs);
     margin-inline: var(--margin-3xs) var(--margin-xs);
   }
 

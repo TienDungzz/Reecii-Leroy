@@ -26,6 +26,8 @@
   assign buttons_padding_horizontal_mobile = buttons_padding_horizontal_mobile | default: settings.buttons_padding_horizontal_mobile
   assign button_type_size_link = button_type_size_link | default: settings.button_type_size_link
   assign button_font_weight_link = button_font_weight_link | default: settings.button_font_weight_link
+  assign custom_color_underline = custom_color_underline | default: settings.custom_color_underline
+  assign link_underline_color = link_underline_color | default: settings.link_underline_color
 -%}
 
 {%- capture button -%}
@@ -80,6 +82,9 @@
     {%- endif -%}
     {%- if button_font_weight_link -%}
       --button-font-weight-link: {{ button_font_weight_link }};
+    {%- endif -%}
+    {%- if custom_color_underline and link_underline_color -%}
+      --link-underline-color: rgb({{ link_underline_color.rgba }});
     {%- endif -%}
   {%- endif -%}
 {%- endcapture -%}

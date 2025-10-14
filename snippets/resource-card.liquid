@@ -36,7 +36,14 @@
   endif
 %}
 
-<div class="resource-card-wrapper product-card-wrapper card-wrapper">
+<div
+  class="resource-card-wrapper product-card-wrapper card-wrapper"
+  style="
+    {% if settings.animations_reveal_on_scroll %}
+      --animation-order: {{ index | default: 1 }};
+    {% endif %}
+  "
+>
   <div class="card">
     <div
       class="
@@ -168,11 +175,13 @@
           {% endif %}
         </card-media>
       </div>
-      <div class="
-        resource-card__content
-        {% if horizontal_alignment != blank %} {{ horizontal_alignment}}{% endif %}
-        {% if vertical_alignment != blank %} {{ vertical_alignment}}{% endif %}
-      ">
+      <div
+        class="
+          resource-card__content
+          {% if horizontal_alignment != blank %} {{ horizontal_alignment}}{% endif %}
+          {% if vertical_alignment != blank %} {{ vertical_alignment}}{% endif %}
+        "
+      >
         {% if resource_type == 'product' and settings.predictive_search_show_vendor %}
           <p class="resource-card__subtext paragraph">
             {{- resource.vendor -}}
@@ -195,7 +204,7 @@
         </p>
 
         {% if resource_type == 'product' and settings.predictive_search_show_price %}
-          {% render 'price', product_resource: resource, show_unit_price: true %}
+          {% render 'price', product: resource, show_unit_price: true %}
         {% elsif resource_type == 'collection' and single_thumbnail_collection == false %}
           <p class="resource-card__subtext paragraph">
             {{- 'content.search_results_resource_products_count' | t: count: resource.all_products_count -}}
@@ -302,17 +311,17 @@
       font-size: var(--font-size--2xs);
     }
 
-    &.justify-end ,
+    &.justify-end,
     &.items-end {
       --text-align: right;
     }
 
-    &.justify-center ,
+    &.justify-center,
     &.items-center {
       --text-align: center;
     }
 
-    &.justify-start ,
+    &.justify-start,
     &.items-start {
       --text-align: left;
     }
@@ -356,7 +365,7 @@
     color: var(--color-foreground);
   }
 
-  .resource-card__title > *{
+  .resource-card__title > * {
     margin-block: 0;
     display: -webkit-box;
     -webkit-box-orient: vertical;

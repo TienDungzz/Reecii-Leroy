@@ -98,6 +98,7 @@
 
     {% render 'spacing-padding', settings: section.settings %}
   "
+
 >
   <div
     id="slideshow-{{ section.id }}"
@@ -172,6 +173,7 @@
       assign dot_background = sec_stts.dot_background
       assign dot_border_radius = sec_stts.dot_border_radius
       assign swiper_buttons_gap = sec_stts.swiper_buttons_gap
+      assign speed = 800
     -%}
     <swiper-component
       class="slideshow__container"
@@ -179,12 +181,12 @@
         settings: section.settings,
         space_between: 0,
         parallax: true,
-        speed: 800,
+        speed: speed,
         direction: sec_stts.slide_direction
       -%}
     >
-      <div class="swiper">
-        <div class="swiper-wrapper slideshow__slides w-full">
+      <div class="swiper slideshow__slides" style="--swiper-speed: {{ speed }}ms;">
+        <div class="swiper-wrapper w-full">
           {% content_for 'blocks' %}
         </div>
 
@@ -234,7 +236,7 @@
     </swiper-component>
 
     {%- if sec_stts.enable_multi_level_category -%}
-      <div class="home-category-filter-sections{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--fade-in{% endif %}">
+      <div class="home-category-filter-sections">
         {% render 'multi-level-category', enable_multi_level_category: true %}
       </div>
     {%- endif -%}
@@ -1246,10 +1248,6 @@
         {
           "value": "ambient",
           "label": "t:options.ambient_movement"
-        },
-        {
-          "value": "zoom-in",
-          "label": "t:options.zoom_in_on_scroll"
         }
       ],
       "default": "none",

@@ -139,9 +139,11 @@
         if (window.pageYOffset <= 300) {
           backToTopButton.classList.add('hide');
 
-          if (!this.querySelector(`.button__back-to-top:first-child`)) {
+          if (!this.querySelector(`.button__back-to-top:first-child`) && backToTopButton.classList.contains('active')) {
             backToTopButton.classList.remove('active');
             firstTargetBlock?.classList.add('active');
+            console.log('firstTargetBlock', firstTargetBlock);
+
           }
 
           backToTopButton.style.setProperty('--h-cus', '0px');
@@ -169,11 +171,12 @@
     transition: opacity var(--duration-long) ease, visibility var(--duration-long) ease,
       transform var(--duration-long) ease;
     will-change: transform;
+    overflow: hidden;
   }
 
   .multi-t__button {
-    width: 4rem;
-    height: 4rem;
+    width: var(--size-40);
+    height: var(--size-40);
     background: transparent;
     transition: all var(--duration-default) ease;
   }
@@ -184,16 +187,16 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 4rem;
-    height: 4rem;
+    width: var(--size-40);
+    height: var(--size-40);
     pointer-events: none;
   }
 
   .multi-t__button .icon {
     color: rgba(var(--color-foreground));
     display: block;
-    width: 1.8rem;
-    height: 1.8rem;
+    width: var(--size-18);
+    height: var(--size-18);
     z-index: 1;
     transition-property: color, transform;
     transition-duration: var(--duration-long);
@@ -215,8 +218,8 @@
 
   .recently-viewed__warnings .icon {
     display: block;
-    width: 4.6rem;
-    height: 4.6rem;
+    width: var(--size-46);
+    height: var(--size-46);
     z-index: 1;
     color: rgb(var(--color-foreground-rgb) / var(--opacity-10));
     margin: 0 auto 1rem auto;
@@ -245,11 +248,11 @@
   }
 
   .multi-t__wrap [data-index='2'].active ~ .glider {
-    transform: translateY(calc(100% + var(--margin-xs)));
+    transform: translateY(calc(100% + var(--gap-xs)));
   }
 
   .multi-t__wrap [data-index='3'].active ~ .glider {
-    transform: translateY(calc(200% + var(--margin-xs) * 2));
+    transform: translateY(calc(200% + var(--gap-xs) * 2));
   }
 
   .multi-t__wrap .button__back-to-top.hide ~ [data-index='2'].active ~ .glider {
@@ -257,7 +260,7 @@
   }
 
   .multi-t__wrap .button__back-to-top.hide ~ [data-index='3'].active ~ .glider {
-    transform: translateY(calc(100% + var(--margin-xs)));
+    transform: translateY(calc(100% + var(--gap-xs)));
   }
 
   .multi-t__social {
@@ -289,8 +292,8 @@
   }
 
   .glider {
-    height: 4rem;
-    width: 4rem;
+    height: var(--size-40);
+    width: var(--size-40);
     z-index: -1;
     background-color: rgba(var(--secondary-icon-background));
     transition: 0.25s ease-out;
@@ -298,7 +301,10 @@
 
   .button__back-to-top {
     height: var(--h-cus, 0);
+    border: 1px solid rgba(var(--color-foreground-rgb) / var(--opacity-20));
+    border-radius: 50%;
     transition: opacity var(--duration-medium) ease, height var(--duration-medium) var(--cubic-smooth);
+
   }
 
   .button__back-to-top .progress-circle path {
@@ -340,8 +346,8 @@
     .multi-t__button,
     .multi-t__button:after,
     .glider {
-      width: 4.8rem;
-      height: 4.8rem;
+      width: var(--size-48);
+      height: var(--size-48);
     }
   }
 
@@ -440,7 +446,7 @@
   ],
   "presets": [
     {
-      "name": "t:names.multitasking-bar"
+      "name": "t:names.multitasking_bar"
     }
   ]
 }

@@ -405,9 +405,15 @@ class DropdownDetails extends HTMLDetailsElement {
     this.elements.button?.addEventListener('click', this._toggleOpen.bind(this));
 
     if (this.mqlDesktop.matches && this.getAttribute('activate-event') === 'hover') {
-      const hoverEvents = ['focusin', 'mouseenter', 'mouseleave'];
-      hoverEvents.forEach(event => this.addEventListener(event, this._hoverOpen.bind(this)));
+      // const hoverEvents = ['focusin', 'pointerenter'];
+      // hoverEvents.forEach(event => this.addEventListener(event, this._hoverOpen.bind(this)));
+      this.addEventListener('pointerenter', () => {
+        this._animate(true);
+      })
+      this.addEventListener('pointerleave', this.close.bind(this));
     }
+
+    this.addEventListener('focusin', this._hoverOpen.bind(this))
 
     if (Shopify.designMode && this.hasAttribute('check-shopify-design-mode')) {
       this.addEventListener('shopify:block:select', () => {
@@ -446,9 +452,7 @@ class DropdownDetails extends HTMLDetailsElement {
   }
 
   onFocusOut() {
-    setTimeout(() => {
-      if (!this.contains(document.activeElement)) this.close();
-    });
+    if (!this.contains(document.activeElement)) this.close();
   }
 
   _toggleOpen(event) {
@@ -460,13 +464,12 @@ class DropdownDetails extends HTMLDetailsElement {
   }
 
   _hoverOpen(event) {
-    const value = event.type === 'mouseenter' || event.type === 'focusin';
-    this.isOpen = value;
-    if (this.isConnected) {
-      this._animate(value);
-    } else {
-      value ? this.setAttribute('open', 'true') : this.setAttribute('open', 'false');
-    }
+    const value = true;
+    this._animate(value);
+    // if (this.isConnected) {
+    // } else {
+    //   value ? this.setAttribute('open', 'true') : this.setAttribute('open', 'false');
+    // }
     // this.elements.dropdown.classList.toggle('active', value);
     if (this.closest('header-menu')) this.closest('.header-wrapper').preventHide = value;
   }
@@ -479,19 +482,19 @@ class DropdownDetails extends HTMLDetailsElement {
 
   }
 
-  async _animate(open) {
+  _animate(open) {
     const translateYIn = 'translateY(-50%)';
-    const translateYOut = 'translateY(-105%)';
+    const translateYOut = 'translateY(-55%)';
     if (open) {
       this.setAttribute('open', 'true');
 
-      await Motion.animate(this.elements.dropdown, { opacity: [0, 1], visibility: 'visible' }, { duration: 0.6, delay: 0.2 });
+      Motion.animate(this.elements.dropdown, { opacity: [0, 1], visibility: 'visible' }, { duration: 0.3, delay: 0.2 });
 
-      await Motion.animate(this.elements.dropdown.firstElementChild, { transform: [`${translateYIn}`, 'translateY(0px)'] }, { duration: 0.6 }).finished;
+      Motion.animate(this.elements.dropdown.firstElementChild, { transform: [`${translateYIn}`, 'translateY(0px)'] }, { duration: 0.5 });
     } else {
-      await Motion.animate(this.elements.dropdown, { opacity: 0, visibility: 'hidden' }, { duration: 0.3 });
+      Motion.animate(this.elements.dropdown, { opacity: 0, visibility: 'hidden' }, { duration: 0.15 });
 
-      await Motion.animate(this.elements.dropdown.firstElementChild, { transform: `${translateYOut}` }, { duration: 0.3 }).finished;
+      Motion.animate(this.elements.dropdown.firstElementChild, { transform: `${translateYOut}` }, { duration: 0.15 });
       this.setAttribute('open', 'false');
     }
   }

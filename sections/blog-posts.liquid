@@ -127,6 +127,14 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
                 slides_per_view: mobile_columns,
                 space_between: section.settings.items_gap
               -%}
+              style="
+                {% render 'swiper-style',
+                  columns_mobile: mobile_columns,
+                  columns_tablet: columns_tablet,
+                  columns_desktop: columns_desktop,
+                  columns_gap: section.settings.items_gap,
+                %}
+              "
             >
               <div class="swiper">
           {%- endif -%}
@@ -163,6 +171,14 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
             watch_slides_progress: true,
             breakpoints: breakpoints
           -%}
+          style="
+            {% render 'swiper-style',
+              columns_mobile: mobile_columns,
+              columns_tablet: columns_tablet,
+              columns_desktop: columns_desktop,
+              columns_gap: space_between,
+            %}
+          "
         >
           <div class="swiper size-full" style="--swiper-navigation-top-offset: 50%;">
             <ul

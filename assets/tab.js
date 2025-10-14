@@ -5,6 +5,8 @@ class TabsComponent extends HTMLElement {
 
   connectedCallback() {
     this.init();
+    this.observeExternalHeader();
+    this.initTabsHeader()
   }
 
   init() {
@@ -20,15 +22,15 @@ class TabsComponent extends HTMLElement {
   handleTabClick(event) {
     event.preventDefault();
 
-    let target = event.target,
-      tabId = target.getAttribute("href");
+    let target = event.target.closest(".tabs-component-panel-trigger");
+    if (!target) return;
+
+    let tabId = target.getAttribute("href");
+    if (!tabId) return;
 
     if (target.classList.contains("--active")) return;
 
-    this.tabs.forEach((tab) => {
-      tab.classList.remove("--active");
-    });
-
+    this.tabs.forEach((tab) => tab.classList.remove("--active"));
     target.classList.add("--active");
 
     this.tabContents.forEach((content) => {
@@ -66,36 +68,101 @@ class TabsComponent extends HTMLElement {
     this.hasInitialized = true;
   }
 
-  initMaskBackground() {
-    const maskBackground = this.querySelector(".mask-background");
+  observeExternalHeader() {
+    const allHeaders = document.querySelectorAll("tabs-header");
+    if (!allHeaders.length) return;
 
-    if (maskBackground) {
-      const tabs = this.querySelectorAll(".tabs-component-panel-trigger");
-      const activeTab = this.querySelector(
-        ".tabs-component-panel-trigger.--active"
-      );
+    allHeaders.forEach((header) => {
+      const targetSelector = header.getAttribute("data-tabs-target");
+      const targetTabs =
+        (targetSelector && document.querySelector(targetSelector)) || this;
 
-      const rectParent = this.getBoundingClientRect();
-      const rectTabActive = activeTab.getBoundingClientRect();
+      if (targetTabs === this) {
+        const headerButtons = header.querySelectorAll(".tabs-component-panel-trigger");
+        headerButtons.forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-      let left = rectTabActive.left - rectParent.left - 1;
+            const href = btn.getAttribute("href");
+            if (!href) return;
 
-      const top = rectTabActive.top - rectParent.top;
-      const width = rectTabActive.width + 1;
-      const height = rectTabActive.height;
+            headerButtons.forEach((b) => b.classList.remove("--active"));
+            btn.classList.add("--active");
 
-      Motion.animate(
-        maskBackground,
-        {
-          transform: `translate(${left}px, ${top}px)`,
-          width: `${width}px`,
-          height: `${height}px`,
-        },
-        { ease: [0.39, 0.24, 0.3, 1] }
-      );
+            const internalTab = this.querySelector(
+              `.tabs-component-panel-trigger[href="${href}"]`
+            );
+            if (internalTab) {
+              internalTab.click();
+            }
+          });
+        });
+      }
+    });
+  }
 
-      maskBackground.innerHTML = activeTab.innerHTML;
-    }
+  initTabsHeader() {
+    const sectionHeaders = document.querySelectorAll('.section-global__header');
+
+    sectionHeaders.forEach((header) => {
+      const template = header.querySelector('template');
+      if (!template) return;
+
+      const tabsHeader = template.content.querySelector('tabs-header');
+      if (!tabsHeader) return;
+
+      const block = header.querySelector('.section-header--block');
+      if (!block) return;
+
+      if (!block.querySelector('tabs-header')) {
+        const clone = tabsHeader.cloneNode(true);
+        block.appendChild(clone);
+
+        this.bindTabsEvents(clone);
+      }
+    });
+  }
+
+  bindTabsEvents(tabsHeader) {
+    const buttons = tabsHeader.querySelectorAll('.tabs-component-panel-trigger');
+    const tabContents = document.querySelectorAll('.tabs-component-content');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        const href = btn.getAttribute('href');
+        if (!href) return;
+        const targetId = href.replace('#', '');
+
+        buttons.forEach((b) => b.classList.remove('--active', 'is-active'));
+        btn.classList.add('--active', 'is-active');
+
+        tabContents.forEach((content) => {
+          const isMatch = content.id === targetId;
+          content.classList.toggle('--active', isMatch);
+          content.classList.toggle('is-active', isMatch);
+
+          if (isMatch && !content.hasAttribute('data-rendered')) {
+            const template = content.querySelector('template');
+            if (template) {
+              const templateContent = template.content.cloneNode(true);
+              content.appendChild(templateContent);
+              content.setAttribute('data-rendered', 'true');
+            }
+          }
+        });
+
+        const internalTabs = document.querySelectorAll(
+          `.tabs-component-panel-trigger[href="${href}"]`
+        );
+        internalTabs.forEach((tab) => {
+          tab.classList.remove('--active');
+          if (tab.getAttribute('href') === href) tab.classList.add('--active');
+        });
+      });
+    });
   }
 }
 if (!customElements.get("tabs-component"))
@@ -111,7 +178,6 @@ class HeaderMobileTabs extends HTMLElement {
   }
 
   init() {
-    console.log("init");
     this.tabs = this.querySelectorAll("[data-tab-heading]");
     this.tabContents = this.querySelectorAll("[data-tab-for]");
 
@@ -122,9 +188,6 @@ class HeaderMobileTabs extends HTMLElement {
 
   handleTabClick(event) {
     event.preventDefault();
-
-    console.log("handleTabClick");
-
 
     let target = event.target.closest("a"),
       tabTarget = target.getAttribute("data-tab-heading-target");
@@ -143,9 +206,6 @@ class HeaderMobileTabs extends HTMLElement {
       }
     });
   }
-
-
 }
-
 if (!customElements.get("header-mobile-tabs"))
   customElements.define("header-mobile-tabs", HeaderMobileTabs);

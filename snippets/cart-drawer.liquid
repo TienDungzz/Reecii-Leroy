@@ -223,7 +223,9 @@
                               {%- endfor -%}
                             </dl> {% endcomment %}
 
-                            <p class="product-option">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                            {% if item.selling_plan_allocation != null %}
+                              <p class="product-option">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                            {% endif %}
                           {%- endif -%}
 
                           {%- if item.original_price != item.final_price -%}
@@ -254,10 +256,12 @@
                           >
                             {%- for discount in item.line_level_discount_allocations -%}
                               <li class="discounts__discount">
-                                <span class="svg-wrapper">
-                                  {{- 'icon-discount.svg' | inline_asset_content -}}
+                                <span class="discounts__discount-text font-medium">
+                                  <span class="svg-wrapper">
+                                    {{- 'icon-discount.svg' | inline_asset_content -}}
+                                  </span>
+                                  {{ discount.discount_application.title }}
                                 </span>
-                                {{ discount.discount_application.title }}
                               </li>
                             {%- endfor -%}
                           </ul>
