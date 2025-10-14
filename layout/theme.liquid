@@ -12,30 +12,39 @@
     <link
       rel="canonical"
       href="{{ canonical_url }}"
-      canonical-url="{{ shop.url }}/">
+      canonical-url="{{ shop.url }}/"
+    >
 
     {%- if settings.favicon != blank -%}
       <link
         rel="icon"
         type="image/png"
-        href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+        href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
+      >
     {%- endif -%}
 
-    {%- unless settings.type_header_font.system? and settings.type_body_font.system? and settings.type_subheading_font.system? -%}
+    {%- unless settings.type_header_font.system?
+      and settings.type_body_font.system?
+      and settings.type_subheading_font.system?
+    -%}
       <link
         rel="preconnect"
         href="https://fonts.shopifycdn.com"
-        crossorigin>
+        crossorigin
+      >
     {%- endunless -%}
 
     <title>
       {{ page_title }}
       {%- if current_tags %}
-        &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+        &ndash; tagged "{{ current_tags | join: ', ' }}"
+      {%- endif -%}
       {%- if current_page != 1 %}
-        &ndash; Page {{ current_page }}{% endif -%}
+        &ndash; Page {{ current_page -}}
+      {%- endif -%}
       {%- unless page_title contains shop.name %}
-        &ndash; {{ shop.name }}{% endunless -%}
+        &ndash; {{ shop.name -}}
+      {%- endunless -%}
     </title>
 
     {% if page_description %}
@@ -49,7 +58,14 @@
     {%- render 'global-script' -%}
   </head>
 
-  <body class="template-{{ request.page_type | replace: 'customers/', '' }}{% if settings.animations_hover_elements != 'none' %} card-hover--{{ settings.animations_hover_elements }}{% endif %}{% if settings.enable_preloading_screen %} has--preload-screen preloading-o-h{% endif %}">
+  <body
+    class="
+      template-{{ request.page_type | replace: 'customers/', '' }}
+      {% if settings.animations_hover_elements != 'none' %} card-hover--{{ settings.animations_hover_elements }}{% endif %}
+      {% if settings.animation_hover_buttons != 'none' %} button-hover--effect{% endif %}
+      {% if settings.enable_preloading_screen %} has--preload-screen preloading-o-h{% endif %}
+    "
+  >
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
 
     {%- if settings.enable_preloading_screen -%}
@@ -70,7 +86,8 @@
       id="MainContent"
       class="content-for-layout focus-none"
       role="main"
-      tabindex="-1">
+      tabindex="-1"
+    >
       {{ content_for_layout }}
     </main>
 

@@ -94,10 +94,12 @@
   --button-padding-vertical-mobile: {{ sec_stts.tabs_header_padding_block_items | times: 0.75 }}px;
   --button-padding-horizontal: {{ sec_stts.tabs_header_padding_inline_items }}px;
   --button-padding-horizontal-mobile: {{ sec_stts.tabs_header_padding_inline_items | times: 0.75 }}px;
-  --border-radius: {{ sec_stts.tabs_header_corner_radius }}px;
-  --border-width: {{ sec_stts.tabs_header_border_thickness }}px;
-  --border-style: solid;
-  --border-color: var(--color-border);
+  {%- if sec_stts.style_class != 'link' -%}
+    --border-radius: {{ sec_stts.tabs_header_corner_radius }}px;
+    --border-width: {{ sec_stts.tabs_header_border_thickness }}px;
+    --border-style: solid;
+    --border-color: var(--color-border);
+  {%- endif -%}
 {%- endcapture -%}
 {% comment %} End For layout type tabs-grid and tabs-carousel {% endcomment %}
 
@@ -528,7 +530,7 @@
                 -%}
 
                 <div {{ attr_tabs_header }}>
-                  {% for collection in section_collections_list limit: limit %}
+                  {% comment %} {% for collection in section_collections_list limit: limit %}
                     <a
                       href="#tabs-{{ sec_id }}-{{ forloop.index }}"
                       class="{{ class_tabs_product_header_item }}{% if forloop.first %} --active{% endif %}"
@@ -536,7 +538,24 @@
                     >
                       {{ collection.title | escape | default: 'Collection title' }}
                     </a>
-                  {% endfor %}
+                  {% endfor %} {% endcomment %}
+
+                  {%- capture labels -%}
+                    {%- for collection in section_collections_list -%}
+                      {{ collection.title | escape | default: 'Collection title' }}
+                      {%- unless forloop.last -%}
+                        ,
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  {%- endcapture -%}
+
+                  {%- render 'tab-header-item',
+                    settings: sec_stts,
+                    id: sec_id,
+                    labels: labels,
+                    class: class_tabs_product_header_item,
+                    style_tabs_header_item: style_tabs_header_item
+                  -%}
                 </div>
 
                 {% for collection in section_collections_list limit: limit %}
@@ -603,7 +622,7 @@
             <tabs-component class="{% if has_media_banner %}block overflow-hidden{% endif %}">
               {%- if section_collections_list != blank -%}
                 <div {{ attr_tabs_header }}>
-                  {% for collection in section_collections_list %}
+                  {% comment %} {% for collection in section_collections_list %}
                     <a
                       href="#tabs-{{ sec_id }}-{{ forloop.index }}"
                       class="{{ class_tabs_product_header_item }}{% if forloop.first %} --active{% endif %}"
@@ -611,7 +630,24 @@
                     >
                       {{ collection.title | escape | default: 'Collection title' }}
                     </a>
-                  {% endfor %}
+                  {% endfor %} {% endcomment %}
+
+                  {%- capture labels -%}
+                    {%- for collection in section_collections_list -%}
+                      {{ collection.title | escape | default: 'Collection title' }}
+                      {%- unless forloop.last -%}
+                        ,
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  {%- endcapture -%}
+
+                  {%- render 'tab-header-item',
+                    settings: sec_stts,
+                    id: sec_id,
+                    labels: labels,
+                    class: class_tabs_product_header_item,
+                    style_tabs_header_item: style_tabs_header_item
+                  -%}
                 </div>
 
                 {% for collection in section_collections_list %}
@@ -653,6 +689,14 @@
                           watch_slides_progress: true,
                           breakpoints: breakpoints
                         -%}
+                        style="
+                          {% render 'swiper-style',
+                            columns_mobile: columns_mobile,
+                            columns_tablet: columns_tablet,
+                            columns_desktop: columns_desktop,
+                            columns_gap: columns_gap,
+                          %}
+                        "
                       >
                         <div class="swiper">
                           <ul
@@ -713,7 +757,7 @@
                 -%}
 
                 <div {{ attr_tabs_header }}>
-                  {% for collection in section_collections_list limit: limit %}
+                  {% comment %} {% for collection in section_collections_list limit: limit %}
                     <a
                       href="#tabs-{{ sec_id }}-{{ forloop.index }}"
                       class="{{ class_tabs_product_header_item }}{% if forloop.first %} --active{% endif %}"
@@ -721,7 +765,24 @@
                     >
                       {{ collection.title | escape | default: 'Collection title' }}
                     </a>
-                  {% endfor %}
+                  {% endfor %} {% endcomment %}
+
+                  {%- capture labels -%}
+                    {%- for collection in section_collections_list -%}
+                      {{ collection.title | escape | default: 'Collection title' }}
+                      {%- unless forloop.last -%}
+                        ,
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  {%- endcapture -%}
+
+                  {%- render 'tab-header-item',
+                    settings: sec_stts,
+                    id: sec_id,
+                    labels: labels,
+                    class: class_tabs_product_header_item,
+                    style_tabs_header_item: style_tabs_header_item
+                  -%}
                 </div>
 
                 {% for collection in section_collections_list limit: limit %}
@@ -749,6 +810,14 @@
                           watch_slides_progress: true,
                           breakpoints: breakpoints
                         -%}
+                        style="
+                          {% render 'swiper-style',
+                            columns_mobile: columns_mobile,
+                            columns_tablet: columns_tablet,
+                            columns_desktop: columns_desktop,
+                            columns_gap: columns_gap,
+                          %}
+                        "
                       >
                         <div class="swiper">
                           <ul
@@ -1468,7 +1537,7 @@
         },
         {
           "value": "outline",
-          "label": "t:options.outline"  
+          "label": "t:options.outline"
         }
       ],
       "default": "default"
@@ -1539,21 +1608,13 @@
       "visible_if": "{{ section.settings.style_class == 'link' and section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
     },
     {
-      "type": "checkbox",
-      "id": "link_reveal",
-      "label": "t:settings.reveal_on_hover",
-      "default": false,
-      "info": "t:info.link_reveal_info",  
-      "visible_if": "{{ section.settings.style_class == 'link' and section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
-    },
-    {
       "type": "range",
       "id": "tabs_header_border_thickness",
       "min": 0,
       "max": 5,
       "step": 1,
       "unit": "px",
-      "label": "t:settings.border_width",  
+      "label": "t:settings.border_width",
       "default": 1,
       "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' and section.settings.style_class != 'link' }}"
     },
@@ -1664,7 +1725,7 @@
       "id": "video_display_mode",
       "label": "t:settings.video_type",
       "default": "inline",
-      "info": "t:info.video_display_mode_info",  
+      "info": "t:info.video_display_mode_info",
       "options": [
         {
           "value": "inline",
@@ -1702,7 +1763,7 @@
     {
       "type": "select",
       "id": "position",
-      "label": "t:settings.position",  
+      "label": "t:settings.position",
       "options": [
         {
           "value": "left",

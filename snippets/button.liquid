@@ -96,20 +96,23 @@
     border: 1px solid var(--border-outline-color);
   }
 
-  .button {
-    --tss: transform var(--animation-slowest-smooth);
+  .button:not(.button-unstyled) {
     transition: color var(--animation-speed) var(--animation-easing),
       box-shadow var(--animation-speed) var(--animation-easing),
       background-color var(--animation-speed) var(--animation-easing),
       transform var(--animation-speed) var(--animation-easing);
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    background-color: var(--color-primary-button-background);
 
     &:not(.deferred-media__poster, .prevent-active):active {
       transform: scale(0.9);
     }
+  }
+
+  .button-hover--effect .button:not(.button-unstyled, .header__icon) {
+    --tss: transform var(--animation-slowest-smooth);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background-color: var(--color-primary-button-background);
 
     .button-text-main {
       transition: var(--tss);
@@ -150,12 +153,15 @@
   }
 
   .link {
+    height: auto;
     font-size: var(--button-font-size-link, var(--font-size--sm));
     font-weight: var(--button-font-weight-link, var(--font-body--weight));
     text-decoration: none;
     text-decoration-color: currentcolor;
     text-wrap: var(--text-wrap);
     text-transform: var(--text-transform);
+    transition: background-size var(--animation-slowest-smooth), opacity var(--animation-speed)  var(--animation-delay, 0s) var(--animation-easing), color var(--animation-speed) var(--animation-delay, 0s) var(--animation-easing);
+
     &[style*='--button-font-size-link'] {
       font-size: var(--button-font-size-link);
     }
@@ -165,23 +171,22 @@
     }
   }
 
-  .link--underline,
-  .link--hover-underline .text,
-  .link--hover-underline:not(:has(.text)) {
+  .link.link--underline,
+  .link.link--hover-underline .text,
+  .link.link--hover-underline:not(:has(.text)) {
     --line-link-gap: min(100%, 1.35em);
-    transition: background-size var(--animation-slowest-smooth);
     text-decoration: none;
   }
 
-  .link--underline {
+  .link.link--underline {
     background: linear-gradient(to right, currentColor, currentColor) 0 var(--line-link-gap) / 0 1px no-repeat;
     background-position-y: bottom;
     background-position-x: left;
     background-size: 100% 1px;
   }
 
-  .link--hover-underline .text,
-  .link--hover-underline:not(:has(.text)) {
+  .link.link--hover-underline .text,
+  .link.link--hover-underline:not(:has(.text)) {
     background: linear-gradient(to left, currentColor, currentColor) 0 var(--line-link-gap) / 0 1px no-repeat;
     background-position-y: bottom;
     background-position-x: right;
@@ -222,13 +227,13 @@
       }
     }
 
-    .link--hover-underline:hover .text,
-    .link--hover-underline:not(:has(.text)):hover {
+    .link.link--hover-underline:hover .text,
+    .link.link--hover-underline:not(:has(.text)):hover {
       background-position-x: left;
       background-size: 100% 1px;
     }
 
-    .link--underline:hover {
+    .link.link--underline:hover {
       background-position-x: right;
       background-size: 0% 1px;
     }
