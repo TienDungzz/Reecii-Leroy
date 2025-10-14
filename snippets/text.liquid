@@ -107,13 +107,16 @@
       echo ' text-block--full-width-mobile '
     endif
     if text_width == 'custom' or text_width == '100%'
-      echo 'text-block--align-' | append: alignment
+      echo ' text-block--align-' | append: alignment
     endif
     if text_width_tablet == 'custom' or text_width_tablet == '100%'
-      echo 'text-block--align-tablet-' | append: alignment_tablet
+      echo ' text-block--align-tablet-' | append: alignment_tablet
     endif
     if text_width_mobile == 'custom' or text_width_mobile == '100%'
-      echo 'text-block--align-mobile-' | append: alignment_mobile
+      echo ' text-block--align-mobile-' | append: alignment_mobile
+    endif
+    if text_width == 'custom' or text_width_tablet == 'custom' or text_width_mobile == 'custom'
+      echo ' text-block--custom-width'
     endif
     if bl_stts.type_preset == 'custom'
       echo ' custom-typography '
@@ -378,6 +381,10 @@
 
   .text-block {
     align-items: var(--horizontal-alignment);
+
+    &.size-style {
+      height: auto;
+    }
   }
 
   .text-block > * {
@@ -392,6 +399,10 @@
     @media screen and (min-width: 1025px) {
       text-align: var(--text-align, var(--text-align-default));
     }
+  }
+
+  .text-block.text-block--custom-width  > * {
+    width: 100%;
   }
 
   .text-block:not(.text-block--full-width-mobile).rte,

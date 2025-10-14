@@ -12,6 +12,12 @@
   else
     assign has_menu_tab = false
   endif
+
+  if settings.animations_reveal_on_scroll
+    assign class_item_hover_reveal = 'menu-item__animate'
+  else
+    assign class_item_hover_reveal = ''
+  endif
 -%}
 
 <link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
@@ -96,13 +102,13 @@
                 assign icon_type = section.settings.icon_type
 
                 if check_mega_menu_1 and has_mega_menu_1
-                  render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
+                  render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings, class_item_hover_reveal: class_item_hover_reveal
                 elsif check_mega_menu_2 and has_mega_menu_2
-                  render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
+                  render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings, class_item_hover_reveal: class_item_hover_reveal
                 elsif check_mega_menu_3 and has_mega_menu_3
-                  render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
+                  render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings, class_item_hover_reveal: class_item_hover_reveal
                 else
-                  render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type, settings: section.settings
+                  render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type, settings: section.settings, class_item_hover_reveal: class_item_hover_reveal
                 endif
               -%}
             {%- else -%}
@@ -208,5 +214,79 @@
     top: 50%;
     bottom: auto;
     transform: translateY(-50%) rotate(270deg);
+  }
+
+  .header__inline-menu .details--dropdown > .details__list > .header__submenu,
+  .header__inline-menu .details--dropdown > .details__list {
+    transition: opacity var(--animation-slowest-smooth), visibility var(--animation-slowest-smooth), top var(--animation-slowest-smooth);
+  }
+
+  .header__inline-menu .details--dropdown > .details__list > .header__submenu ,
+  .header__inline-menu .details--dropdown > .details__list > .mega-menu__container {
+    transform: translateY(-50%);
+    transition: transform var(--animation-slowest-smooth), opacity var(--animation-slowest-smooth), visibility var(--animation-slowest-smooth);
+    opacity: var(--opacity-0);
+    visibility: hidden;
+  }
+
+  .header__inline-menu .details--dropdown > .header__submenu-wrapper {
+    min-width: initial;
+    background: var(--color-background);
+  }
+
+  @media screen and (min-width: 1025px){
+    :has(.mega-menu__list, .header__submenu) .menu-item__animate.link--hover-underline > .text,
+    :has(.mega-menu__list, .header__submenu) .menu-item__animate > .text ,
+    :has(.mega-menu__list, .header__submenu) .menu-item__animate > .label-wrapper {
+      transform: translateY(110%);
+      display: inline-block;
+      opacity: var(--opacity-0);
+    }
+
+    :has(.mega-menu__collage) .menu-item__animate.collage__item--image {
+      opacity: var(--opacity-0);
+      transition: opacity var(--animation-slowest-smooth);
+    }
+
+    .mega-menu__collage .menu-item__animate .resource-card-wrapper {
+      opacity: var(--opacity-0);
+      transform: translateY(10%);
+    }
+
+    .header__inline-menu .details--dropdown:hover > .details__list {
+      opacity: 1;
+      visibility: visible;
+
+      > .header__submenu,
+      > .mega-menu__container {
+        transform: translateY(0);
+        opacity: var(--opacity-100);
+        visibility: visible;
+      }
+
+      :has(.mega-menu__list, .header__submenu) .menu-item__animate {
+        overflow: hidden;
+        position: relative;
+
+        > .text,
+        > .label-wrapper {
+          transform: translateY(0);
+          opacity: var(--opacity-100);
+          transition: transform var(--animation-slowest-smooth) calc(var(--animation-speed-slowest) + 0.1s), opacity var(--animation-slowest-smooth) calc(var(--animation-speed-slowest)), background-size var(--animation-slowest-smooth);
+        }
+      }
+
+      .mega-menu__collage .menu-item__animate.collage__item--image {
+        opacity: var(--opacity-100);
+        transition-delay: var(--animation-speed-slowest);
+      }
+
+      .mega-menu__collage .menu-item__animate .resource-card-wrapper {
+        opacity: var(--opacity-100);
+        transform: translateY(0);
+        transition: transform var(--animation-slowest-smooth), opacity var(--animation-slowest-smooth);
+        transition-delay: calc(var(--animation-speed-slowest) + (var(--animation-order , 1) * 75ms));
+      }
+    }
   }
 {%- endstylesheet -%}

@@ -23,6 +23,26 @@
     margin-top: 3rem;
   }
 
+  .template-search__search .field:after,
+  .template-search__search .field__input {
+    transition: box-shadow var(--animation-speed-slow) var(--ease-out-smooth), border-radius var(--animation-speed-slow) var(--ease-out-smooth);
+    border-radius: var(--inputs-radius);
+  }
+
+  .template-search__search .field__input ,
+  .template-search__search .field__input:focus {
+    padding: 1.5rem 0 1.5rem 2rem;
+  }
+
+  .template-search__search predictive-search[open] .field {
+    --inputs-radius: var(--style-border-radius-popover) var(--style-border-radius-popover) 0 0;
+
+    &:after,
+    .field__input {
+      border-radius: var(--inputs-radius);
+    }
+  }
+
   .template-search--empty {
     padding-bottom: 18rem;
   }
@@ -103,7 +123,6 @@
                       spellcheck="false"
                     {%- endif -%}
                   >
-                  <label class="field__label" for="Search-In-Template">{{ 'content.search' | t }}</label>
                   <input name="options[prefix]" type="hidden" value="last">
 
                   {%- if settings.predictive_search_enabled -%}

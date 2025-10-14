@@ -148,8 +148,12 @@
   endif
 
   if show_country or show_language
+    assign show_flag = false
+    if sec_stts.country_selector_style == true
+      assign show_flag = true
+    endif
     capture localization_markup
-      render 'dropdown-localization', show_country: show_country, show_language: show_language, country_style: sec_stts.country_selector_style, localization_position: sec_stts.localization_position, localization_type: sec_stts.localization_type, hide_mobile: true
+      render 'dropdown-localization', show_country: show_country, show_language: show_language, country_style: show_flag, localization_position: sec_stts.localization_position, localization_type: sec_stts.localization_type, hide_mobile: true
     endcapture
   endif
 
@@ -421,7 +425,6 @@
   .header__row {
     position: relative;
     background-color: var(--header-bg-color, var(--color-background));
-    transition: padding-block-start var(--animation-speed), padding-block-end var(--animation-speed);
 
     /* will default to bg from its color scheme unless --header-bg-color is transparent */
     &:after {
@@ -468,24 +471,6 @@
   /* Animated Sticky Header */
   .section-header-main.scrolled-past-header sticky-header[data-sticky-type='always'] {
     .header {
-      .header__row--top {
-        padding-block-start: calc(var(--padding-block-start) * 0.5);
-      }
-      .header__row--bottom {
-        padding-block-end: calc(var(--padding-block-end) * 0.5);
-      }
-
-      &:not(:has(.header__row--bottom)) .header__row--top {
-        padding-block-end: calc(var(--padding-block-end) * 0.5);
-      }
-
-      &:not(:has(.header__row--top)) .header__row--bottom {
-        padding-block-start: calc(var(--padding-block-start) * 0.5);
-      }
-
-      &:has(.header__row--bottom) .header__row--top {
-        padding-block-end: calc(var(--padding-block-start) * 0.5);
-      }
     }
   }
 
@@ -1973,17 +1958,17 @@
     },
     {
       "type": "checkbox",
-      "id": "country_selector_style",
-      "label": "t:settings.flag",
-      "default": true,
-      "visible_if": "{{ section.settings.show_country }}"
-    },
-    {
-      "type": "checkbox",
       "id": "show_language",
       "label": "t:settings.language_selector",
       "info": "t:info.manage_languages",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "country_selector_style",
+      "label": "t:settings.flag",
+      "default": true,
+      "visible_if": "{{ section.settings.show_country or section.settings.show_language }}"
     },
     {
       "type": "select",

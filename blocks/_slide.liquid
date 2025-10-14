@@ -157,7 +157,7 @@
   {% if block.settings.inherit_color_scheme == false %}color-scheme-custom{% endif %}
 {%- endcapture -%}
 
-<div
+<slideshow-animated
   id="slide-{{ block.id }}"
   class="{{ class_slide_item }}"
   aria-hidden="{% if blockIndex == 1 %}false{% else %}true{% endif %}"
@@ -220,29 +220,71 @@
     {% endif %}
   {% endstyle %}
 
-    {%- if block.settings.slide_background  %}
-      <div class="slide__image-container flex size-full overflow-hidden absolute">
-        <div
-          class="slide__img-wrapper grid w-full"
-          {%- if block_stts.image_1 != blank -%}
-            style="--slide-media-count: {{ media_count }};"
-          {%- endif -%}
-        >
-          {{ media }}
-        </div>
+  {%- if block.settings.slide_background %}
+    <div class="slide__image-container flex size-full overflow-hidden absolute" data-image-trans>
+      <div
+        class="slide__img-wrapper grid w-full"
+        {%- if block_stts.image_1 != blank -%}
+          style="--slide-media-count: {{ media_count }};"
+        {%- endif -%}
+      >
+        {{ media }}
       </div>
-    {% endif -%}
+    </div>
+  {% endif -%}
 
   <div class="{{ block_stts.container }} h-{{ block_stts.height }}">
-    <div class="{{ block.settings | class_list }} slide__content relative size-full">
+    <div
+      class="
+        {{ block.settings | class_list }}
+        relative size-full
+        slide__content
+        {% if settings.animations_reveal_on_scroll %} slide__content--animate{% endif %}
+      "
+    >
       {% content_for 'blocks' %}
     </div>
   </div>
-</div>
+</slideshow-animated>
 
 {%- stylesheet -%}
+  slideshow-animated .slide__image-container {
+    height: 140%;
+  }
+
   .slide__img-wrapper {
     grid-template-columns: repeat(var(--slide-media-count, 1), 1fr);
+  }
+
+  .slide__content--animate {
+    .text-block {
+      overflow: hidden;
+      position: relative;
+
+      > * {
+        opacity: var(--opacity-0);
+        transform: translateY(100%);
+        transition: transform var(--animation-speed-slowest) var(--ease-out-cubic),
+          opacity var(--animation-speed-slowest) var(--ease-out-cubic);
+        transition-delay: var(--swiper-speed);
+      }
+    }
+
+    .link {
+      --animation-delay: var(--swiper-speed);
+      opacity: var(--opacity-0);
+    }
+  }
+
+  .swiper-slide-active .slide__content--animate {
+    .text-block > * {
+      opacity: var(--opacity-100);
+      transform: translateY(0);
+    }
+
+    .link {
+      opacity: var(--opacity-100);
+    }
   }
 {%- endstylesheet -%}
 
