@@ -3731,12 +3731,30 @@ class StickyATC extends HTMLElement {
   constructor() {
     super();
 
-    this.form = document.getElementById(this.getAttribute('product-form'));
-    // this.footer = document.querySelector('.shopify-section-group-footer-group');
+    // Find the main product form dynamically
+    // Look for product-info component and get its form
+    const productInfo = document.querySelector('product-info');
+    if (productInfo) {
+      this.form = productInfo.querySelector('product-form-component form[data-type="add-to-cart-form"]');
+    }
+    
+    // Fallback: try to get form from attribute
+    if (!this.form && this.getAttribute('product-form')) {
+      this.form = document.getElementById(this.getAttribute('product-form'));
+    }
 
-    const observer = new IntersectionObserver(this.onScroll.bind(this));
-    observer.observe(this.form);
-    // observer.observe(this.footer);
+    // If still no form, try to find any main product form
+    if (!this.form) {
+      this.form = document.querySelector('form[data-type="add-to-cart-form"]');
+    }
+
+    if (this.form) {
+      const observer = new IntersectionObserver(this.onScroll.bind(this));
+      observer.observe(this.form);
+    } else {
+      console.warn('Sticky ATC: Could not find product form');
+    }
+    // this.footer = document.querySelector('.shopify-section-group-footer-group');
 
   }
 
@@ -3753,7 +3771,6 @@ class StickyATC extends HTMLElement {
       document.body.style.setProperty('--sticky-atc-height', `${this.offsetHeight}px`);
     } else {
       document.body.style.setProperty('--sticky-atc-height', `0px`);
-
     }
 
     if (!shouldShow) this.classList.remove('sticky-open');

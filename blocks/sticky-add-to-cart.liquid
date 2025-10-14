@@ -60,7 +60,7 @@ style="
 "
 {%- endcapture -%}
 
-<sticky-atc class="sticky-atc w-full fixed bottom-0 left-0 right-0 z-10 flex justify-between items-center shadow-style style-{{ style_class }}{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}" {{ sticky_attr }} product-form="{{ product_form_id }}" form="{{ product_form_id }}">
+<sticky-atc class="sticky-atc w-full fixed bottom-0 left-0 right-0 z-10 flex justify-between items-center shadow-style style-{{ style_class }}{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}" {{ sticky_attr }} form="{{ product_form_id }}" data-sticky-section-id="{{ section.id }}">
     {%- unless product.has_only_default_variant -%}
       <div div class="sticky-atc__variant">
         <div class="section section--page-width variant-alignment--{{ variant_alignment }}" {{ attr }}>
@@ -208,43 +208,181 @@ style="
 </sticky-atc>
 
 {% javascript %}
+  // Optimized variant sync for sticky cart - Direct variant selection
   document.addEventListener('DOMContentLoaded', function() {
-    const stickyRoot = document.querySelector('.sticky-atc');
-    if (!stickyRoot) return;
+    const stickyAtcElement = document.querySelector('sticky-atc');
+    if (!stickyAtcElement) return;
 
-    // Toggle sticky variant selector visibility
-    const buttonToggleVariants = stickyRoot.querySelector('.button-toggle-variants');
-    if (buttonToggleVariants) {
-      buttonToggleVariants.addEventListener('click', function() {
-        const isOpen = stickyRoot.classList.contains('show-select-variants');
-        if (isOpen) {
-          const addToCartButton = document.querySelector('.add-to-cart-button');
-          addToCartButton?.click?.();
-          setTimeout(() => {
-            stickyRoot.classList.remove('show-select-variants');
-          }, 500);
+    const productInfo = document.querySelector('product-info');
+    if (!productInfo) return;
+
+    let stickyVariantSelects = null;
+
+    const init = () => {
+      stickyVariantSelects = stickyAtcElement.querySelector('.sticky-atc__variant variant-selects');
+      if (stickyVariantSelects) {
+        setupListeners();
+      }
+      setupToggleButton();
+    };
+
+    const setupToggleButton = () => {
+      const btn = stickyAtcElement.querySelector('.button-toggle-variants');
+      if (!btn) return;
+
+      btn.addEventListener('click', (e) => {
+        const isOpen = stickyAtcElement.classList.contains('show-select-variants');
+        
+        if (!isOpen) {
+          e.preventDefault();
+          e.stopPropagation();
+          stickyAtcElement.classList.add('show-select-variants');
         } else {
-          stickyRoot.classList.add('show-select-variants');
+          // Closing - submit form
+          const form = document.querySelector('product-form-component form');
+          const submitBtn = form?.querySelector('[name="add"]');
+          if (submitBtn && !submitBtn.hasAttribute('disabled')) {
+            submitBtn.click();
+          }
+          setTimeout(() => stickyAtcElement.classList.remove('show-select-variants'), 300);
         }
       });
+    };
+
+    const setupListeners = () => {
+      stickyVariantSelects.addEventListener('change', (e) => {
+        // Check if main is syncing to sticky (prevent loop)
+        if (productInfo.isSyncingVariant) return;
+        
+        // Get all selected options from sticky
+        const selectedOptions = getSelectedOptions();
+        if (!selectedOptions || selectedOptions.length === 0) return;
+
+        // Find matching variant and publish directly
+        updateVariantDirectly(selectedOptions);
+      });
+    };
+
+    const getSelectedOptions = () => {
+      // Get all selected option values from sticky variant selects
+      const options = [];
+      const fieldsets = stickyVariantSelects.querySelectorAll('fieldset');
+      const selects = stickyVariantSelects.querySelectorAll('select');
+      
+      // From radio buttons
+      fieldsets.forEach(fieldset => {
+        const checked = fieldset.querySelector('input:checked');
+        if (checked) {
+          options.push(checked.value);
+        }
+      });
+      
+      // From dropdowns
+      selects.forEach(select => {
+        if (select.value) {
+          options.push(select.value);
+        }
+      });
+      
+      return options;
+    };
+
+    const updateVariantDirectly = (selectedOptions) => {
+      try {
+        // Get variant data from product-info
+        const variantData = productInfo.getVariantData();
+        if (!variantData) return;
+
+        // Find matching variant
+        const matchedVariant = variantData.find(variant => {
+          return selectedOptions.every((option, index) => {
+            const optionKey = `option${index + 1}`;
+            return variant[optionKey] === option;
+          });
+        });
+
+        if (!matchedVariant) {
+          console.log('No matching variant found for options:', selectedOptions);
+          return;
+        }
+
+        // Update main product inputs silently (no events)
+        updateMainProductInputsSilently(matchedVariant.id, selectedOptions);
+
+        // Publish variant change event directly - this updates everything
+        if (typeof publish === 'function' && typeof PUB_SUB_EVENTS !== 'undefined') {
+          publish(PUB_SUB_EVENTS.variantChange, {
+            data: {
+              sectionId: productInfo.sectionId,
+              variant: matchedVariant,
+              html: document
+            }
+          });
+        }
+
+      } catch (error) {
+        console.error('Error updating variant directly:', error);
+      }
+    };
+
+    const updateMainProductInputsSilently = (variantId, selectedOptions) => {
+      // Update hidden variant ID input
+      const variantIdInput = productInfo.querySelector('input[name="id"]');
+      if (variantIdInput) {
+        variantIdInput.value = variantId;
+        variantIdInput.disabled = false;
+      }
+
+      // Update main variant selects display (without triggering events)
+      const mainVariantSelects = productInfo.querySelector('variant-selects');
+      if (!mainVariantSelects) return;
+
+      // Update radio buttons
+      const fieldsets = mainVariantSelects.querySelectorAll('fieldset');
+      fieldsets.forEach((fieldset, index) => {
+        if (!selectedOptions[index]) return;
+        
+        const option = selectedOptions[index];
+        const input = fieldset.querySelector(`input[value="${CSS.escape(option)}"]`);
+        
+        if (input && !input.checked) {
+          input.checked = true;
+          
+          // Update display text
+          const display = fieldset.querySelector('[data-selected-value]');
+          if (display) {
+            display.textContent = option;
+          }
+        }
+      });
+
+      // Update select dropdowns
+      const selects = mainVariantSelects.querySelectorAll('select');
+      selects.forEach((select, index) => {
+        if (!selectedOptions[index]) return;
+        
+        const option = selectedOptions[index];
+        if (select.value !== option) {
+          select.value = option;
+          
+          // Update selected attribute
+          Array.from(select.options).forEach(opt => {
+            if (opt.value === option) {
+              opt.setAttribute('selected', 'selected');
+            } else {
+              opt.removeAttribute('selected');
+            }
+          });
+        }
+      });
+    };
+
+    // Initialize
+    if (productInfo.classList.contains('initialized')) {
+      init();
+    } else {
+      productInfo.addEventListener('product-info:loaded', init, { once: true });
     }
-
-    const stickyVariants = stickyRoot.querySelectorAll('.sticky-atc__variant [data-option-value-id]');
-    stickyVariants.forEach((el) => {
-      el.addEventListener('click', function() {
-        const optionValueId = this.dataset.optionValueId;
-        if (!optionValueId) return;
-        const mainVariantInput = document.querySelector('product-info variant-selects [data-option-value-id="' + optionValueId + '"]');
-        if (!mainVariantInput) return;
-
-        if (mainVariantInput.type === 'radio') {
-          mainVariantInput.checked = true;
-        } else if (mainVariantInput.tagName === 'OPTION') {
-          mainVariantInput.selected = true;
-        }
-        mainVariantInput.dispatchEvent(new Event('change', { bubbles: true }));
-      });
-    });
   });
 {% endjavascript %}
 
@@ -442,6 +580,222 @@ style="
       "id": "scheme_shadow",
       "label": "t:settings.shadow_color",
       "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:names.primary_button",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_background",
+      "label": "t:settings.background",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color_background",
+      "id": "scheme_primary_button_background_gradient",
+      "label": "t:content.background_gradient",
+      "info": "t:info.background_gradient_info",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_text",
+      "label": "t:settings.text",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_border",
+      "label": "t:settings.borders",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_hover_background",
+      "label": "t:settings.hover_background",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color_background",
+      "id": "scheme_primary_button_hover_background_gradient",
+      "label": "t:settings.hover_background_gradient",
+      "info": "t:info.background_gradient_info",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_hover_text",
+      "label": "t:settings.hover_text",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_primary_button_hover_border",
+      "label": "t:settings.hover_borders",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:names.secondary_button",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_background",
+      "label": "t:settings.background",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color_background",
+      "id": "scheme_secondary_button_background_gradient",
+      "label": "t:content.background_gradient",
+      "info": "t:info.background_gradient_info",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_text",
+      "label": "t:settings.text",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_border",
+      "label": "t:settings.borders",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_hover_background",
+      "label": "t:settings.hover_background",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color_background",
+      "id": "scheme_secondary_button_hover_background_gradient",
+      "label": "t:settings.hover_background_gradient",
+      "info": "t:info.background_gradient_info",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_hover_text",
+      "label": "t:settings.hover_text",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_secondary_button_hover_border",
+      "label": "t:settings.hover_borders",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:names.inputs",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_input_background",
+      "label": "t:settings.background",
+      "default": "#FFFFFF",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_input_text_color",
+      "label": "t:settings.text",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_input_border_color",
+      "label": "t:settings.borders",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_input_hover_background",
+      "label": "t:settings.hover_background",
+      "default": "#F5F5F5",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "Carousel",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_arrow_color",
+      "label": "t:settings.arrow_color",
+      "default": "#333333",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_arrow_background",
+      "label": "t:settings.arrow_background",
+      "default": "#ffffff",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_arrow_border",
+      "label": "t:settings.arrow_border",
+      "default": "#333333",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_pagination_color",
+      "label": "t:settings.pagination_color",
+      "default": "#cecece",
+      "alpha": true,
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "color",
+      "id": "scheme_pagination_active_color",
+      "label": "t:settings.pagination_active_color",
+      "default": "#333333",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
     },

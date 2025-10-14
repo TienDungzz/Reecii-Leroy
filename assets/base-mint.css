@@ -21,3 +21,102 @@
 .price-item--sale {
   color: var(--sale-price-color);
 }
+
+.text-clamp-style .link--hover-underline{
+  --lineHeight : calc(var(--font-body--line-height) * var(--font-body--size));
+  --row: var(--text-clamp);
+  height: calc(var(--lineHeight) * var(--row));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: var(--row);
+  -webkit-box-orient: vertical;
+}
+
+/* css for description template */
+.description-sample {
+  .flex-block {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+
+    &.row-reverse {
+      flex-direction: row-reverse;
+    }
+
+    & + .banner-block {
+      margin-top: 30px;
+    }
+
+    > .flex-item {
+      width: calc(50% - 15px);
+
+      @media (max-width: 750px) {
+        width: 100%;
+      }
+    }
+
+    .banner-content {
+      border: 1px solid var(--color-border, #323232);
+      display: flex;
+      align-content: center;
+    }
+
+    .content-box {
+      max-width: 430px;
+      padding: 30px 15px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .banner-sub-title {
+        margin-bottom: 18px;
+      }
+
+      .banner-heading {
+        display: inline-block;
+        position: relative;
+        margin-top: 0;
+        margin-bottom: 42px;
+
+        &:before {
+          content: "";
+          position: absolute;
+          left: 50%;
+          bottom: -25px;
+          -moz-transform: translateX(-50%);
+          -o-transform: translateX(-50%);
+          -ms-transform: translateX(-50%);
+          -webkit-transform: translateX(-50%);
+          transform: translate(-50%);
+          height: 2px;
+          width: 40px;
+          display: inline-block;
+          background-color: var(--color, var(--color-foreground-heading));
+        }
+      }
+
+      .banner-text {
+        margin-bottom: 25px;
+      }
+    }
+  }
+  .quote {
+    h4 {
+      margin-bottom: 18px;
+      margin-top: 0;
+    }
+
+    p {
+      padding: 34px 40px;
+
+      @media (max-width: 750px) {
+        padding: 15px 20px;
+      }
+    }
+  }
+}

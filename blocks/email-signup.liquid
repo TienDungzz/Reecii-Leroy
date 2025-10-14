@@ -86,6 +86,12 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
         {% if block.settings.inherit_color_scheme == false %}
           {% render 'color-scheme-style', settings: block.settings %}
         {% endif %}
+        
+        {%- if block.settings.submit_width == 'custom' -%}
+          --size-style-width: {{- block.settings.submit_custom_width }}%;
+        {%- else -%}
+          --size-style-width: {{ block.settings.submit_width }};
+        {%- endif -%}
       "
     >
       <div class="email-signup__input-group">
@@ -135,19 +141,15 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
           {%- if block.settings.integrated_button -%}
             --size-style-width: fit-content;
           {%- else -%}
-            {%- if block.settings.submit_width == 'custom' -%}
-              --size-style-width: {{- block.settings.submit_custom_width }}%;
-            {%- else -%}
-              --size-style-width: {{ block.settings.submit_width }};
-            {%- endif -%}
+            --size-style-width: fill-content;
 
             {% if block.settings.submit_width_mobile == 'custom' %}
-              --size-style-width-mobile: {{- block.settings.submit_custom_width_mobile }}%;
-              --size-style-width-mobile-min: {{- block.settings.submit_custom_width_mobile }}%;
-            {%- elsif block.settings.submit_width_mobile == 'fit-content' -%}
-              --size-style-width-mobile: {{ block.settings.submit_width_mobile }};
-              --size-style-width-mobile-min: {{ block.settings.submit_width_mobile }};
-            {%- endif -%}
+            --size-style-width-mobile: {{- block.settings.submit_custom_width_mobile }}%;
+            --size-style-width-mobile-min: {{- block.settings.submit_custom_width_mobile }}%;
+          {%- elsif block.settings.submit_width_mobile == 'fit-content' -%}
+            --size-style-width-mobile: {{ block.settings.submit_width_mobile }};
+            --size-style-width-mobile-min: {{ block.settings.submit_width_mobile }};
+          {%- endif -%}
           {%- endif -%}
         "
       >
@@ -234,7 +236,9 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
     background-color: transparent;
 
     &:has(.email-signup__button--size-custom):not(:has(.email-signup__button--icon)) {
-      grid-template-columns: 1fr;
+      @media screen and (min-width: 750px) {
+        grid-template-columns: calc(100% - var(--size-style-width)) var(--size-style-width);
+      }
     }
   }
 

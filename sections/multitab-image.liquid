@@ -34,6 +34,16 @@
   --background-tab-active: {{ sec_stts.background_tab_active }};
 {%- endcapture -%}
 
+{{ 'tabs-component.css' | asset_url | stylesheet_tag: preload: true }}
+
+{% stylesheet %}
+  .tabs-component-panel-trigger.button:hover, .tabs-component-panel-trigger.button.--active {    
+    color: var(--button-color);
+    background: var(--color-primary-button-hover-background);
+    border-color: var(--color-primary-button-hover-background);
+  }
+{% endstylesheet %}
+
 <div
   class="section spacing-style section--{{ sec_stts.section_width }} color-{{ sec_stts.color_scheme }}"
   style="{% render 'spacing-style', settings: sec_stts %}"
@@ -109,7 +119,7 @@
                 </a>
                 {%- if section.settings.show_tab_item_content == nil or section.settings.show_tab_item_content == true -%}
                   <div class="tab-item__content">
-                    <a href="{{ link.url }}" class="link link--text body-m-font-size subheading">{{ link.title }}</a>
+                    <a href="{{ link.url }}" class="link link--text body-m-font-size subheading" style="--button-font-size-link: {{ section.settings.button_type_size_link_content }}; --button-font-weight-link: {{ section.settings.button_font_weight_link_content }}">{{ link.title }}</a>
                   </div>
                 {%- endif -%}
               </div>
@@ -123,9 +133,6 @@
     </div>
   </tabs-component>
 </div>
-
-{%- stylesheet -%}
-{%- endstylesheet -%}
 
 {% schema %}
 {
@@ -472,6 +479,100 @@
       "default": true
     },
     {
+      "type": "select",
+      "id": "button_type_size_link_content",
+      "label": "t:settings.size",
+      "visible_if": "{{ section.settings.show_tab_item_content == true }}",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        }
+      ],
+      "default": "1.2rem"
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight_link_content",
+      "label": "t:settings.button_text_weight",
+      "visible_if": "{{ section.settings.show_tab_item_content == true }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "100",
+          "label": "t:options.thin"
+        },
+        {
+          "value": "300",
+          "label": "t:options.light"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "500",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        },
+        {
+          "value": "900",
+          "label": "t:options.black"
+        }
+      ],
+      "default": "default"
+    },
+    {
       "type": "header",
       "content": "Padding: Image"
     },
@@ -544,7 +645,7 @@
       "unit": "px",
       "label": "t:settings.border_width",
       "default": 1,
-      "visible_if": "{{ block.settings.border != 'none' }}"
+      "visible_if": "{{ section.settings.border != 'none' }}"
     },
     {
       "type": "range",
@@ -555,7 +656,7 @@
       "unit": "%",
       "label": "t:settings.border_opacity",
       "default": 100,
-      "visible_if": "{{ block.settings.border != 'none' }}"
+      "visible_if": "{{ section.settings.border != 'none' }}"
     },
     {
       "type": "range",
