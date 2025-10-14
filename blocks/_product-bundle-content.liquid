@@ -58,7 +58,14 @@
         watch_slides_progress: true,
         breakpoints: breakpoints
       -%}
-      style="--items-gap: {{ block.settings.items_gap }}px;"
+      style="
+        {% render 'swiper-style',
+          columns_mobile: 2,
+          columns_tablet: 3,
+          columns_desktop: 4,
+          columns_gap: block.settings.items_gap,
+        %}
+      "
     >
       <div class="swiper size-full" style="--swiper-navigation-top-offset: 50%;">
         <ul

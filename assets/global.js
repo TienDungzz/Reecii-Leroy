@@ -4177,15 +4177,15 @@ class SlideshowAnimated extends HTMLElement {
 
   initAnimate() {
     let n = this.image.offsetHeight - this.offsetHeight;
-    let y = Math.round(n * this.speed)
-
+    let yUp = Math.round(n * this.speed)
+    let yDown = Math.round(n * this.speed) * -1
     Motion.scroll(
       Motion.animate(
         this.image,
-        { y: ['0', y] },
+        { y: [yDown, yUp] },
         { easing: 'linear' },
       ),
-      { target: this.image, offset: ["start center", "end start"] }
+      { target: this, offset: ["center start", "end start"] }
     );
   }
 }

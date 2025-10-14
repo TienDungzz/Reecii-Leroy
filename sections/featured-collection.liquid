@@ -527,7 +527,20 @@
                 <swiper-component
                   class="swiper-component-mobile"
                   data-swiper-mobile
-                  {%- render 'swiper-data', settings: section.settings, loop: false, slides_per_view: columns_mobile, space_between: columns_gap -%}
+                  {%- render 'swiper-data', 
+                    settings: section.settings, 
+                    loop: false, 
+                    slides_per_view: columns_mobile, 
+                    space_between: columns_gap 
+                  -%}
+                  style="
+                    {% render 'swiper-style',
+                      columns_mobile: columns_mobile,
+                      columns_tablet: columns_tablet,
+                      columns_desktop: columns_desktop,
+                      columns_gap: columns_gap,
+                    %}
+                  "
                 >
                   <div class="swiper">
               {%- endif -%}
