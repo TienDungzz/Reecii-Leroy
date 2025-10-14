@@ -51,6 +51,13 @@
       "visible_if": "{{ block.settings.typing_text == false }}"
     },
     {
+      "type": "text",
+      "id": "highlight_text_content",
+      "label": "t:settings.select_highlight_content",
+      "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true }}",
+      "info": "t:info.highlight_text_content"  
+    },
+    {
       "type": "select",
       "id": "highlight_text_type",
       "label": "t:settings.highlight_type",
@@ -68,11 +75,26 @@
       "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true }}"
     },
     {
-      "type": "text",
-      "id": "highlight_text_content",
-      "label": "t:settings.select_highlight_content",
-      "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true }}",
-      "info": "t:info.highlight_text_content"  
+      "type": "range",
+      "id": "underline_height",
+      "label": "t:settings.underline_height",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "unit": "%",
+      "default": 18,
+      "visible_if": "{{ block.settings.highlight_text_type == 'underline' and block.settings.typing_text == false and block.settings.highlight_text == true }}"
+    },
+    {
+      "type": "range",
+      "id": "underline_offset",
+      "label": "t:settings.underline_offset",
+      "min": -20,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "default": -20,
+      "visible_if": "{{ block.settings.highlight_text_type == 'underline' and block.settings.typing_text == false and block.settings.highlight_text == true }}"
     },
     {
       "type": "color",

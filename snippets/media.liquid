@@ -69,7 +69,6 @@
     {% endif %}
   {%- elsif show_video -%}
     {% render 'video',
-      video_from_url: true,
       video: block.settings.video,
       video_class: 'media-block__media media-block__media--video spacing-style size-style border-style',
       video_type: block.settings.video_url.type,
@@ -93,10 +92,11 @@
   {%- endif -%}
 </div>
 
-{% style %}
+{% stylesheet %}
   .media-banner {
     min-height: var(--media-height, auto);
-    aspect-ratio: {{ aspect_ratio }};
+    /* aspect-ratio: {{ aspect_ratio }}; */
+    align-items: center;
   }
 
   .media-block {
@@ -109,7 +109,7 @@
   }
 
   .media-block__media {
-    height: var(--media-height-mobile, auto);
+    height: var(--media-height-mobile, 100%);
     object-fit: var(--image-position, 'cover');
     object-position: center center;
     width: 100%;
@@ -134,4 +134,4 @@
       --media-height-mobile: auto;
     }
   }
-{% endstyle %}
+{% endstylesheet %}

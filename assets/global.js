@@ -3817,21 +3817,28 @@ class HoverButton extends HTMLElement {
   onMouseEnter() {
     const hoverButton = event.currentTarget;
     const btnFill = hoverButton.querySelector('[data-fill-bg]');
+    const btnFillAfter = hoverButton.querySelector('[data-fill-bg-after]');
     const dir = this.classList.contains('swiper-button-prev') ? 'left' : 'right';
 
     if (btnFill) {
       Motion.animate(btnFill, {x: dir === 'left' ? ['100%', '0%'] : ['-100%', '0%']}, { duration: 0.35 });
+    }
+    if (btnFillAfter) {
+      Motion.animate(btnFillAfter, {x: dir === 'left' ? ['0%', '-100%'] : ['0%', '100%']}, { duration: 0.35 });
     }
   }
 
   onMouseLeave() {
     const hoverButton = event.currentTarget;
     const btnFill = hoverButton.querySelector('[data-fill-bg]');
+    const btnFillAfter = hoverButton.querySelector('[data-fill-bg-after]');
     const dir = this.classList.contains('swiper-button-prev') ? 'left' : 'right';
 
     if (btnFill) {
       Motion.animate(btnFill, {x: dir === 'left' ? ['-100%'] : ['100%']}, { duration: 0.35 });
-
+    }
+    if (btnFillAfter) {
+      Motion.animate(btnFillAfter, {x: dir === 'left' ? ['-100%', '0%'] : ['100%', '0%']}, { duration: 0.35 });
     }
   }
 }

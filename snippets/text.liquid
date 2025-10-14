@@ -82,7 +82,11 @@
 
   if highlight_content != blank and highlight_text == true
     for highlight in highlight_content
-      assign highlight_text_code = highlight | prepend: '<span class="highlight_text--content highlight_text--[highlight_text_type]" style="--color: [highlight_color];">' | append: '</span>' | replace: '[highlight_color]', highlight_color | replace: '[highlight_text_type]', highlight_text_type
+      assign style_underline = ''
+      if highlight_text_type == 'underline'
+        assign style_underline = ' --underline-height: ' | append: bl_stts.underline_height | append: '%; --underline-offset: ' | append: bl_stts.underline_offset | append: '%;'
+      endif
+      assign highlight_text_code = highlight | prepend: '<span class="highlight_text--content highlight_text--[highlight_text_type]" style="--color: [highlight_color];[style_underline]">' | append: '</span>' | replace: '[highlight_color]', highlight_color | replace: '[highlight_text_type]', highlight_text_type | replace: '[style_underline]', style_underline
       assign text = text | replace: highlight, highlight_text_code
     endfor
   endif
@@ -299,16 +303,18 @@
   .highlight_text--content.highlight_text--underline {
     position: relative;
     display: inline-block;
+    z-index: 1;
   }
   .highlight_text--content.highlight_text--underline:after {
     content: '';
     display: block;
     position: absolute;
-    bottom: -0.2em;
+    bottom: calc(var(--underline-offset, 0.2em) * -1);
     left: 0;
     width: 100%;
-    height: max(1px, 0.18em);
+    height: max(1px, var(--underline-height,0.18em));
     background: var(--color);
+    z-index: -1;
   }
 
   .text-border-style-bottom {
