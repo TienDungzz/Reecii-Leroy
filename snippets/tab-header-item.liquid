@@ -1,55 +1,57 @@
-{%- assign labels = labels | split: ',' -%}
+{% doc %}
+  Intended for use in the featured collection list section.
+
+  @param {string} labels - The labels
+  @param {string} id - The id
+  @param {string} class - The class
+  @param {string} style - The style
+
+  @example
+  {% render 'tab-header-item',
+    labels: 'Label 1, Label 2, Label 3',
+    id: 'tabs-1',
+    class: class_tabs_product_header_item,
+    style: style_tabs_header_item
+  %}
+{% enddoc %}
+
+{%- liquid
+  assign class = class | strip | strip_newlines
+  assign style = style | strip | strip_newlines
+
+  assign labels = labels | split: ','
+-%}
 
 {%- for label in labels -%}
-  {%- capture class_default -%}
-    {{ class }} tabs-component-panel-trigger
-    {% if forloop.first %} --active{% endif %}
-  {%- endcapture -%}
-
   {%- capture link -%}#tabs-{{ id }}-{{ forloop.index }}{%- endcapture -%}
 
-  {%- if settings.style_class == 'link' -%}
-    {%- capture style_tabs_header_item -%}
-      {%- if settings.button_type_size_link != blank -%}
-        --button-font-size-link: {{ settings.button_type_size_link }};
-      {%- endif -%}
-      {%- if settings.button_font_weight_link != blank and settings.button_font_weight_link != 'default' -%}
-        --button-font-weight-link: {{ settings.button_font_weight_link }};
-      {%- endif -%}
-      --text-transform: {{ settings.case }};
-      --text-wrap: {{ settings.wrap }};
-      --font-style: {{ settings.font_style }};
-    {%- endcapture -%}
-  {%- endif-%}
+  {%- capture class_default -%}
+    {{ class }} tabs-component-panel-trigger{% if forloop.first %} --active{% endif %}
+  {%- endcapture -%}
 
   {% render 'button',
     link: link,
     label: label,
     class: class_default,
-    style: style_tabs_header_item,
-    style_class: settings.style_class,
-    button_style: settings.button_style,
-    link_underline: settings.link_underline,
+    style: style
   %}
 {%- endfor -%}
 
-{%- if settings.style_class == 'button' -%}
-  <span class="mask-background absolute top-0 left-0 whitespace-nowrap flex-center"></span>
-{%- endif -%}
-
 {%- stylesheet -%}
-  .tabs-component-panel-trigger.button:hover,
   .tabs-component-panel-trigger.button.--active {
-    --button-color: var(--color-primary-button-hover-text);
-    --button-background-color: var(--color-primary-button-hover-background);
-    --color-border: var(--color-primary-button-hover-border);
+    color: var(--color-primary-button-hover-text);
+    background-color: var(--color-primary-button-hover-background);
+    border-color: var(--color-primary-button-hover-border);
   }
 
-  .tabs-component-panel-trigger.button-secondary:hover,
   .tabs-component-panel-trigger.button-secondary.--active {
-    --button-color: var(--color-secondary-button-hover-text);
-    --button-background-color: var(--color-secondary-button-hover-background);
-    --color-border: var(--color-secondary-button-hover-border);
+    color: var(--color-secondary-button-hover-text);
+    background-color: var(--color-secondary-button-hover-background);
+    border-color: var(--color-secondary-button-hover-border);
   }
 
+  .tabs-component-panel-trigger.link.--active {
+    font-weight: 700;
+    background-size: 100% 2px !important;
+  }
 {%- endstylesheet -%}

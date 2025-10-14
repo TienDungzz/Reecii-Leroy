@@ -12,7 +12,10 @@
   @param {string} [label] - The label
   @param {string} [button_style] - The button style
   @param {string} [class] - The class
+  @param {string} [style] - The style
   @param {string} [icon] - The icon
+  @param {string} [wrap] - The wrap
+  @param {string} [font_style] - The font style
 
   @example
   {% render 'button', link: '/collections/all' %}
@@ -123,13 +126,14 @@
     &:after {
       content: '';
       position: absolute;
-      inset: 0;
+      top: 50%;
+      left: 50%;
       width: 120%;
-      height: 100%;
+      height: calc(100% + (max(0.2rem, var(--button-border-width)) * 2));
       background-color: var(--color-primary-button-hover-background);
       backface-visibility: hidden;
       will-change: transform;
-      transform: rotate3d(0, 0, 2, 20deg) translate3d(-1.2em, 105%, 0);
+      transform: translate(-50%, -50%) rotate3d(0, 0, 2, 20deg) translate3d(-1.2em, 105%, 0);
       transform-origin: 0% 100%;
       transition: var(--tss);
       z-index: -1;
@@ -143,7 +147,7 @@
         transform: translateY(-100%);
       }
       &:after {
-        transform: rotate3d(0, 0, 1, 0) translateZ(0);
+        transform: translate(-50%, -50%) rotate3d(0, 0, 1, 0) translate3d(0, 0, 0);
         transition: var(--tss);
       }
     }
@@ -174,7 +178,7 @@
   }
 
   .link--underline {
-    background: linear-gradient(to right, currentColor, currentColor) 0 var(--line-link-gap) / 0 1px no-repeat;
+    background: linear-gradient(to right, var(--link-underline-color, currentColor), var(--link-underline-color, currentColor)) 0 var(--line-link-gap) / 0 1px no-repeat;
     background-position-y: bottom;
     background-position-x: left;
     background-size: 100% 1px;
@@ -182,7 +186,7 @@
 
   .link--hover-underline .text,
   .link--hover-underline:not(:has(.text)) {
-    background: linear-gradient(to left, currentColor, currentColor) 0 var(--line-link-gap) / 0 1px no-repeat;
+    background: linear-gradient(to left, var(--link-underline-color, currentColor), var(--link-underline-color, currentColor)) 0 var(--line-link-gap) / 0 1px no-repeat;
     background-position-y: bottom;
     background-position-x: right;
   }
