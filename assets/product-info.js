@@ -7,8 +7,10 @@ if (!customElements.get('product-info')) {
       stickyQuantityContainer = undefined;
       stickyQuantityInput = undefined;
       isSyncingQuantity = false;
+      isSyncingVariant = false;
       onVariantChangeUnsubscriber = undefined;
       cartUpdateUnsubscriber = undefined;
+      variantChangeUnsubscriber = undefined;
       abortController = undefined;
       pendingRequestUrl = null;
       preProcessHtmlCallbacks = [];
@@ -34,6 +36,7 @@ if (!customElements.get('product-info')) {
         this.initQuantityHandlers();
         this.initStickyQuantityHandlers();
         this.initVariantSyncHandlers();
+        this.classList.add('initialized');
         this.dispatchEvent(new CustomEvent('product-info:loaded', { bubbles: true }));
       }
 
@@ -42,7 +45,143 @@ if (!customElements.get('product-info')) {
       }
 
       initVariantSyncHandlers() {
-        console.log("initVariantSyncHandlers");
+        // Subscribe to variant change events to update sticky variants
+        this.variantChangeUnsubscriber = subscribe(
+          PUB_SUB_EVENTS.variantChange,
+          this.handleVariantChangeForSticky.bind(this)
+        );
+      }
+
+      handleVariantChangeForSticky({ data }) {
+        if (data.sectionId !== this.sectionId) return;
+        if (this.isSyncingVariant) return; // Prevent infinite loop
+        
+        this.isSyncingVariant = true;
+
+        try {
+          // Update sticky variant selectors to match main product
+          const stickyVariantSelects = document.querySelector('.sticky-atc__variant variant-selects');
+          if (!stickyVariantSelects) return;
+
+          const mainVariantSelects = this.variantSelectors;
+          if (!mainVariantSelects) return;
+
+          // Sync all selected options from main to sticky
+          const mainSelectedOptions = mainVariantSelects.querySelectorAll('select option[selected], fieldset input:checked');
+          
+          mainSelectedOptions.forEach((mainOption) => {
+            const optionValueId = mainOption.dataset.optionValueId;
+            if (!optionValueId) return;
+
+            // Find corresponding option in sticky cart
+            const stickyOption = stickyVariantSelects.querySelector(`[data-option-value-id="${optionValueId}"]`);
+            if (!stickyOption) return;
+
+            if (stickyOption.tagName === 'INPUT' && stickyOption.type === 'radio') {
+              // Don't trigger change event to avoid infinite loop
+              if (!stickyOption.checked) {
+                stickyOption.checked = true;
+                // Update the selected value display
+                const selectedValueSpan = stickyOption.closest('.product-form__input')?.querySelector('[data-selected-value]');
+                if (selectedValueSpan) {
+                  selectedValueSpan.innerHTML = stickyOption.value;
+                }
+              }
+            } else if (stickyOption.tagName === 'OPTION') {
+              const select = stickyOption.closest('select');
+              if (select && select.value !== stickyOption.value) {
+                // Remove selected from all options
+                Array.from(select.options).forEach(opt => opt.removeAttribute('selected'));
+                // Set new selected option
+                stickyOption.setAttribute('selected', 'selected');
+                select.value = stickyOption.value;
+                
+                // Update swatch display if exists
+                const swatchValue = stickyOption.dataset.optionSwatchValue;
+                const selectedDropdownSwatchValue = select.closest('.product-form__input')?.querySelector('[data-selected-value] > .swatch');
+                if (selectedDropdownSwatchValue) {
+                  if (swatchValue) {
+                    selectedDropdownSwatchValue.style.setProperty('--swatch--background', swatchValue);
+                    selectedDropdownSwatchValue.classList.remove('swatch--unavailable');
+                  } else {
+                    selectedDropdownSwatchValue.style.setProperty('--swatch--background', 'unset');
+                    selectedDropdownSwatchValue.classList.add('swatch--unavailable');
+                  }
+                  selectedDropdownSwatchValue.style.setProperty(
+                    '--swatch-focal-point',
+                    stickyOption.dataset.optionSwatchFocalPoint || 'unset'
+                  );
+                }
+                
+                // Update the selected value display text
+                const selectedValueSpan = select.closest('.product-form__input')?.querySelector('[data-selected-value]');
+                if (selectedValueSpan) {
+                  // Remove swatch element from text content
+                  const textNode = selectedValueSpan.childNodes[selectedValueSpan.childNodes.length - 1];
+                  if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+                    textNode.textContent = stickyOption.value;
+                  } else {
+                    const swatchEl = selectedValueSpan.querySelector('.swatch');
+                    selectedValueSpan.innerHTML = '';
+                    if (swatchEl) selectedValueSpan.appendChild(swatchEl);
+                    selectedValueSpan.appendChild(document.createTextNode(stickyOption.value));
+                  }
+                }
+              }
+            }
+          });
+
+          // Update sticky variant button state
+          this.updateStickyButtonState(data.variant);
+        } finally {
+          // Reset syncing flag after a short delay
+          setTimeout(() => {
+            this.isSyncingVariant = false;
+          }, 100);
+        }
+      }
+
+      updateStickyButtonState(variant) {
+        const stickyButton = document.querySelector('.sticky-cart__button [name="add"]');
+        const stickyButtonText = stickyButton?.querySelector('.add-to-cart-text');
+        const stickyQuantityForm = document.querySelector('#StickyCart-Quantity-Form-' + this.dataset.section);
+        
+        if (!stickyButton) return;
+
+        if (variant && variant.available) {
+          stickyButton.removeAttribute('disabled');
+          stickyButton.classList.remove('sold-out--button');
+          if (stickyQuantityForm) {
+            stickyQuantityForm.classList.remove('disabled');
+          }
+          
+          // Update button text based on inventory
+          if (stickyButtonText) {
+            const inventoryQty = variant.inventory_quantity || 0;
+            const inventoryPolicy = variant.inventory_policy || 'deny';
+            
+            if (inventoryQty <= 0 && inventoryPolicy === 'continue') {
+              stickyButtonText.innerHTML = window.variantStrings.preOrder;
+            } else {
+              stickyButtonText.innerHTML = window.variantStrings.addToCart;
+            }
+          }
+        } else {
+          stickyButton.setAttribute('disabled', 'disabled');
+          stickyButton.classList.add('sold-out--button');
+          if (stickyQuantityForm) {
+            stickyQuantityForm.classList.add('disabled');
+          }
+          if (stickyButtonText) {
+            stickyButtonText.innerHTML = window.variantStrings.soldOut;
+          }
+        }
+
+        // Update hidden variant id input in sticky form
+        const stickyVariantInput = document.querySelector('#product-form-sticky-' + this.dataset.section + ' input[name="id"]');
+        if (stickyVariantInput && variant) {
+          stickyVariantInput.value = variant.id;
+        }
       }
 
       initQuantityHandlers() {
@@ -121,6 +260,7 @@ if (!customElements.get('product-info')) {
       disconnectedCallback() {
         this.onVariantChangeUnsubscriber();
         this.cartUpdateUnsubscriber?.();
+        this.variantChangeUnsubscriber?.();
       }
 
       initializeProductSwapUtility() {
