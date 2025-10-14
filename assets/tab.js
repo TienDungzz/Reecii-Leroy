@@ -111,7 +111,6 @@ class HeaderMobileTabs extends HTMLElement {
   }
 
   init() {
-    console.log("init");
     this.tabs = this.querySelectorAll("[data-tab-heading]");
     this.tabContents = this.querySelectorAll("[data-tab-for]");
 
@@ -122,9 +121,6 @@ class HeaderMobileTabs extends HTMLElement {
 
   handleTabClick(event) {
     event.preventDefault();
-
-    console.log("handleTabClick");
-
 
     let target = event.target.closest("a"),
       tabTarget = target.getAttribute("data-tab-heading-target");
@@ -143,8 +139,6 @@ class HeaderMobileTabs extends HTMLElement {
       }
     });
   }
-
-
 }
 
 if (!customElements.get("header-mobile-tabs"))

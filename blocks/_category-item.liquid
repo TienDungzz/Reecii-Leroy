@@ -1,22 +1,25 @@
 {%- liquid
-  assign bl_id = block.id
   assign collection = block.settings.collection
 -%}
 
-{% capture style %}
-  --gap: 1rem;
-  {% if block.settings.inherit_color_scheme == false %}
-    {% render 'color-scheme-style', settings: block.settings %}
-  {% endif %}
-  {% render 'spacing-style', settings: block.settings %}
-{% endcapture %}
-
 {%- capture class -%}
-  category-item category-item-{{ bl_id }} shadow-style border-style relative overflow-hidden flex justify-between items-center{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %} spacing-style
+  class="
+    category-item category-item-{{ block.id }} shadow-style border-style relative overflow-hidden flex justify-between items-center{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %} spacing-style
+  "
 {%- endcapture -%}
 
+{% capture style %}
+  style="
+    --gap: 1rem;
+    {% if block.settings.inherit_color_scheme == false %}
+      {% render 'color-scheme-style', settings: block.settings %}
+    {% endif %}
+    {% render 'spacing-style', settings: block.settings %}
+  "
+{% endcapture %}
+
 {%- capture image_html -%}
-  <div class="category-item__image relative shrink-0 overflow-hidden" >
+  <div class="category-item__image relative shrink-0 overflow-hidden">
     {%- capture class_img -%}
       category-item__img object-cover w-full h-full
     {%- endcapture -%}
@@ -33,7 +36,7 @@
   </div>
 {%- endcapture -%}
 
-<div class="{{ class }}" style="{{ style }}" {{ block.shopify_attributes }}>
+<div {{ class }} {{ style }} {{ block.shopify_attributes }}>
   {% if block.settings.position == 'left' %}
     {{ image_html }}
   {% endif %}
@@ -76,9 +79,53 @@
   "tag": null,
   "settings": [
     {
+      "type": "select",
+      "id": "position",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "header",
+      "content": "t:settings.image"
+    },
+    {
       "type": "collection",
       "id": "collection",
       "label": "t:settings.collection"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:settings.image"
+    },
+    {
+      "type": "header",
+      "content": "t:content.content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:names.title"
+    },
+    {
+      "type": "text",
+      "id": "url_label",
+      "label": "t:settings.button_label"
+    },
+    {
+      "type": "url",
+      "id": "url",
+      "label": "t:settings.button_link"
     },
     {
       "type": "header",
@@ -152,50 +199,6 @@
       "default": "#000000",
       "alpha": true,
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "header",
-      "content": "t:settings.image"
-    },
-    {
-      "type": "select",
-      "id": "position",
-      "label": "t:settings.position",
-      "options": [
-        {
-          "value": "left",
-          "label": "t:options.left"
-        },
-        {
-          "value": "right",
-          "label": "t:options.right"
-        }
-      ],
-      "default": "right"
-    },
-    {
-      "type": "image_picker",
-      "id": "image",
-      "label": "t:settings.image"
-    },
-    {
-      "type": "header",
-      "content": "t:content.content"
-    },
-    {
-      "type": "inline_richtext",
-      "id": "title",
-      "label": "t:names.title"
-    },
-    {
-      "type": "text",
-      "id": "url_label",
-      "label": "t:settings.button_label"
-    },
-    {
-      "type": "url",
-      "id": "url",
-      "label": "t:settings.button_link"
     },
     {
       "type": "header",
