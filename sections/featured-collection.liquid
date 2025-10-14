@@ -117,7 +117,19 @@
   }
 
   .product-infinite-scroll {
-    margin-top: 5.5rem;
+    margin-top: var(--show-more-button-offset, 5.5rem);
+  }
+
+  @media screen and (max-width: 1024px) {
+    .product-infinite-scroll {
+      margin-top: calc(var(--show-more-button-offset, 5.5rem) * 0.75);
+    }
+  }
+
+  @media screen and (max-width: 750px) {
+    .product-infinite-scroll {
+      margin-top: calc(var(--show-more-button-offset, 5.5rem) * 0.5);
+    }
   }
 
   .section--featured-collection .content-inside-media {
@@ -561,7 +573,7 @@
               {%- endif -%}
 
               {%- if show_more_product -%}
-                <show-more-product-grid class="product-infinite-scroll block center">
+                <show-more-product-grid class="product-infinite-scroll block center" style="--show-more-button-offset: {{ sec_stts.show_more_product_top_offset }}px">
                   <button type="button" class="button m-x-auto">
                     <span>{{ sec_stts.show_more_product_text }}</span>
                   </button>
@@ -1928,6 +1940,17 @@
       "label": "t:options.text",
       "default": "Show more",
       "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "range",
+      "id": "show_more_product_top_offset",
+      "label": "Spacing Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.show_more_product == true }}"
     },
     {
       "type": "header",
