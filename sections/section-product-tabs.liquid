@@ -119,7 +119,7 @@ style="
                   {%- endfor -%}
                 </ul>
 
-                <div class="tabs-content" style="font-size: 16px;">
+                <div class="tabs-content" style="--pb: 20px; --pt: 20px;">
                   {%- for block in section.blocks -%}
                     {% liquid
                       assign title = block.settings.title
@@ -128,7 +128,7 @@ style="
                     {%- case block.type -%}
                       {%- when 'description' -%}
                       {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
-                        <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %} {% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
                         <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
                           <button class="toggle-link cursor-pointer">
                             <span class="text">{{ title }}</span>
@@ -139,12 +139,13 @@ style="
                         </side-drawer-opener>
                         
                           <div class="toggle-content">
-                            {{ product.description }}
+                            {% render 'sample-desc-layout-1' %}
+                            {% comment %} {{ product.description }} {% endcomment %}
                           </div>
                         </div>
                       {%- when 'review' -%}
                       {%- if title == blank or product.reviews.rating_average == blank -%}{%- continue -%}{%- endif -%}
-                        <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %} {% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
                           <div class="toggle-title">
                             <a href="#" class="toggle-link">
                               <span class="text">{{ title }}</span>
@@ -161,7 +162,7 @@ style="
                         {%- assign page_title = title | default: block.settings.page.title -%}
                         {%- if page_title == blank or block.settings.content == blank and block.settings.page.content == blank -%}{%- continue -%}{%- endif -%}
 
-                        <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
                           <div class="toggle-title">
                             <a href="#" class="toggle-link">
                               <span class="text">{{ title }}</span>
@@ -171,14 +172,14 @@ style="
                             </a>
                           </div>
                           <div class="toggle-content">
-                            <div class="rte" style="margin-bottom: 2rem">{{ block.settings.content }}</div>
+                            <div class="rte">{{ block.settings.content }}</div>
                             {{ block.settings.page.content }}
                           </div>
                         </div>
                       {% when 'liquid' %}
                         {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
 
-                        <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+                        <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
                           <div class="toggle-title">
                             <a href="#" class="toggle-link">
                               <span class="text">{{ title }}</span>
@@ -207,7 +208,7 @@ style="
           {%- case block.type -%}
             {%- when 'description' -%}
             {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
-              <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+              <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
                 <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
                   <button class="toggle-link cursor-pointer">
                     <span class="text">{{ title }}</span>
@@ -222,7 +223,7 @@ style="
               </div>
             {%- when 'review' -%}
             {%- if title == blank or product.reviews.rating_average == blank -%}{%- continue -%}{%- endif -%}
-              <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+              <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
                 <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
                   <button class="toggle-link cursor-pointer">
                     <span class="text">{{ title }}</span>
@@ -238,7 +239,7 @@ style="
             {% when 'html' %}
               {%- assign page_title = title | default: block.settings.page.title -%}
               {%- if page_title == blank or block.settings.content == blank and block.settings.page.content == blank -%}{%- continue -%}{%- endif -%}
-              <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+              <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
                 <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
                   <button class="toggle-link cursor-pointer">
                     <span class="text">{{ title }}</span>
@@ -248,14 +249,14 @@ style="
                   </button>
                 </side-drawer-opener>
                 <div class="toggle-content">
-                  <div class="rte" style="margin-bottom: 2rem">{{ block.settings.content }}</div>
+                  <div class="rte">{{ block.settings.content }}</div>
                   {{ block.settings.page.content }}
                 </div>
               </div>
             {% when 'liquid' %}
               {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
 
-              <div class="tab-content{% if forloop.first %} is-active{% endif %} border-{{ accordion_border_style }}">
+              <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
                 <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
                   <button class="toggle-link cursor-pointer">
                     <span class="text">{{ title }}</span>
@@ -348,6 +349,71 @@ style="
           } else {
             toggleLink.closest('.toggle-title').classList.toggle('is-open');
           }
+        });
+      });
+    }
+
+    // Open video popup
+    const modalTemplate = `
+      <side-drawer
+        class="popup__content drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
+        element-s-popup=""
+        id="PopupModal-AZDFEMWdKNDFCVHdoM__popup_link_desc_video"
+        data-moved="true"
+      >
+        <div
+          id="Drawer-Overlay-AZDFEMWdKNDFCVHdoM__popup_link_desc_video"
+          class="drawer__overlay fixed inset-0 cursor-pointer"
+          style="transform: translateX(0px)"
+        ></div>
+        <div
+          class="popup__inner color-scheme-1 popup__inner--video w-auto h-full absolute-c-c flex flex-column global-settings-popup"
+        >
+          <div
+            class="popup__inner--content relative w-full h-full overflow-auto cus-scrollbar"
+          >
+          <div class="video-modal__content-block">Video</div>
+            <button
+              onclick="this.closest('side-drawer').close()"
+              class="button button-unstyled close-button popup__close drawer__close block t-button bor-none rounded-full cursor-pointer absolute"
+              type="button"
+              aria-label="Close dialog"
+              style="--top: 0.3rem; --right: 0.3rem"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                class="icon icon-close"
+                viewBox="0 0 18 17"
+              >
+                <path
+                  fill="currentColor"
+                  d="M.865 15.978a.5.5 0 0 0 .707.707l7.433-7.431 7.579 7.282a.501.501 0 0 0 .846-.37.5.5 0 0 0-.153-.351L9.712 8.546l7.417-7.416a.5.5 0 1 0-.707-.708L8.991 7.853 1.413.573a.5.5 0 1 0-.693.72l7.563 7.268z"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </side-drawer>
+      `;
+      
+    document.body.insertAdjacentHTML('beforeend', modalTemplate);
+
+    const videoOpenPopups = document.querySelectorAll('.video-open-popup');
+    if (videoOpenPopups.length > 0) {
+      videoOpenPopups.forEach(videoOpenPopup => {
+        videoOpenPopup.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const videoId = videoOpenPopup.dataset.videoId;
+          const videoWrapper = document.querySelector('.video-modal__content-block');
+
+         const youtubeIframe = `
+          <iframe width="100%" src="https://www.youtube.com/embed/${videoId}?si=6yJ56P_BJEG5d2Uq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+         `;
+
+         videoWrapper.innerHTML = youtubeIframe;
+
         });
       });
     }

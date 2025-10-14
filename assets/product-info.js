@@ -282,13 +282,14 @@ if (!customElements.get('product-info')) {
         this.pendingRequestUrl = productUrl;
         const shouldSwapProduct = this.dataset.url !== productUrl;
         const shouldFetchFullPage = this.dataset.updateUrl === 'true' && shouldSwapProduct;
-
+        const isStickyChanged = event.target.closest('variant-selects');
         this.renderProductInfo({
           requestUrl: this.buildRequestUrlWithParams(productUrl, selectedOptionValues, shouldFetchFullPage),
           targetId: target.id,
           callback: shouldSwapProduct
             ? this.handleSwapProduct(productUrl, shouldFetchFullPage)
             : this.handleUpdateProductInfo(productUrl, event.target),
+          isStickyChanged,
         });
 
       }
@@ -327,7 +328,7 @@ if (!customElements.get('product-info')) {
         };
       }
 
-      renderProductInfo({ requestUrl, targetId, callback }) {
+      renderProductInfo({ requestUrl, targetId, callback, isStickyChanged = false }) {
         this.abortController?.abort();
         this.abortController = new AbortController();
 
@@ -339,8 +340,9 @@ if (!customElements.get('product-info')) {
             callback(html);
           })
           .then(() => {
-            // set focus to last clicked option value
-            document.querySelector(`#${targetId}`)?.focus();
+            if (!isStickyChanged) {
+              document.querySelector(`#${targetId}`)?.focus();
+            }
           })
           .catch((error) => {
             if (error.name === 'AbortError') {

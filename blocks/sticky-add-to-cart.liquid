@@ -208,180 +208,123 @@ style="
 </sticky-atc>
 
 {% javascript %}
-  // Optimized variant sync for sticky cart - Direct variant selection
+  // Variant sync functionality for sticky cart
+  // Note: The main sticky-atc custom element is defined in global.js for scroll behavior
   document.addEventListener('DOMContentLoaded', function() {
     const stickyAtcElement = document.querySelector('sticky-atc');
     if (!stickyAtcElement) return;
 
+    let mainProductInfo = null;
+    let stickyVariantSelects = null;
+
+    // Wait for product-info to be loaded
     const productInfo = document.querySelector('product-info');
     if (!productInfo) return;
 
-    let stickyVariantSelects = null;
-
-    const init = () => {
+    const initStickyVariantSync = () => {
+      mainProductInfo = productInfo;
       stickyVariantSelects = stickyAtcElement.querySelector('.sticky-atc__variant variant-selects');
+      
       if (stickyVariantSelects) {
-        setupListeners();
+        setupStickyVariantListeners();
       }
+
       setupToggleButton();
     };
 
     const setupToggleButton = () => {
-      const btn = stickyAtcElement.querySelector('.button-toggle-variants');
-      if (!btn) return;
+      const buttonToggleVariants = stickyAtcElement.querySelector('.button-toggle-variants');
+      if (!buttonToggleVariants) return;
 
-      btn.addEventListener('click', (e) => {
+      buttonToggleVariants.addEventListener('click', (e) => {
         const isOpen = stickyAtcElement.classList.contains('show-select-variants');
-        
         if (!isOpen) {
+          // Prevent form submission when opening variant selector
           e.preventDefault();
           e.stopPropagation();
           stickyAtcElement.classList.add('show-select-variants');
         } else {
-          // Closing - submit form
-          const form = document.querySelector('product-form-component form');
-          const submitBtn = form?.querySelector('[name="add"]');
-          if (submitBtn && !submitBtn.hasAttribute('disabled')) {
-            submitBtn.click();
-          }
-          setTimeout(() => stickyAtcElement.classList.remove('show-select-variants'), 300);
+          // When closing, allow normal submit behavior
+          const addToCartButton = document.querySelector('.add-to-cart-button');
+          addToCartButton?.click?.();
+          setTimeout(() => {
+            stickyAtcElement.classList.remove('show-select-variants');
+          }, 500);
         }
       });
     };
 
-    const setupListeners = () => {
-      stickyVariantSelects.addEventListener('change', (e) => {
-        // Check if main is syncing to sticky (prevent loop)
-        if (productInfo.isSyncingVariant) return;
+    const setupStickyVariantListeners = () => {
+      // Listen to changes on sticky variant selects
+      stickyVariantSelects.addEventListener('change', (event) => {
+        // Check if main product-info is currently syncing to prevent loop
+        if (mainProductInfo && mainProductInfo.isSyncingVariant) return;
         
-        // Get all selected options from sticky
-        const selectedOptions = getSelectedOptions();
-        if (!selectedOptions || selectedOptions.length === 0) return;
+        const target = event.target;
+        const optionValueId = getOptionValueId(target);
+        if (!optionValueId) return;
 
-        // Find matching variant and publish directly
-        updateVariantDirectly(selectedOptions);
+        syncStickyToMain(optionValueId, target);
       });
     };
 
-    const getSelectedOptions = () => {
-      // Get all selected option values from sticky variant selects
-      const options = [];
-      const fieldsets = stickyVariantSelects.querySelectorAll('fieldset');
-      const selects = stickyVariantSelects.querySelectorAll('select');
-      
-      // From radio buttons
-      fieldsets.forEach(fieldset => {
-        const checked = fieldset.querySelector('input:checked');
-        if (checked) {
-          options.push(checked.value);
-        }
-      });
-      
-      // From dropdowns
-      selects.forEach(select => {
-        if (select.value) {
-          options.push(select.value);
-        }
-      });
-      
-      return options;
+    const getOptionValueId = (element) => {
+      if (element.tagName === 'SELECT') {
+        return element.selectedOptions[0]?.dataset.optionValueId;
+      } else if (element.type === 'radio' && element.checked) {
+        return element.dataset.optionValueId;
+      }
+      return null;
     };
 
-    const updateVariantDirectly = (selectedOptions) => {
+    const syncStickyToMain = (optionValueId, stickyElement) => {
+      if (!mainProductInfo) return;
+
       try {
-        // Get variant data from product-info
-        const variantData = productInfo.getVariantData();
-        if (!variantData) return;
+        const mainVariantSelects = mainProductInfo.querySelector('variant-selects');
+        if (!mainVariantSelects) return;
 
-        // Find matching variant
-        const matchedVariant = variantData.find(variant => {
-          return selectedOptions.every((option, index) => {
-            const optionKey = `option${index + 1}`;
-            return variant[optionKey] === option;
-          });
-        });
+        const mainVariantInput = mainVariantSelects.querySelector(`[data-option-value-id="${optionValueId}"]`);
+        if (!mainVariantInput) return;
 
-        if (!matchedVariant) {
-          console.log('No matching variant found for options:', selectedOptions);
-          return;
-        }
+        // Store current scroll position to prevent unwanted scrolling
+        const scrollY = window.scrollY;
 
-        // Update main product inputs silently (no events)
-        updateMainProductInputsSilently(matchedVariant.id, selectedOptions);
-
-        // Publish variant change event directly - this updates everything
-        if (typeof publish === 'function' && typeof PUB_SUB_EVENTS !== 'undefined') {
-          publish(PUB_SUB_EVENTS.variantChange, {
-            data: {
-              sectionId: productInfo.sectionId,
-              variant: matchedVariant,
-              html: document
-            }
-          });
-        }
-
-      } catch (error) {
-        console.error('Error updating variant directly:', error);
-      }
-    };
-
-    const updateMainProductInputsSilently = (variantId, selectedOptions) => {
-      // Update hidden variant ID input
-      const variantIdInput = productInfo.querySelector('input[name="id"]');
-      if (variantIdInput) {
-        variantIdInput.value = variantId;
-        variantIdInput.disabled = false;
-      }
-
-      // Update main variant selects display (without triggering events)
-      const mainVariantSelects = productInfo.querySelector('variant-selects');
-      if (!mainVariantSelects) return;
-
-      // Update radio buttons
-      const fieldsets = mainVariantSelects.querySelectorAll('fieldset');
-      fieldsets.forEach((fieldset, index) => {
-        if (!selectedOptions[index]) return;
-        
-        const option = selectedOptions[index];
-        const input = fieldset.querySelector(`input[value="${CSS.escape(option)}"]`);
-        
-        if (input && !input.checked) {
-          input.checked = true;
-          
-          // Update display text
-          const display = fieldset.querySelector('[data-selected-value]');
-          if (display) {
-            display.textContent = option;
+        // Update main variant selector
+        if (mainVariantInput.tagName === 'INPUT' && mainVariantInput.type === 'radio') {
+          if (!mainVariantInput.checked) {
+            mainVariantInput.checked = true;
+            // Trigger change event to update product info
+            mainVariantInput.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        } else if (mainVariantInput.tagName === 'OPTION') {
+          const select = mainVariantInput.closest('select');
+          if (select && select.value !== mainVariantInput.value) {
+            // Update select value
+            Array.from(select.options).forEach(opt => opt.removeAttribute('selected'));
+            mainVariantInput.setAttribute('selected', 'selected');
+            select.value = mainVariantInput.value;
+            // Trigger change event
+            select.dispatchEvent(new Event('change', { bubbles: true }));
           }
         }
-      });
 
-      // Update select dropdowns
-      const selects = mainVariantSelects.querySelectorAll('select');
-      selects.forEach((select, index) => {
-        if (!selectedOptions[index]) return;
-        
-        const option = selectedOptions[index];
-        if (select.value !== option) {
-          select.value = option;
-          
-          // Update selected attribute
-          Array.from(select.options).forEach(opt => {
-            if (opt.value === option) {
-              opt.setAttribute('selected', 'selected');
-            } else {
-              opt.removeAttribute('selected');
-            }
-          });
-        }
-      });
+        // Restore scroll position after a short delay to ensure no scroll happens
+        requestAnimationFrame(() => {
+          if (window.scrollY !== scrollY) {
+            window.scrollTo(0, scrollY);
+          }
+        });
+      } catch (error) {
+        console.error('Error syncing sticky to main:', error);
+      }
     };
 
     // Initialize
     if (productInfo.classList.contains('initialized')) {
-      init();
+      initStickyVariantSync();
     } else {
-      productInfo.addEventListener('product-info:loaded', init, { once: true });
+      productInfo.addEventListener('product-info:loaded', initStickyVariantSync, { once: true });
     }
   });
 {% endjavascript %}
