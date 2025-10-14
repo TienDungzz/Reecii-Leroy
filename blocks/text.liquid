@@ -51,6 +51,13 @@
       "visible_if": "{{ block.settings.typing_text == false }}"
     },
     {
+      "type": "text",
+      "id": "highlight_text_content",
+      "label": "t:settings.select_highlight_content",
+      "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true }}",
+      "info": "t:info.highlight_text_content"  
+    },
+    {
       "type": "select",
       "id": "highlight_text_type",
       "label": "t:settings.highlight_type",
@@ -68,11 +75,26 @@
       "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true }}"
     },
     {
-      "type": "text",
-      "id": "highlight_text_content",
-      "label": "t:settings.select_highlight_content",
-      "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true }}",
-      "info": "t:info.highlight_text_content"  
+      "type": "range",
+      "id": "underline_height",
+      "label": "t:settings.underline_height",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "unit": "%",
+      "default": 18,
+      "visible_if": "{{ block.settings.highlight_text_type == 'underline' and block.settings.typing_text == false and block.settings.highlight_text == true }}"
+    },
+    {
+      "type": "range",
+      "id": "underline_offset",
+      "label": "t:settings.underline_offset",
+      "min": -20,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "default": -20,
+      "visible_if": "{{ block.settings.highlight_text_type == 'underline' and block.settings.typing_text == false and block.settings.highlight_text == true }}"
     },
     {
       "type": "color",
@@ -205,11 +227,18 @@
       "visible_if": "{{ block.settings.width == 'custom' or block.settings.width == '100%' }}"
     },
     {
+      "type": "checkbox",
+      "id": "justify_alignment",
+      "label": "t:settings.justify_alignment",
+      "default": false,
+      "visible_if": "{{ block.settings.inherit_text_alignment == false and block.settings.width == 'custom' or block.settings.width == '100%' }}"
+    },
+    {
       "type": "text_alignment",
       "id": "alignment",
       "label": "t:settings.alignment",
       "default": "left",
-      "visible_if": "{{ block.settings.inherit_text_alignment == false and block.settings.width == 'custom' or block.settings.width == '100%' }}"
+      "visible_if": "{{ block.settings.justify_alignment == false and block.settings.inherit_text_alignment == false and block.settings.width == 'custom' or block.settings.width == '100%' }}"
     },
     {
       "type": "select",
@@ -278,11 +307,18 @@
       "visible_if": "{{ block.settings.width_tablet == 'custom' or block.settings.width_tablet == '100%' }}"
     },
     {
+      "type": "checkbox",
+      "id": "justify_alignment_tablet",
+      "label": "t:settings.justify_alignment",
+      "default": false,
+      "visible_if": "{{ block.settings.inherit_text_alignment_tablet == false and block.settings.width_tablet == 'custom' or block.settings.width_tablet == '100%' }}"
+    },
+    {
       "type": "text_alignment",
       "id": "alignment_tablet",
       "label": "t:settings.alignment",
       "default": "left",
-      "visible_if": "{{ block.settings.inherit_text_alignment_tablet == false and block.settings.width_tablet == 'custom' or block.settings.width_tablet == '100%' }}"
+      "visible_if": "{{ block.settings.justify_alignment_tablet == false and block.settings.inherit_text_alignment_tablet == false and block.settings.width_tablet == 'custom' or block.settings.width_tablet == '100%' }}"
     },
     {
       "type": "select",
@@ -351,11 +387,18 @@
       "visible_if": "{{ block.settings.width_mobile == 'custom' or block.settings.width_mobile == '100%' }}"
     },
     {
+      "type": "checkbox",
+      "id": "justify_alignment_mobile",
+      "label": "t:settings.justify_alignment",
+      "default": false,
+      "visible_if": "{{ block.settings.inherit_text_alignment_mobile == false and block.settings.width_mobile == 'custom' or block.settings.width_mobile == '100%' }}"
+    },
+    {
       "type": "text_alignment",
       "id": "alignment_mobile",
       "label": "t:settings.alignment",
       "default": "left",
-      "visible_if": "{{ block.settings.inherit_text_alignment_mobile == false and block.settings.width_mobile == 'custom' or block.settings.width_mobile == '100%' }}"
+      "visible_if": "{{ block.settings.justify_alignment_mobile == false and block.settings.inherit_text_alignment_mobile == false and block.settings.width_mobile == 'custom' or block.settings.width_mobile == '100%' }}"
     },
     {
       "type": "header",
