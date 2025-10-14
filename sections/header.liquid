@@ -1,6 +1,5 @@
 <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
 
 {{ 'section-header.css' | asset_url | stylesheet_tag: preload: true }}
 
@@ -335,22 +334,36 @@
       --color-primary-button-text: var(--color-foreground);
       --color-primary-button-hover-text: var(--color-foreground);
 
+      .header__row {
+        /* Faster transition for "in" animation */
+        transition: color var(--animation-values-fast),
+          border-color var(--animation-values-fast), background-color var(--animation-values-fast);
+
+          .button {
+            --animation-speed: var(--animation-speed-fast);
+          }
+      }
+
       .header__row:after {
         opacity: var(--opacity-100);
-        /* Faster transition for "in" animation */
-        transition: opacity var(--animation-values-fast), color var(--animation-values-fast),
-          border-color var(--animation-values-fast), background-color var(--animation-values-fast);
+        transition: opacity var(--animation-values-fast), transform var(--animation-values-fast);
+        transform: translateY(0%);
       }
     }
 
     .header__row {
       background-color: transparent;
+      transition: color var(--animation-values-slow),
+      border-color var(--animation-values-slow), background-color var(--animation-values-slow);
+
+      .button {
+        --animation-speed: var(--animation-speed-slow);
+      }
     }
 
     .header__row:after {
       /* Slower transition for "out" animation */
-      transition: opacity var(--animation-values-slow), color var(--animation-values-slow),
-        border-color var(--animation-values-slow), background-color var(--animation-values-slow);
+        transition: opacity var(--animation-values-slow), transform var(--animation-values-slow);
     }
   }
 
@@ -435,10 +448,11 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: var(--header-bg-color, var(--color-background));
+      background-color: var(--color-background);
       z-index: -1;
       opacity: var(--opacity-0);
       pointer-events: none;
+      transform: translateY(-50%);
     }
   }
 
@@ -461,17 +475,25 @@
     }
 
     &:has(.header__row--top) .header__row--bottom {
-      padding-block-start: var(--padding-block-end);
+      padding-block-start: var(--padding-block-start);
     }
 
     &:has(.header__row--bottom) .header__row--top {
-      padding-block-end: var(--padding-block-start);
+      padding-block-end: var(--padding-block-end);
     }
   }
 
   /* Animated Sticky Header */
+
   .section-header-main.scrolled-past-header sticky-header[data-sticky-type='always'] {
-    .header {
+    .header-logo__image-container {
+      width: calc(var(--header-logo-image-width-mobile) * 0.75);
+      height: calc(var(--header-logo-image-height-mobile) * 0.75);
+
+      @media screen and (min-width: 750px) {
+        width: calc(var(--header-logo-image-width) * 0.75);
+        height: calc(var(--header-logo-image-height) * 0.75);
+      }
     }
   }
 
@@ -1722,10 +1744,6 @@
         {
           "value": "caret",
           "label": "t:options.caret"
-        },
-        {
-          "value": "plus",
-          "label": "t:options.plus"
         }
       ],
       "default": "none"
