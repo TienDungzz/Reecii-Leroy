@@ -216,15 +216,18 @@
     transform: translateY(-50%) rotate(270deg);
   }
 
-  .header__inline-menu .details--dropdown > .details__list > .header__submenu,
   .header__inline-menu .details--dropdown > .details__list {
-    transition: opacity var(--animation-slowest-smooth), visibility var(--animation-slowest-smooth), top var(--animation-slowest-smooth);
+    transition: opacity var(--animation-values-slow), transform var(--animation-values-slow), visibility var(--animation-values-slow), top var(--animation-values-slow);
+    overflow-y: auto;
   }
 
-  .header__inline-menu .details--dropdown > .details__list > .header__submenu ,
+  .header__inline-menu .details--dropdown > .details__list:not(:has(.mega-menu__container)) {
+    transform: translateY(-10%);
+  }
+
   .header__inline-menu .details--dropdown > .details__list > .mega-menu__container {
     transform: translateY(-50%);
-    transition: transform var(--animation-slowest-smooth), opacity var(--animation-slowest-smooth), visibility var(--animation-slowest-smooth);
+    transition: transform var(--animation-values-slow), opacity var(--animation-values-slow), visibility var(--animation-values-slow);
     opacity: var(--opacity-0);
     visibility: hidden;
   }
@@ -245,7 +248,7 @@
 
     :has(.mega-menu__collage) .menu-item__animate.collage__item--image {
       opacity: var(--opacity-0);
-      transition: opacity var(--animation-slowest-smooth);
+      transition: opacity var(--animation-values-slow);
     }
 
     .mega-menu__collage .menu-item__animate .resource-card-wrapper {
@@ -256,6 +259,7 @@
     .header__inline-menu .details--dropdown:hover > .details__list {
       opacity: 1;
       visibility: visible;
+      transform: translateY(0);
 
       > .header__submenu,
       > .mega-menu__container {
@@ -264,7 +268,7 @@
         visibility: visible;
       }
 
-      :has(.mega-menu__list, .header__submenu) .menu-item__animate {
+      &:has(.mega-menu__list, .header__submenu) .menu-item__animate {
         overflow: hidden;
         position: relative;
 
@@ -272,7 +276,7 @@
         > .label-wrapper {
           transform: translateY(0);
           opacity: var(--opacity-100);
-          transition: transform var(--animation-slowest-smooth) calc(var(--animation-speed-slowest) + 0.1s), opacity var(--animation-slowest-smooth) calc(var(--animation-speed-slowest)), background-size var(--animation-slowest-smooth);
+          transition: transform var(--animation-values-slow) var(--animation-speed-slowest), opacity var(--animation-values-slow) var(--animation-speed-slowest), background-size var(--animation-values-slow);
         }
       }
 
@@ -284,7 +288,7 @@
       .mega-menu__collage .menu-item__animate .resource-card-wrapper {
         opacity: var(--opacity-100);
         transform: translateY(0);
-        transition: transform var(--animation-slowest-smooth), opacity var(--animation-slowest-smooth);
+        transition: transform var(--animation-values-slow), opacity var(--animation-values-slow);
         transition-delay: calc(var(--animation-speed-slowest) + (var(--animation-order , 1) * 75ms));
       }
     }

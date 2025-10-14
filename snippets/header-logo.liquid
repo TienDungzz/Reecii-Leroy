@@ -51,28 +51,11 @@
       <span
         class="header-logo__image-container header-logo__image-container--original"
         data-testid="header-logo"
+        style="--url-image: {{ settings.logo | image_url: width: section.settings.logo_width }};{{ logo_style }}"
       >
-        {% render 'image',
-          image: settings.logo,
-          class: 'header__heading-logo motion-reduce',
-          widths: widths,
-          height: logo_height,
-          width: section.settings.logo_width,
-          text_fallback: text_fallback,
-          alt: logo_alt,
-          sizes: sizes,
-          style: logo_style,
-          fetch_priority: 'high'
-        %}
-      </span>
-
-      {% if use_inverse_logo %}
-        <span
-          class="header-logo__image-container header-logo__image-container--inverse"
-          data-testid="header-logo-inverse"
-        >
+        {% comment %}
           {% render 'image',
-            image: inverse_logo,
+            image: settings.logo,
             class: 'header__heading-logo motion-reduce',
             widths: widths,
             height: logo_height,
@@ -80,8 +63,27 @@
             text_fallback: text_fallback,
             alt: logo_alt,
             sizes: sizes,
-            style: inverse_logo_style
+            fetch_priority: 'high'
           %}
+        {% endcomment %}
+      </span>
+
+      {% if use_inverse_logo %}
+        <span
+          class="header-logo__image-container header-logo__image-container--inverse"
+          data-testid="header-logo-inverse"
+          style="--url-image: {{ inverse_logo | image_url: width: section.settings.logo_width }};{{ inverse_logo_style }}"
+        >
+          {% comment %} {% render 'image',
+            image: inverse_logo,
+            class: 'header__heading-logo motion-reduce',
+            widths: widths,
+            height: logo_height,
+            width: section.settings.logo_width,
+            text_fallback: text_fallback,
+            alt: logo_alt,
+            sizes: sizes
+          %} {% endcomment %}
         </span>
       {% endif %}
     </div>
@@ -92,9 +94,10 @@
 </div>
 
 {%- stylesheet -%}
-  .header__heading-logo {
+  .header-logo__image-container {
     width: var(--header-logo-image-width);
     height: var(--header-logo-image-height);
+    transition: width var(--animation-speed), height var(--animation-speed);
     @media screen and (max-width: 749px) {
       width: var(--header-logo-image-width-mobile);
       height: var(--header-logo-image-height-mobile);
