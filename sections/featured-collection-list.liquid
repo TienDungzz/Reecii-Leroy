@@ -78,8 +78,10 @@
   class="tabs-product-header flex md:justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }} overflow-x-a"
   style="
     --gap-x: {{ sec_stts.tabs_header_gap }}px;
-    --pt: {{ sec_stts.tabs_header_padding_top | times: 0.1 }}rem;
-    --pb: {{ sec_stts.tabs_header_padding_bottom | times: 0.1 }}rem;
+    {% if sec_stts.tabs_header_style == 'default' %}
+      --pt: {{ sec_stts.tabs_header_padding_top | times: 0.1 }}rem;
+      --pb: {{ sec_stts.tabs_header_padding_bottom | times: 0.1 }}rem;
+    {% endif %}
   "
 {%- endcapture -%}
 
@@ -98,6 +100,7 @@
   --button-padding-vertical-mobile: {{ sec_stts.tabs_header_padding_block_items | times: 0.75 }}px;
   --button-padding-horizontal: {{ sec_stts.tabs_header_padding_inline_items }}px;
   --button-padding-horizontal-mobile: {{ sec_stts.tabs_header_padding_inline_items | times: 0.75 }}px;
+  {% render 'button-style', settings: sec_stts %}
 {%- endcapture -%}
 
 {% assign class_tabs_product_grid = 'tabs-product-grid tabs-component-content' %}
@@ -383,59 +386,65 @@
       data-id="{{ sec_id }}"
       data-product-block
     >
-      <div class="section-global__header">
-        {%- content_for 'block', type: '_section-header', id: 'section-header' -%}
+      <div class="section-global__header" data-check-tabs="{{ sec_id }}">
+        {%- content_for 'block', type: '_section-header', id: 'section-header', collections: section_collections_list -%}
 
         {% comment %} Button tab header item {% endcomment %}
-        {%- if section_collections_list != blank -%}
-          {% if collection_list_count > 1 and has_tabs_header %}
-            <div {{ attr_tabs_header }}>
-              {%- capture labels -%}
-                {%- for collection in section_collections_list -%}
-                  {{ collection.title | escape | default: 'Collection title' }}
-                  {%- unless forloop.last -%}
-                    ,
-                  {%- endunless -%}
-                {%- endfor -%}
-              {%- endcapture -%}
-
-              {%- render 'tab-header-item',
-                id: sec_id,
-                labels: labels,
-                class: class_tabs_header_item,
-                style: style_tabs_header_item
-              -%}
-            </div>
-          {% endif %}
-        {%- else -%}
-          {%- liquid
-            for i in (1..4)
-              assign section_collections_list = section_collections_list | append: ', '
-            endfor
-
-            assign section_collections_list = section_collections_list | split: ','
-          -%}
-
-          {% if has_tabs_header %}
-            <div {{ attr_tabs_header }}>
-              {%- capture labels -%}
-                {%- for collection in section_collections_list limit: 4 -%}
-                  {{ collection.title | escape | default: 'Collection title' }}
-                  {%- unless forloop.last -%}
-                    ,
-                  {%- endunless -%}
-                {%- endfor -%}
-              {%- endcapture -%}
-
-              {%- render 'tab-header-item',
-                id: sec_id,
-                labels: labels,
-                class: class_tabs_header_item,
-                style: style_tabs_header_item
-              -%}
-            </div>
-          {% endif %}
-        {%- endif -%}
+        {% if sec_stts.tabs_header_style == 'inside_section_header' %}
+          {%- if section_collections_list != blank -%}
+            {% if collection_list_count > 1 and has_tabs_header %}
+              <template>
+                <tabs-header {{ attr_tabs_header }}>
+                  {%- capture labels -%}
+                    {%- for collection in section_collections_list -%}
+                      {{ collection.title | escape | default: 'Collection title' }}
+                      {%- unless forloop.last -%}
+                        ,
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  {%- endcapture -%}
+    
+                  {%- render 'tab-header-item',
+                    id: sec_id,
+                    labels: labels,
+                    class: class_tabs_header_item,
+                    style: style_tabs_header_item
+                  -%}
+                </tabs-header>
+              </template>
+            {% endif %}
+          {%- else -%}
+            {%- liquid
+              for i in (1..4)
+                assign section_collections_list = section_collections_list | append: ', '
+              endfor
+  
+              assign section_collections_list = section_collections_list | split: ','
+            -%}
+  
+            {% if has_tabs_header %}
+              <template>
+                <tabs-header {{ attr_tabs_header }}>
+                  {%- capture labels -%}
+                    {%- for collection in section_collections_list limit: 4 -%}
+                      {{ collection.title | escape | default: 'Collection title' }}
+                      {%- unless forloop.last -%}
+                        ,
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  {%- endcapture -%}
+    
+                  {%- render 'tab-header-item',
+                    id: sec_id,
+                    labels: labels,
+                    class: class_tabs_header_item,
+                    style: style_tabs_header_item
+                  -%}
+                </tabs-header>
+              </template>
+            {% endif %}
+          {%- endif -%}
+        {% endif %}
       </div>
 
       {%- capture class_media -%}
@@ -481,7 +490,7 @@
 
             <tabs-component class="{% if has_media_banner %}block overflow-hidden{% endif %} ">
               {%- if section_collections_list != blank -%}
-                {% if collection_list_count > 1 and has_tabs_header %}
+                {% if sec_stts.tabs_header_style == 'default' and collection_list_count > 1 and has_tabs_header %}
                   <div {{ attr_tabs_header }}>
                     {%- capture labels -%}
                       {%- for collection in section_collections_list -%}
@@ -602,7 +611,7 @@
                   endif
                 -%}
 
-                {% if has_tabs_header %}
+                {% if sec_stts.tabs_header_style == 'default' and has_tabs_header %}
                   <div {{ attr_tabs_header }}>
                     {%- capture labels -%}
                       {%- for collection in section_collections_list limit: limit -%}
@@ -689,7 +698,7 @@
 
             <tabs-component class="{% if has_media_banner %}block overflow-hidden{% endif %}">
               {%- if section_collections_list != blank -%}
-                {% if collection_list_count > 1 and has_tabs_header %}
+                {% if sec_stts.tabs_header_style == 'default' and collection_list_count > 1 and has_tabs_header %}
                   <div {{ attr_tabs_header }}>
                     {%- capture labels -%}
                       {%- for collection in section_collections_list -%}
@@ -815,7 +824,7 @@
                   assign section_collections_list = section_collections_list | split: ','
                 -%}
 
-                {% if has_tabs_header %}
+                {% if sec_stts.tabs_header_style == 'default' and has_tabs_header %}
                   <div {{ attr_tabs_header }}>
                     {%- capture labels -%}
                       {%- for collection in section_collections_list limit: limit -%}
@@ -1571,6 +1580,23 @@
       "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
     },
     {
+      "type": "select",
+      "id": "tabs_header_style",
+      "label": "Tabs header style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "inside_section_header",
+          "label": "Inside section header"
+        }
+      ],
+      "default": "default",
+      "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
+    },
+    {
       "type": "text_alignment",
       "id": "tabs_header_alignment",
       "label": "t:settings.alignment_on_desktop",
@@ -1597,7 +1623,7 @@
       "default": 0,
       "unit": "px",
       "label": "t:settings.padding_top",
-      "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
+      "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' and section.settings.tabs_header_style == 'default' }}"
     },
     {
       "type": "range",
@@ -1608,7 +1634,7 @@
       "default": 20,
       "unit": "px",
       "label": "t:settings.padding_bottom",
-      "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
+      "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' and section.settings.tabs_header_style == 'default' }}"
     },
     {
       "type": "paragraph",
