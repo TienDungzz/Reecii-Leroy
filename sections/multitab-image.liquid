@@ -99,7 +99,7 @@
                   {% render 'border-override', settings: section.settings %}
                 "
               >
-                <a href="{{ link.url }}" class="tab-item__image spacing-style" style="{% render 'spacing-style', settings: section.settings, suffix: 'img', scale_min: 10 %}">
+                <a href="{{ link.url }}" class="tab-item__image spacing-style" style="--padding-block-start: {{ section.settings.padding-block-start-img | default: 0 }}px; --padding-block-end:{{- section.settings.padding-block-end-img | default: 0 -}}px; --padding-inline-start:{{ section.settings.padding-inline-start-img | default: 0 }}px; --padding-inline-end:{{- section.settings.padding-inline-end-img | default: 0 -}}px; ">
                   {% for ext in extensions %}
                     {% assign filename = base_name | append: '.' | append: ext | file_url %}
                     <img
