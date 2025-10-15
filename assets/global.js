@@ -20,13 +20,15 @@ window.addEventListener('pageshow', (event) => {
 function initLenis() {
   if (window.LenisInstance || !window.Lenis) return;
   window.LenisInstance = new window.Lenis({
-    lerp: 0.07
+    lerp: 0.1
     // Add more options here
   });
+
   function raf(time) {
     window.LenisInstance.raf(time);
     window.LenisInstance._rafId = requestAnimationFrame(raf);
   }
+
   window.LenisInstance._rafId = requestAnimationFrame(raf);
 }
 
@@ -88,46 +90,88 @@ function headerHeight() {
     var listMenuWrapper = document.querySelectorAll(".list-menu--wrapper");
     var sectionHeader = listMenuDesktop.offsetHeight;
     var listMenu = listMenuDesktop;
+    const listSubMenuHeight = listMenu.querySelector(".header__submenu").offsetHeight;
 
     if (sectionHeader > 52) {
       listMenuWrapper.forEach((summary) => {
         summary.style.setProperty("--top-position", "auto");
+        summary.style.setProperty("--submenu-height", summary.offsetHeight + "px");
       });
       listMenu.style.setProperty("--list-menu-height", "4rem");
     } else {
       listMenuWrapper.forEach((summary) => {
         summary.style.setProperty("--top-position", headerHeight);
+        summary.style.setProperty("--submenu-height", summary.offsetHeight + "px");
       });
       listMenu.style.setProperty("--list-menu-height", headerHeight);
     }
 
-    const stickyHeader = header.closest('sticky-header');
+    if (header) {
+      mainMenu.addEventListener("mouseenter", function () {
 
-    if (stickyHeader) {
-      header.addEventListener("mouseenter", function () {
-        const newHeight = header.offsetHeight - 1 + "px";
+        const newHeight = header.offsetHeight;
 
         if (listMenuWrapper && listMenuWrapper.length) {
           listMenuWrapper.forEach((summary) => {
-            summary.style.setProperty("--top-position", newHeight);
+            summary.style.setProperty("--top-position", newHeight + "px");
           });
         }
       });
 
-      header.addEventListener("mouseleave", function () {
-        const newHeight = header.offsetHeight - 1 + "px";
+      mainMenu.addEventListener("mouseleave", function () {
+        const newHeight = header.offsetHeight;
         if (sectionHeader > 52) {
           listMenuWrapper.forEach((summary) => {
             summary.style.setProperty("--top-position", "auto");
           });
         } else {
           listMenuWrapper.forEach((summary) => {
-            summary.style.setProperty("--top-position", newHeight);
+            summary.style.setProperty("--top-position", newHeight + "px");
           });
         }
       });
     }
   }
+}
+
+function calculateHeaderGroupHeight(
+  header = document.querySelector('#header-component'),
+  headerGroup = document.querySelector('#header-group')
+) {
+  if (!headerGroup) return 0;
+
+  let totalHeight = 0;
+  const children = headerGroup.children;
+  for (let i = 0; i < children.length; i++) {
+    const element = children[i];
+    if (element === header || !(element instanceof HTMLElement)) continue;
+    totalHeight += element.offsetHeight;
+  }
+
+  // If the header is transparent and has a sibling section, add the height of the header to the total height
+  if (header instanceof HTMLElement && header.hasAttribute('transparent') && header.parentElement?.nextElementSibling) {
+    return totalHeight + header.offsetHeight;
+  }
+
+  return totalHeight;
+}
+
+function updateHeaderHeights() {
+  const header = document.querySelector('header-component');
+
+  // Early exit if no header - nothing to do
+  if (!(header instanceof HTMLElement)) return;
+
+  // Calculate initial height(s
+  const headerHeight = header.offsetHeight;
+  const headerGroupHeight = calculateHeaderGroupHeight(header);
+
+  console.log(`%c🔍 Log headerHeight:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", headerHeight);
+  console.log(`%c🔍 Log headerGroupHeight:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", headerGroupHeight);
+
+
+  document.body.style.setProperty('--header-height', `${headerHeight}px`);
+  document.body.style.setProperty('--header-group-height', `${headerGroupHeight}px`);
 }
 
 // Preloading Screen Annimate
@@ -162,15 +206,18 @@ window.addEventListener("DOMContentLoaded", () => {
   logoReveal();
   pageReveal();
   headerHeight();
+  updateHeaderHeights();
 });
 
 window.addEventListener("resize", () => {
   headerHeight();
+  updateHeaderHeights();
 });
 
 window.addEventListener("scroll", () => {
   setTimeout(() => {
     headerHeight();
+    // updateHeaderHeights();
   }, 200);
 });
 
@@ -867,29 +914,29 @@ window.addEventListener("DOMContentLoaded", () => {
   appendTabMenuToMainMenu();
 });
 
-class HeaderMenu extends HTMLElement {
-  constructor() {
-    super();
-    this.header = document.querySelector(".header-wrapper");
-  }
+// class HeaderMenu extends HTMLElement {
+//   constructor() {
+//     super();
+//     this.header = document.querySelector(".header-wrapper");
+//   }
 
-  onToggle() {
-    if (!this.header) return;
+//   onToggle() {
+//     if (!this.header) return;
 
-    if (
-      document.documentElement.style.getPropertyValue(
-        "--header-bottom-position-desktop"
-      ) !== ""
-    )
-      return;
-    document.documentElement.style.setProperty(
-      "--header-bottom-position-desktop",
-      `${Math.floor(this.header.getBoundingClientRect().bottom)}px`
-    );
-  }
-}
-if (!customElements.get("header-menu"))
-  customElements.define("header-menu", HeaderMenu);
+//     if (
+//       document.documentElement.style.getPropertyValue(
+//         "--header-bottom-position-desktop"
+//       ) !== ""
+//     )
+//       return;
+//     document.documentElement.style.setProperty(
+//       "--header-bottom-position-desktop",
+//       `${Math.floor(this.header.getBoundingClientRect().bottom)}px`
+//     );
+//   }
+// }
+// if (!customElements.get("header-menu"))
+//   customElements.define("header-menu", HeaderMenu);
 
 class MenuDrawer extends HTMLElement {
   constructor() {
@@ -3644,15 +3691,22 @@ class SlideshowAnimated extends HTMLElement {
     let n = this.image.offsetHeight - this.offsetHeight;
     let yUp = Math.round(n * this.speed)
     let yDown = Math.round(n * this.speed) * -1
+    let sectionIdex = this.closest('.section')?.dataset.index;
+    let offset = ["center start", "end start"];
+    if (sectionIdex == 1) {
+      offset = ["start start", "end start"];
+      yDown = 0;
+    }
+
     Motion.scroll(
       Motion.animate(
         this.image,
         { y: [yDown, yUp] },
         { easing: 'linear' },
       ),
-      { target: this, offset: ["center start", "end start"] }
+      { target: this, offset: offset }
     );
   }
 }
-if (!customElements.get('slideshow-animated'))
-  customElements.define('slideshow-animated', SlideshowAnimated);
+if (!customElements.get('slideshow-animated')) customElements.define('slideshow-animated', SlideshowAnimated);
+

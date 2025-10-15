@@ -26,7 +26,6 @@
     {%- if image != blank -%}
       <div class="collage__item collage__item--2 overflow-hidden
       collage__item--image
-      {{ class_item_hover_reveal }} "
       >
         <a
           class="block relative h-full"
@@ -54,7 +53,7 @@
   {%- endif -%}
 {%- endcapture -%}
 
-<header-menu class="{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+<div>
   <div
     id="Details-HeaderMenu-{{ forloopIndex }}"
     class="details--dropdown mega-menu mega-menu-style-3"
@@ -63,15 +62,15 @@
     <div
       id="HeaderMenu-{{ link.handle }}"
       class="
-        details__summary list-menu__item menu__link--level-1 header__menu-item list-menu__item link focus-inset link--hover-underline
-        {% render 'highlight-class', order: '1', keys: keys, compare: link.title, settings: section.settings %}
+        list-menu__item menu__link--level-1 header__menu-item list-menu__item link focus-inset link--hover-underline
+        {% render 'highlight-class', order: '1', keys: keys, compare: link.title, settings: sec_settings %}
       "
       {%- if link.links != blank -%}
         aria-controls="submenu-{{ forloop.index }}"
         aria-haspopup="true"
         aria-expanded="false"
       {%- endif -%}
-      style="{%  render 'highlight-style', order: '1', keys: keys, compare: link.title, settings: section.settings %}"
+      style="{%  render 'highlight-style', order: '1', keys: keys, compare: link.title, settings: sec_settings %}"
     >
       {% if is_vertical_menu %}
         {% liquid
@@ -118,7 +117,7 @@
         <span class="text">
           {{ link.title | escape }}
         </span>
-        {% render 'highlight-label-menu', order: '1', keys: keys, compare: link.title, settings: section.settings %}
+        {% render 'highlight-label-menu', order: '1', keys: keys, compare: link.title, settings: sec_settings %}
       </a>
       {% if icon_type == 'caret' %}
         <span class="svg-wrapper">
@@ -128,9 +127,12 @@
     </div>
     <div
       id="MegaMenu-Content-{{ forloopIndex }}"
-      class="details__list list-menu--wrapper mega-menu__content z-1 color-{{ section.settings.menu_color_scheme }} motion-reduce global-settings-popup"
+      class="list-menu--wrapper mega-menu__content z-1 color-{{ sec_settings.menu_color_scheme }} motion-reduce global-settings-popup"
       tabindex="-1"
       style="--columns-count: {{ bl_stts.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
+      {% if settings.enable_smooth_scroll %}
+        data-lenis-prevent
+      {% endif %}
     >
       <div class="mega-menu__container">
         <div class="page-width page-width--{{ bl_stts.width }}">
@@ -155,10 +157,9 @@
                         title="{{ link.title | escape }}"
                         class="
                           header__menu-item mega-menu__link mega-menu__link--level-2 link
-                          {{ class_item_hover_reveal }}
-                          {% render 'highlight-class', order: '2', keys: keys, compare: link.title, settings: section.settings %}
+                          {% render 'highlight-class', order: '2', keys: keys, compare: link.title, settings: sec_settings %}
                         "
-                        style="{%  render 'highlight-style', order: '2', keys: keys, compare: link.title, color: highlight_color, settings: section.settings %}"
+                        style="{%  render 'highlight-style', order: '2', keys: keys, compare: link.title, color: highlight_color, settings: sec_settings %}"
                       >
                         <span class="text">
                           {{ link.title | escape }}
@@ -167,7 +168,7 @@
                           order: '2',
                           keys: keys,
                           compare: link.title,
-                          settings: section.settings
+                          settings: sec_settings
                         %}
                       </a>
                     </li>
@@ -182,11 +183,10 @@
                   href="{{ childlink.url }}"
                   class="
                     header__menu-item mega-menu__link mega-menu__link--level-2 link
-                    {{ class_item_hover_reveal }}
                     {% if childlink.current %} list-menu__item--active{% endif %}
-                    {% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: section.settings %}
+                    {% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: sec_settings %}
                   "
-                  style="{%  render 'highlight-style', order: '2', keys: keys, compare: childlink.title, color: highlight_color, settings: section.settings %}"
+                  style="{%  render 'highlight-style', order: '2', keys: keys, compare: childlink.title, color: highlight_color, settings: sec_settings %}"
                   {% if childlink.current %}
                     aria-current="page"
                   {% endif %}
@@ -204,14 +204,13 @@
                           href="{{ grandchildlink.url }}"
                           class="
                             header__menu-item mega-menu__link link link--hover-underline
-                            {{ class_item_hover_reveal }}
                             {% if grandchildlink.current %} list-menu__item--active{% endif %}
-                            {% render 'highlight-class', order: '3', keys: keys, compare: grandchildlink.title, settings: section.settings %}
+                            {% render 'highlight-class', order: '3', keys: keys, compare: grandchildlink.title, settings: sec_settings %}
                           "
                           {% if grandchildlink.current %}
                             aria-current="page"
                           {% endif %}
-                          style="{%  render 'highlight-style', order: '3', keys: keys, compare: grandchildlink.title, color: highlight_color, settings: section.settings %}"
+                          style="{%  render 'highlight-style', order: '3', keys: keys, compare: grandchildlink.title, color: highlight_color, settings: sec_settings %}"
                         >
                           <span class="text">
                             {{ grandchildlink.title | escape }}
@@ -220,7 +219,7 @@
                             order: '3',
                             keys: keys,
                             compare: grandchildlink.title,
-                            settings: section.settings
+                            settings: sec_settings
                           %}
                         </a>
                       </li>
@@ -300,7 +299,7 @@
                       {% for product in collection.products limit: max_items %}
                         <li
                           id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}"
-                          class="mega-menu__collection--item grid__item swiper-slide {{ class_item_hover_reveal }}"
+                          class="mega-menu__collection--item grid__item swiper-slide"
                         >
                           {% render 'resource-card',
                             resource_type: 'product',
@@ -329,7 +328,7 @@
       </div>
     </div>
   </div>
-</header-menu>
+</div>
 
 {%- stylesheet -%}
   @media screen and (min-width: 750px) {

@@ -64,6 +64,12 @@
   assign media_width_mobile = '100vw'
   assign sizes = '(min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
   assign widths = '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840'
+
+  assign image_behavior = sec_stts.image_behavior
+  assign element = 'div'
+  if image_behavior == 'parallax'
+    assign element = 'slideshow-animated'
+  endif
 -%}
 
 {% capture media %}
@@ -157,7 +163,7 @@
   {% if block.settings.inherit_color_scheme == false %}color-scheme-custom{% endif %}
 {%- endcapture -%}
 
-<slideshow-animated
+<{{ element }}
   id="slide-{{ block.id }}"
   class="{{ class_slide_item }}"
   aria-hidden="{% if blockIndex == 1 %}false{% else %}true{% endif %}"
@@ -244,7 +250,7 @@
       {% content_for 'blocks' %}
     </div>
   </div>
-</slideshow-animated>
+</{{ element }}>
 
 {%- stylesheet -%}
   slideshow-animated .slide__image-container {
