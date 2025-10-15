@@ -128,7 +128,11 @@
                   data-variant-img="{{ variant.image.src | image_url: '800x' }}"
                 {% else %}
                   class="{{ class_swatch }} swatch--unavailable"
-                  {%- if sbs_variant_picker -%}style="--swatch-input--size: 100%;"{%- endif -%}
+                  style="{%- if swatch_type == 'color' -%}--swatch--background-color: {{ color | split: ' ' | last | handle }};{%- endif -%}
+                    {%- if has_metaobject and metaobject_color != blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
+                    {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}
+                    {%- if swatch_size != blank -%}--swatch-input--size: {{ swatch_size }}px;{%- endif -%}
+                    {%- if sbs_variant_picker -%}--swatch-input--size: 100%;{%- endif -%}"
                 {% endif %}
               >
                 <span class="visually-hidden">{{ color | escape }}</span>
