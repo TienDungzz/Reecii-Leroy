@@ -4163,30 +4163,30 @@ function resetShimmer(container = document.body) {
   }
 })();
 
-class SlideshowAnimated extends HTMLElement {
-  constructor() {
-    super();
+// class SlideshowAnimated extends HTMLElement {
+//   constructor() {
+//     super();
 
-    this.image = this.querySelector('[data-image-trans]')
-    this.speed = parseFloat(this.dataset.speed) || 0.5;
-  }
+//     this.image = this.querySelector('[data-image-trans]')
+//     this.speed = parseFloat(this.dataset.speed) || 0.5;
+//   }
 
-  connectedCallback() {
-    this.initAnimate()
-  }
+//   connectedCallback() {
+//     this.initAnimate()
+//   }
 
-  initAnimate() {
-    let n = this.image.offsetHeight - this.offsetHeight;
-    let yUp = Math.round(n * this.speed)
-    let yDown = Math.round(n * this.speed) * -1
-    Motion.scroll(
-      Motion.animate(
-        this.image,
-        { y: [yDown, yUp] },
-        { easing: 'linear' },
-      ),
-      { target: this, offset: ["center start", "end start"] }
-    );
-  }
-}
-if (!customElements.get('slideshow-animated')) customElements.define('slideshow-animated', SlideshowAnimated);
+//   initAnimate() {
+//     let n = this.image.offsetHeight - this.offsetHeight;
+//     let yUp = Math.round(n * this.speed)
+//     let yDown = Math.round(n * this.speed) * -1
+//     Motion.scroll(
+//       Motion.animate(
+//         this.image,
+//         { y: [yDown, yUp] },
+//         { easing: 'linear' },
+//       ),
+//       { target: this, offset: ["center start", "end start"] }
+//     );
+//   }
+// }
+// if (!customElements.get('slideshow-animated')) customElements.define('slideshow-animated', SlideshowAnimated);
