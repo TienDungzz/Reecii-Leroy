@@ -1380,3 +1380,16 @@ summary {
 .icon-caret--up svg {
   transform: rotate(180deg);
 }
+
+/* When header is transparent, pull the first main content section up to sit under the floating header */
+body:has(.header[transparent]) .content-for-layout > .shopify-section:first-child {
+  margin-top: calc(var(--header-group-height) * -1);
+}
+
+body:has(.header[transparent]) #header-group > *:not(.header-section) {
+  z-index: 1;
+}
+
+body:has(.header[transparent]) #header-group > .header-section {
+  z-index: var(--layer-sticky);
+}

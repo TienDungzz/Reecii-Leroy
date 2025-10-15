@@ -5,14 +5,14 @@
   {% render 'header-dropdown-menu' %}
 {% endcomment %}
 
-<header-menu>
+<div>
   <div
     id="Details-HeaderMenu-{{ forloopIndex }}"
     class="details--dropdown dropdown-menu"
   >
     <div
       id="HeaderMenu-{{ link.handle }}"
-      class="details__summary header__menu-item list-menu__item link focus-inset link--hover-underline"
+      class="header__menu-item list-menu__item link focus-inset link--hover-underline"
     >
       {% if is_vertical_menu %}
         {% liquid
@@ -62,12 +62,17 @@
         </span>
       {% endif %}
     </div>
-    <div class="header__submenu-wrapper details__list list-menu--disclosure z-1 global-settings-popup">
+    <div
+      class="header__submenu-wrapper list-menu--wrapper list-menu--disclosure z-1 global-settings-popup  cus-scrollbar"
+      tabindex="-1"
+      {% if settings.enable_smooth_scroll %}
+        data-lenis-prevent
+      {% endif %}
+    >
       <ul
         id="HeaderMenu-MenuList-{{ forloopIndex }}"
         class="header__submenu list-menu color-{{ block.settings.menu_color_scheme }} caption-large motion-reduce"
         role="list"
-        tabindex="-1"
       >
         {%- for childlink in link.links -%}
           <li>
@@ -98,7 +103,7 @@
                     </span>
                   {% endif %}
                 </div>
-                <ul
+                {% comment %} <ul
                   id="HeaderMenu-SubMenuList-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
                   class="details__list header__submenu list-menu list-menu--disclosure top-0 left-full z-1 motion-reduce global-settings-popup"
                 >
@@ -116,7 +121,7 @@
                       </a>
                     </li>
                   {%- endfor -%}
-                </ul>
+                </ul> {% endcomment %}
               </div>
             {%- endif -%}
           </li>
@@ -124,4 +129,4 @@
       </ul>
     </div>
   </div>
-</header-menu>
+</div>

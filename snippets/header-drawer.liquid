@@ -5,6 +5,8 @@
   {% render 'header-drawer' %}
 {% endcomment %}
 
+{{ 'component-menu-drawer.css' | asset_url | stylesheet_tag: preload: true }}
+
 {%- liquid
   assign listmenu = section.settings.menu.links
   assign listmenu_size = listmenu.size
@@ -53,7 +55,7 @@
           <nav class="menu-drawer__navigation">
             <ul class="menu-drawer__menu has-submenu list-menu" role="list">
               {%- for link in listmenu -%}
-                <li class="menu-drawer__list-item" style="--menu-drawer-animation-index: {{ forloop.index }};">
+                <menu-drawer class="menu-drawer__list-item" style="--menu-drawer-animation-index: {{ forloop.index }};">
                   {%- if link.links != blank -%}
                     <details id="Details-menu-drawer-menu-item-{{ forloop.index }}">
                       <summary
@@ -172,7 +174,7 @@
                       {{ link.title | escape }}
                     </a>
                   {%- endif -%}
-                </li>
+                </menu-drawer>
               {%- endfor -%}
             </ul>
           </nav>
@@ -204,7 +206,7 @@
     z-index: var(--layer-heightened);
   }
 
-  .menu-drawer__back-button {
+  .drawer--menu .menu-drawer__utility-links .menu-drawer__back-button {
     display: flex;
     align-items: center;
     width: 100%;
@@ -222,7 +224,7 @@
     letter-spacing: normal;
   }
 
-  .menu-drawer__back-button > .svg-wrapper {
+  .drawer--menu .menu-drawer__utility-links .menu-drawer__back-button > .svg-wrapper {
     margin-right: var(--padding-md);
     width: var(--icon-size-xs);
     height: var(--icon-size-xs);
@@ -284,6 +286,10 @@
       height: 100%;
       display: flex;
     }
+  }
+
+  .drawer__container .list-menu__item {
+    padding-block: var(--padding-sm);
   }
 
   .drawer__container.active .menu-drawer__item-animate {

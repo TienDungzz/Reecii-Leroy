@@ -9,7 +9,7 @@
   assign bl_stts = block.settings
 -%}
 
-<header-menu class="{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+<div class="">
   <div
     id="Details-HeaderMenu-{{ forloopIndex }}"
     class="details--dropdown mega-menu mega-menu-style-1"
@@ -18,15 +18,15 @@
     <div
       id="HeaderMenu-{{ link.handle }}"
       class="
-        details__summary list-menu__item menu__link--level-1 header__menu-item list-menu__item link focus-inset link--hover-underline
-        {% render 'highlight-class', order: '1', keys: keys, compare: link.title, settings: section.settings %}
+        list-menu__item menu__link--level-1 header__menu-item list-menu__item link focus-inset link--hover-underline
+        {% render 'highlight-class', order: '1', keys: keys, compare: link.title, settings: sec_settings %}
       "
       {%- if link.links != blank -%}
         aria-controls="submenu-{{ forloop.index }}"
         aria-haspopup="true"
         aria-expanded="false"
       {%- endif -%}
-      style="{%  render 'highlight-style', order: '1', keys: keys, compare: link.title, settings: section.settings %}"
+      style="{%  render 'highlight-style', order: '1', keys: keys, compare: link.title, settings: sec_settings %}"
     >
       {% if is_vertical_menu %}
         {% liquid
@@ -75,13 +75,16 @@
           {{- 'icon-caret.svg' | inline_asset_content -}}
         </span>
       {% endif %}
-      {% render 'highlight-label-menu', order: '1', keys: keys, compare: link.title, settings: section.settings %}
+      {% render 'highlight-label-menu', order: '1', keys: keys, compare: link.title, settings: sec_settings %}
     </div>
     <div
       id="MegaMenu-Content-{{ forloopIndex }}"
-      class="details__list list-menu--wrapper mega-menu__content z-1 motion-reduce global-settings-popup"
+      class="list-menu--wrapper mega-menu__content z-1 motion-reduce global-settings-popup"
       tabindex="-1"
       style="--columns-count: {{ bl_stts.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
+      {% if settings.enable_smooth_scroll %}
+        data-lenis-prevent
+      {% endif %}
     >
       <div class="mega-menu__container">
         <div class="page-width page-width--{{ bl_stts.width }} flex items-start justify-between flex-wrap xl:flex-nowrap">
@@ -96,14 +99,13 @@
                   href="{{ childlink.url }}"
                   class="
                     header__menu-item mega-menu__link mega-menu__link--level-2 link
-                    {{ class_item_hover_reveal }}
                     {% if childlink.current %} list-menu__item--active{% endif %}
-                    {% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: section.settings %}
+                    {% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: sec_settings %}
                   "
                   {% if childlink.current %}
                     aria-current="page"
                   {% endif %}
-                  style="{%  render 'highlight-style', order: '2', keys: keys, compare: childlink.title, color: highlight_color, settings: section.settings %}"
+                  style="{%  render 'highlight-style', order: '2', keys: keys, compare: childlink.title, color: highlight_color, settings: sec_settings %}"
                 >
                   <span class="text">
                     {{ childlink.title | escape }}
@@ -112,7 +114,7 @@
                     order: '2',
                     keys: keys,
                     compare: childlink.title,
-                    settings: section.settings
+                    settings: sec_settings
                   %}
                 </a>
                 {%- if childlink.links != blank -%}
@@ -124,14 +126,13 @@
                           href="{{ grandchildlink.url }}"
                           class="
                             header__menu-item mega-menu__link link link--hover-underline
-                            {{ class_item_hover_reveal }}
                             {% if grandchildlink.current %} list-menu__item--active{% endif %}
-                            {% render 'highlight-class', order: '3', keys: keys, compare: grandchildlink.title, settings: section.settings %}
+                            {% render 'highlight-class', order: '3', keys: keys, compare: grandchildlink.title, settings: sec_settings %}
                           "
                           {% if grandchildlink.current %}
                             aria-current="page"
                           {% endif %}
-                          style="{%  render 'highlight-style', order: '3', keys: keys, compare: grandchildlink.title, color: highlight_color, settings: section.settings %}"
+                          style="{%  render 'highlight-style', order: '3', keys: keys, compare: grandchildlink.title, color: highlight_color, settings: sec_settings %}"
                         >
                           <span class="text">
                             {{ grandchildlink.title | escape }}
@@ -140,7 +141,7 @@
                             order: '3',
                             keys: keys,
                             compare: grandchildlink.title,
-                            settings: section.settings
+                            settings: sec_settings
                           %}
                         </a>
                       </li>
@@ -198,7 +199,6 @@
                       collage__item
                       collage__item--image
                       collage__item--{{ image_index }}
-                      {{ class_item_hover_reveal }}
                     "
                   >
                     <a
@@ -238,7 +238,7 @@
       </div>
     </div>
   </div>
-</header-menu>
+</div>
 
 {%- stylesheet -%}
   .mega-menu-style-1:not(:has(.collage__item--3)) {

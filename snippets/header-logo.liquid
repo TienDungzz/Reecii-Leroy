@@ -22,17 +22,15 @@
   assign logo_height = sec_stts.logo_width | divided_by: settings.logo.aspect_ratio | ceil
   assign logo_height_mobile = sec_stts.logo_width_mobile | divided_by: settings.logo.aspect_ratio | ceil
 
-  assign inverse_logo_height = sec_stts.logo_width | divided_by: inverse_logo.aspect_ratio | ceil
-  assign inverse_logo_height_mobile = sec_stts.logo_width_mobile | divided_by: inverse_logo.aspect_ratio | ceil
-
   assign logo_style = '--header-logo-image-width: ' | append: sec_stts.logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: sec_stts.logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: logo_height_mobile | append: 'px;'
 
-  assign inverse_logo_style = '--header-logo-image-width: ' | append: sec_stts.logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: sec_stts.logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: inverse_logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: inverse_logo_height_mobile | append: 'px;'
 -%}
+  {% comment %} assign inverse_logo_height = sec_stts.logo_width | divided_by: inverse_logo.aspect_ratio | ceil
+  assign inverse_logo_height_mobile = sec_stts.logo_width_mobile | divided_by: inverse_logo.aspect_ratio | ceil {% endcomment %}
+  {% comment %} assign inverse_logo_style = '--header-logo-inverse-image-width: ' | append: sec_stts.logo_width | append: 'px;' | append: '--header-logo-inverse-image-width-mobile: ' | append: sec_stts.logo_width_mobile | append: 'px; --header-logo-inverse-image-height: ' | append: inverse_logo_height | append: 'px; --header-logo-inverse-image-height-mobile: ' | append: inverse_logo_height_mobile | append: 'px;' {% endcomment %}
 <div
   class="
     header-block header-logo grid__item block {{ class }}
-    {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}
   "
 >
   {%- if request.page_type == 'index' -%}
@@ -40,52 +38,22 @@
   {%- endif -%}
   <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset" data-logo-page>
     <div class="header__heading-logo-wrapper w-full inline-block">
-      {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
-      {% capture sizes %}(max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ section.settings.logo_width }}px{% endcapture %}
-      {% capture widths %}{{ section.settings.logo_width }}, {{ section.settings.logo_width | times: 1.5 | round }}, {{ section.settings.logo_width | times: 2 }}{% endcapture %}
-
       {%- capture text_fallback -%}
         <span class="h2">{{ shop.name }}</span>
       {%- endcapture -%}
 
       <span
-        class="header-logo__image-container header-logo__image-container--original"
+        class="header-logo__image-container header-logo__image-container--original relative{% if use_inverse_logo %}header-logo__image-container--inverse{% endif %}"
         data-testid="header-logo"
-        style="--url-image: {{ settings.logo | image_url: width: section.settings.logo_width }};{{ logo_style }}"
+        style="
+            --url-image: url({{ settings.logo | image_url: width: section.settings.logo_width }});
+          {% if use_inverse_logo %}
+            --url-image-inverse: url({{ inverse_logo | image_url: width: section.settings.logo_width }});
+          {% endif %}
+          {{ logo_style }}
+        "
       >
-        {% comment %}
-          {% render 'image',
-            image: settings.logo,
-            class: 'header__heading-logo motion-reduce',
-            widths: widths,
-            height: logo_height,
-            width: section.settings.logo_width,
-            text_fallback: text_fallback,
-            alt: logo_alt,
-            sizes: sizes,
-            fetch_priority: 'high'
-          %}
-        {% endcomment %}
       </span>
-
-      {% if use_inverse_logo %}
-        <span
-          class="header-logo__image-container header-logo__image-container--inverse"
-          data-testid="header-logo-inverse"
-          style="--url-image: {{ inverse_logo | image_url: width: section.settings.logo_width }};{{ inverse_logo_style }}"
-        >
-          {% comment %} {% render 'image',
-            image: inverse_logo,
-            class: 'header__heading-logo motion-reduce',
-            widths: widths,
-            height: logo_height,
-            width: section.settings.logo_width,
-            text_fallback: text_fallback,
-            alt: logo_alt,
-            sizes: sizes
-          %} {% endcomment %}
-        </span>
-      {% endif %}
     </div>
   </a>
   {%- if request.page_type == 'index' -%}
@@ -94,21 +62,48 @@
 </div>
 
 {%- stylesheet -%}
+
   .header-logo__image-container {
     width: var(--header-logo-image-width);
     height: var(--header-logo-image-height);
-    transition: width var(--animation-speed), height var(--animation-speed);
+    display: block;
+
     @media screen and (max-width: 749px) {
       width: var(--header-logo-image-width-mobile);
       height: var(--header-logo-image-height-mobile);
     }
+
+    &::after, &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        display: block;
+        transition: opacity var(--animation-speed-slowest);
+    }
+
+    &:before {
+      background: var(--url-image) no-repeat center center / contain;
+      opacity: var(--header-logo-opacity);
+    }
+    &:after {
+      background: var(--url-image-inverse) no-repeat center center / contain;
+      opacity: var(--header-logo-inverse-opacity);
+    }
   }
 
   .header-logo:has(.header-logo__image-container--inverse) .header-logo__image-container--original {
-    display: var(--header-logo-display, block);
+    --header-logo-opacity: 1;
   }
 
   .header-logo__image-container--inverse {
-    display: var(--header-logo-inverse-display, none);
+    --header-logo-inverse-opacity: 0;
+  }
+
+  .header-logo:not(:has(.header-logo__image-container--inverse)) .header-logo__image-container--original {
+    --header-logo-opacity: 1;
+    --header-logo-inverse-opacity: 0;
   }
 {%- endstylesheet -%}
