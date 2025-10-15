@@ -65,17 +65,12 @@
     assign has_media_banner = true
   endif
 
-  assign show_more_product = false
-  if sec_stts.show_more_product and collections[sec_stts.collection].all_products_count > max_items
-    assign show_more_product = true
-  endif
-
   assign scroll_reveal = settings.animations_reveal_on_scroll
 -%}
 
 {% comment %} Layout type [tabs-grid] and [tabs-carousel] {% endcomment %}
 {%- capture attr_tabs_header -%}
-  class="tabs-product-header flex md:justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }} overflow-x-a"
+  class="tabs-product-header flex md:justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }} overflow-x-a hide-scrollbar-mobile"
   style="
     --gap-x: {{ sec_stts.tabs_header_gap }}px;
     {% if sec_stts.tabs_header_style == 'default' %}
@@ -87,7 +82,6 @@
 
 {%- capture class_tabs_header_item -%}
   tabs-product-header__item
-  border-style full-unstyled-link shrink-0
   {{ sec_stts.style_class }}
   {% if sec_stts.link_reveal and sec_stts.style_class == 'link' %}link--reveal{% endif %}
   {% if sec_stts.link_underline %}link--underline{% endif %}
@@ -386,7 +380,7 @@
       data-id="{{ sec_id }}"
       data-product-block
     >
-      <div class="section-global__header" data-check-tabs="{{ sec_id }}">
+      <div class="section-global__header overflow-hidden" data-check-tabs="{{ sec_id }}">
         {%- content_for 'block', type: '_section-header', id: 'section-header', collections: section_collections_list -%}
 
         {% comment %} Button tab header item {% endcomment %}
@@ -466,7 +460,7 @@
 
       <div
         class="section-global__content{% if has_media_banner %} {{ class_media }} {% endif %}"
-        style="{% if has_media_banner %} {{ style_media }} {% endif %}"
+        {% if has_media_banner %}style="{{ style_media }}"{% endif %}
       >
         {%- if section.settings.position == 'left' and section_has_settings_media -%}
           {%- if section.settings.media_type == 'image' -%}
@@ -478,8 +472,6 @@
 
         {% case layout_type %}
           {% when 'tabs-grid' %}
-            {{ 'tabs-component.css' | asset_url | stylesheet_tag: preload: true }}
-
             {%- capture attr_ul -%}
               id="Grid-tabs-{{ sec_id }}"
               data-id="{{ sec_id }}"
@@ -686,8 +678,6 @@
               {%- endif -%}
             </tabs-component>
           {% when 'tabs-carousel' %}
-            {{ 'tabs-component.css' | asset_url | stylesheet_tag: preload: true }}
-
             {%- capture attr_ul -%}
               id="Grid-tabs-{{ sec_id }}"
               data-id="{{ sec_id }}"
@@ -916,11 +906,13 @@
             {%- liquid
               assign section_collections_list = sec_stts.collection_list
               if layout_type == 'duo'
-                assign columns_block_items = sec_stts.columns_block_items
                 assign columns_layout = 2
+                assign columns_block_items = sec_stts.columns_block_items
+                assign columns_block_items_mobile = 2
+                assign columns_block_items_tablet = 2
               else
-                assign columns_block_items = 1
                 assign columns_layout = columns_desktop
+                assign columns_block_items = 1
               endif
 
               assign slide_in_mobile = false
@@ -939,7 +931,7 @@
 
             <div
               class="product-vertical{% if slide_in_mobile %} has_slide_mobile{% else %} grid grid-cols{% endif %}"
-              style="--columns-vertical-int: repeat({{ columns_layout }}, 1fr);"
+              style="--columns-vertical-int: repeat({{ columns_layout }}, minmax(0,1fr));"
             >
               {% if slide_in_mobile %}
                 <swiper-component
@@ -953,6 +945,13 @@
                     pagination_type: 'bullets',
                     auto_height: true
                   -%}
+                  style="
+                    {% render 'swiper-style',
+                      columns_mobile: 1,
+                      columns_tablet: 1,
+                      columns_desktop: 1,
+                      columns_gap: columns_gap,
+                    %}
                   "
                 >
                   <div class="swiper">
@@ -993,8 +992,15 @@
                       {%- endif -%}
                     </div>
                     <div
-                      class="grid grid-cols"
-                      style="--gap: {{ rows_gap }}px {{ columns_gap }}px;--columns-vertical-int: repeat({{ columns_block_items }}, 1fr);"
+                      class="grid grid-cols{% if layout_type == 'duo' %} grid-cols:sm grid-cols:md{% endif %}"
+                      style="
+                        --gap: {{ rows_gap }}px {{ columns_gap }}px;
+                        --columns-vertical-int: repeat({{ columns_block_items }}, minmax(0,1fr));
+                        {% if layout_type == 'duo' %}
+                          --columns-vertical-int-sm: repeat({{ columns_block_items_mobile }}, minmax(0,1fr));
+                          --columns-vertical-int-md: repeat({{ columns_block_items_tablet }}, minmax(0,1fr));
+                        {% endif %}
+                      "
                     >
                       {% for product in collection.products limit: max_items %}
                         {% content_for 'block', type: 'card-product-flex', id: 'product-slide-item', closest.product: product %}
@@ -1053,15 +1059,18 @@
                     </div>
 
                     <div
-                      class="grid grid-cols"
-                      style="--gap: {{ rows_gap }}px;--columns-vertical-int: repeat({{ columns_block_items }}, 1fr);"
+                      class="grid grid-cols{% if layout_type == 'duo' %} grid-cols:sm grid-cols:md{% endif %}"
+                      style="
+                        --gap: {{ rows_gap }}px {{ columns_gap }}px;
+                        --columns-vertical-int: repeat({{ columns_block_items }}, minmax(0,1fr));
+                        {% if layout_type == 'duo' %}
+                          --columns-vertical-int-sm: repeat({{ columns_block_items_mobile }}, minmax(0,1fr));
+                          --columns-vertical-int-md: repeat({{ columns_block_items_tablet }}, minmax(0,1fr));
+                        {% endif %}
+                      "
                     >
                       {% for product in section_collections limit: max_items %}
-                        {% content_for 'block',
-                          type: 'card-product-flex',
-                          id: 'product-slide-item',
-                          closest.product: product
-                        %}
+                        {% content_for 'block', type: 'card-product-flex', id: 'product-slide-item', closest.product: product %}
                       {% endfor %}
                     </div>
                   </div>
@@ -1077,75 +1086,91 @@
             </div>
           {% when 'duo-carousel' %}
             {%- liquid
+              assign columns_layout = 2
               assign section_collections_list = sec_stts.collection_list
               assign columns_block_items = sec_stts.columns_block_items
-              assign columns_layout = 2
+              assign columns_block_items_tablet = 2
+              assign columns_block_items_mobile = 2
               assign max_items = sec_stts.products_to_show
             -%}
 
-            <div class="product-duo-carousel">
-              <div class="md:grid grid-cols-2" style="--gap: {{ rows_gap }}px {{ columns_gap }}px;">
-                {% for collection in section_collections_list %}
-                  <div class="duo-carousel-item">
-                    <div class="flex flex-wrap items-center justify-between" style="--gap: 1rem;">
-                      <div>
-                        <h3>
-                          <a href="{{ collection.url }}" class="full-unstyled-link font-bold">
-                            {{ collection.title | escape | default: 'Collection title' }}
-                          </a>
-                        </h3>
-                      </div>
-                      {%- if show_view_all and more_in_collection -%}
-                        <a
-                          href="{{ collection.url }}"
-                          class="caption {% if view_all_style == 'link' %}link underlined-link{% elsif view_all_style == 'solid' %}button{% else %}button button-secondary{% endif %}"
-                          aria-label="{{ 'content.view_all_label' | t: collection_name: sec_stts.collection.title | escape }}"
-                        >
-                          {{ 'content.view_all' | t }}
+            <div
+              class="product-duo-carousel md:grid grid-cols"
+              style="
+                --gap: {{ rows_gap }}px {{ columns_gap }}px;
+                --columns-vertical-int: repeat({{ columns_layout }}, minmax(0,1fr));
+              "
+            >
+              {% for collection in section_collections_list %}
+                <div class="duo-carousel-item">
+                  <div class="flex flex-wrap items-center justify-between" style="--gap: 1rem;">
+                    <div>
+                      <h3>
+                        <a href="{{ collection.url }}" class="full-unstyled-link font-bold">
+                          {{ collection.title | escape | default: 'Collection title' }}
                         </a>
+                      </h3>
+                    </div>
+                    {%- if show_view_all and more_in_collection -%}
+                      <a
+                        href="{{ collection.url }}"
+                        class="caption {% if view_all_style == 'link' %}link underlined-link{% elsif view_all_style == 'solid' %}button{% else %}button button-secondary{% endif %}"
+                        aria-label="{{ 'content.view_all_label' | t: collection_name: sec_stts.collection.title | escape }}"
+                      >
+                        {{ 'content.view_all' | t }}
+                      </a>
+                    {%- endif -%}
+                  </div>
+
+                  {%- capture breakpoints -%}
+                    {
+                      "768": { "slidesPerView": {{ columns_block_items_tablet }} },
+                      "1024": { "slidesPerView": {{ columns_block_items_tablet }} },
+                      "1400": { "slidesPerView": {{ columns_block_items }} }
+                    }
+                  {%- endcapture -%}
+                  <swiper-component
+                    class="collection-carousel-swiper-component"
+                    {%- render 'swiper-data',
+                      settings: section.settings,
+                      loop: false,
+                      slides_per_view: columns_block_items_mobile,
+                      space_between: columns_gap,
+                      breakpoints: breakpoints
+                    -%}
+                    style="
+                      {% render 'swiper-style',
+                        columns_mobile: columns_block_items_mobile,
+                        columns_tablet: columns_block_items_tablet,
+                        columns_desktop: columns_block_items,
+                        columns_gap: columns_gap,
+                      %}
+                    "
+                  >
+                    <div class="swiper w-full">
+                      <ul
+                        class="swiper-wrapper grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_block_items }} md:grid-layout--{{ columns_block_items_tablet }} grid--{{ columns_block_items_mobile }}-col-mobile"
+                        id="Slider-{{ sec_id }}"
+                        data-id="{{ sec_id }}"
+                      >
+                        {% for product in collection.products limit: max_items %}
+                          <li id="Slide-{{ sec_id }}-{{ forloop.index }}" class="grid__item swiper-slide">
+                            {% content_for 'block', type: 'card-product-flex', id: 'product-slide-item', closest.product: product %}
+                          </li>
+                        {% endfor %}
+                      </ul>
+                      {%- if enable_navigation -%}
+                        <div class="swiper-btns-wrap small-hide">
+                          {%- render 'swiper-button' -%}
+                        </div>
+                      {%- endif -%}
+                      {%- if enable_pagination -%}
+                        <div class="swiper-pagination"></div>
                       {%- endif -%}
                     </div>
-                    <swiper-component
-                      {%- render 'swiper-data',
-                        settings: section.settings,
-                        loop: false,
-                        slides_per_view: columns_block_items,
-                        space_between: columns_gap
-                      -%}
-                      style="
-                        {% render 'swiper-style',
-                          columns_mobile: columns_block_items,
-                          columns_tablet: columns_block_items,
-                          columns_desktop: columns_block_items,
-                          columns_gap: columns_gap,
-                        %}
-                      "
-                    >
-                      <div class="swiper">
-                        <ul class="swiper-wrapper list-unstyled">
-                          {% for product in collection.products limit: max_items %}
-                            <li class="swiper-slide">
-                              {% content_for 'block',
-                                type: 'card-product-flex',
-                                id: 'product-slide-item',
-                                closest.product: product
-                              %}
-                            </li>
-                          {% endfor %}
-                        </ul>
-                        {%- if enable_navigation -%}
-                          <div class="swiper-btns-wrap small-hide">
-                            {%- render 'swiper-button' -%}
-                          </div>
-                        {%- endif -%}
-                        {%- if enable_pagination -%}
-                          <div class="swiper-pagination"></div>
-                        {%- endif -%}
-                      </div>
-                    </swiper-component>
-                  </div>
-                {% endfor %}
-              </div>
+                  </swiper-component>
+                </div>
+              {% endfor %}
             </div>
         {% endcase %}
 

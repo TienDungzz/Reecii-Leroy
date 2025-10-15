@@ -1,5 +1,3 @@
-{{ 'section-related-products.css' | asset_url | stylesheet_tag: preload: true }}
-
 {% if section.settings.image_shape == 'blob' %}
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag: preload: true }}
 {%- endif -%}
@@ -14,6 +12,16 @@
     assign columns_tablet = 1
   endif
 -%}
+
+{%- stylesheet -%}
+  .related-products {
+    display: block;
+  }
+
+  .related-products__heading {
+    margin: 0 0 3rem;
+  }
+{%- endstylesheet -%}
 
 <div class="color-{{ section.settings.color_scheme }}">
   <product-recommendations

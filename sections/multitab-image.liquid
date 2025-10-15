@@ -28,21 +28,20 @@
   --grid-mobile-horizontal-spacing: {{ sec_stts.content_horizontal_gap | times: 0.5 }}px; --grid-mobile-vertical-spacing: {{ sec_stts.content_vertical_gap | times: 0.5 }}px;
 {%- endcapture -%}
 
-{%- capture style_tab_active -%}
-  --gap: {{ sec_stts.button_gap }}px;
-  --color-tab-active: {{ sec_stts.color_tab_active }};
-  --background-tab-active: {{ sec_stts.background_tab_active }};
+{% comment %} Tabs header {% endcomment %}
+{%- capture class_tabs_header_item -%}
+  tab-header-item
+  {{ sec_stts.style_class }}
+  {% if sec_stts.link_reveal and sec_stts.style_class == 'link' %}link--reveal{% endif %}
+  {% if sec_stts.link_underline %}link--underline{% endif %}
+  {% if sec_stts.link_hover_underline and sec_stts.style_class == 'link' and sec_stts.link_underline == false %}link--hover-underline{% endif %}
+  {% if sec_stts.button_style == 'outline' %}button--outline{% endif %}
 {%- endcapture -%}
 
-{{ 'tabs-component.css' | asset_url | stylesheet_tag: preload: true }}
-
-{% stylesheet %}
-  .tabs-component-panel-trigger.button:hover, .tabs-component-panel-trigger.button.--active {    
-    color: var(--button-color);
-    background: var(--color-primary-button-hover-background);
-    border-color: var(--color-primary-button-hover-background);
-  }
-{% endstylesheet %}
+{%- capture style_tabs_header_item -%}
+  {% render 'button-style', settings: sec_stts %}
+{%- endcapture -%}
+{% comment %} Tabs header {% endcomment %}
 
 <div
   class="section spacing-style section--{{ sec_stts.section_width }} color-{{ sec_stts.color_scheme }}"
@@ -52,10 +51,9 @@
     {%- assign alignment_header = sec_stts.button_alignment | replace: 'left', 'start' | replace: 'right', 'end' | prepend: 'justify-' -%}
     <div
       class="sec-tab__header relative w-full flex flex-wrap hide-scrollbar-mobile {{ alignment_header }} max-sm:justify-start"
-      style="{{ style_tab_active }}"
+      style="--gap: {{ sec_stts.button_gap }}px;"
     >
-
-       {%- capture labels -%}
+      {%- capture labels -%}
         {%- for block in section.blocks -%}
           {{ block.settings.title_header }}
           {%- unless forloop.last -%}
@@ -65,12 +63,10 @@
       {%- endcapture -%}
 
       {%- render 'tab-header-item',
-        settings: sec_stts,
         id: sec_id,
         labels: labels,
-        splitting_text: true,
-        splitting_text_by: "chars",
-        class: "tab-header-item"
+        class: class_tabs_header_item,
+        style: style_tabs_header_item
       -%}
     </div>
     <div class="sec-tab__content">
@@ -206,11 +202,7 @@
     },
     {
       "type": "header",
-      "content": "t:content.buttons"
-    },
-    {
-      "type": "header",
-      "content": "t:content.typography"
+      "content": "Tabs header"
     },
     {
       "type": "text_alignment",
@@ -261,9 +253,200 @@
         {
           "value": "outline",
           "label": "t:options.outline"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_width",
+      "default": 1,
+      "visible_if": "{{ section.settings.button_style == 'custom' and section.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_radius",
+      "default": 100,
+      "visible_if": "{{ section.settings.button_style == 'custom' and section.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "button_type_font",
+      "label": "t:settings.font",
+      "visible_if": "{{ section.settings.button_style == 'custom' and section.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "var(--font-body--family)",
+          "label": "t:options.body"
+        },
+        {
+          "value": "var(--font-subheading--family)",
+          "label": "t:options.subheading"
+        },
+        {
+          "value": "var(--font-heading--family)",
+          "label": "t:options.heading"
+        }
+      ],
+      "default": "var(--font-body--family)"
+    },
+    {
+      "type": "select",
+      "id": "button_type_size",
+      "label": "t:settings.size",
+      "visible_if": "{{ section.settings.button_style == 'custom' and section.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        }
+      ],
+      "default": "1.2rem"
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "t:settings.button_text_weight",
+      "visible_if": "{{ section.settings.button_style == 'custom' and section.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "100",
+          "label": "t:options.thin"
+        },
+        {
+          "value": "300",
+          "label": "t:options.light"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "500",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        },
+        {
+          "value": "900",
+          "label": "t:options.black"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "button_text_case",
+      "label": "t:settings.button_text_case",
+      "visible_if": "{{ section.settings.button_style == 'custom' and section.settings.style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "buttons_shadow_horizontal_offset",
+      "min": -12,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.shadow_horizontal_offset",
+      "default": 0,
+      "visible_if": "{{ section.settings.button_style == 'custom' and section.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "buttons_shadow_vertical_offset",
+      "min": -12,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.shadow_vertical_offset",
+      "default": 0,
+      "visible_if": "{{ section.settings.button_style == 'custom' and section.settings.style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "buttons_shadow_blur",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "t:settings.shadow_blur",
+      "default": 0,
+      "visible_if": "{{ section.settings.button_style == 'custom' and section.settings.style_class != 'link' }}"
     },
     {
       "type": "header",
@@ -445,8 +628,23 @@
       "id": "link_reveal",
       "label": "t:settings.reveal_on_hover",
       "default": false,
-      "info": "t:info.link_reveal_info",  
+      "info": "t:info.link_reveal_info",
       "visible_if": "{{ section.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_color_underline",
+      "label": "Custom color underline",
+      "default": false,
+      "visible_if": "{{ section.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "color",
+      "id": "link_underline_color",
+      "label": "Link underline color",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ section.settings.custom_color_underline == true and section.settings.style_class == 'link' }}"
     },
     {
       "type": "header",

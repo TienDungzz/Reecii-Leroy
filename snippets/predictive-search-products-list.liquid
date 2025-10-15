@@ -20,9 +20,11 @@
   list-unstyled
 {%- endcapture -%}
 
-<h6 class="predictive-search__heading body-m-font-size">
-  {{ title }}
-</h6>
+{% if settings.search_layout == 'default' %}
+  <h6 class="predictive-search__heading body-m-font-size">
+    {{ title }}
+  </h6>
+{% endif %}
 <div
   id="predictive-search-products"
   class="predictive-search-results__products"
@@ -53,9 +55,8 @@
 </div>
 
 {% stylesheet %}
-  .predictive-search-results__wrapper-products {
-
-    @media screen and (max-width: 749px) {
+  @media screen and (max-width: 749px) {
+    .predictive-search-results__wrapper-products {
       gap: var(--gap-xs);
     }
   }

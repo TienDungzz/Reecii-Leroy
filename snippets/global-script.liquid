@@ -2,16 +2,16 @@
 <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'vendor.js' | asset_url }}" defer="defer"></script>
 {%- if settings.enable_smooth_scroll -%}
-  <script src="{{ 'smooth-scroll.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'smooth-scroll.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
-{%- if settings.animations_reveal_on_scroll -%}
-<script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
-{%- endif -%}
-<script src="{{ 'media.js' | asset_url }}" defer="defer"></script>
-<script src="{{ 'accordion.js' | asset_url }}" defer="defer"></script>
-<script src="{{ 'click-outside-details.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'accordion.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'media.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'tab.js' | asset_url }}" defer="defer"></script>
+
+{%- if settings.animations_reveal_on_scroll -%}
+    <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
 <script src="{{ 'text-animation.js' | asset_url }}" defer="defer"></script>
 
 {%- if settings.show_calculator_free_shipping_message -%}
@@ -19,12 +19,16 @@
 {% endif %}
 
 {%- if settings.show_cart_quick_edit -%}
-  <script src="{{ 'edit-cart.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'edit-cart.js' | asset_url }}" defer="defer"></script>
 {% endif %}
 
 {%- if settings.show_countdown -%}
     <script src="{{ 'countdown.js' | asset_url }}" defer="defer"></script>
 {% endif %}
+
+{%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
+    <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
 
 <script>
     window.shopUrl = '{{ request.origin }}';

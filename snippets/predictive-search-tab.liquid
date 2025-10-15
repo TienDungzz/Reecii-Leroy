@@ -43,10 +43,6 @@
 {% endif %}
 
 {%- if tab_labels.size > 0 -%}
-  {%- capture class_tabs_product_header_item -%}
-    tabs-component-panel-trigger predictive-search-tab__trigger{% if is_active %} --active{% endif %}
-  {%- endcapture -%}
-
   <tabs-component class="predictive-search-tabs block">
     <div class="tabs-product-header flex overflow-x-a mb-4">
       {%- capture labels -%}
@@ -59,10 +55,10 @@
       {%- endcapture -%}
 
       {%- render 'tab-header-item',
-        settings: settings,
         id: 'predictive-search-tabs',
         labels: labels,
-        class: class_tabs_product_header_item
+        class: 'predictive-search-tab__trigger',
+        style: ''
       -%}
     </div>
     <div class="tabs-product-grid tabs-component-content">
@@ -76,7 +72,9 @@
           {% endunless %}
           id="tabs-predictive-search-tabs-{{ forloop.index }}"
         >
-          <template>
+          {%- unless forloop.first -%}
+            <template>
+          {%- endunless -%}
             {%- case tab -%}
               {%- when 'products' -%}
                 {% assign products = predictive_search.resources.products %}
@@ -152,7 +150,9 @@
                   </div>
                 {% endif %}
             {%- endcase -%}
-          </template>
+          {%- unless forloop.first -%}
+            </template>
+          {%- endunless -%}
         </div>
       {%- endfor -%}
     </div>
@@ -168,6 +168,7 @@
     gap: var(--gap-2xl);
     margin-bottom: 1rem;
   }
+
   .predictive-search-tab__trigger {
     background: none;
     border: none;
@@ -200,17 +201,9 @@
   .predictive-search-tab__panel {
     display: none;
     padding-top: 1rem;
-  }
-  .predictive-search-tab__panel.--active {
-    display: block;
+
+    &.--active {
+      display: block;
+    }
   }
 {%- endstylesheet -%}
-
-{% comment %}
-  .predictive-search-tab__trigger.--active,
-  .predictive-search-tab__trigger:focus {
-    color: var(--color-tab-active, #fff);
-    background: var(--background-tab-active, #ff8b21);
-    outline: none;
-  }
-{% endcomment %}

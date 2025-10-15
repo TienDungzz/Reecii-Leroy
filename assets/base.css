@@ -603,8 +603,16 @@ img {
   grid-template-columns: var(--columns-vertical-int, repeat(2, minmax(0,1fr)));
 }
 
-.grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0,1fr));
+@media screen and (max-width: 749px) {
+  .grid-cols\:sm {
+    grid-template-columns: var(--columns-vertical-int-sm, repeat(1, minmax(0,1fr)));
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 1024px) {
+  .grid-cols\:md {
+    grid-template-columns: var(--columns-vertical-int-md, repeat(2, minmax(0,1fr)));
+  }
 }
 
 .flex-center {
@@ -2317,16 +2325,6 @@ details[open] > summary .icon-plus-wrapper {
   .lg\:grid-layout--1 {
     --card-grid-per-row: 1;
   }
-
-  .slider.slider--desktop .scroll-trigger.animate--slide-in {
-    animation: none;
-    opacity: var(--opacity-100);
-    transform: inherit;
-  }
-
-  .scroll-trigger:not(.scroll-trigger--offscreen) .slider--desktop {
-    animation: var(--animation-slide-in);
-  }
 }
 
 /* component-media */
@@ -3436,15 +3434,6 @@ details[open]>.share-button__fallback {
   scale: 0.9;
 }
 
-@media screen and (min-width: 1025px) {
-
-  .announcement-bar.announcement-bar--one-announcement,
-  .announcement-bar--one-announcement .announcement-bar__link {
-    width: fit-content;
-    margin: auto;
-  }
-}
-
 .announcement-bar,
 .announcement-bar__announcement {
   color: var(--color-foreground);
@@ -3457,32 +3446,11 @@ details[open]>.share-button__fallback {
   grid-area: announcements;
 }
 
-.announcement-bar .slider--everywhere {
-  margin-bottom: 0;
-  scroll-behavior: auto;
-}
-
+.announcement-bar-slider,
 .utility-bar__grid .announcement-bar-slider {
   width: 100%;
 }
 
-.announcement-bar-slider,
-.announcement-bar-slider .slider {
-  width: 100%;
-}
-
-.announcement-bar .slider-button--next {
-  margin-right: -1.5rem;
-  min-width: 44px;
-}
-
-.announcement-bar .slider-button--prev {
-  margin-left: -1.5rem;
-  min-width: 44px;
-}
-
-.announcement-bar .slider-button--next:focus-visible,
-.announcement-bar .slider-button--prev:focus-visible,
 .utility-bar .list-social__link:focus-visible {
   outline-offset: -0.3rem;
   box-shadow: 0 0 0 -0.2rem var(--color-foreground);
@@ -3498,104 +3466,6 @@ details[open]>.share-button__fallback {
 .utility-bar .localization-wrapper .disclosure .localization-form__select,
 .utility-bar .localization-wrapper .disclosure__link {
   font-size: 1.3rem;
-}
-
-@media screen and (min-width: 1025px) {
-  .announcement-bar-slider {
-    width: 60%;
-  }
-
-  .announcement-bar .slider-button {
-    height: 3.8rem;
-  }
-}
-
-.announcement-bar__link {
-  display: flex;
-  width: 100%;
-  text-decoration: none;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-
-  &:hover {
-    text-decoration: underline;
-  }
-
-  .icon-arrow {
-    display: inline-block;
-    pointer-events: none;
-    margin-left: 0.8rem;
-    vertical-align: middle;
-    margin-bottom: 0.2rem;
-  }
-}
-
-.announcement-bar__message {
-  text-align: center;
-  padding: 0;
-  margin: 0;
-  letter-spacing: 0.1rem;
-  /* min-height: 3.8rem; */
-}
-
-.announcement-bar-slider--fade-in-next .announcement-bar__message,
-.announcement-bar-slider--fade-in-previous .announcement-bar__message,
-.announcement-bar-slider--fade-out-next .announcement-bar__message,
-.announcement-bar-slider--fade-out-previous .announcement-bar__message {
-  animation-duration: var(--duration-announcement-bar);
-  animation-timing-function: ease-in-out;
-  animation-fill-mode: forwards;
-}
-
-.announcement-bar-slider--fade-in-next .announcement-bar__message {
-  --announcement-translate-from: -1.5rem;
-
-  opacity: var(--opacity-0);
-  animation-name: translateAnnouncementSlideIn;
-  animation-delay: var(--duration-announcement-bar);
-}
-
-.announcement-bar-slider--fade-in-previous .announcement-bar__message {
-  --announcement-translate-from: 1.5rem;
-
-  opacity: var(--opacity-0);
-  animation-name: translateAnnouncementSlideIn;
-  animation-delay: var(--duration-announcement-bar);
-}
-
-.announcement-bar-slider--fade-out-next .announcement-bar__message {
-  --announcement-translate-to: 1.5rem;
-  animation-name: translateAnnouncementSlideOut;
-}
-
-.announcement-bar-slider--fade-out-previous .announcement-bar__message {
-  --announcement-translate-to: -1.5rem;
-  animation-name: translateAnnouncementSlideOut;
-}
-
-@keyframes translateAnnouncementSlideIn {
-  0% {
-    opacity: var(--opacity-0);
-    transform: translateX(var(--announcement-translate-from));
-  }
-
-  100% {
-    opacity: var(--opacity-100);
-    transform: translateX(0);
-  }
-}
-
-@keyframes translateAnnouncementSlideOut {
-  0% {
-    opacity: var(--opacity-100);
-    transform: translateX(0);
-  }
-
-  100% {
-    opacity: var(--opacity-0);
-    transform: translateX(var(--announcement-translate-to));
-  }
 }
 
 /* section-header */
@@ -3961,7 +3831,6 @@ details[open]>.share-button__fallback {
 
   .scroll-trigger.scroll-trigger--design-mode.animate--fade-in,
   .scroll-trigger.scroll-trigger--design-mode.animate--slide-in,
-  .scroll-trigger.scroll-trigger--design-mode .slider,
   .scroll-trigger:not(.scroll-trigger--offscreen).scroll-trigger--cancel {
     opacity: var(--opacity-100);
     animation: none;
@@ -4752,57 +4621,11 @@ collapsible-tab.is-open .collapsible-tab__header .icon-caret {
 }
 /* Collage */
 
-/* Swiper */
-swiper-component {
-  display: block;
-  width: 100%;
-}
-
-.swiper-component-mobile {
-  @media screen and (min-width: 750px) {
-    .swiper-wrapper.md\:block {
-      display: block;
-    }
-
-    .swiper-wrapper.md\:grid {
-      display: grid;
-    }
-  }
-
-}
-.swiper-initialized .swiper-slide {
-  max-width: 100%;
-}
-
-.swiper:has(.swiper-pagination:not(.swiper-pagination-pos--inside)) {
-  padding-bottom: 4rem;
-}
-
-.swiper:has(.swiper-pagination) .swiper-btns-wrap {
-  top: calc(50% - 2rem);
-}
-
-.swiper-button::after {
+/* tabs-component */
+tabs-component:not(.predictive-search-tabs) .tabs-component-content {
   display: none;
-}
 
-.swiper-button-next .icon {
-  &.icon-caret {
-    transform: rotate(-90deg);
+  &.--active {
+    display: block;
   }
-}
-
-.swiper-button-prev .icon {
-  &.icon-caret {
-    transform: rotate(90deg);
-  }
-
-  &.icon-arrow {
-    transform: rotate(180deg);
-  }
-}
-
-.swiper-pagination-progressbar {
-  top: unset !important;
-  bottom: 0;
 }
