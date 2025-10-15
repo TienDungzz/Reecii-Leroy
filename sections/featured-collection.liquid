@@ -586,11 +586,15 @@
               {%- endif -%}
 
               {%- if show_more_product -%}
-                <show-more-product-grid class="product-infinite-scroll block center" style="--show-more-button-offset: {{ sec_stts.show_more_product_top_offset }}px">
+                <show-more-grid
+                  ref="product-grid"
+                  class="product-infinite-scroll block center"
+                  style="--show-more-button-offset: {{ sec_stts.show_more_product_top_offset }}px"
+                >
                   <button type="button" class="button m-x-auto">
                     <span>{{ sec_stts.show_more_product_text }}</span>
                   </button>
-                </show-more-product-grid>
+                </show-more-grid>
               {%- endif -%}
             </div>
 
@@ -2024,13 +2028,13 @@
         }
       ],
       "default": "inside",
-      "visible_if": "{{ section.settings.navigation == 'arrows' or section.settings.navigation == 'arrows-pagination' and section.settings.layout_type == 'carousel' }}"
+      "visible_if": "{{ section.settings.layout_type == 'carousel' and section.settings.navigation == 'arrows' or section.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "select",
       "id": "pagination_type",
       "label": "t:settings.pagination_type",
-      "visible_if": "{{ section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
       "options": [
         {
           "value": "bullets",
@@ -2207,7 +2211,6 @@
           "settings": {
             "padding-block-end": 16,
             "content_direction": "row",
-            "wrap": "wrap",
             "gap": 16
           },
           "blocks": {
@@ -2331,7 +2334,6 @@
           "settings": {
             "padding-block-end": 16,
             "content_direction": "row",
-            "wrap": "wrap",
             "gap": 16
           },
           "blocks": {
@@ -2452,7 +2454,6 @@
           "settings": {
             "padding-block-end": 16,
             "content_direction": "row",
-            "wrap": "wrap",
             "gap": 16
           },
           "blocks": {
