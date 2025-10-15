@@ -53,7 +53,7 @@
 {%- endcapture -%}
 
 {%- capture class_slideshow -%}
-  slideshow slideshow--{{ section.settings.slide_height }} slideshow-mb--{{ section.settings.slide_height_mb }}
+  slideshow slideshow--{{ section.settings.slide_height }} slideshow-mb--{{ section.settings.slide_height_mb }}{% if section.settings.slide_height_mb != 'adapt_image' and section.settings.slide_height_mb != 'height_first_slide' %} slideshow--custom-height-mb{% endif %}
   {% if show_left_categories or show_right_banner and is_layout_masonry == false %} flex flex-wrap{% endif %}
   {% if show_left_categories and is_layout_masonry == false %} slideshow--has-categories{% endif %}
   {% if show_right_banner and is_layout_masonry == false %} slideshow--has-right-banner{% endif %}
@@ -729,6 +729,17 @@
       ],
       "default": "medium",
       "visible_if": "{{ section.settings.slideshow_type != 'masonry' }}"
+    },
+    {
+      "type": "range",
+      "id": "section_height_custom_mb",
+      "label": "t:settings.custom_height",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 100,
+      "unit": "%",
+      "visible_if": "{{ section.settings.slide_height_mb == 'custom' and section.settings.slideshow_type != 'masonry' }}"
     },
     {
       "type": "header",
