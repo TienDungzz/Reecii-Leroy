@@ -43,8 +43,9 @@
 </script>
 
 <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'sticky-add-to-cart.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
-{%- if closest.product .quantity_price_breaks_configured? -%}
+{%- if closest.product.quantity_price_breaks_configured? -%}
   <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
@@ -72,66 +73,76 @@
 {%- endif -%}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<product-info
-  id="MainProduct-{{ section.id }}"
-  class="product-information section section--{{ page_width }} spacing-style color-{{ section.settings.color_scheme }} relative"
-  data-section="{{ section.id }}"
-  data-product-id="{{ closest.product.id }}"
-  data-update-url="true"
-  data-url="{{ closest.product.url }}"
-  style="{% render 'spacing-style', settings: section.settings %} --gap: {{ section.settings.gap }}px;"
+<div
+  class="main-product-information section section--{{ page_width }} color-{{ section.settings.color_scheme }}"
+  style="
+    {% if page_width == 'custom' %}
+      --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    {% endif %}
+  "
 >
-  {% if section.settings.desktop_media_position == 'left' and product_has_media %}
-    {% assign product_href = '#ProductInformation-' | append: section.id %}
-    {% render 'skip-to-content-link', href: product_href, text: 'accessibility.skip_to_product_info' %}
-  {% endif %}
-  <div
-    class="{{ product_grid_class }}"
-    data-product-grid-content
+  <product-info
+    id="MainProduct-{{ section.id }}"
+    class="product-information spacing-style relative"
+    data-section="{{ section.id }}"
+    data-product-id="{{ closest.product.id }}"
+    data-update-url="true"
+    data-url="{{ closest.product.url }}"
+    style="{% render 'spacing-style', settings: section.settings %} --gap: {{ section.settings.gap }}px;"
   >
-    {% assign render_order_array = render_order | split: ',' %}
-    {% capture media %}
-      <div
-        class="product-information__media"
-        data-testid="product-information-media"
-      >
+    {% if section.settings.desktop_media_position == 'left' and product_has_media %}
+      {% assign product_href = '#ProductInformation-' | append: section.id %}
+      {% render 'skip-to-content-link', href: product_href, text: 'accessibility.skip_to_product_info' %}
+    {% endif %}
+    <div
+      class="{{ product_grid_class }}"
+      data-product-grid-content
+    >
+      {% assign render_order_array = render_order | split: ',' %}
+      {% capture media %}
+        <div
+          class="product-information__media"
+          data-testid="product-information-media"
+        >
+          {%- content_for 'block',
+            type: '_product-media-gallery',
+            id: 'media-gallery',
+            closest.product: closest.product
+          -%}
+        </div>
+      {% endcapture %}
+
+      {% capture details %}
         {%- content_for 'block',
-          type: '_product-media-gallery',
-          id: 'media-gallery',
+          type: '_product-details',
+          id: 'product-details',
           closest.product: closest.product
         -%}
-      </div>
-    {% endcapture %}
+      {% endcapture %}
 
-    {% capture details %}
-      {%- content_for 'block',
-        type: '_product-details',
-        id: 'product-details',
-        closest.product: closest.product
-      -%}
-    {% endcapture %}
+      {% for block in render_order_array %}
+        {% if block == 'media' and product_has_media %}
+          {{ media }}
+        {% elsif block == 'product-details' %}
+          {{ details }}
+        {% endif %}
+      {% endfor %}
+    </div>
 
-    {% for block in render_order_array %}
-      {% if block == 'media' and product_has_media %}
-        {{ media }}
-      {% elsif block == 'product-details' %}
-        {{ details }}
-      {% endif %}
-    {% endfor %}
-  </div>
+    {%- if closest.product.media.size > 0 -%}
+      <script src="{{ 'media-gallery.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
 
-  {%- if closest.product.media.size > 0 -%}
-    <script src="{{ 'media-gallery.js' | asset_url }}" defer="defer"></script>
-  {%- endif -%}
+    {%- content_for 'blocks'-%}
+  </product-info>
 
-  {%- content_for 'blocks'-%}
-</product-info>
-
-{% content_for 'block',
-  type: 'sticky-add-to-cart',
-  id: 'sticky-atc',
-  product: closest.product
-%}
+  {% content_for 'block',
+    type: 'sticky-add-to-cart',
+    id: 'sticky-atc',
+    product: closest.product
+  %}
+</div>
 
 
 {% stylesheet %}
@@ -148,6 +159,9 @@
 
   /* Default column positions */
   .product-information__media {
+    display: flex;
+    position: sticky;
+    top: 0;
     order: 0;
     width: 0;
     min-width: 100%;
@@ -339,7 +353,7 @@
     {
       "type": "select",
       "id": "page_width",
-      "label": "t:settings.width", 
+      "label": "t:settings.width",
       "options": [
         {
           "value": "page-width",
@@ -348,9 +362,24 @@
         {
           "value": "full-width",
           "label": "t:options.full"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom" 
         }
       ],
-      "default": "full-width"
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "page_width_custom",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "default": 1570,
+      "unit": "px",
+      "label": "t:settings.page_width",
+      "visible_if": "{{ section.settings.page_width == 'custom' }}"
     },
     {
       "type": "select",

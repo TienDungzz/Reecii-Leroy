@@ -2125,80 +2125,6 @@ class SwiperComponent extends HTMLElement {
 if (!customElements.get("swiper-component"))
   customElements.define("swiper-component", SwiperComponent);
 
-class VariantSelects extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.addEventListener("change", (event) => {
-      const target = this.getInputForEventTarget(event.target);
-      if (target.classList.contains('not-change')) return;
-      this.updateSelectionMetadata(event);
-
-      publish(PUB_SUB_EVENTS.optionValueSelectionChange, {
-        data: {
-          event,
-          target,
-          selectedOptionValues: this.selectedOptionValues,
-        },
-      });
-    });
-  }
-
-  updateSelectionMetadata({ target }) {
-    const { value, tagName } = target;
-
-    if (tagName === "SELECT" && target.selectedOptions.length) {
-      Array.from(target.options)
-        .find((option) => option.getAttribute("selected"))
-        .removeAttribute("selected");
-      target.selectedOptions[0].setAttribute("selected", "selected");
-
-      const swatchValue = target.selectedOptions[0].dataset.optionSwatchValue;
-      const selectedDropdownSwatchValue = target
-        .closest(".product-form__input")
-        .querySelector("[data-selected-value] > .swatch");
-      if (!selectedDropdownSwatchValue) return;
-      if (swatchValue) {
-        selectedDropdownSwatchValue.style.setProperty(
-          "--swatch--background",
-          swatchValue
-        );
-        selectedDropdownSwatchValue.classList.remove("swatch--unavailable");
-      } else {
-        selectedDropdownSwatchValue.style.setProperty(
-          "--swatch--background",
-          "unset"
-        );
-        selectedDropdownSwatchValue.classList.add("swatch--unavailable");
-      }
-
-      selectedDropdownSwatchValue.style.setProperty(
-        "--swatch-focal-point",
-        target.selectedOptions[0].dataset.optionSwatchFocalPoint || "unset"
-      );
-    } else if (tagName === "INPUT" && target.type === "radio") {
-      const selectedSwatchValue = target
-        .closest(`.product-form__input`)
-        .querySelector("[data-selected-value]");
-      if (selectedSwatchValue) selectedSwatchValue.innerHTML = value;
-    }
-  }
-
-  getInputForEventTarget(target) {
-    return target.tagName === "SELECT" ? target.selectedOptions[0] : target;
-  }
-
-  get selectedOptionValues() {
-    return Array.from(
-      this.querySelectorAll("select option[selected], fieldset input:checked")
-    ).map(({ dataset }) => dataset.optionValueId);
-  }
-}
-if (!customElements.get("variant-selects"))
-  customElements.define("variant-selects", VariantSelects);
-
 class ProductRecommendations extends HTMLElement {
   observer = undefined;
 
@@ -2967,10 +2893,23 @@ class ColorSwatch extends HTMLElement {
 
   init() {
     this.swatchList = this.querySelector(".swatch-list");
+    this.variantSelectsSwatchList = this.querySelector("variant-selects .swatch-list");
     this.swatchList?.addEventListener(
       "click",
       this.handleSwatchClick.bind(this)
     );
+  }
+
+  handleSwatchClickActive(event) {
+    const target = event.target;
+    if (target.closest(".swatch-item")) {
+      this.querySelectorAll(".swatch-item").forEach(item => {
+        if (item !== target.closest(".swatch-item")) {
+          item.classList.remove("active");
+        }
+      });
+      target.closest(".swatch-item").classList.add("active");
+    }
   }
 
   handleSwatchClick(event) {
@@ -2985,37 +2924,20 @@ class ColorSwatch extends HTMLElement {
       jsonData = divFragment.getAttribute("data-json-product"),
       productJson = JSON.parse(jsonData),
       productTitle = product.querySelector(".card__heading > a"),
-      productAction = product.querySelector("[data-btn-addtocart]"),
-      productAction2 = product.querySelector(
-        ".card-product [data-btn-addtocart]"
-      ),
       variantId = Number(target.dataset.variantId),
       productHref = product.querySelector("a").getAttribute("href"),
-      oneOption = target.dataset.withOneOption,
       newImage = target.dataset.variantImg,
       mediaList = [];
 
     if (target.closest(".swatch-item")) {
-      console.log(`%c🔍 Log target:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", target);
-
-      // Toggle active class
-      this.querySelectorAll(".swatch-item").forEach(item => {
-        if (item !== target.closest(".swatch-item")) {
-          item.classList.remove("active");
-        }
-      });
-      target.closest(".swatch-item").classList.add("active");
-
+      this.handleSwatchClickActive(event);
       // CHANGE TITLE
       if (productTitle.classList.contains("card-title-change")) {
-        // productTitle.querySelector("[data-change-title]").textContent =
-        //   " - " + title;
         productTitle
           .querySelector(".text")
           .setAttribute("data-change-title", " - " + title);
       } else {
         productTitle.classList.add("card-title-change");
-        // productTitle.innerHTML = `<span data-change-title> - ${title}</span>`;
         productTitle
           .querySelector(".text")
           .setAttribute("data-change-title", " - " + title);
@@ -3726,57 +3648,6 @@ class InfiniteScrolling extends HTMLElement {
 
 }
 customElements.define('infinite-scrolling', InfiniteScrolling);
-
-class StickyATC extends HTMLElement {
-  constructor() {
-    super();
-
-    // Find the main product form dynamically
-    // Look for product-info component and get its form
-    const productInfo = document.querySelector('product-info');
-    if (productInfo) {
-      this.form = productInfo.querySelector('product-form-component form[data-type="add-to-cart-form"]');
-    }
-    
-    // Fallback: try to get form from attribute
-    if (!this.form && this.getAttribute('product-form')) {
-      this.form = document.getElementById(this.getAttribute('product-form'));
-    }
-
-    // If still no form, try to find any main product form
-    if (!this.form) {
-      this.form = document.querySelector('form[data-type="add-to-cart-form"]');
-    }
-
-    if (this.form) {
-      const observer = new IntersectionObserver(this.onScroll.bind(this));
-      observer.observe(this.form);
-    } else {
-      console.warn('Sticky ATC: Could not find product form');
-    }
-    // this.footer = document.querySelector('.shopify-section-group-footer-group');
-
-  }
-
-  onScroll(entries) {
-    entries.forEach((entry) => {
-      if (entry.target === this.form) this.passedForm = entry.boundingClientRect.bottom < 0;
-      // if (entry.target === this.footer) this.reachedFooter = entry.isIntersecting;
-    });
-
-    const shouldShow = this.passedForm && !this.reachedFooter;
-    document.body.classList.toggle('sticky-cart-visible', shouldShow);
-    this.classList.toggle('is-visible', shouldShow);
-    if (shouldShow) {
-      document.body.style.setProperty('--sticky-atc-height', `${this.offsetHeight}px`);
-    } else {
-      document.body.style.setProperty('--sticky-atc-height', `0px`);
-    }
-
-    if (!shouldShow) this.classList.remove('sticky-open');
-  }
-}
-customElements.define('sticky-atc', StickyATC);
 
 document.addEventListener(
   'toggle',

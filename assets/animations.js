@@ -13,6 +13,8 @@ function onIntersection(elements, observer) {
         if (elementTarget.hasAttribute('data-cascade'))
           elementTarget.setAttribute('style', `--animation-order: ${index};`);
       }
+
+      observer?.unobserve(elementTarget);
     } else {
       element.target.classList.add(SCROLL_ANIMATION_OFFSCREEN_CLASSNAME);
       element.target.classList.remove(SCROLL_ANIMATION_CANCEL_CLASSNAME);

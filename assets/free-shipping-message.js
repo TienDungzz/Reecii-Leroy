@@ -29,7 +29,7 @@ class FreeShippingComponent extends HTMLElement {
   }
 
   initialize() {
-    fetch(`${routes.root}cart.js`)
+    fetch('/cart.js')
       .then(response => response.json())
       .then(cart => {
         this.cart = cart;

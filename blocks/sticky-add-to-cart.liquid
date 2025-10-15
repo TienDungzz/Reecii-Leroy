@@ -1,3 +1,4 @@
+{% comment %} INSERT_YOUR_REWRITE_HERE {% endcomment %}
 {% liquid
   assign product_resource = product
   if request.visual_preview_mode and product_resource == blank
@@ -6,7 +7,7 @@
 
   assign product_form_id = 'product-form-' | append: section.id
 
-  assign color_scheme = block.settings.color_scheme
+  assign color_scheme = section.settings.color_scheme
 
   assign content_gap = block.settings.content_gap | append: 'px'
   assign action_gap = block.settings.action_gap | append: 'px'
@@ -38,12 +39,12 @@
 
 {%- capture sticky_attr -%}
 style="
-  --sticky-width: {{ sticky_width }}%; 
-  --sticky-pos-bottom: {{ sticky_pos_bottom }}px; 
-  --shadow-horizontal-offset: {{ shadow_horizontal_offset }}px; 
-  --shadow-vertical-offset: {{ shadow_vertical_offset }}px; 
-  --shadow-blur: {{ shadow_blur }}px; 
-  --shadow-spread-radius: {{ shadow_spread_radius }}px; 
+  --sticky-width: {{ sticky_width }}%;
+  --sticky-pos-bottom: {{ sticky_pos_bottom }}px;
+  --shadow-horizontal-offset: {{ shadow_horizontal_offset }}px;
+  --shadow-vertical-offset: {{ shadow_vertical_offset }}px;
+  --shadow-blur: {{ shadow_blur }}px;
+  --shadow-spread-radius: {{ shadow_spread_radius }}px;
   --shadow-color: {{ shadow_color }};
   {% if block.settings.inherit_color_scheme == false %}
     {% render 'color-scheme-style', settings: block.settings %}
@@ -53,282 +54,219 @@ style="
 
 {%- capture attr -%}
 style="
-{% if pl != 0 %}--pl:{{ pl }}px;{% endif %}
-{% if pt != 0 %}--pt:{{ pt }}px;{% endif %}
-{% if pb != 0 %}--pb:{{ pb }}px;{% endif %}
-{% if pr != 0 %}--pr:{{ pr }}px;{% endif %}
+  {% if pl != 0 %}--pl:{{ pl }}px;{% endif %}
+  {% if pt != 0 %}--pt:{{ pt }}px;{% endif %}
+  {% if pb != 0 %}--pb:{{ pb }}px;{% endif %}
+  {% if pr != 0 %}--pr:{{ pr }}px;{% endif %}
 "
 {%- endcapture -%}
 
-<sticky-atc class="sticky-atc w-full fixed bottom-0 left-0 right-0 z-10 flex justify-between items-center shadow-style style-{{ style_class }}{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}" {{ sticky_attr }} form="{{ product_form_id }}" data-sticky-section-id="{{ section.id }}">
-    {%- unless product.has_only_default_variant -%}
-      <div div class="sticky-atc__variant">
-        <div class="section section--page-width variant-alignment--{{ variant_alignment }}" {{ attr }}>
-          <div class="large-up-hide medium-hide">
-            <div class="sticky-atc__info">
-              <div class="sticky-atc__title">
-                  <h5 class="{{ type_preset }}">{{ product.title | escape }}</h5>
-              </div>
-              <div class="sticky-atc__price">
-                  {%- render 'price', product: product, use_variant: true, show_badges: false, price_class: 'price--large'-%}
-              </div>
+<sticky-atc
+  class="sticky-atc w-full fixed bottom-0 left-0 right-0 z-10 flex justify-between items-center shadow-style style-{{ style_class }}{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% else %} color-{{ color_scheme }}{% endif %}"
+  {{ sticky_attr }}
+  form="{{ product_form_id }}"
+  data-sticky-section-id="{{ section.id }}"
+>
+  {%- unless product.has_only_default_variant -%}
+    <div div class="sticky-atc__variant">
+      <div class="section section--page-width variant-alignment--{{ variant_alignment }}" {{ attr }}>
+        <div class="large-up-hide medium-hide">
+          <div class="sticky-atc__info">
+            <div class="sticky-atc__title">
+              <h5 class="{{ type_preset }}">{{ product.title | escape }}</h5>
+            </div>
+            <div class="sticky-atc__price">
+              {%- render 'price', product: product, use_variant: true, show_badges: false, price_class: 'price--large'-%}
             </div>
           </div>
-          {% render 'variant-main-picker', product_resource: product_resource %}
+        </div>
+        {% render 'variant-main-picker', context: 'sticky', product_resource: product_resource %}
+      </div>
+    </div>
+  {%- endunless -%}
+  {% comment %} get variant length  {% endcomment %}
+  <div class="section section--page-width">
+    <div class="flex justify-between align-center" {{ attr }}>
+      <div class="sticky-atc__content w-full flex items-center small-hide" style="--gap: {{ content_gap }};">
+        <div class="sticky-atc__media">
+          {{- product.featured_media | image_url: width: 64 | image_tag: height: '64', sizes: '64px', widths: '64', loading: 'lazy', class: 'w-full h-auto object-cover' -}}
+        </div>
+        <div class="sticky-atc__info">
+          <div class="sticky-atc__title">
+            <h5 class="{{ type_preset }}">{{ product.title | escape }}</h5>
+          </div>
+          <div class="sticky-atc__price">
+            {%- render 'price', product: product, use_variant: true, show_badges: false, price_class: 'price--large'-%}
+          </div>
         </div>
       </div>
-      {%- endunless -%}
-{% comment %} get variant length  {% endcomment %}
-    <div class="section section--page-width">
-      <div class="flex justify-between align-center" {{ attr }}>
-        <div class="sticky-atc__content w-full flex items-center small-hide" style="--gap: {{ content_gap }};">
-            <div class="sticky-atc__media">
-                {{- product.featured_media | image_url: width: 64 | image_tag: height: '64', sizes: '64px', widths: '64', loading: 'lazy', class: 'w-full h-auto object-cover' -}}
-            </div>
-            <div class="sticky-atc__info">
-                <div class="sticky-atc__title">
-                    <h5 class="{{ type_preset }}">{{ product.title | escape }}</h5>
-                </div>
-                <div class="sticky-atc__price">
-                    {%- render 'price', product: product, use_variant: true, show_badges: false, price_class: 'price--large'-%}
-                </div>
-            </div>
+      <div class="sticky-atc__action flex items-center" style="--gap: {{ action_gap }};">
+        {%- liquid
+          assign check_against_inventory = true
+          if product.selected_or_first_available_variant.inventory_management != 'shopify' or product.selected_or_first_available_variant.inventory_policy == 'continue'
+            assign check_against_inventory = false
+          endif
+          if product.selected_or_first_available_variant.quantity_rule.min > product.selected_or_first_available_variant.inventory_quantity and check_against_inventory
+            assign quantity_rule_soldout = true
+          endif
+          assign variant_length = product.variants | size
+        -%}
+        <div id="StickyCart-Quantity-Form-{{ section.id }}" class="sticky-cart__quantity product-form__quantity small-hide{% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %} disabled{% endif %}">
+          {%- comment -%} TODO: enable theme-check once `item_count_for_variant` is accepted as valid filter {%- endcomment -%}
+          {%- # theme-check-disable -%}
+          {%- assign cart_qty = cart | item_count_for_variant: product.selected_or_first_available_variant.id -%}
+          {%- # theme-check-enable -%}
+          <quantity-input class="quantity" data-url="{{ product.url }}" data-section="{{ section.id }}">
+            <button class="quantity__button no-js-hidden pos-relative" name="minus" type="button">
+              <span class="visually-hidden">{{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}</span>
+              <span class="svg-wrapper icon-minus">
+                {{- 'icon-minus.svg' | inline_asset_content -}}
+              </span>
+            </button>
+            <input class="quantity__input" type="number" name="quantity" id="Quantity-{{ section.id }}" data-cart-quantity="{{ cart_qty }}" data-min="{{ product.selected_or_first_available_variant.quantity_rule.min }}" min="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
+              {% if product.selected_or_first_available_variant.quantity_rule.max != null %}
+                data-max="{{ product.selected_or_first_available_variant.quantity_rule.max }}" max="{{ product.selected_or_first_available_variant.quantity_rule.max }}"
+              {% endif %}
+              step="{{ product.selected_or_first_available_variant.quantity_rule.increment }}" value="{{ product.selected_or_first_available_variant.quantity_rule.min }}" form="{{ product_form_id }}"/>
+            <button class="quantity__button no-js-hidden pos-relative" name="plus" type="button">
+              <span class="visually-hidden">{{- 'products.product.quantity.increase' | t: product: product.title | escape -}}</span>
+              <span class="svg-wrapper icon-plus">
+                {{- 'icon-plus.svg' | inline_asset_content -}}
+              </span>
+            </button>
+          </quantity-input>
         </div>
-        <div class="sticky-atc__action flex items-center" style="--gap: {{ action_gap }};">
-            {%- liquid
-                assign check_against_inventory = true
-                if product.selected_or_first_available_variant.inventory_management != 'shopify' or product.selected_or_first_available_variant.inventory_policy == 'continue'
-                assign check_against_inventory = false
-                endif
-                if product.selected_or_first_available_variant.quantity_rule.min > product.selected_or_first_available_variant.inventory_quantity and check_against_inventory
-                assign quantity_rule_soldout = true
-                endif
-
-                assign variant_length = product.variants | size
-            -%}
-            <div id="StickyCart-Quantity-Form-{{ section.id }}" class="sticky-cart__quantity product-form__quantity small-hide{% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %} disabled{% endif %}">
-                {%- comment -%} TODO: enable theme-check once `item_count_for_variant` is accepted as valid filter {%- endcomment -%}
-                {%- # theme-check-disable -%}
-                {%- assign cart_qty = cart | item_count_for_variant: product.selected_or_first_available_variant.id -%}
-                {%- # theme-check-enable -%}
-                <quantity-input class="quantity" data-url="{{ product.url }}" data-section="{{ section.id }}">
-                <button class="quantity__button no-js-hidden pos-relative" name="minus" type="button">
-                    <span class="visually-hidden">{{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}</span>
-                    <span class="svg-wrapper icon-minus">
-                      {{- 'icon-minus.svg' | inline_asset_content -}}
-                    </span>
-                </button>
-                    <input class="quantity__input" type="number" name="quantity" id="Quantity-{{ section.id }}" data-cart-quantity="{{ cart_qty }}" data-min="{{ product.selected_or_first_available_variant.quantity_rule.min }}" min="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
-                        {% if product.selected_or_first_available_variant.quantity_rule.max != null %}
-                        data-max="{{ product.selected_or_first_available_variant.quantity_rule.max }}" max="{{ product.selected_or_first_available_variant.quantity_rule.max }}"
-                        {% endif %}
-                        step="{{ product.selected_or_first_available_variant.quantity_rule.increment }}" value="{{ product.selected_or_first_available_variant.quantity_rule.min }}" form="{{ product_form_id }}"/>
-                <button class="quantity__button no-js-hidden pos-relative" name="plus" type="button">
-                    <span class="visually-hidden">{{- 'products.product.quantity.increase' | t: product: product.title | escape -}}</span>
-                    <span class="svg-wrapper icon-plus">
-                      {{- 'icon-plus.svg' | inline_asset_content -}}
-                    </span>
-                </button>
-                </quantity-input>
-            </div>
-            {%- assign product_form_sticky_id = 'product-form-sticky-' | append: section.id -%}
-            <div class="sticky-cart__button w-full" id="{{ product_form_sticky_id }}">
-                {%- liquid
-                assign check_against_inventory = true
-                if product.selected_or_first_available_variant.inventory_management != 'shopify' or product.selected_or_first_available_variant.inventory_policy == 'continue'
-                    assign check_against_inventory = false
-                endif
-                if product.selected_or_first_available_variant.quantity_rule.min > product.selected_or_first_available_variant.inventory_quantity and check_against_inventory
-                    assign quantity_rule_soldout = true
-                endif
-                if product.selected_or_first_available_variant.inventory_quantity <= 0 and product.selected_or_first_available_variant.inventory_policy == 'continue'
-                    assign check_pre_order = true
-                endif
-                -%}
-                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" disabled class="product-variant-id">
-                <button
-                id="StickyCart-ProductSubmitButton-{{ section.id }}" type="submit" name="add"
-                class="product-form__submit button button--full-width button--tertiary{% if variant_length > 1 %} button-toggle-variants{% endif %} {% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %} sold-out--button{% endif %}"
-                form="{{ product_form_id }}"
-                {% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %}disabled{% endif %}
-                data-inventory-quantity="{{ product.selected_or_first_available_variant.inventory_quantity }}"
-                >
+        {%- assign product_form_sticky_id = 'product-form-sticky-' | append: section.id -%}
+        <div class="sticky-cart__button w-full" id="{{ product_form_sticky_id }}">
+          {%- liquid
+            assign check_against_inventory = true
+            if product.selected_or_first_available_variant.inventory_management != 'shopify' or product.selected_or_first_available_variant.inventory_policy == 'continue'
+              assign check_against_inventory = false
+            endif
+            if product.selected_or_first_available_variant.quantity_rule.min > product.selected_or_first_available_variant.inventory_quantity and check_against_inventory
+              assign quantity_rule_soldout = true
+            endif
+            if product.selected_or_first_available_variant.inventory_quantity <= 0 and product.selected_or_first_available_variant.inventory_policy == 'continue'
+              assign check_pre_order = true
+            endif
+          -%}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" disabled class="product-variant-id">
+          <button
+            id="StickyCart-ProductSubmitButton-{{ section.id }}" type="submit" name="add"
+            class="product-form__submit button button--full-width{% if variant_length > 1 %} button-toggle-variants{% endif %} {% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %} sold-out--button{% endif %}"
+            form="{{ product_form_id }}"
+            {% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %}disabled{% endif %}
+            data-inventory-quantity="{{ product.selected_or_first_available_variant.inventory_quantity }}"
+          >
+            {%- if product.selected_or_first_available_variant.available == false or quantity_rule_soldout -%}
+              <span class="add-to-cart-text whitespace-nowrap">
+                {{ 'products.product.sold_out' | t }}
+              </span>
+            {%- else -%}
+              {% if check_pre_order %}
                 <span class="add-to-cart-text whitespace-nowrap">
-                  {%- if product.selected_or_first_available_variant.available == false or quantity_rule_soldout -%}
-                    {{ 'products.product.sold_out' | t }}
-                  {%- else -%}
-                  {% if check_pre_order %}
-                      {{ 'products.product.pre_order' | t }}
-                  {% else %}
-                    {% if variant_length > 1 %}
-                      {% if button_type == 'text' %}
-                        <span class="add-to-cart-text--add">
+                  {{ 'products.product.pre_order' | t }}
+                </span>
+              {% else %}
+                {% if variant_length > 1 %}
+                  {% if button_type == 'text' %}
+                      <span class="add-to-cart-text--add">
+                        <span class="add-to-cart-text whitespace-nowrap">
                           {{ 'products.product.add_to_cart' | t }}
                         </span>
-                        <span class="add-to-cart-text--choose-options">
+                      </span>
+                      <span class="add-to-cart-text--choose-options whitespace-nowrap">
                         {{ 'products.product.choose_options' | t }}
-                        </span>
-                      {% else %}
-                        {% render 'icon-or-image',
-                          icon: icon,
-                          icon_custom: icon_custom,
-                          svg_upload: svg_upload,
-                          image_upload: image_upload,
-                          width: width,
-                          class_name: icon_block_class,
-                          attributes: block.shopify_attributes
-                        %}
-                      {% endif %}
-                    {% else %}
-                      {% if button_type == 'text' %}
-                        {{ 'products.product.add_to_cart' | t }}
-                      {% else %}
-                        {% render 'icon-or-image',
-                          icon: icon,
-                          icon_custom: icon_custom,
-                          svg_upload: svg_upload,
-                          image_upload: image_upload,
-                          width: width,
-                          class_name: icon_block_class,
-                          attributes: block.shopify_attributes
-                        %}
-                      {% endif %}
-                    {% endif %}
+                      </span>
+                  {% else %}
+                    <span class="add-to-cart-text whitespace-nowrap">
+                      {% render 'icon-or-image',
+                        icon: icon,
+                        icon_custom: icon_custom,
+                        svg_upload: svg_upload,
+                        image_upload: image_upload,
+                        width: width,
+                        class_name: icon_block_class,
+                        attributes: block.shopify_attributes
+                      %}
+                    </span>
                   {% endif %}
-                  {%- endif -%}
-                </span>
-                <span class="loading-overlay__spinner hidden">
-                    <svg aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"><circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle></svg>
-                </span>
-                </button>
-            </div>
+                {% else %}
+                  {% if button_type == 'text' %}
+                    <span class="add-to-cart-text whitespace-nowrap">
+                      {{ 'products.product.add_to_cart' | t }}
+                    </span>
+                  {% else %}
+                    <span class="add-to-cart-text whitespace-nowrap">
+                      {% render 'icon-or-image',
+                        icon: icon,
+                        icon_custom: icon_custom,
+                        svg_upload: svg_upload,
+                        image_upload: image_upload,
+                        width: width,
+                        class_name: icon_block_class,
+                        attributes: block.shopify_attributes
+                      %}
+                    </span>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            {%- endif -%}
+            <span class="loading-overlay__spinner hidden">
+              <svg aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"><circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle></svg>
+            </span>
+          </button>
         </div>
       </div>
     </div>
+  </div>
 </sticky-atc>
 
 {% javascript %}
-  // Variant sync functionality for sticky cart
-  // Note: The main sticky-atc custom element is defined in global.js for scroll behavior
-  document.addEventListener('DOMContentLoaded', function() {
-    const stickyAtcElement = document.querySelector('sticky-atc');
-    if (!stickyAtcElement) return;
+  class StickyATC extends HTMLElement {
+    constructor() {
+      super();
 
-    let mainProductInfo = null;
-    let stickyVariantSelects = null;
-
-    // Wait for product-info to be loaded
-    const productInfo = document.querySelector('product-info');
-    if (!productInfo) return;
-
-    const initStickyVariantSync = () => {
-      mainProductInfo = productInfo;
-      stickyVariantSelects = stickyAtcElement.querySelector('.sticky-atc__variant variant-selects');
+      const productInfo = document.querySelector('product-info');
+      if (productInfo) {
+        this.form = productInfo.querySelector('product-form-component form[data-type="add-to-cart-form"]');
+      }
       
-      if (stickyVariantSelects) {
-        setupStickyVariantListeners();
+      if (!this.form && this.getAttribute('product-form')) {
+        this.form = document.getElementById(this.getAttribute('product-form'));
       }
 
-      setupToggleButton();
-    };
-
-    const setupToggleButton = () => {
-      const buttonToggleVariants = stickyAtcElement.querySelector('.button-toggle-variants');
-      if (!buttonToggleVariants) return;
-
-      buttonToggleVariants.addEventListener('click', (e) => {
-        const isOpen = stickyAtcElement.classList.contains('show-select-variants');
-        if (!isOpen) {
-          // Prevent form submission when opening variant selector
-          e.preventDefault();
-          e.stopPropagation();
-          stickyAtcElement.classList.add('show-select-variants');
-        } else {
-          // When closing, allow normal submit behavior
-          const addToCartButton = document.querySelector('.add-to-cart-button');
-          addToCartButton?.click?.();
-          setTimeout(() => {
-            stickyAtcElement.classList.remove('show-select-variants');
-          }, 500);
-        }
-      });
-    };
-
-    const setupStickyVariantListeners = () => {
-      // Listen to changes on sticky variant selects
-      stickyVariantSelects.addEventListener('change', (event) => {
-        // Check if main product-info is currently syncing to prevent loop
-        if (mainProductInfo && mainProductInfo.isSyncingVariant) return;
-        
-        const target = event.target;
-        const optionValueId = getOptionValueId(target);
-        if (!optionValueId) return;
-
-        syncStickyToMain(optionValueId, target);
-      });
-    };
-
-    const getOptionValueId = (element) => {
-      if (element.tagName === 'SELECT') {
-        return element.selectedOptions[0]?.dataset.optionValueId;
-      } else if (element.type === 'radio' && element.checked) {
-        return element.dataset.optionValueId;
+      if (!this.form) {
+        this.form = document.querySelector('form[data-type="add-to-cart-form"]');
       }
-      return null;
-    };
 
-    const syncStickyToMain = (optionValueId, stickyElement) => {
-      if (!mainProductInfo) return;
-
-      try {
-        const mainVariantSelects = mainProductInfo.querySelector('variant-selects');
-        if (!mainVariantSelects) return;
-
-        const mainVariantInput = mainVariantSelects.querySelector(`[data-option-value-id="${optionValueId}"]`);
-        if (!mainVariantInput) return;
-
-        // Store current scroll position to prevent unwanted scrolling
-        const scrollY = window.scrollY;
-
-        // Update main variant selector
-        if (mainVariantInput.tagName === 'INPUT' && mainVariantInput.type === 'radio') {
-          if (!mainVariantInput.checked) {
-            mainVariantInput.checked = true;
-            // Trigger change event to update product info
-            mainVariantInput.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-        } else if (mainVariantInput.tagName === 'OPTION') {
-          const select = mainVariantInput.closest('select');
-          if (select && select.value !== mainVariantInput.value) {
-            // Update select value
-            Array.from(select.options).forEach(opt => opt.removeAttribute('selected'));
-            mainVariantInput.setAttribute('selected', 'selected');
-            select.value = mainVariantInput.value;
-            // Trigger change event
-            select.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-        }
-
-        // Restore scroll position after a short delay to ensure no scroll happens
-        requestAnimationFrame(() => {
-          if (window.scrollY !== scrollY) {
-            window.scrollTo(0, scrollY);
-          }
-        });
-      } catch (error) {
-        console.error('Error syncing sticky to main:', error);
+      if (this.form) {
+        const observer = new IntersectionObserver(this.onScroll.bind(this));
+        observer.observe(this.form);
+      } else {
+        console.warn('Sticky ATC: Could not find product form');
       }
-    };
-
-    // Initialize
-    if (productInfo.classList.contains('initialized')) {
-      initStickyVariantSync();
-    } else {
-      productInfo.addEventListener('product-info:loaded', initStickyVariantSync, { once: true });
     }
-  });
-{% endjavascript %}
 
+    onScroll(entries) {
+      entries.forEach((entry) => {
+        if (entry.target === this.form) this.passedForm = entry.boundingClientRect.bottom < 0;
+      });
+
+      const shouldShow = this.passedForm && !this.reachedFooter;
+      document.body.classList.toggle('sticky-cart-visible', shouldShow);
+      this.classList.toggle('is-visible', shouldShow);
+      if (shouldShow) {
+        document.body.style.setProperty('--sticky-atc-height', `${this.offsetHeight}px`);
+      } else {
+        document.body.style.setProperty('--sticky-atc-height', `0px`);
+      }
+
+      if (!shouldShow) this.classList.remove('sticky-open');
+    }
+  }
+  if (!customElements.get('sticky-atc')) customElements.define('sticky-atc', StickyATC);
+{% endjavascript %}
 
 {% stylesheet %}
   .sticky-atc {
@@ -527,222 +465,6 @@ style="
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
     },
     {
-      "type": "paragraph",
-      "content": "t:names.primary_button",
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_primary_button_background",
-      "label": "t:settings.background",
-      "default": "#000000",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color_background",
-      "id": "scheme_primary_button_background_gradient",
-      "label": "t:content.background_gradient",
-      "info": "t:info.background_gradient_info",
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_primary_button_text",
-      "label": "t:settings.text",
-      "default": "#FFFFFF",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_primary_button_border",
-      "label": "t:settings.borders",
-      "default": "#000000",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_primary_button_hover_background",
-      "label": "t:settings.hover_background",
-      "default": "#000000",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color_background",
-      "id": "scheme_primary_button_hover_background_gradient",
-      "label": "t:settings.hover_background_gradient",
-      "info": "t:info.background_gradient_info",
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_primary_button_hover_text",
-      "label": "t:settings.hover_text",
-      "default": "#FFFFFF",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_primary_button_hover_border",
-      "label": "t:settings.hover_borders",
-      "default": "#000000",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "paragraph",
-      "content": "t:names.secondary_button",
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_secondary_button_background",
-      "label": "t:settings.background",
-      "default": "#FFFFFF",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color_background",
-      "id": "scheme_secondary_button_background_gradient",
-      "label": "t:content.background_gradient",
-      "info": "t:info.background_gradient_info",
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_secondary_button_text",
-      "label": "t:settings.text",
-      "default": "#000000",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_secondary_button_border",
-      "label": "t:settings.borders",
-      "default": "#000000",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_secondary_button_hover_background",
-      "label": "t:settings.hover_background",
-      "default": "#FFFFFF",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color_background",
-      "id": "scheme_secondary_button_hover_background_gradient",
-      "label": "t:settings.hover_background_gradient",
-      "info": "t:info.background_gradient_info",
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_secondary_button_hover_text",
-      "label": "t:settings.hover_text",
-      "default": "#000000",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_secondary_button_hover_border",
-      "label": "t:settings.hover_borders",
-      "default": "#000000",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "paragraph",
-      "content": "t:names.inputs",
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_input_background",
-      "label": "t:settings.background",
-      "default": "#FFFFFF",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_input_text_color",
-      "label": "t:settings.text",
-      "default": "#000000",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_input_border_color",
-      "label": "t:settings.borders",
-      "default": "#000000",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_input_hover_background",
-      "label": "t:settings.hover_background",
-      "default": "#F5F5F5",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "paragraph",
-      "content": "Carousel",
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_arrow_color",
-      "label": "t:settings.arrow_color",
-      "default": "#333333",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_arrow_background",
-      "label": "t:settings.arrow_background",
-      "default": "#ffffff",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_arrow_border",
-      "label": "t:settings.arrow_border",
-      "default": "#333333",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_pagination_color",
-      "label": "t:settings.pagination_color",
-      "default": "#cecece",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
-      "type": "color",
-      "id": "scheme_pagination_active_color",
-      "label": "t:settings.pagination_active_color",
-      "default": "#333333",
-      "alpha": true,
-      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
-    },
-    {
       "type": "header",
       "content":  "t:content.shadow"
     },
@@ -786,7 +508,7 @@ style="
     {
       "type": "range",
       "id": "shadow_spread_radius",
-      "label": "t:settings.spread_radius",
+      "label": "t:settings.spread",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -876,40 +598,40 @@ style="
       "label": "t:settings.preset",
       "options": [
         {
-        "value": "rte",
-        "label": "t:options.default"
+          "value": "rte",
+          "label": "t:options.default"
         },
         {
-        "value": "paragraph",
-        "label": "t:options.paragraph"
+          "value": "paragraph",
+          "label": "t:options.paragraph"
         },
         {
-        "value": "h1",
-        "label": "t:options.h1"
+          "value": "h1",
+          "label": "t:options.h1"
         },
         {
-        "value": "h2",
-        "label": "t:options.h2"
+          "value": "h2",
+          "label": "t:options.h2"
         },
         {
-        "value": "h3",
-        "label": "t:options.h3"
+          "value": "h3",
+          "label": "t:options.h3"
         },
         {
-        "value": "h4",
-        "label": "t:options.h4"
+          "value": "h4",
+          "label": "t:options.h4"
         },
         {
-        "value": "h5",
-        "label": "t:options.h5"
+          "value": "h5",
+          "label": "t:options.h5"
         },
         {
-        "value": "h6",
-        "label": "t:options.h6"
+          "value": "h6",
+          "label": "t:options.h6"
         },
         {
-        "value": "custom",
-        "label": "t:options.custom"
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "rte",
@@ -1113,14 +835,14 @@ style="
       "id": "variant_style",
       "label": "t:settings.style",
       "options": [
-          {
+        {
           "value": "dropdowns",
           "label": "t:options.dropdowns"
-          },
-          {
+        },
+        {
           "value": "pills",
           "label": "t:options.pills"
-          }
+        }
       ],
       "default": "pills"
     },

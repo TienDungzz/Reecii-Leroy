@@ -24,6 +24,9 @@
     data-product-id="{{ product_resource.id }}"
     data-block-id="{{ block.id }}"
     data-product-url="{{ product_resource.url }}"
+    {% if context %}
+      data-context="{{ context }}"
+    {% endif %}
     ref="mainVariantSelects"
     {% if product.id == product_resource.id %}
       data-template-product-match="true"
@@ -83,7 +86,7 @@
         endif
       -%}
       {%- if variant_style == 'pills' or variant_style == 'swatch' -%}
-        <fieldset  class="js product-form__input variant-option variant-option--buttons{% if is_color %} product-form__input--swatch variant-option--swatches{% else %} product-form__input--pill variant-option--{{ bl_stts.variant_button_width }}{% endif %}">
+        <fieldset  class="js product-form__input variant-option variant-option--buttons{% if is_color %} product-form__input--swatch variant-option--swatches{% else %} product-form__input--pill variant-option--pill{% endif %}">
           <legend class="form__label">
             {{ product_option.name  | escape }}:
             <span data-selected-value>
