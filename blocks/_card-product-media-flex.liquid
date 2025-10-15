@@ -54,8 +54,19 @@
     assign check_pos_badge = 'bottom-left'
   elsif settings.badge_position == 'bottom right'
     assign check_pos_badge = 'bottom-right'
+  elsif settings.badge_position == 'custom'
+    assign check_pos_badge = 'custom'
   endif
 -%}
+
+{%- capture style_badge -%}
+  style="--badge-top: {{ settings.badge_top }}px; --badge-left: {{ settings.badge_left }}px;"
+{%- endcapture -%}
+
+{%- capture class_badge -%}
+  {{ settings.badge_position }} {{ settings.badge_text_transform }}
+{%- endcapture -%}
+
 {%- if card_product and card_product != empty -%}
   {%- if card_product.featured_media -%}
     <div class="card--block-media overflow-hidden card-badge-is-{{ check_pos_badge }} relative group-block w-full" style="{%- if block.settings.width_option == 'custom' -%} --globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}">
@@ -63,7 +74,7 @@
         {%- render 'card-product-media', show_secondary_image: show_secondary_image, card_product: card_product -%}
 
         <div class="card__content relative">
-          <div class="card__badge relative {{ settings.badge_position }}">
+          <div class="card__badge relative {{ class_badge }}" {{ style_badge }}>
             {%- render 'product-badge',
               card_product: card_product,
               new_badge: new_badge,
