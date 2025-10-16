@@ -1,5 +1,4 @@
 {%- liquid
-  assign bl_id = block.id | replace: '_', '' | downcase
   assign bl_stts = block.settings
 
   case bl_stts.image_ratio
@@ -26,53 +25,53 @@
   endif
 -%}
 
-{% style %}
-  .categories-list-container-{{ bl_id }} .category-item__image {
-    --ratio: {{ ratio }};
-  {% if bl_stts.image_ratio == 'custom' %}
-    --image-height: {{ bl_stts.image_height }}px;
-  {% else %}
-    --image-height: auto;
-  {% endif %}
-  {% if bl_stts.image_width == 'custom' %}
-    width: {{ bl_stts.image_width_custom }}px;
-  {% else %}
-    width: {{ bl_stts.image_width }};
-  {% endif %}
-    height: var(--image-height);
-  }
-
-  .categories-list-container-{{ bl_id }} .category-item {
-    --border-width: {{ bl_stts.border_width }}px;
-    --border-style: {{ bl_stts.border }};
-    --border-color: var(--color-border);
-    --border-radius: {{ bl_stts.border_radius }}px;
-    {% if bl_stts.border_radius > 0 %} overflow: hidden; {% endif %}
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-    &:hover {
-      transform: translateY(-{{ bl_stts.hover_lift }}px);
-      box-shadow: 0 {{ bl_stts.shadow_blur }}px {{ bl_stts.shadow_spread }}px rgb({{ bl_stts.shadow_color.rgba }});
-    }
-  }
-{% endstyle %}
-
-{%- capture class_grid -%}
-  categories-grid categories-grid-{{ bl_id }} disable-srollbar flex flex-{{ bl_stts.content_direction }}{% if bl_stts.content_direction_tablet %} max-md:flex-{{ content_direction_tablet }}{% endif %}{% if bl_stts.content_direction_mobile %} max-sm:flex-{{ content_direction_mobile }}{% endif %}
-{%- endcapture -%}
-
 <div
-  class="categories-list size-style{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}"
+  class="categories-list spacing-style size-style{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}"
   style="
     {% render 'size-style', settings: bl_stts %};
-    {% render 'spacing-padding', settings: bl_stts %}
+    {% render 'spacing-style', settings: bl_stts %}
     {% if block.settings.inherit_color_scheme == false %}
       {% render 'color-scheme-style', settings: block.settings %}
     {% endif %}
   "
   {{ block.shopify_attributes }}
 >
-  <div class="categories-list-container categories-list-container-{{ bl_id }}">
+  {% style %}
+    .categories-list-container .category-item__image {
+      --ratio: {{ ratio }};
+    {% if bl_stts.image_ratio == 'custom' %}
+      --image-height: {{ bl_stts.image_height }}px;
+    {% else %}
+      --image-height: auto;
+    {% endif %}
+    {% if bl_stts.image_width == 'custom' %}
+      width: {{ bl_stts.image_width_custom }}px;
+    {% else %}
+      width: {{ bl_stts.image_width }};
+    {% endif %}
+      height: var(--image-height);
+    }
+
+    .categories-list-container .category-item {
+      --border-width: {{ bl_stts.border_width }}px;
+      --border-style: {{ bl_stts.border }};
+      --border-color: var(--color-border);
+      --border-radius: {{ bl_stts.border_radius }}px;
+      {% if bl_stts.border_radius > 0 %} overflow: hidden; {% endif %}
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+      &:hover {
+        transform: translateY(-{{ bl_stts.hover_lift }}px);
+        box-shadow: 0 {{ bl_stts.shadow_blur }}px {{ bl_stts.shadow_spread }}px rgb({{ bl_stts.shadow_color.rgba }});
+      }
+    }
+  {% endstyle %}
+
+  {%- capture class_grid -%}
+    categories-grid categories-grid disable-srollbar flex flex-{{ bl_stts.content_direction }}{% if bl_stts.content_direction_tablet %} max-md:flex-{{ content_direction_tablet }}{% endif %}{% if bl_stts.content_direction_mobile %} max-sm:flex-{{ content_direction_mobile }}{% endif %}
+  {%- endcapture -%}
+
+  <div class="categories-list-container categories-list-container">
     <div class="{{ class_grid }}" style="--gap: {{ bl_stts.gap }}px;">
       {% content_for 'blocks' %}
     </div>
