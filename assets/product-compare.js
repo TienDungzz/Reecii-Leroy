@@ -14,7 +14,7 @@ class ProductCompare extends HTMLElement {
 
   handleClick(event) {
     const target = event.target;
-    if (target.matches("[data-compare-link]")) {
+    if (target.matches("[data-compare-link]") || target.closest("[data-compare-link]")) {
       this.handleCompareLink();
     } else if (target.matches("[data-compare-remove]")) {
       this.handleCompareRemove(target);

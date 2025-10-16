@@ -144,6 +144,12 @@
         message: `{{ 'content.compare.message' | t }}`
     };
 
+    {% if settings.currency_format_enable %}
+        window.money_format = '{{ shop.money_with_currency_format }}';
+    {% else %}
+        window.money_format = '{{ shop.money_format }}';
+    {% endif %}
+
     document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
 
     if (Shopify.designMode) {
@@ -154,10 +160,4 @@
     document.addEventListener('DOMContentLoaded', () => {
         while (ThemeDefer.length) ThemeDefer.shift().call();
     });
-
-    {% if settings.currency_format_enable %}
-        window.money_format = '{{ shop.money_with_currency_format }}';
-    {% else %}
-        window.money_format = '{{ shop.money_format }}';
-    {% endif %}
 </script>
