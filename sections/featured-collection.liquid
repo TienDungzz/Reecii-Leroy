@@ -348,7 +348,11 @@
 
     {%- capture banner_image_html -%}
       {%- liquid
-        assign banner_image = sec_stts.banner_image
+        if sec_stts.banner_image != blank
+          assign banner_image = sec_stts.banner_image
+        elsif sec_stts.video != blank
+          assign banner_image = sec_stts.video.preview_image
+        endif
       -%}
       {% if banner_image != blank %}
         {%- liquid
