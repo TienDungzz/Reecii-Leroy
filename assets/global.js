@@ -90,7 +90,7 @@ function headerHeight() {
     var listMenuWrapper = document.querySelectorAll(".list-menu--wrapper");
     var sectionHeader = listMenuDesktop.offsetHeight;
     var listMenu = listMenuDesktop;
-    const listSubMenuHeight = listMenu.querySelector(".header__submenu").offsetHeight;
+    const listSubMenuHeight = listMenu.querySelector(".header__submenu")?.offsetHeight;
 
     if (sectionHeader > 52) {
       listMenuWrapper.forEach((summary) => {
@@ -362,10 +362,6 @@ function trapFocus(container, elementToFocus = container) {
 
   document.addEventListener("focusout", trapFocusHandlers.focusout);
   document.addEventListener("focusin", trapFocusHandlers.focusin);
-
-  console.log(`%c🔍 Log elementToFocus:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", elementToFocus);
-
-  console.log("clkick");
 
   elementToFocus?.focus();
 
