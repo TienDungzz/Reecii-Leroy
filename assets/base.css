@@ -3345,6 +3345,58 @@ details[open]>.share-button__fallback {
   position: relative;
 }
 
+.quantity__rules-cart .svg-wrapper {
+  width: var(--size-15);
+  height: var(--size-15);
+}
+
+.quantity__tooltip-trigger {
+  position: relative;
+  top: 0.2rem;
+  display: inline-block;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 50%;
+  border: 0.1rem solid var(--color-black);
+  color: var(--color-black);
+  width: var(--size-23);
+  height: var(--size-23);
+}
+
+.quantity__tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-black);
+  color: var(--color-white);
+  font-size: 1.2rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--quantity-radius);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  z-index: 10;
+}
+
+.quantity__tooltip:after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0.5rem;
+  border-style: solid;
+  border-color: var(--color-black) transparent transparent transparent;
+}
+
+.quantity__tooltip-trigger:hover .quantity__tooltip,
+.quantity__tooltip-trigger:focus .quantity__tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
 .product__info-container .loading__spinner:not(.hidden)~*,
 .quantity__rules-cart .loading__spinner:not(.hidden)~* {
   visibility: hidden;

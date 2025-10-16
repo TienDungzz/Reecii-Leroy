@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sticky Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .console-output {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Sticky Cart Test Suite</h1>
+        
+        <div class="test-section">
+            <h3>📋 Test Checklist</h3>
+            <div id="test-results">
+                <div class="status info">Initializing tests...</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔧 Manual Tests</h3>
+            <p>Use these buttons to test different scenarios:</p>
+            <button onclick="testInitialSync()">Test Initial Sync</button>
+            <button onclick="testMainToSticky()">Test Main → Sticky</button>
+            <button onclick="testStickyToMain()">Test Sticky → Main</button>
+            <button onclick="testQuantitySync()">Test Quantity Sync</button>
+            <button onclick="clearConsole()">Clear Console</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Console Output</h3>
+            <div id="console-output" class="console-output">Console output will appear here...</div>
+        </div>
+    </div>
+
+    <script>
+        // Mock console.log to capture output
+        const originalConsoleLog = console.log;
+        const consoleOutput = document.getElementById('console-output');
+        
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            consoleOutput.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        };
+
+        // Test functions
+        function testInitialSync() {
+            console.log('🧪 Testing Initial Sync...');
+            
+            const stickyATC = document.querySelector('sticky-atc');
+            if (!stickyATC) {
+                console.log('❌ StickyATC element not found');
+                return;
+            }
+            
+            console.log('✅ StickyATC element found');
+            
+            const mainVariantSelects = document.querySelector('product-info variant-selects');
+            const stickyVariantSelects = stickyATC.querySelector('variant-selects');
+            
+            if (!mainVariantSelects) {
+                console.log('❌ Main variant selects not found');
+                return;
+            }
+            
+            if (!stickyVariantSelects) {
+                console.log('❌ Sticky variant selects not found');
+                return;
+            }
+            
+            console.log('✅ Both variant selects found');
+            
+            // Check if initial sync worked
+            const mainSelected = mainVariantSelects.querySelectorAll('input:checked, option[selected]');
+            const stickySelected = stickyVariantSelects.querySelectorAll('input:checked, option[selected]');
+            
+            console.log(`Main selected options: ${mainSelected.length}`);
+            console.log(`Sticky selected options: ${stickySelected.length}`);
+            
+            if (mainSelected.length === stickySelected.length) {
+                console.log('✅ Initial sync appears to be working');
+            } else {
+                console.log('❌ Initial sync mismatch detected');
+            }
+        }
+
+        function testMainToSticky() {
+            console.log('🧪 Testing Main → Sticky sync...');
+            
+            const mainVariantSelects = document.querySelector('product-info variant-selects');
+            if (!mainVariantSelects) {
+                console.log('❌ Main variant selects not found');
+                return;
+            }
+            
+            const firstInput = mainVariantSelects.querySelector('input[type="radio"]');
+            if (!firstInput) {
+                console.log('❌ No radio inputs found in main');
+                return;
+            }
+            
+            console.log('✅ Found main radio input:', firstInput.value);
+            
+            // Simulate clicking the input
+            firstInput.click();
+            console.log('✅ Clicked main input');
+            
+            // Check if sticky updated
+            setTimeout(() => {
+                const stickyATC = document.querySelector('sticky-atc');
+                const stickyVariantSelects = stickyATC?.querySelector('variant-selects');
+                const stickyInput = stickyVariantSelects?.querySelector(`input[value="${firstInput.value}"]`);
+                
+                if (stickyInput && stickyInput.checked) {
+                    console.log('✅ Sticky input synced correctly');
+                } else {
+                    console.log('❌ Sticky input not synced');
+                }
+            }, 100);
+        }
+
+        function testStickyToMain() {
+            console.log('🧪 Testing Sticky → Main sync...');
+            
+            const stickyATC = document.querySelector('sticky-atc');
+            if (!stickyATC) {
+                console.log('❌ StickyATC element not found');
+                return;
+            }
+            
+            const stickyVariantSelects = stickyATC.querySelector('variant-selects');
+            if (!stickyVariantSelects) {
+                console.log('❌ Sticky variant selects not found');
+                return;
+            }
+            
+            const firstInput = stickyVariantSelects.querySelector('input[type="radio"]');
+            if (!firstInput) {
+                console.log('❌ No radio inputs found in sticky');
+                return;
+            }
+            
+            console.log('✅ Found sticky radio input:', firstInput.value);
+            
+            // Simulate clicking the input
+            firstInput.click();
+            console.log('✅ Clicked sticky input');
+            
+            // Check if main updated
+            setTimeout(() => {
+                const mainVariantSelects = document.querySelector('product-info variant-selects');
+                const mainInput = mainVariantSelects?.querySelector(`input[value="${firstInput.value}"]`);
+                
+                if (mainInput && mainInput.checked) {
+                    console.log('✅ Main input synced correctly');
+                } else {
+                    console.log('❌ Main input not synced');
+                }
+            }, 100);
+        }
+
+        function testQuantitySync() {
+            console.log('🧪 Testing Quantity Sync...');
+            
+            const mainQuantityInput = document.querySelector('product-info .quantity__input');
+            const stickyQuantityInput = document.querySelector('sticky-atc .sticky-quantity-input');
+            
+            if (!mainQuantityInput) {
+                console.log('❌ Main quantity input not found');
+                return;
+            }
+            
+            if (!stickyQuantityInput) {
+                console.log('❌ Sticky quantity input not found');
+                return;
+            }
+            
+            console.log('✅ Both quantity inputs found');
+            
+            // Test main to sticky
+            const testValue = '5';
+            mainQuantityInput.value = testValue;
+            mainQuantityInput.dispatchEvent(new Event('change'));
+            
+            setTimeout(() => {
+                if (stickyQuantityInput.value === testValue) {
+                    console.log('✅ Main → Sticky quantity sync working');
+                } else {
+                    console.log('❌ Main → Sticky quantity sync failed');
+                }
+                
+                // Test sticky to main
+                const testValue2 = '3';
+                stickyQuantityInput.value = testValue2;
+                stickyQuantityInput.dispatchEvent(new Event('change'));
+                
+                setTimeout(() => {
+                    if (mainQuantityInput.value === testValue2) {
+                        console.log('✅ Sticky → Main quantity sync working');
+                    } else {
+                        console.log('❌ Sticky → Main quantity sync failed');
+                    }
+                }, 100);
+            }, 100);
+        }
+
+        function clearConsole() {
+            consoleOutput.textContent = 'Console cleared...\n';
+        }
+
+        // Auto-run initial tests when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🚀 Starting automatic tests...');
+                testInitialSync();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

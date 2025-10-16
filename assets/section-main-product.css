@@ -1,7 +1,3 @@
-product-info {
-  display: block;
-}
-
 .product {
   margin: 0;
 }
@@ -327,10 +323,6 @@ a.product__text {
 .product--no-media .product-form__quantity {
   flex-direction: column;
   max-width: 100%;
-}
-
-.product-form__quantity .form__label {
-  margin-bottom: 0.6rem;
 }
 
 .price-per-item__label.form__label {
@@ -1145,4 +1137,66 @@ a.product__text {
   .recipient-form > input[type='checkbox']:checked + label .icon-checkmark {
     border: none;
   }
+}
+
+.product-countdown-wrapper .product-countdown {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: repeat(7, auto);
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 2.4rem;
+}
+
+.product-countdown-wrapper .divider {
+  justify-content: center;
+  min-width: 1rem;
+  color: var(--countdown_text_color);
+  font-size: clamp(1.6rem, 2vw, 2.4rem);
+}
+
+.product-countdown-bar,
+.product-countdown-labels {
+  display: contents;
+}
+
+.product-countdown-bar {
+  font-size: clamp(2.6rem, 4vw, 4rem);
+
+  * {
+    color: var(--countdown_text_color);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    height: clamp(3.6rem, 4vw, 5.6rem);
+    background: var(--countdown_background_color);
+    border-radius: 10rem;
+    z-index: -1;
+  }
+}
+
+.product-countdown-labels {
+  font-size: 1.2rem;
+}
+
+.product-countdown-labels .divider {
+  opacity: var(--opacity-0);
+}
+
+.product-countdown-num,
+.product-countdown-label {
+  display: inline-block; 
+  min-width: clamp(3.2rem, 4vw, 5.2rem);
+  text-align: center;
+}
+
+.product-countdown:has(.loading) {
+  opacity: 0.8;
+  pointer-events: none;
+  filter: blur(1.5px) brightness(1.15);
+  transition: opacity 0.4s, filter 0.4s;
 }

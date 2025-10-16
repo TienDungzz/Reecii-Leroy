@@ -755,7 +755,6 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
   align-items: center;
   color: var(--color-input-text);
   background-color: var(--color-input-background);
-  border: var(--inputs-border-width) solid rgb(var(--color-input-border-rgb) / var(--opacity-20));
   border-radius: var(--inputs-radius);
   flex: 1 1 var(--quantity-selector-width);
   align-self: stretch;
@@ -766,12 +765,16 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
   }
 }
 
+.add-to-cart-button {
+  min-height: var(--size-45);
+}
+
 .product-form__buttons:has(.add-to-cart-button.button-secondary) .quantity-selector {
   border-radius: var(--style-border-radius-buttons-secondary);
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus) {
-  padding: 0;
+  padding: var(--button-padding-vertical) 0;
   background: transparent;
   box-shadow: none;
   display: flex;
@@ -948,63 +951,6 @@ product-info .swiper-main .swiper-pagination-progressbar {
   opacity: 0.6;
 }
 
-swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
-  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']),
-  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
-    display: flex;
-    align-items: stretch;
-    gap: var(--padding-2xs);
-
-    .swiper-controls__thumbnails-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
-      height: 100%;
-
-      .swiper {
-        height: 100%;
-      }
-    }
-  }
-
-  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
-    .swiper-main {
-      width: 100%;
-      margin-left: calc(68px + var(--padding-2xs));
-    }
-  }
-
-  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']) {
-    .swiper-controls__thumbnails-container {
-      left: auto;
-      right: 0;
-    }
-
-    .swiper-main {
-      width: 100%;
-      margin-right: calc(68px + var(--padding-2xs));
-    }
-  }
-
-  .swiper-controls__thumbnails-container[data-thumbnail-position='left'] {
-    order: -1;
-  }
-
-  [data-thumbnail-position='right'],
-  [data-thumbnail-position='left'] {
-    width: 68px;
-  }
-
-  [data-thumbnail-position='right'] {
-    justify-content: flex-end;
-  }
-
-  [data-thumbnail-position='left'] {
-    justify-content: flex-start;
-  }
-}
-
 .color-scheme-custom {
   color: var(--color-foreground);
   background: var(--color-background);
@@ -1076,12 +1022,61 @@ text-loader-component {
   }
 }
 
-@keyframes text-shimmer {
-  0% {
-    background-position: 100% 0;
-  }
-
-  100% {
-    background-position: -100% 0;
+@media screen and (min-width: 750px) {
+  swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
+    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']),
+    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
+      display: flex;
+      align-items: stretch;
+      gap: var(--padding-2xs);
+  
+      .swiper-controls__thumbnails-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        height: 100%;
+  
+        .swiper {
+          height: 100%;
+        }
+      }
+    }
+  
+    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
+      .swiper-main {
+        width: 100%;
+        margin-left: calc(68px + var(--padding-2xs));
+      }
+    }
+  
+    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']) {
+      .swiper-controls__thumbnails-container {
+        left: auto;
+        right: 0;
+      }
+  
+      .swiper-main {
+        width: 100%;
+        margin-right: calc(68px + var(--padding-2xs));
+      }
+    }
+  
+    .swiper-controls__thumbnails-container[data-thumbnail-position='left'] {
+      order: -1;
+    }
+  
+    [data-thumbnail-position='right'],
+    [data-thumbnail-position='left'] {
+      width: 68px;
+    }
+  
+    [data-thumbnail-position='right'] {
+      justify-content: flex-end;
+    }
+  
+    [data-thumbnail-position='left'] {
+      justify-content: flex-start;
+    }
   }
 }

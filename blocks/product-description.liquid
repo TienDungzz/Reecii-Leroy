@@ -1,18 +1,29 @@
 
 
 {% liquid
-  assign product = block.settings.product
+  assign bl_stts = block.settings
+  assign product = closest.product
   if request.visual_preview_mode and product == blank
     assign product = collections.all.products.first
-    assign text = product.description
+    if bl_stts.truncate_type == 'words'
+      assign text = product.description | strip_html | truncatewords: bl_stts.truncatewords
+    else
+      assign text = product.description
+    endif
   endif
 %}
 
-{% render 'text', fallback_text: text, block: block %}
+{% if bl_stts.truncate_type == 'words' %}
+  {% assign text = bl_stts.text | strip_html | truncatewords: bl_stts.truncatewords %}
+  {% render 'text', fallback_text: text, block: block %}
+{% else %}
+  {% render 'text', fallback_text: text, block: block %}
+{% endif %}
+
 
 {% schema %}
 {
-  "name": "t:names.product_description",
+  "name": "t:names.product_short_description",
   "tag": null,
   "settings": [
     {
@@ -47,19 +58,45 @@
       "label": "t:settings.max_width",
       "options": [
         {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
           "value": "narrow",
           "label": "t:options.narrow"
         },
         {
           "value": "normal",
           "label": "t:options.normal"
-        },
-        {
-          "value": "none",
-          "label": "t:options.none"
         }
       ],
       "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "truncate_type",
+      "label": "t:settings.truncate_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "words",
+          "label": "t:options.words"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "truncatewords",
+      "min": 10,
+      "max": 200,
+      "step": 2,
+      "default": 30,
+      "label": "t:settings.truncatewords",
+      "visible_if": "{{ block.settings.truncate_type == 'words' }}"
     },
     {
       "type": "text_alignment",
@@ -421,7 +458,16 @@
       "name": "t:names.product_description",
       "category": "t:categories.product",
       "settings": {
-        "text": "{{ closest.product.description }}"
+        "text": "{{ closest.product.description }}",
+        "truncate_type": "none"
+      }
+    },
+    {
+      "name": "t:names.product_short_description",
+      "category": "t:categories.product",
+      "settings": {
+        "text": "{{ closest.product.description }}",
+        "truncate_type": "words"
       }
     }
   ]

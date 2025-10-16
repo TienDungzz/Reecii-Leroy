@@ -37,6 +37,8 @@
   {% endif %}
   {% if block.settings.inherit_color_scheme == false %}
     style="{% render 'color-scheme-style', settings: block.settings %}"
+  {% else %}
+    style="--bg-color: var(--color-background);"
   {% endif %}
 >
   <div class="view-product-title">
@@ -102,6 +104,9 @@
     },
     {
       "type": "product-description"
+    },
+    {
+      "type": "product-info"
     },
     {
       "type": "review"
@@ -237,7 +242,7 @@
     {
       "type": "color_background",
       "id": "scheme_background_gradient",
-      "label": "t:content.background_gradient",
+      "label": "t:settings.background_gradient",
       "info": "t:info.background_gradient_info",
       "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
     },

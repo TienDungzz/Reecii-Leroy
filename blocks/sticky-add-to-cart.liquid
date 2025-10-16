@@ -227,25 +227,520 @@ style="
     constructor() {
       super();
 
+    this.form = null;
+    this.mainProductInfo = null;
+    this.mainVariantSelects = null;
+    this.stickyVariantSelects = null;
+    this.isSyncing = false;
+    
+    this.init();
+  }
+  
+  init() {
+    // Find the main product form
+    this.findMainForm();
+    
+    if (this.form) {
+      const observer = new IntersectionObserver(this.onScroll.bind(this));
+      observer.observe(this.form);
+    } else {
+      console.warn('Sticky ATC: Could not find product form');
+    }
+    
+    // Initialize variant sync after DOM is ready
+    setTimeout(() => {
+      this.initializeVariantSync();
+    }, 100);
+  }
+  
+  findMainForm() {
+    // Try multiple selectors to find the main product form
       const productInfo = document.querySelector('product-info');
       if (productInfo) {
         this.form = productInfo.querySelector('product-form-component form[data-type="add-to-cart-form"]');
       }
       
-      if (!this.form && this.getAttribute('product-form')) {
-        this.form = document.getElementById(this.getAttribute('product-form'));
+    if (!this.form && this.getAttribute('form')) {
+      this.form = document.getElementById(this.getAttribute('form'));
       }
 
       if (!this.form) {
         this.form = document.querySelector('form[data-type="add-to-cart-form"]');
+    }
+  }
+  
+  initializeVariantSync() {
+    const sectionId = this.getAttribute('data-sticky-section-id');
+    // Prefer product-info that matches this section
+    this.mainProductInfo = document.querySelector(
+      sectionId
+        ? `product-info[data-section="${sectionId}"], product-info[data-original-section="${sectionId}"]`
+        : 'product-info'
+    ) || document.querySelector('product-info');
+
+    this.stickyVariantSelects = this.querySelector('variant-selects');
+    
+    if (this.mainProductInfo) {
+      this.mainVariantSelects = this.mainProductInfo.querySelector('variant-selects');
+    }
+    
+    if (this.stickyVariantSelects && this.mainVariantSelects) {
+      this.setupVariantSync();
+      this.setupToggleButton();
+      this.syncInitialState();
+      this.updateStickyAvailabilityFromMain();
+      this.observeMainAvailabilityChanges();
+    }
+  }
+  
+  setupVariantSync() {
+    // Listen to main variant changes
+    this.mainVariantSelects.addEventListener('change', (event) => {
+      if (this.isSyncing) return;
+      console.log('Main variant changed:', event.target);
+      this.syncMainToSticky(event);
+      // Mirror availability state
+      this.updateStickyAvailabilityFromMain();
+    });
+    
+    // Listen to sticky variant changes
+    this.stickyVariantSelects.addEventListener('change', (event) => {
+      if (this.isSyncing) return;
+      console.log('Sticky variant changed:', event.target);
+
+      // Normalize sticky group state (remove `.checked` from siblings)
+      const t = this.getInputFromEventTarget(event.target);
+      if (t && t.type === 'radio') {
+        const wrapper = t.closest('.product-form__input') || this.stickyVariantSelects;
+        wrapper
+          .querySelectorAll('input[type="radio"]')
+          .forEach((el) => {
+            el.classList.remove('checked');
+            if (el.nextElementSibling && el.nextElementSibling.tagName === 'LABEL') {
+              el.nextElementSibling.classList.remove('checked');
+            }
+          });
+        t.classList.add('checked');
+        if (t.nextElementSibling && t.nextElementSibling.tagName === 'LABEL') {
+          t.nextElementSibling.classList.add('checked');
+        }
       }
 
-      if (this.form) {
-        const observer = new IntersectionObserver(this.onScroll.bind(this));
-        observer.observe(this.form);
-      } else {
-        console.warn('Sticky ATC: Could not find product form');
+      this.syncStickyToMain(event);
+    });
+
+    // Also listen to sticky clicks (labels may fire click not change)
+    this.stickyVariantSelects.addEventListener('click', (event) => {
+      if (this.isSyncing) return;
+      const input = this.getInputFromEventTarget(event.target);
+      if (!input) return;
+
+      // Normalize UI immediately
+      if (input.type === 'radio') {
+        const wrapper = input.closest('.product-form__input') || this.stickyVariantSelects;
+        wrapper
+          .querySelectorAll('input[type="radio"]')
+          .forEach((el) => {
+            el.classList.remove('checked');
+            if (el.nextElementSibling && el.nextElementSibling.tagName === 'LABEL') {
+              el.nextElementSibling.classList.remove('checked');
+            }
+          });
+        input.classList.add('checked');
+        if (input.nextElementSibling && input.nextElementSibling.tagName === 'LABEL') {
+          input.nextElementSibling.classList.add('checked');
+        }
       }
+
+      // Defer to next frame instead of setTimeout
+      requestAnimationFrame(() => {
+        this.syncStickyToMain({ target: input });
+      });
+    });
+  }
+  
+  setupToggleButton() {
+    const buttonToggleVariants = this.querySelector('.button-toggle-variants');
+    if (!buttonToggleVariants) return;
+
+    buttonToggleVariants.addEventListener('click', (e) => {
+      const isOpen = this.classList.contains('show-select-variants');
+      if (!isOpen) {
+        // Prevent form submission when opening variant selector
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.add('show-select-variants');
+        console.log('Opening variant selector');
+      } else {
+        // When closing, allow normal submit behavior
+        console.log('Closing variant selector');
+        setTimeout(() => {
+          this.classList.remove('show-select-variants');
+        }, 100);
+      }
+    });
+  }
+  
+  syncInitialState() {
+    console.log('Syncing initial state from main to sticky');
+    
+    // First, ensure main form has selected options
+    this.ensureMainVariantInitialization();
+    
+    // Get all selected options from main form
+    const mainSelectedOptions = this.mainVariantSelects.querySelectorAll('select option[selected], fieldset input:checked');
+    
+    console.log('Found main selected options:', mainSelectedOptions.length);
+    
+    mainSelectedOptions.forEach((mainOption) => {
+      const optionValueId = mainOption.dataset.optionValueId;
+      if (!optionValueId) return;
+      
+      console.log('Syncing option:', optionValueId, mainOption.value);
+      
+      // Find corresponding option in sticky
+      const stickyOption = this.stickyVariantSelects.querySelector(`[data-option-value-id="${optionValueId}"]`);
+      if (!stickyOption) {
+        console.log('No corresponding sticky option found for:', optionValueId);
+        return;
+      }
+      
+      // Update sticky option to match main
+      if (stickyOption.tagName === 'INPUT' && stickyOption.type === 'radio') {
+        if (!stickyOption.checked) {
+          stickyOption.checked = true;
+          stickyOption.classList.add('checked');
+        }
+      } else if (stickyOption.tagName === 'OPTION') {
+        const select = stickyOption.closest('select');
+        if (select && select.value !== stickyOption.value) {
+          Array.from(select.options).forEach(opt => opt.removeAttribute('selected'));
+          stickyOption.setAttribute('selected', 'selected');
+          select.value = stickyOption.value;
+        }
+      }
+    });
+  }
+  
+  ensureMainVariantInitialization() {
+    console.log('Ensuring main variant initialization...');
+    
+    // Check if main variant selects have any selected options
+    const mainSelectedOptions = this.mainVariantSelects.querySelectorAll('select option[selected], fieldset input:checked');
+    
+    if (mainSelectedOptions.length === 0) {
+      console.log('No selected options found in main, triggering default selection...');
+      
+      // Find the first available option for each variant group
+      const variantGroups = this.mainVariantSelects.querySelectorAll('fieldset, .product-form__input');
+      
+      variantGroups.forEach(group => {
+        const firstAvailableInput = group.querySelector('input[type="radio"]:not(.disabled)');
+        const firstAvailableOption = group.querySelector('option:not([disabled])');
+        
+        if (firstAvailableInput && !firstAvailableInput.checked) {
+          console.log('Selecting first available radio input:', firstAvailableInput.value);
+          firstAvailableInput.checked = true;
+          firstAvailableInput.classList.add('checked');
+          
+          // Update display
+          const selectedValueSpan = group.querySelector('[data-selected-value]');
+          if (selectedValueSpan) {
+            selectedValueSpan.innerHTML = firstAvailableInput.value;
+          }
+          
+          // Trigger change event
+          firstAvailableInput.dispatchEvent(new Event('change', { bubbles: true }));
+        } else if (firstAvailableOption && !firstAvailableOption.selected) {
+          console.log('Selecting first available option:', firstAvailableOption.value);
+          const select = firstAvailableOption.closest('select');
+          if (select) {
+            Array.from(select.options).forEach(opt => opt.removeAttribute('selected'));
+            firstAvailableOption.setAttribute('selected', 'selected');
+            select.value = firstAvailableOption.value;
+            
+            // Update display
+            const selectedValueSpan = group.querySelector('[data-selected-value]');
+            if (selectedValueSpan) {
+              selectedValueSpan.innerHTML = firstAvailableOption.value;
+            }
+            
+            // Trigger change event
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+      });
+    } else {
+      console.log('Main variant selects already have selected options:', mainSelectedOptions.length);
+    }
+  }
+  
+  syncMainToSticky(event) {
+    this.isSyncing = true;
+    
+    try {
+      // Refresh sticky selects in case DOM updated
+      this.stickyVariantSelects = this.querySelector('variant-selects') || this.stickyVariantSelects;
+
+      const target = event.target;
+      const optionValueId = this.getOptionValueId(target);
+      
+      if (!optionValueId || !this.stickyVariantSelects) return;
+      
+      console.log('Syncing main to sticky:', optionValueId);
+      
+      // Find corresponding sticky option
+      const stickyOption = this.stickyVariantSelects.querySelector(`[data-option-value-id="${optionValueId}"]`);
+      if (!stickyOption) return;
+      
+      // Update sticky option
+      if (stickyOption.tagName === 'INPUT' && stickyOption.type === 'radio') {
+        if (!stickyOption.checked) {
+          // Uncheck siblings in same wrapper (safer than name selector)
+          const wrapper = stickyOption.closest('.product-form__input') || this.stickyVariantSelects;
+          wrapper
+            .querySelectorAll('input[type="radio"]')
+            .forEach((el) => {
+              el.checked = false;
+              el.classList.remove('checked');
+              if (el.nextElementSibling && el.nextElementSibling.tagName === 'LABEL') {
+                el.nextElementSibling.classList.remove('checked');
+              }
+            });
+          stickyOption.checked = true;
+          stickyOption.classList.add('checked');
+          if (stickyOption.nextElementSibling && stickyOption.nextElementSibling.tagName === 'LABEL') {
+            stickyOption.nextElementSibling.classList.add('checked');
+          }
+        }
+      } else if (stickyOption.tagName === 'OPTION') {
+        const select = stickyOption.closest('select');
+        if (select && select.value !== stickyOption.value) {
+          Array.from(select.options).forEach(opt => opt.removeAttribute('selected'));
+          stickyOption.setAttribute('selected', 'selected');
+          select.value = stickyOption.value;
+        }
+      }
+
+      // Mirror availability immediately after applying main change (observer also updates)
+      requestAnimationFrame(() => this.updateStickyAvailabilityFromMain());
+    } finally {
+      this.isSyncing = false;
+    }
+  }
+  
+  syncStickyToMain(event) {
+    this.isSyncing = true;
+    
+    try {
+      // Refresh references in case DOM updated
+      if (this.mainProductInfo) {
+        this.mainVariantSelects = this.mainProductInfo.querySelector('variant-selects');
+      }
+
+      const target = this.getInputFromEventTarget(event.target) || event.target;
+      const optionValueId = this.getOptionValueId(target);
+      
+      if (!this.mainVariantSelects) return;
+      
+      // Find corresponding main option with robust fallback
+      const mainOption = this.findMainOptionForStickyTarget(optionValueId, target);
+      if (!mainOption) {
+        console.warn('Sticky->Main: No main option found for', optionValueId, target?.name, target?.value);
+        return;
+      }
+      
+      console.log('Syncing sticky to main:', optionValueId || '(fallback by name/value)');
+      
+      // Update main option
+      if (mainOption.tagName === 'INPUT' && mainOption.type === 'radio') {
+        // Uncheck siblings in same group in main
+        const group = mainOption.name;
+        // Use getElementsByName to avoid selector escaping issues
+        Array.from(document.getElementsByName(group)).forEach((el) => {
+          if (el instanceof HTMLInputElement && el.type === 'radio') {
+            el.checked = false;
+            el.classList.remove('checked');
+          }
+        });
+        mainOption.checked = true;
+        mainOption.classList.add('checked');
+        // Always dispatch change/input to trigger theme logic
+        requestAnimationFrame(() => {
+          mainOption.dispatchEvent(new Event('input', { bubbles: true }));
+          mainOption.dispatchEvent(new Event('change', { bubbles: true }));
+          // After theme updates main DOM, mirror availability again (next frame)
+          requestAnimationFrame(() => this.updateStickyAvailabilityFromMain());
+        });
+      } else if (mainOption.tagName === 'OPTION') {
+        const select = mainOption.closest('select');
+        if (select) {
+          Array.from(select.options).forEach(opt => opt.removeAttribute('selected'));
+          mainOption.setAttribute('selected', 'selected');
+          select.value = mainOption.value;
+          requestAnimationFrame(() => {
+            select.dispatchEvent(new Event('input', { bubbles: true }));
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+            requestAnimationFrame(() => this.updateStickyAvailabilityFromMain());
+          });
+        }
+      }
+    } finally {
+      this.isSyncing = false;
+    }
+  }
+  
+  getOptionValueId(element) {
+    const el = this.getInputFromEventTarget(element) || element;
+    if (el && el.tagName === 'SELECT') {
+      return el.selectedOptions[0]?.dataset.optionValueId;
+    } else if (el && el.type === 'radio' && el.checked) {
+      return el.dataset.optionValueId;
+    }
+    return null;
+  }
+
+  // Fallback resolver to locate main input when data-option-value-id match fails
+  findMainOptionForStickyTarget(optionValueId, stickyInput) {
+    // 1) Try direct match by data-option-value-id first
+    if (optionValueId) {
+      const byId = this.mainVariantSelects.querySelector(`[data-option-value-id="${optionValueId}"]`);
+      if (byId) return byId;
+    }
+
+    // 2) Fallback by name/value using getElementsByName (avoids selector escaping issues)
+    if (stickyInput && stickyInput.name && stickyInput.value) {
+      // Try exact name
+      let candidates = Array.from(document.getElementsByName(stickyInput.name));
+      // If none, try trimmed name (to avoid trailing spaces in name attr)
+      if (!candidates.length) candidates = Array.from(document.getElementsByName(stickyInput.name.trim()));
+
+      // Filter to radios or options with matching value
+      const radioMatch = candidates.find(
+        (el) => el instanceof HTMLInputElement && el.type === 'radio' && el.value === stickyInput.value
+      );
+      if (radioMatch) return radioMatch;
+
+      // If sticky is an <option> (select), try find main select by name and value
+      if (stickyInput.tagName === 'OPTION') {
+        const selectName = stickyInput.closest('select')?.name;
+        if (selectName) {
+          let mainSelects = Array.from(document.getElementsByName(selectName));
+          if (!mainSelects.length) mainSelects = Array.from(document.getElementsByName(selectName.trim()));
+          const mainSelect = mainSelects.find((el) => el instanceof HTMLSelectElement);
+          if (mainSelect) {
+            const option = Array.from(mainSelect.options).find((opt) => opt.value === stickyInput.value);
+            if (option) return option;
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  getInputFromEventTarget(target) {
+    // If label clicked, map to its input
+    if (target && target.tagName === 'LABEL') {
+      const forId = target.getAttribute('for');
+      if (forId) return document.getElementById(forId);
+      // fallback: previous sibling input
+      if (target.previousElementSibling && target.previousElementSibling.tagName === 'INPUT') {
+        return target.previousElementSibling;
+      }
+    }
+    // If inside product-form__input, find the actual control
+    const wrapper = target.closest && target.closest('.product-form__input');
+    if (wrapper) {
+      const checkedRadio = wrapper.querySelector('input[type="radio"]:checked');
+      if (checkedRadio) return checkedRadio;
+      const selectEl = wrapper.querySelector('select');
+      if (selectEl) return selectEl;
+    }
+    // If target itself is an input/select
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'OPTION')) return target;
+    return null;
+  }
+
+  updateStickyAvailabilityFromMain() {
+    if (!this.mainVariantSelects || !this.stickyVariantSelects) return;
+
+    const mainOptions = this.mainVariantSelects.querySelectorAll(
+      'input[type="radio"][data-option-value-id], select option[data-option-value-id]'
+    );
+
+    mainOptions.forEach((mainEl) => {
+      const id = mainEl.dataset.optionValueId;
+      if (!id) return;
+      const stickyEl = this.stickyVariantSelects.querySelector(`[data-option-value-id="${id}"]`);
+      if (!stickyEl) return;
+
+      // Determine unavailable state from main using only per-option signals
+      let mainUnavailable = false;
+      if (mainEl.tagName === 'INPUT') {
+        const input = mainEl;
+        const label = input.nextElementSibling && input.nextElementSibling.tagName === 'LABEL' ? input.nextElementSibling : null;
+        mainUnavailable = !!(
+          input.disabled ||
+          input.getAttribute('aria-disabled') === 'true' ||
+          input.classList.contains('disabled') ||
+          input.classList.contains('visually-disabled') ||
+          (label && (label.classList.contains('disabled') || label.classList.contains('visually-disabled') || label.classList.contains('unavailable') || label.classList.contains('sold-out')))
+        );
+      } else {
+        // OPTION in select
+        mainUnavailable = mainEl.disabled || mainEl.getAttribute('aria-disabled') === 'true';
+      }
+
+      // Apply to sticky (enable when available, disable when unavailable)
+      if (stickyEl.tagName === 'INPUT') {
+        stickyEl.disabled = mainUnavailable;
+        if (mainUnavailable) {
+          stickyEl.setAttribute('aria-disabled', 'true');
+          stickyEl.classList.add('disabled', 'visually-disabled');
+          const label = stickyEl.nextElementSibling;
+          if (label && label.tagName === 'LABEL') {
+            label.classList.add('disabled', 'visually-disabled');
+          }
+        } else {
+          stickyEl.removeAttribute('aria-disabled');
+          stickyEl.classList.remove('disabled', 'visually-disabled');
+          const label = stickyEl.nextElementSibling;
+          if (label && label.tagName === 'LABEL') {
+            label.classList.remove('disabled', 'visually-disabled');
+          }
+        }
+      } else if (stickyEl.tagName === 'OPTION') {
+        if (mainUnavailable) {
+          stickyEl.setAttribute('disabled', '');
+          stickyEl.setAttribute('aria-disabled', 'true');
+        } else {
+          stickyEl.removeAttribute('disabled');
+          stickyEl.removeAttribute('aria-disabled');
+        }
+      }
+    });
+  }
+
+  observeMainAvailabilityChanges() {
+    if (!this.mainVariantSelects) return;
+    const debouncedUpdate = (() => {
+      let rafId = null;
+      return () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => this.updateStickyAvailabilityFromMain());
+      };
+    })();
+
+    const observer = new MutationObserver(debouncedUpdate);
+    observer.observe(this.mainVariantSelects, {
+      attributes: true,
+      attributeFilter: ['disabled', 'class', 'aria-disabled'],
+      subtree: true,
+      childList: true
+    });
+    // Save to instance if we need to disconnect later
+    this._availabilityObserver = observer;
     }
 
     onScroll(entries) {
@@ -256,6 +751,7 @@ style="
       const shouldShow = this.passedForm && !this.reachedFooter;
       document.body.classList.toggle('sticky-cart-visible', shouldShow);
       this.classList.toggle('is-visible', shouldShow);
+    
       if (shouldShow) {
         document.body.style.setProperty('--sticky-atc-height', `${this.offsetHeight}px`);
       } else {
@@ -265,6 +761,7 @@ style="
       if (!shouldShow) this.classList.remove('sticky-open');
     }
   }
+
   if (!customElements.get('sticky-atc')) customElements.define('sticky-atc', StickyATC);
 {% endjavascript %}
 
