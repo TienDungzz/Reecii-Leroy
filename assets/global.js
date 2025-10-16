@@ -906,30 +906,6 @@ window.addEventListener("DOMContentLoaded", () => {
   appendTabMenuToMainMenu();
 });
 
-// class HeaderMenu extends HTMLElement {
-//   constructor() {
-//     super();
-//     this.header = document.querySelector(".header-wrapper");
-//   }
-
-//   onToggle() {
-//     if (!this.header) return;
-
-//     if (
-//       document.documentElement.style.getPropertyValue(
-//         "--header-bottom-position-desktop"
-//       ) !== ""
-//     )
-//       return;
-//     document.documentElement.style.setProperty(
-//       "--header-bottom-position-desktop",
-//       `${Math.floor(this.header.getBoundingClientRect().bottom)}px`
-//     );
-//   }
-// }
-// if (!customElements.get("header-menu"))
-//   customElements.define("header-menu", HeaderMenu);
-
 class MenuDrawer extends HTMLElement {
   constructor() {
     super();
@@ -1854,7 +1830,6 @@ if (!customElements.get("swiper-component"))
   customElements.define("swiper-component", SwiperComponent);
 
 
-
 class ProductRecommendations extends HTMLElement {
   observer = undefined;
 
@@ -2356,10 +2331,6 @@ class RecentlyViewedProducts extends HTMLElement {
 }
 if (!customElements.get("recently-viewed-products"))
   customElements.define("recently-viewed-products", RecentlyViewedProducts);
-
-const moreButton = document.querySelectorAll(
-  ".card__swatch .item-swatch-more .number-showmore"
-);
 
 // Initialize 'show more swatches' buttons; safe to call multiple times
 function initMoreSwatchButtons(root = document) {

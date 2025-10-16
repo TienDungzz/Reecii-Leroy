@@ -72,11 +72,8 @@
   >
     {%- if request.page_type == 'search' and search.results_count > 0 and search.performed -%}
       <div
-        class="spacing"
-        style="
-          --p-spacing-t: {{ sec_stts.padding_top }}px;
-          --p-spacing-b: {{ sec_stts.padding_bottom }}px;
-        "
+        class="spacing-style"
+        style="{% render 'spacing-style', settings: sec_stts %}"
       >
         <div class="section-global__header">
           {%- content_for 'block', type: '_section-header', id: 'section-header' -%}
@@ -230,7 +227,8 @@
   "class": "section-wrapper",
   "limit": 1,
   "disabled_on": {
-    "groups": ["header", "footer", "custom.popup"]
+    "groups": ["header", "footer", "custom.popup", "aside"],
+    "templates": ["index"]
   },
   "settings": [
     {

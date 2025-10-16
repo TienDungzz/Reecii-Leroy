@@ -1,11 +1,8 @@
 {{ 'section-main-page.css' | asset_url | stylesheet_tag: preload: true }}
 
 <div class="color-{{ section.settings.color_scheme }}">
-  <div class="page-width spacing"
-    style="
-      --p-spacing-t: {{ section.settings.padding_top }}px;
-      --p-spacing-b: {{ section.settings.padding_bottom }}px;
-    "
+  <div class="page-width spacing-style"
+    style="{% render 'spacing-style', settings: section.settings %}"
   >
     <h2 class="page-title {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
       {%- if section.settings.page.title != blank -%}
@@ -32,7 +29,7 @@
   "tag": "section",
   "class": "section",
   "disabled_on": {
-    "groups": ["header", "footer", "custom.popup"]
+    "groups": ["header", "footer", "custom.popup", "aside"]
   },
   "settings": [
     {
@@ -80,26 +77,26 @@
     },
     {
       "type": "header",
-      "content": "t:content.section_padding"
+      "content": "t:content.padding"
     },
     {
       "type": "range",
-      "id": "padding_top",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:settings.top",
       "default": 36
     },
     {
       "type": "range",
-      "id": "padding_bottom",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:settings.bottom",
       "default": 36
     }
   ],
