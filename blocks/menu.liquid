@@ -49,11 +49,20 @@
         <span class="menu__heading__default">{{ heading }}</span>
         <span class="menu__heading__accordion">
           {{ heading | default: menu.title }}
-          <span class="menu__heading__toggle svg-wrapper icon-caret icon-animated">
-            {{- 'icon-caret.svg' | inline_asset_content -}}
-          </span>
-          <span class="menu__heading__toggle svg-wrapper icon-plus">
-            {{- 'icon-plus.svg' | inline_asset_content -}}
+
+          <span class="menu__heading__toggle svg-wrapper icon-{{ bl_stts.accordion_icon }}">
+            {% if bl_stts.accordion_icon == 'caret' %}
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            {% endif %}
+            {% if bl_stts.accordion_icon == 'plus' %}
+              <span class="icon-plus-block">
+                {{- 'icon-plus.svg' | inline_asset_content -}}
+              </span>
+
+              <span class="icon-minus-block">
+                {{- 'icon-minus.svg' | inline_asset_content -}}
+              </span>
+            {% endif %}
           </span>
         </span>
       </summary>

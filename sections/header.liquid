@@ -214,7 +214,7 @@
   id="header-component"
 >
   <header>
-    <div class="row-group" style="{% render 'spacing-padding', settings: sec_stts %}">
+    <div class="row-group" style="{% render 'spacing-padding', settings: sec_stts %} --button-font-size-link: {{ sec_stts.button_type_size_link }};--button-font-weight-link: {{ sec_stts.button_font_weight_link }}; --text-transform: {{ sec_stts.case }};">
       {% for row in rows %}
         {% liquid
           assign scheme = 'color_scheme_' | append: row
@@ -1793,6 +1793,122 @@
         {
           "value": "caret",
           "label": "t:options.caret"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "t:content.link",
+    },
+    {
+      "type": "select",
+      "id": "button_type_size_link",
+      "label": "t:settings.size",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        }
+      ],
+      "default": "1.2rem"
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight_link",
+      "label": "t:settings.button_text_weight",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "100",
+          "label": "t:options.thin"
+        },
+        {
+          "value": "300",
+          "label": "t:options.light"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "500",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        },
+        {
+          "value": "900",
+          "label": "t:options.black"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "t:settings.case",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "t:options.capitalize"
         }
       ],
       "default": "none"
