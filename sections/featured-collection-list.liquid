@@ -65,14 +65,14 @@
     assign has_media_banner = true
   endif
 
-  assign scroll_reveal = settings.animations_reveal_on_scroll
+  assign scroll_reveal = false
 -%}
 
 {% comment %} Layout type [tabs-grid] and [tabs-carousel] {% endcomment %}
 {%- capture attr_tabs_header -%}
   class="tabs-product-header flex md:justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }} overflow-x-a hide-scrollbar-mobile"
   style="
-    --gap-x: {{ sec_stts.tabs_header_gap }}px;
+    --gap-x: {{ sec_stts.tabs_header_gap }}px;swiper
     {% if sec_stts.tabs_header_style == 'default' %}
       --pt: {{ sec_stts.tabs_header_padding_top | times: 0.1 }}rem;
       --pb: {{ sec_stts.tabs_header_padding_bottom | times: 0.1 }}rem;
@@ -387,7 +387,7 @@
         {% if sec_stts.tabs_header_style == 'inside_section_header' %}
           {%- if section_collections_list != blank -%}
             {% if collection_list_count > 1 and has_tabs_header %}
-              <template>
+              <template class="tabs-component-template">
                 <tabs-header {{ attr_tabs_header }}>
                   {%- capture labels -%}
                     {%- for collection in section_collections_list -%}
@@ -397,7 +397,7 @@
                       {%- endunless -%}
                     {%- endfor -%}
                   {%- endcapture -%}
-    
+
                   {%- render 'tab-header-item',
                     id: sec_id,
                     labels: labels,
@@ -412,12 +412,12 @@
               for i in (1..4)
                 assign section_collections_list = section_collections_list | append: ', '
               endfor
-  
+
               assign section_collections_list = section_collections_list | split: ','
             -%}
-  
+
             {% if has_tabs_header %}
-              <template>
+              <template class="tabs-component-template">
                 <tabs-header {{ attr_tabs_header }}>
                   {%- capture labels -%}
                     {%- for collection in section_collections_list limit: 4 -%}
@@ -427,7 +427,7 @@
                       {%- endunless -%}
                     {%- endfor -%}
                   {%- endcapture -%}
-    
+
                   {%- render 'tab-header-item',
                     id: sec_id,
                     labels: labels,
@@ -524,7 +524,7 @@
                     class="{{ class_tabs_product_grid }}{% if forloop.first %} --active{% endif %}"
                   >
                     {%- unless forloop.first -%}
-                      <template>
+                      <template class="tabs-component-template">
                     {%- endunless -%}
                     {%- if show_mobile_slider -%}
                       <swiper-component
@@ -630,7 +630,7 @@
                     id="tabs-{{ sec_id }}-{{ forloop.index }}"
                     class="{{ class_tabs_product_grid }}{% if forloop.first %} --active{% endif %}"
                   >
-                    <template>
+                    <template class="tabs-component-template">
                       {%- if show_mobile_slider -%}
                         <swiper-component
                           class="swiper-component-mobile"
@@ -730,7 +730,7 @@
                     class="{{ class_tabs_product_grid }}{% if forloop.first %} --active{% endif %}"
                   >
                     {%- unless forloop.first -%}
-                      <template>
+                      <template class="tabs-component-template">
                     {%- endunless -%}
                       {%- capture breakpoints -%}
                         {
@@ -849,7 +849,7 @@
                     id="tabs-{{ sec_id }}-{{ forloop.index }}"
                     class="{{ class_tabs_product_grid }}{% if forloop.first %} --active{% endif %}"
                   >
-                    <template>
+                    <template class="tabs-component-template">
                       {%- capture breakpoints -%}
                         {
                           "768": { "slidesPerView": {{ columns_tablet }} },
@@ -2068,7 +2068,7 @@
     {
       "type": "select",
       "id": "font_style",
-      "label": "t:settings.font_style",  
+      "label": "t:settings.font_style",
       "options": [
         {
           "value": "normal",

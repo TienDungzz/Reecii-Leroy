@@ -88,7 +88,7 @@
 
   assign page_width = sec_stts.page_width
 
-  assign scroll_reveal = settings.animations_reveal_on_scroll
+  assign scroll_reveal = false
 -%}
 
 {%- stylesheet -%}
@@ -271,7 +271,7 @@
         echo ' rte ';
       {% endif %}
     {% endcapture %}
-    
+
     {% capture subheading_block_classes %}
       {% if subheading_type_preset == 'custom' %}
         echo ' custom-typography ';
@@ -527,11 +527,11 @@
                 <swiper-component
                   class="swiper-component-mobile"
                   data-swiper-mobile
-                  {%- render 'swiper-data', 
-                    settings: section.settings, 
-                    loop: false, 
-                    slides_per_view: columns_mobile, 
-                    space_between: columns_gap 
+                  {%- render 'swiper-data',
+                    settings: section.settings,
+                    loop: false,
+                    slides_per_view: columns_mobile,
+                    space_between: columns_gap
                   -%}
                   style="
                     {% render 'swiper-style',
@@ -629,7 +629,7 @@
                 %}
               "
             >
-              <div 
+              <div
                 class="swiper w-full"
                 style="
                   {% if section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
@@ -805,7 +805,7 @@
     {
       "type": "range",
       "id": "columns_gap",
-      "label": "t:settings.horizontal_gap",  
+      "label": "t:settings.horizontal_gap",
       "min": 0,
       "max": 100,
       "step": 1,
@@ -886,7 +886,7 @@
       "id": "video_display_mode",
       "label": "t:settings.video_type",
       "default": "inline",
-      "info": "t:info.video_display_mode_info",  
+      "info": "t:info.video_display_mode_info",
       "options": [
         {
           "value": "inline",

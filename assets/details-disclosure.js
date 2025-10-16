@@ -400,7 +400,7 @@ class DropdownDetails extends HTMLDetailsElement {
 
     if (!this) return;
     this.addEventListener('focusout', this.onFocusOut.bind(this));
-    this.addEventListener('keyup', onKeyUpEscape);
+    // this.addEventListener('keyup', onKeyUpEscape);
     this.setAttribute('open', 'false');
     this.elements.button?.addEventListener('click', this._toggleOpen.bind(this));
 
@@ -502,204 +502,204 @@ class DropdownDetails extends HTMLDetailsElement {
 if (!customElements.get('dropdown-details')) customElements.define('dropdown-details', DropdownDetails, { extends: 'details' });
 
 
-class StickyHeader extends HTMLElement {
-  constructor() {
-    super();
+// class StickyHeader extends HTMLElement {
+//   constructor() {
+//     super();
 
-    this.stickyHeader = this;
-    this.headerDrawerContainer = this.querySelector('.header__drawer-container');
-    this.headerMenu = this.querySelector('.header__menu');
-    this.headerRowTop = this.querySelector('.header__row--top');
+//     this.stickyHeader = this;
+//     this.headerDrawerContainer = this.querySelector('.header__drawer-container');
+//     this.headerMenu = this.querySelector('.header__menu');
+//     this.headerRowTop = this.querySelector('.header__row--top');
 
-    this.offscreen = false;
+//     this.offscreen = false;
 
-    /**
-     * Width of window when header drawer was hidden
-     * @type {number | null}
-     */
-    let menuDrawerHiddenWidth = null;
+//     /**
+//      * Width of window when header drawer was hidden
+//      * @type {number | null}
+//      */
+//     let menuDrawerHiddenWidth = null;
 
-    /**
-     * An intersection observer for monitoring sticky header position
-     * @type {IntersectionObserver | null}
-     */
-    let intersectionObserver = null;
+//     /**
+//      * An intersection observer for monitoring sticky header position
+//      * @type {IntersectionObserver | null}
+//      */
+//     let intersectionObserver = null;
 
-    /**
-     * Whether the header has been scrolled offscreen, when sticky behavior is 'scroll-up'
-     * @type {boolean}
-     */
+//     /**
+//      * Whether the header has been scrolled offscreen, when sticky behavior is 'scroll-up'
+//      * @type {boolean}
+//      */
 
-    /**
-     * The last recorded scrollTop of the document, when sticky behavior is 'scroll-up
-     * @type {number}
-     */
-    let lastScrollTop = 0;
+//     /**
+//      * The last recorded scrollTop of the document, when sticky behavior is 'scroll-up
+//      * @type {number}
+//      */
+//     let lastScrollTop = 0;
 
-    /**
-     * A timeout to allow for hiding animation, when sticky behavior is 'scroll-up'
-     * @type {number | null}
-     */
-    let timeout = null;
+//     /**
+//      * A timeout to allow for hiding animation, when sticky behavior is 'scroll-up'
+//      * @type {number | null}
+//      */
+//     let timeout = null;
 
-    /**
-     * The duration to wait for hiding animation, when sticky behavior is 'scroll-up'
-     * @constant {number}
-     */
-    const animationDelay = 150;
-  }
+//     /**
+//      * The duration to wait for hiding animation, when sticky behavior is 'scroll-up'
+//      * @constant {number}
+//      */
+//     const animationDelay = 150;
+//   }
 
-  connectedCallback() {
-    this.setHeaderHeight();
-    this.addEventListener('overflowMinimum', this.handleOverflowMinimum);
+//   connectedCallback() {
+//     this.setHeaderHeight();
+//     this.addEventListener('overflowMinimum', this.handleOverflowMinimum);
 
-    const stickyMode = this.stickyHeader.getAttribute('data-sticky-type');
-    if (stickyMode) {
-      this.observeStickyPosition(stickyMode === 'always');
+//     const stickyMode = this.stickyHeader.getAttribute('data-sticky-type');
+//     if (stickyMode) {
+//       this.observeStickyPosition(stickyMode === 'always');
 
-      if (stickyMode === 'scroll-up' || stickyMode === 'always') {
-        document.addEventListener('scroll', this.handleWindowScroll);
-      }
-    }
-  }
+//       if (stickyMode === 'scroll-up' || stickyMode === 'always') {
+//         document.addEventListener('scroll', this.handleWindowScroll);
+//       }
+//     }
+//   }
 
-  disconnectedCallback() {
-    this.setHeaderHeight();
-    this.intersectionObserver?.disconnect();
-    this.removeEventListener('overflowMinimum', this.handleOverflowMinimum);
-    document.removeEventListener('scroll', this.handleWindowScroll);
-    document.body.style.setProperty('--header-height', '0px');
-  }
+//   disconnectedCallback() {
+//     this.setHeaderHeight();
+//     this.intersectionObserver?.disconnect();
+//     this.removeEventListener('overflowMinimum', this.handleOverflowMinimum);
+//     document.removeEventListener('scroll', this.handleWindowScroll);
+//     document.body.style.setProperty('--header-height', '0px');
+//   }
 
-  setHeaderHeight() {
-    const height = this.querySelector('.header').getBoundingClientRect();
-    document.body.style.setProperty('--header-height', `${height}px`);
+//   setHeaderHeight() {
+//     const height = this.querySelector('.header').getBoundingClientRect();
+//     document.body.style.setProperty('--header-height', `${height}px`);
 
-    // Check if the menu drawer should be hidden in favor of the header menu
-    if (this.menuDrawerHiddenWidth && window.innerWidth > this.menuDrawerHiddenWidth) {
-      this.updateMenuVisibility(false);
-    }
-  }
+//     // Check if the menu drawer should be hidden in favor of the header menu
+//     if (this.menuDrawerHiddenWidth && window.innerWidth > this.menuDrawerHiddenWidth) {
+//       this.updateMenuVisibility(false);
+//     }
+//   }
 
-  /**
-   * Observes the header while scrolling the viewport to track when its actively sticky
-   * @param {Boolean} alwaysSticky - Determines if we need to observe when the header is offscreen
-   */
+//   /**
+//    * Observes the header while scrolling the viewport to track when its actively sticky
+//    * @param {Boolean} alwaysSticky - Determines if we need to observe when the header is offscreen
+//    */
 
-  observeStickyPosition(alwaysSticky = true) {
-    if (this.intersectionObserver) return;
+//   observeStickyPosition(alwaysSticky = true) {
+//     if (this.intersectionObserver) return;
 
-    const config = {
-      threshold: alwaysSticky ? 1 : 0,
-    };
+//     const config = {
+//       threshold: alwaysSticky ? 1 : 0,
+//     };
 
-    this.intersectionObserver = new IntersectionObserver(([entry]) => {
-      if (!entry) return;
+//     this.intersectionObserver = new IntersectionObserver(([entry]) => {
+//       if (!entry) return;
 
-      const { isIntersecting } = entry;
+//       const { isIntersecting } = entry;
 
-      if (alwaysSticky) {
-        this.dataset.stickyState = isIntersecting ? 'inactive' : 'active';
-        changeMetaThemeColor(this.headerRowTop);
-      } else {
-        this.offscreen = !isIntersecting || this.dataset.stickyState === 'active';
-      }
-    }, config);
+//       if (alwaysSticky) {
+//         this.dataset.stickyState = isIntersecting ? 'inactive' : 'active';
+//         changeMetaThemeColor(this.headerRowTop);
+//       } else {
+//         this.offscreen = !isIntersecting || this.dataset.stickyState === 'active';
+//       }
+//     }, config);
 
-    this.intersectionObserver.observe(this);
-  };
+//     this.intersectionObserver.observe(this);
+//   };
 
-  /**
-   * Handles the overflow minimum event from the header menu
-   * @param {OverflowMinimumEvent} event
-   */
-  handleOverflowMinimum = (event) => {
-    this.updateMenuVisibility(event.detail.minimumReached);
-  };
+//   /**
+//    * Handles the overflow minimum event from the header menu
+//    * @param {OverflowMinimumEvent} event
+//    */
+//   handleOverflowMinimum = (event) => {
+//     this.updateMenuVisibility(event.detail.minimumReached);
+//   };
 
-  /**
-   * Updates the visibility of the menu and drawer
-   * @param {boolean} hideMenu - Whether to hide the menu and show the drawer
-   */
-  updateMenuVisibility(hideMenu) {
-    if (hideMenu) {
-      this.headerDrawerContainer.classList.remove('desktop:hidden');
-      this.menuDrawerHiddenWidth = window.innerWidth;
-      this.headerMenu.classList.add('hidden');
-    } else {
-      this.headerDrawerContainer.classList.add('desktop:hidden');
-      this.menuDrawerHiddenWidth = null;
-      this.headerMenu.classList.remove('hidden');
-    }
-  }
+//   /**
+//    * Updates the visibility of the menu and drawer
+//    * @param {boolean} hideMenu - Whether to hide the menu and show the drawer
+//    */
+//   updateMenuVisibility(hideMenu) {
+//     if (hideMenu) {
+//       this.headerDrawerContainer.classList.remove('desktop:hidden');
+//       this.menuDrawerHiddenWidth = window.innerWidth;
+//       this.headerMenu.classList.add('hidden');
+//     } else {
+//       this.headerDrawerContainer.classList.add('desktop:hidden');
+//       this.menuDrawerHiddenWidth = null;
+//       this.headerMenu.classList.remove('hidden');
+//     }
+//   }
 
-  handleWindowScroll() {
-    const stickyMode = this.stickyHeader.getAttribute('data-sticky-type');
-    if (!offscreen && stickyMode !== 'always') return;
+//   handleWindowScroll() {
+//     const stickyMode = this.stickyHeader.getAttribute('data-sticky-type');
+//     if (!offscreen && stickyMode !== 'always') return;
 
-    const scrollTop = document.scrollingElement?.scrollTop ?? 0;
-    const isScrollingUp = scrollTop < this.lastScrollTop;
+//     const scrollTop = document.scrollingElement?.scrollTop ?? 0;
+//     const isScrollingUp = scrollTop < this.lastScrollTop;
 
-    console.log(
-      `%c🔍 Log scrollTop:`,
-      'color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;',
-      scrollTop
-    );
-    console.log(
-      `%c🔍 Log isScrollingUp:`,
-      'color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;',
-      isScrollingUp
-    );
+//     console.log(
+//       `%c🔍 Log scrollTop:`,
+//       'color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;',
+//       scrollTop
+//     );
+//     console.log(
+//       `%c🔍 Log isScrollingUp:`,
+//       'color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;',
+//       isScrollingUp
+//     );
 
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-      this.timeout = null;
-    }
+//     if (this.timeout) {
+//       clearTimeout(this.timeout);
+//       this.timeout = null;
+//     }
 
-    if (stickyMode === 'always') {
-      const isAtTop = this.getBoundingClientRect().top >= 0;
+//     if (stickyMode === 'always') {
+//       const isAtTop = this.getBoundingClientRect().top >= 0;
 
-      if (isAtTop) {
-        this.dataset.scrollDirection = 'none';
-      } else if (isScrollingUp) {
-        this.dataset.scrollDirection = 'up';
-      } else {
-        this.dataset.scrollDirection = 'down';
-      }
+//       if (isAtTop) {
+//         this.dataset.scrollDirection = 'none';
+//       } else if (isScrollingUp) {
+//         this.dataset.scrollDirection = 'up';
+//       } else {
+//         this.dataset.scrollDirection = 'down';
+//       }
 
-      this.lastScrollTop = scrollTop;
-      return;
-    }
+//       this.lastScrollTop = scrollTop;
+//       return;
+//     }
 
-    if (isScrollingUp) {
-      this.removeAttribute('data-animating');
+//     if (isScrollingUp) {
+//       this.removeAttribute('data-animating');
 
-      if (this.getBoundingClientRect().top >= 0) {
-        // reset sticky state when header is scrolled up to natural position
-        offscreen = false;
-        this.dataset.stickyState = 'inactive';
-        this.dataset.scrollDirection = 'none';
-      } else {
-        // show sticky header when scrolling up
-        this.dataset.stickyState = 'active';
-        this.dataset.scrollDirection = 'up';
-      }
-    } else if (this.dataset.stickyState === 'active') {
-      this.dataset.scrollDirection = 'none';
-      // delay transitioning to idle hidden state for hiding animation
-      this.setAttribute('data-animating', '');
+//       if (this.getBoundingClientRect().top >= 0) {
+//         // reset sticky state when header is scrolled up to natural position
+//         offscreen = false;
+//         this.dataset.stickyState = 'inactive';
+//         this.dataset.scrollDirection = 'none';
+//       } else {
+//         // show sticky header when scrolling up
+//         this.dataset.stickyState = 'active';
+//         this.dataset.scrollDirection = 'up';
+//       }
+//     } else if (this.dataset.stickyState === 'active') {
+//       this.dataset.scrollDirection = 'none';
+//       // delay transitioning to idle hidden state for hiding animation
+//       this.setAttribute('data-animating', '');
 
-      this.timeout = setTimeout(() => {
-        this.dataset.stickyState = 'idle';
-        this.removeAttribute('data-animating');
-      }, this.animationDelay);
-    } else {
-      this.dataset.scrollDirection = 'none';
-      this.dataset.stickyState = 'idle';
-    }
+//       this.timeout = setTimeout(() => {
+//         this.dataset.stickyState = 'idle';
+//         this.removeAttribute('data-animating');
+//       }, this.animationDelay);
+//     } else {
+//       this.dataset.scrollDirection = 'none';
+//       this.dataset.stickyState = 'idle';
+//     }
 
-    this.lastScrollTop = scrollTop;
-  }
-}
+//     this.lastScrollTop = scrollTop;
+//   }
+// }
 
-if (!customElements.get('sticky-header')) customElements.define('sticky-header', StickyHeader);
+// if (!customElements.get('sticky-header')) customElements.define('sticky-header', StickyHeader);

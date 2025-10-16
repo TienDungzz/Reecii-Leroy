@@ -213,74 +213,72 @@
   {% endif %}
   id="header-component"
 >
-  <header>
-    <div class="row-group" style="{% render 'spacing-padding', settings: sec_stts %}">
-      {% for row in rows %}
-        {% liquid
-          assign scheme = 'color_scheme_' | append: row
-          assign class = 'header__row header__row--[row] color-[row_scheme] section section--full-width-margin section--[section-width]' | replace: '[row]', row | replace: '[row_scheme]', sec_stts[scheme] | replace: '[section-width]', sec_stts.section_width
-          case row
-            when 'top'
-              assign first = mobile_menu
+  <div class="row-group" style="{% render 'spacing-padding', settings: sec_stts %}">
+    {% for row in rows %}
+      {% liquid
+        assign scheme = 'color_scheme_' | append: row
+        assign class = 'header__row header__row--[row] color-[row_scheme] section section--full-width-margin section--[section-width]' | replace: '[row]', row | replace: '[row_scheme]', sec_stts[scheme] | replace: '[section-width]', sec_stts.section_width
+        case row
+          when 'top'
+            assign first = mobile_menu
 
-              if bottom_row_blocks.size > 0 and section.settings.divider_size == 'page-width'
-                assign class = class | append: ' divider--page-width'
-              endif
+            if bottom_row_blocks.size > 0 and section.settings.divider_size == 'page-width'
+              assign class = class | append: ' divider--page-width'
+            endif
 
-              if bottom_row_blocks.size > 0
-                assign border_bottom_setting_id = 'divider_width'
-              else
-                assign border_bottom_setting_id = 'border_width'
-              endif
-            when 'bottom'
-              assign first = ''
-              assign class = class | append: ' max-md:hidden'
-
+            if bottom_row_blocks.size > 0
+              assign border_bottom_setting_id = 'divider_width'
+            else
               assign border_bottom_setting_id = 'border_width'
-          endcase
+            endif
+          when 'bottom'
+            assign first = ''
+            assign class = class | append: ' max-md:hidden'
 
-          assign style = '--border-bottom-width: [width]px; ' | replace: '[width]', section.settings[border_bottom_setting_id]
+            assign border_bottom_setting_id = 'border_width'
+        endcase
 
-          if row == 'top'
-            assign style = style | append: '--border-bottom-width-mobile: [width]px; ' | replace: '[width]', section.settings.border_width
-          endif
+        assign style = '--border-bottom-width: [width]px; ' | replace: '[width]', section.settings[border_bottom_setting_id]
+
+        if row == 'top'
+          assign style = style | append: '--border-bottom-width-mobile: [width]px; ' | replace: '[width]', section.settings.border_width
+        endif
+      %}
+
+      {% capture content %}
+        {% render 'header-row',
+          row: row,
+          order: order,
+          settings: sec_stts,
+          first: first,
+          logo: logo,
+          mobile_logo: mobile_logo,
+          menu: menu,
+          actions: actions,
+          localization: localization_markup,
+          account: account,
+          search: search,
+          mobile_search: mobile_search,
+          multi_tab_menu: multi_tab_menu,
+          message: message
         %}
+      {% endcapture %}
 
-        {% capture content %}
-          {% render 'header-row',
-            row: row,
-            order: order,
-            settings: sec_stts,
-            first: first,
-            logo: logo,
-            mobile_logo: mobile_logo,
-            menu: menu,
-            actions: actions,
-            localization: localization_markup,
-            account: account,
-            search: search,
-            mobile_search: mobile_search,
-            multi_tab_menu: multi_tab_menu,
-            message: message
-          %}
-        {% endcapture %}
-
-        {% assign content = content | strip %}
-        {% if content != blank %}
-          <div
-            class="{{ class | strip }}"
-            {%- if style != blank -%}
-              style="{{ style | strip }}"
-            {%- endif -%}
-          >
-            <div class="header__columns spacing-style">
-              {{ content }}
-            </div>
+      {% assign content = content | strip %}
+      {% if content != blank %}
+        <div
+          class="{{ class | strip }}"
+          {%- if style != blank -%}
+            style="{{ style | strip }}"
+          {%- endif -%}
+        >
+          <div class="header__columns spacing-style">
+            {{ content }}
           </div>
-        {% endif %}
-      {% endfor %}
-    </div>
-  </header>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
 </{{ header_wrapper }}>
 
 {%- if settings.cart_type == 'notification' -%}
@@ -416,30 +414,32 @@
   .header-section {
     position: relative;
     z-index: var(--layer-raised);
-
-    &:not(:has(.header[transparent])) {
-      height: var(--header-group-height);
-    }
+    height: var(--header-height);
   }
 
   #header-group:has(#header-component[data-sticky-type]) {
     display: contents;
   }
 
-  .header-section:has(> #header-component[data-sticky-type='always']),
+  .header-section:has(> #header-component[data-sticky-type='always'][data-sticky-state='active']),
   .header-section:has(> #header-component[data-sticky-type='scroll-up'][data-sticky-state='active']),
   .header-section:has(> #header-component[data-sticky-type='scroll-up'][data-sticky-state='idle']) {
 
-  .header-logo__image-container {
+    .header-logo__image-container {
       width: calc(var(--header-logo-image-width-mobile) * 0.75);
       height: calc(var(--header-logo-image-height-mobile) * 0.75);
       transition: width var(--animation-speed), height var(--animation-speed);
-
 
       @media screen and (min-width: 750px) {
         width: calc(var(--header-logo-image-width) * 0.75);
         height: calc(var(--header-logo-image-height) * 0.75);
       }
+    }
+
+    .header__row {
+      padding-block-start: min(calc(var(--padding-block-start) * 0.5), 1rem);
+      padding-block-end: min(calc(var(--padding-block-end) * 0.5), 1rem);
+      view-transition-name: header-row;
     }
   }
 
@@ -451,12 +451,6 @@
     /* Use -1 instead of 0 so intersection observer can track sticky state */
     top: -1px;
     z-index: var(--layer-sticky);
-
-    .header__row {
-      padding-block-start: min(calc(var(--padding-block-start) * 0.5), 1rem);
-      padding-block-end: min(calc(var(--padding-block-end) * 0.5), 1rem);
-      view-transition-name: header-row;
-    }
   }
 
   .header[data-sticky-state] {
@@ -464,14 +458,14 @@
     opacity: 1;
   }
 
-  .header[data-sticky-state='active'] {
+  .header[data-sticky-type='scroll-up'][data-sticky-state='active'] {
     view-transition-name: sticky-header;
     animation: header-sticky-slide-down var(--animation-speed) forwards;
     box-shadow: rgba(var(--color-shadow-rgb) / var(--opacity-20)) 0rem 0.2rem 2rem 0rem;
   }
 
-  .header[data-sticky-state='idle'],
-  .header[data-sticky-state='active'][data-animating] {
+  .header[data-sticky-type='scroll-up'][data-sticky-state='idle'],
+  .header[data-sticky-type='scroll-up'][data-sticky-state='active'][data-animating] {
     opacity: 0;
     animation: header-sticky-slide-up var(--animation-speed) forwards;
   }
@@ -892,7 +886,6 @@
 
         if (alwaysSticky) {
           this.dataset.stickyState = isIntersecting ? 'inactive' : 'active';
-          changeMetaThemeColor(this.headerRowTop);
         } else {
           this.offscreen = !isIntersecting || this.dataset.stickyState === 'active';
         }
@@ -964,6 +957,7 @@
 {% schema %}
 {
   "name": "t:names.header",
+  "tag": "header",
   "class": "header-section",
   "blocks": [
     { "type": "@app" },
@@ -1966,7 +1960,7 @@
       "options": [
         {
           "value": "frame",
-          "label": "t:options.frame"  
+          "label": "t:options.frame"
         },
         {
           "value": "underline",
