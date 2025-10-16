@@ -89,7 +89,7 @@
 
   {% case block.settings.layout_type %}
     {% when 'grid' %}
-      <div class="collection--grid-layout w-full block">
+      <div class="collection--grid-layout w-full block" style="--grid-desktop-horizontal-spacing: {{ block.settings.gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.gap }}px;">
         {%- if show_mobile_slider -%}
           <swiper-component
             class="swiper-component-mobile"
@@ -117,7 +117,6 @@
           class="grid grid-layout instagram-grid list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
           role="list"
           aria-label="{{ 'content.grid.name' | t }}"
-          style="--grid-desktop-horizontal-spacing: {{ block.settings.gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.gap }}px;"
         >
           {{- list_items -}}
         </ul>

@@ -87,7 +87,7 @@
         <div class="swiper-pagination"></div>
       {%- endif -%}
       {%- if enable_navigation -%}
-        <div class="swiper-btns-wrap small-hide swiper-btns-wrap--{{ block.settings.arrows_position }}">
+        <div class="swiper-btns-wrap small-hide swiper-btns-wrap--{{ block.settings.arrows_position }}" style="--mt: {{ block.settings.navigation_margin_top }}px; --mb: {{ block.settings.navigation_margin_bottom }}px;">
           {%- render 'swiper-button' -%}
         </div>
       {%- endif -%}
@@ -214,6 +214,28 @@
         }
       ],
       "default": "bullets"
+    },
+    {
+      "type": "range",
+      "id": "navigation_margin_top",
+      "label": "Navigation margin top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.navigation == 'arrows' or block.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "range",
+      "id": "navigation_margin_bottom",
+      "label": "Navigation margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.navigation == 'arrows' or block.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "header",
