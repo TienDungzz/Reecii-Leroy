@@ -37,7 +37,7 @@ class TabsComponent extends HTMLElement {
       content.classList.remove("--active");
 
       if (content.id == tabId.substring(1)) {
-        const template = content.querySelector("template");
+        const template = content.querySelector("template.tabs-component-template");
         if (template && !content.hasAttribute("data-rendered")) {
           const templateContent = template.content.cloneNode(true);
           content.appendChild(templateContent);
@@ -57,7 +57,7 @@ class TabsComponent extends HTMLElement {
       const activeContent = document.querySelector(activeTabId);
 
       if (activeContent) {
-        const template = activeContent.querySelector("template");
+        const template = activeContent.querySelector("template.tabs-component-template");
         if (template && !activeContent.hasAttribute("data-rendered")) {
           const templateContent = template.content.cloneNode(true);
           activeContent.appendChild(templateContent);
@@ -145,7 +145,7 @@ class TabsComponent extends HTMLElement {
           content.classList.toggle('is-active', isMatch);
 
           if (isMatch && !content.hasAttribute('data-rendered')) {
-            const template = content.querySelector('template');
+            const template = content.querySelector('template.tabs-component-template');
             if (template) {
               const templateContent = template.content.cloneNode(true);
               content.appendChild(templateContent);

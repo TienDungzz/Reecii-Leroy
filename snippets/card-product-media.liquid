@@ -8,21 +8,21 @@
 
     assign sizes = sizes
 
-    assign f_widths = widths | default: '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
-    assign m_widths = widths | default: '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
+    assign f_widths = widths | default: '240, 352, 832, 1200, 1600, 1920, 2560, 3840'
+    assign m_widths = widths | default: '240, 352, 832, 1200, 1600, 1920, 2560, 3840'
 
     unless lazy_load == false
         assign loading = "lazy"
     endunless
 -%}
 
-<card-media class="card__media block{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }}{% endif %}">
+<div class="card__media block{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }}{% endif %}">
     <div class="media media--transparent media--hover-effect">
-        {{ f_media | image_url: width: 1946 | image_tag: sizes: sizes , widths: f_widths, loading: 'lazy', alt: f_media.alt, class: 'motion-reduce', loading: loading }}
+        {{ f_media | image_url: width: 3840 | image_tag: sizes: sizes , widths: f_widths, loading: 'lazy', alt: f_media.alt, class: 'motion-reduce', loading: loading }}
         {%- if media[1] != null and show_secondary_image -%}
             {%- case media[1].media_type -%}
                 {%- when 'image' -%}
-                    {{ media[1] | image_url: width: 1946 | image_tag: sizes: sizes, widths: m_widths, loading: 'lazy', alt: media.alt, class: 'motion-reduce', loading: 'lazy' }}
+                    {{ media[1] | image_url: width: 3840 | image_tag: sizes: sizes, widths: m_widths, loading: 'lazy', alt: media.alt, class: 'motion-reduce', loading: 'lazy' }}
                 {%- when 'video', 'external_video' -%}
                     {%- render 'video',
                         video: media[1],
@@ -40,4 +40,4 @@
     <a href="{{ card_product.url }}" class="full-unstyled-link link-wrap z-2" aria-labelledby="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}" id="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}">
         <span class="visually-hidden">{{ card_product.title | escape }}</span>
     </a>
-</card-media>
+</div>
