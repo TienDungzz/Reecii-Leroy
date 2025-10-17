@@ -62,7 +62,7 @@
   endcapture
 
   capture account
-    render 'header-account', settings: sec_stts, enable_account: sec_stts.show_account
+    render 'header-account', sec_stts: sec_stts, enable_account: sec_stts.show_account
   endcapture
 
   capture actions
@@ -113,7 +113,7 @@
   # Handle logo row
   if sec_stts.logo_row == 'bottom'
     capture mobile_logo
-      render 'header-logo', header_settings: sec_stts, blocks: section.blocks, class: 'thinh-logo lg:none'
+      render 'header-logo', header_settings: sec_stts, blocks: section.blocks, class: 'lg:none'
     endcapture
   endif
 
@@ -260,7 +260,8 @@
           search: search,
           mobile_search: mobile_search,
           multi_tab_menu: multi_tab_menu,
-          message: message
+          message: message,
+          color: scheme
         %}
       {% endcapture %}
 
@@ -327,7 +328,7 @@
     &:has(.header__icon--menu button.active),
     &:has(.mega-menu__list:hover),
     &:has(.list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])),
-    &:has(.details--dropdown:is(:hover)),
+    &:has(.details--dropdown:not(.details--dropdown-language):is(:hover)),
     &:has(.menu-list__list-item[slot='overflow'] .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])) {
       /* --header-logo-opacity: 1;
       --header-logo-inverse-opacity: 0;
@@ -352,8 +353,8 @@
 
       .header__row {
         /* Faster transition for "in" animation */
-        transition: color var(--animation-values-fast), border-color var(--animation-values-fast),
-          background-color var(--animation-values-fast);
+        /* transition: color var(--animation-values-fast), border-color var(--animation-values-fast),
+          background-color var(--animation-values-fast); */
 
         .button {
           --animation-speed: var(--animation-speed-fast);
@@ -388,7 +389,7 @@
       :has(
           .mega-menu__list:hover,
           .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating]),
-          .details--dropdown:is(:hover),
+          .details--dropdown:not(.details--dropdown-language):is(:hover),
           .menu-list__list-item[slot='overflow'] .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])
         )
     ) {
@@ -414,7 +415,10 @@
   .header-section {
     position: relative;
     z-index: var(--layer-raised);
-    height: var(--header-height);
+
+    &:not(:has(.header[transparent])) {
+      height: var(--header-height);
+    }
   }
 
   #header-group:has(#header-component[data-sticky-type]) {
@@ -425,22 +429,22 @@
   .header-section:has(> #header-component[data-sticky-type='scroll-up'][data-sticky-state='active']),
   .header-section:has(> #header-component[data-sticky-type='scroll-up'][data-sticky-state='idle']) {
 
-    .header-logo__image-container {
+    /* .header-logo__image-container {
       width: calc(var(--header-logo-image-width-mobile) * 0.75);
       height: calc(var(--header-logo-image-height-mobile) * 0.75);
-      transition: width var(--animation-speed), height var(--animation-speed);
+      transition: width var(--animation-speed-slow) var(--animation-easing), height var(--animation-speed-slow) var(--animation-easing);
 
       @media screen and (min-width: 750px) {
         width: calc(var(--header-logo-image-width) * 0.75);
         height: calc(var(--header-logo-image-height) * 0.75);
       }
-    }
+    } */
 
-    .header__row {
+    /* .header__row {
       padding-block-start: min(calc(var(--padding-block-start) * 0.5), 1rem);
       padding-block-end: min(calc(var(--padding-block-end) * 0.5), 1rem);
       view-transition-name: header-row;
-    }
+    } */
   }
 
 
@@ -458,6 +462,7 @@
     opacity: 1;
   }
 
+  .header[data-sticky-type='always'][data-sticky-state='active'] ,
   .header[data-sticky-type='scroll-up'][data-sticky-state='active'] {
     view-transition-name: header-component;
     animation: header-sticky-slide-down var(--animation-speed) forwards;
@@ -822,136 +827,14 @@
   </script>
 {%- endif -%}
 
+<script
+  src="{{ 'header.js' | asset_url }}"
+  defer="defer"
+></script>
+
 {% javascript %}
 
-  class StickyHeader extends HTMLElement {
-    constructor() {
-      super();
 
-    }
-
-    connectedCallback() {
-      this.headerDrawerContainer = this.querySelector('.header__drawer-container');
-      this.headerMenu = this.querySelector('.header__menu');
-      this.headerRowTop = this.querySelector('.header__row--top');
-      this.stickyMode = this.getAttribute('data-sticky-type');
-      this.offscreen = false;
-
-      this.menuDrawerHiddenWidth = null;
-      this.intersectionObserver = null;
-      this.lastScrollTop = 0;
-
-      this.timeout = null;
-      this.animationDelay = 150;
-      this.setHeaderHeight();
-
-      if (this.stickyMode) {
-        this.observeStickyPosition(this.stickyMode === 'always');
-
-        if (this.stickyMode === 'scroll-up' || this.stickyMode === 'always') {
-          console.log('scroll-up or always');
-          document.addEventListener('scroll', this.handleWindowScroll.bind(this));
-        }
-      }
-    }
-
-    disconnectedCallback() {
-      this.setHeaderHeight();
-      this.intersectionObserver?.disconnect();
-      document.removeEventListener('scroll', this.handleWindowScroll.bind(this));
-      document.body.style.setProperty('--header-height', '0px');
-    }
-
-    setHeaderHeight() {
-      const { height } = this.getBoundingClientRect();
-      document.body.style.setProperty('--header-height', `${height}px`);
-
-      // Check if the menu drawer should be hidden in favor of the header menu
-      if (this.menuDrawerHiddenWidth && window.innerWidth > this.menuDrawerHiddenWidth) {
-        this.updateMenuVisibility(false);
-      }
-    }
-
-    observeStickyPosition(alwaysSticky = true) {
-      if (this.intersectionObserver) return;
-
-      const config = {
-        threshold: alwaysSticky ? 1 : 0,
-      };
-
-      this.intersectionObserver = new IntersectionObserver(([entry]) => {
-        if (!entry) return;
-
-        const { isIntersecting } = entry;
-
-        if (alwaysSticky) {
-          this.dataset.stickyState = isIntersecting ? 'inactive' : 'active';
-        } else {
-          this.offscreen = !isIntersecting || this.dataset.stickyState === 'active';
-        }
-      }, config);
-
-      this.intersectionObserver.observe(this);
-    };
-
-    handleWindowScroll() {
-      if (!this.offscreen && this.stickyMode !== 'always') return;
-
-      const scrollTop = document.scrollingElement?.scrollTop ?? 0;
-      const isScrollingUp = scrollTop < this.lastScrollTop;
-
-      if (this.timeout) {
-        clearTimeout(this.timeout);
-        this.timeout = null;
-      }
-
-      if (this.stickyMode === 'always') {
-        const isAtTop = this.getBoundingClientRect().top >= 0;
-
-        if (isAtTop) {
-          this.dataset.scrollDirection = 'none';
-        } else if (isScrollingUp) {
-          this.dataset.scrollDirection = 'up';
-        } else {
-          this.dataset.scrollDirection = 'down';
-        }
-
-        this.lastScrollTop = scrollTop;
-        return;
-      }
-
-      if (isScrollingUp) {
-        this.removeAttribute('data-animating');
-
-        if (this.getBoundingClientRect().top >= 0) {
-          // reset sticky state when header is scrolled up to natural position
-          this.offscreen = false;
-          this.dataset.stickyState = 'inactive';
-          this.dataset.scrollDirection = 'none';
-        } else {
-          // show sticky header when scrolling up
-          this.dataset.stickyState = 'active';
-          this.dataset.scrollDirection = 'up';
-        }
-      } else if (this.dataset.stickyState === 'active') {
-        this.dataset.scrollDirection = 'none';
-        // delay transitioning to idle hidden state for hiding animation
-        this.setAttribute('data-animating', '');
-
-        this.timeout = setTimeout(() => {
-          this.dataset.stickyState = 'idle';
-          this.removeAttribute('data-animating');
-        }, this.animationDelay);
-      } else {
-        this.dataset.scrollDirection = 'none';
-        this.dataset.stickyState = 'idle';
-      }
-
-      this.lastScrollTop = scrollTop;
-    }
-  }
-
-  if (!customElements.get('header-component')) customElements.define('header-component', StickyHeader);
 {% endjavascript %}
 
 {% schema %}
@@ -2395,7 +2278,7 @@
       "id": "color_scheme_search_inline",
       "label": "t:settings.search",
       "default": "primary",
-      "visible_if": "{{ settings.search_type == 'inline' }}"
+      "visible_if": "{{ section.settings.show_search }}"
     },
     {
       "type": "color_scheme",

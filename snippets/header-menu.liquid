@@ -14,8 +14,10 @@
   endif
 -%}
 
-<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+{% comment %} <link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'"> {% endcomment %}
+{{ 'component-list-menu.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'component-mega-menu.css' | asset_url | stylesheet_tag: preload: true }}
 <noscript>
   {{ 'component-list-menu.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-mega-menu.css' | asset_url | stylesheet_tag: preload: true }}
@@ -45,56 +47,7 @@
         {%- for link in header_settings.menu.links -%}
           <li>
             {%- if link.links != blank -%}
-              {%- liquid
-                assign mega_menu_1 = blocks | where: 'type', 'mega_menu_1'
-                assign mega_menu_2 = blocks | where: 'type', 'mega_menu_2'
-                assign mega_menu_3 = blocks | where: 'type', 'mega_menu_3'
-
-                assign check_mega_menu_1 = false
-                assign check_mega_menu_2 = false
-                assign check_mega_menu_3 = false
-
-                assign has_mega_menu_1 = false
-                assign has_mega_menu_2 = false
-                assign has_mega_menu_3 = false
-
-                assign menu_title = link.title | escape | downcase | handle
-
-                if mega_menu_1.size > 0
-                  assign check_mega_menu_1 = true
-                endif
-                for block in mega_menu_1
-                  assign block_title = block.settings.menu_item | escape | downcase | handle
-                  if block_title == menu_title
-                    assign block = block
-                    assign has_mega_menu_1 = true
-                  endif
-                endfor
-
-                if mega_menu_2.size > 0
-                  assign check_mega_menu_2 = true
-                endif
-                for block in mega_menu_2
-                  assign block_title = block.settings.menu_item | escape | downcase | handle
-                  if block_title == menu_title
-                    assign block = block
-                    assign has_mega_menu_2 = true
-                  endif
-                endfor
-
-                if mega_menu_3.size > 0
-                  assign check_mega_menu_3 = true
-                endif
-                for block in mega_menu_3
-                  assign block_title = block.settings.menu_item | escape | downcase | handle
-                  if block_title == menu_title
-                    assign block = block
-                    assign has_mega_menu_3 = true
-                  endif
-                endfor
-
-                assign icon_type = section.settings.icon_type
-
+              {% comment %}
                 if check_mega_menu_1 and has_mega_menu_1
                   render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, sec_settings: section.settings, class_item_hover_reveal: class_item_hover_reveal
                 elsif check_mega_menu_2 and has_mega_menu_2
@@ -104,7 +57,95 @@
                 else
                   render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type, sec_settings: section.settings, class_item_hover_reveal: class_item_hover_reveal
                 endif
-              -%}
+              {% endcomment %}
+              <details
+                id="Details-HeaderMenu-{{ forloopIndex }}"
+                class="details--dropdown mega-menu"
+                is="dropdown-details"
+                activate-event="hover"
+                data-index="0"
+              >
+                <summary
+                  id="HeaderMenu-{{ link.handle }}"
+                  class="
+                    details__summary
+                    list-menu__item menu__link--level-1 header__menu-item list-menu__item link focus-inset link--hover-underline
+                    {% render 'highlight-class', order: '1', keys: keys, compare: link.title, settings: sec_settings %}
+                  "
+                  {%- if link.links != blank -%}
+                    aria-controls="submenu-{{ forloop.index }}"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  {%- endif -%}
+                  style="{%  render 'highlight-style', order: '1', keys: keys, compare: link.title, settings: sec_settings %}"
+                >
+                  {% if is_vertical_menu %}
+                    {% liquid
+                      assign width = 20
+
+                      assign ratio = 1
+
+                      assign image_style = 'width: ' | append: width | append: 'px;' | append: ';' | append: '--media-adapt-ratio:' | append: ratio | append: ';'
+
+                      assign image_sources = 'jpg,png,webp,avif' | split: ','
+                      assign found_image = false
+                    -%}
+
+                    {% for ext in image_sources %}
+                      {% assign ext = ext | strip %}
+                      {% assign item_image = link.handle | downcase | replace: ' ', '-' | append: '.' | append: ext %}
+                      {% if images[item_image] != blank and found_image == false %}
+                        {% assign found_image = true %}
+                        {% assign image = item_image | file_url %}
+                        <span class="icon-image" style="{{ image_style }}">
+                          <img
+                            src="{{ image }}"
+                            srcset="{{ image }} 450w, {{ image }} 900w"
+                            width="450"
+                            height="450"
+                            sizes="{{ sizes }}"
+                            loading="lazy"
+                            alt="{{ shop.name | escape }}"
+                          >
+                        </span>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                  <a
+                    class="text{% if link.child_active %} header__active-menu-item{% endif %}"
+                    {% if link.url != blank %}
+                      href="{{ link.url }}"
+                    {% else %}
+                      role="link" aria-disabled="true"
+                    {% endif %}
+                  >
+                    {{- link.title | escape -}}
+                  </a>
+                  {% if icon_type == 'caret' %}
+                    <span class="svg-wrapper">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  {% endif %}
+                  {% render 'highlight-label-menu',
+                    order: '1',
+                    keys: keys,
+                    compare: link.title,
+                    settings: sec_settings
+                  %}
+                </summary>
+                <div class="details__list mega-menu__content z-1 motion-reduce global-settings-popup color-{{ section.settings.color_scheme_top }}" tabindex="-1">
+                  {%- render 'header-nav-mega',
+                    blocks: blocks,
+                    link: link,
+                    forloopIndex: forloop.index,
+                    block: block,
+                    icon_type: icon_type,
+                    keys: keys,
+                    sec_settings: section.settings,
+                    class_item_hover_reveal: class_item_hover_reveal
+                  -%}
+                </div>
+              </details>
             {%- else -%}
               <a
                 id="HeaderMenu-{{ link.handle }}"
@@ -129,141 +170,4 @@
 </div>
 
 {%- stylesheet -%}
-  .header__inline-menu {
-    --submenu-animation-speed: var(--animation-speed-slowest);
-    --submenu-opacity: 0;
-    --submenu-height-transition: 0px;
-  }
-
-  .mega-menu__content:has(.mega-menu__collage-wrapper) {
-    padding-bottom: 0;
-
-    .mega-menu__list {
-      padding-bottom: 3rem;
-    }
-  }
-  .mega-menu__collage-wrapper {
-    padding-block: var(--padding-4xl);
-  }
-
-  .list-menu__item.highlighted-item {
-    --color-foreground: var(--highlighted-color);
-    --color-foreground-rgb: var(--highlighted-color-rgb);
-  }
-
-  .list-menu__item .label-wrapper {
-    position: absolute;
-    right: 7px;
-    top: -9px;
-  }
-
-  .header__menu-item {
-    position: relative;
-  }
-
-  .header__inline-menu .label-wrapper {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--gap-xs);
-    font-size: 1.2rem;
-    pointer-events: none;
-  }
-
-  .header__inline-menu .label {
-    display: inline-block;
-    height: 15px;
-    text-transform: capitalize;
-    text-align: center;
-    border-radius: var(--badge-corner-radius);
-    padding: 0 var(--padding-xs);
-    position: relative;
-    color: var(--color-foreground);
-    background-color: var(--color-background);
-
-    &::before {
-      content: '';
-      position: absolute;
-      left: 50%;
-      bottom: -9px;
-      transform: translate(-50%) rotate(180deg);
-      border: 5px solid transparent;
-      border-bottom-color: var(--color-background);
-    }
-
-    &.new-label {
-      --color-foreground: var(--new-color);
-      --color-foreground-rgb: var(--new-color-rgb);
-      --color-background: var(--new-bg);
-      --color-background-rgb: var(--new-bg-rgb);
-    }
-
-    &.sale-label {
-      --color-foreground: var(--sale-color);
-      --color-foreground-rgb: var(--sale-color-rgb);
-      --color-background: var(--sale-bg);
-      --color-background-rgb: var(--sale-bg-rgb);
-    }
-  }
-
-  .mega-menu__content .label-wrapper {
-    margin-left: var(--margin-xs);
-  }
-
-  .mega-menu__content .label:before {
-    left: -8px;
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%) rotate(270deg);
-  }
-
-  .header__inline-menu .details--dropdown > .list-menu--wrapper:not(.header__submenu-wrapper)  {
-    clip-path: rect(0 100% var(--submenu-height-transition) 0);
-    max-height: 70dvh;
-    transition: clip-path var(--submenu-animation-speed) var(--ease-out-smooth);
-  }
-
-  .header__inline-menu .details--dropdown > .list-menu--wrapper.header__submenu-wrapper {
-    opacity: var(--submenu-opacity);
-    visibility: hidden;
-    transform: translateY(-.4rem);
-    overflow: hidden;
-    transition: opacity var(--submenu-animation-speed) var(--ease-out-smooth), transform var(--submenu-animation-speed) var(--ease-out-smooth);
-  }
-
-  .header__inline-menu .details--dropdown > .list-menu--wrapper {
-    overflow-y: auto;
-    pointer-events: none;
-  }
-
-  .header__inline-menu .details--dropdown > .list-menu--wrapper:not(:has(.mega-menu__container)) {
-    overflow: visible;
-  }
-
-  .header__inline-menu .details--dropdown > .header__submenu-wrapper {
-    min-width: initial;
-    background: var(--color-background);
-  }
-
-  @media screen and (min-width: 1025px) {
-    .header__inline-menu .details--dropdown:hover .menu__link--level-1:before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 100%;
-      width: 100%;
-      height: var(--list-menu-height);
-      z-index: 1;
-    }
-
-    .header__inline-menu .details--dropdown:hover > .list-menu--wrapper {
-      --submenu-opacity: 1;
-      --submenu-height-transition: var(--submenu-height);
-      pointer-events: auto;
-
-      &.header__submenu-wrapper {
-        visibility: visible;
-        transform: translate3d(0, 0, 0);
-      }
-    }
-  }
 {%- endstylesheet -%}

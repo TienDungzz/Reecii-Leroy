@@ -1,7 +1,7 @@
 .mega-menu {
   position: static;
 }
-.mega-menu__content {
+.mega-menu__content:not(:has(>.header__submenu-wrapper)) {
   background: var(--color-background);
   border-left: 0;
   border-radius: 0;
@@ -19,6 +19,13 @@
     padding-inline: var(--padding-4xl);
   }
 }
+
+.mega-menu__content:has(>.header__submenu-wrapper) {
+  position: absolute;
+  width: 20rem;
+  border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+}
+
 .shopify-section-header-sticky .mega-menu__content {
   max-height: calc(100vh - var(--header-bottom-position-desktop, 20rem) - 4rem);
 }
