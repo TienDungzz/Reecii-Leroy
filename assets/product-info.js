@@ -45,7 +45,6 @@ if (!customElements.get('product-info')) {
       }
 
       initVariantSyncHandlers() {
-        // Subscribe to variant change events to update sticky variants
         this.variantChangeUnsubscriber = subscribe(
           PUB_SUB_EVENTS.variantChange,
           this.handleVariantChangeForSticky.bind(this)
@@ -54,31 +53,27 @@ if (!customElements.get('product-info')) {
 
       handleVariantChangeForSticky({ data }) {
         if (data.sectionId !== this.sectionId) return;
-        if (this.isSyncingVariant) return; // Prevent infinite loop
+        if (this.isSyncingVariant) return;
         
         this.isSyncingVariant = true;
 
         try {
-          // Update sticky variant selectors to match main product
           const stickyVariantSelects = document.querySelector('variant-selects[data-context^="sticky"]');
           if (!stickyVariantSelects) return;
 
           const mainVariantSelects = this.variantSelectors;
           if (!mainVariantSelects) return;
 
-          // Sync all selected options from main to sticky
           const mainSelectedOptions = mainVariantSelects.querySelectorAll('select option[selected], fieldset input:checked');
           
           mainSelectedOptions.forEach((mainOption) => {
             const optionValueId = mainOption.dataset.optionValueId;
             if (!optionValueId) return;
 
-            // Find corresponding option in sticky cart
             const stickyOption = stickyVariantSelects.querySelector(`[data-option-value-id="${optionValueId}"]`);
             if (!stickyOption) return;
 
             if (stickyOption.tagName === 'INPUT' && stickyOption.type === 'radio') {
-              // Don't trigger change event to avoid infinite loop
               if (!stickyOption.checked) {
                 stickyVariantSelects.querySelectorAll(`input[type='radio']`).forEach(opt => opt.classList.remove('checked'));
                 stickyOption.classList.add('checked');
@@ -87,7 +82,6 @@ if (!customElements.get('product-info')) {
                   mainVariantSelects.querySelectorAll(`input[type='radio']`).forEach(opt => opt.classList.remove('checked'));
                   mainOption.classList.add('checked');
                 }
-                // Update the selected value display
                 const selectedValueSpan = stickyOption.closest('.product-form__input')?.querySelector('[data-selected-value]');
                 if (selectedValueSpan) {
                   selectedValueSpan.innerHTML = stickyOption.value;
@@ -96,13 +90,10 @@ if (!customElements.get('product-info')) {
             } else if (stickyOption.tagName === 'OPTION') {
               const select = stickyOption.closest('select');
               if (select && select.value !== stickyOption.value) {
-                // Remove selected from all options
                 Array.from(select.options).forEach(opt => opt.removeAttribute('selected'));
-                // Set new selected option
                 stickyOption.setAttribute('selected', 'selected');
                 select.value = stickyOption.value;
                 
-                // Update swatch display if exists
                 const swatchValue = stickyOption.dataset.optionSwatchValue;
                 const selectedDropdownSwatchValue = select.closest('.product-form__input')?.querySelector('[data-selected-value] > .swatch');
                 if (selectedDropdownSwatchValue) {
@@ -119,10 +110,8 @@ if (!customElements.get('product-info')) {
                   );
                 }
                 
-                // Update the selected value display text
                 const selectedValueSpan = select.closest('.product-form__input')?.querySelector('[data-selected-value]');
                 if (selectedValueSpan) {
-                  // Remove swatch element from text content
                   const textNode = selectedValueSpan.childNodes[selectedValueSpan.childNodes.length - 1];
                   if (textNode && textNode.nodeType === Node.TEXT_NODE) {
                     textNode.textContent = stickyOption.value;
@@ -137,10 +126,8 @@ if (!customElements.get('product-info')) {
             }
           });
 
-          // Update sticky variant button state
           this.updateStickyButtonState(data.variant);
         } finally {
-          // Reset syncing flag after a short delay
           setTimeout(() => {
             this.isSyncingVariant = false;
           }, 100);
@@ -161,7 +148,6 @@ if (!customElements.get('product-info')) {
             stickyQuantityForm.classList.remove('disabled');
           }
           
-          // Update button text based on inventory
           if (stickyButtonText) {
             const inventoryQty = variant.inventory_quantity || 0;
             const inventoryPolicy = variant.inventory_policy || 'deny';
@@ -183,7 +169,6 @@ if (!customElements.get('product-info')) {
           }
         }
 
-        // Update hidden variant id input in sticky form
         const stickyVariantInput = document.querySelector('#product-form-sticky-' + this.dataset.section + ' input[name="id"]');
         if (stickyVariantInput && variant) {
           stickyVariantInput.value = variant.id;
@@ -205,20 +190,16 @@ if (!customElements.get('product-info')) {
       initStickyQuantityHandlers() {
         if (!this.stickyQuantityInput || !this.quantityInput) return;
 
-        // Initialize sticky value to match main
         this.syncStickyFromMain();
 
-        // Listen to sticky input changes → update main
         const onStickyChange = () => this.syncMainFromSticky();
         this.stickyQuantityInput.addEventListener('input', onStickyChange);
         this.stickyQuantityInput.addEventListener('change', onStickyChange);
 
-        // Listen to main input changes → update sticky
         const onMainChange = () => this.syncStickyFromMain();
         this.quantityInput.addEventListener('input', onMainChange);
         this.quantityInput.addEventListener('change', onMainChange);
 
-        // Ensure sticky constraints mirror main
         this.syncStickyConstraintsFromMain();
       }
 
@@ -227,9 +208,7 @@ if (!customElements.get('product-info')) {
         if (this.isSyncingQuantity) return;
         this.isSyncingQuantity = true;
         try {
-          // Mirror value
           this.quantityInput.value = this.stickyQuantityInput.value;
-          // Dispatch change so existing listeners react
           this.quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
           publish?.(PUB_SUB_EVENTS.quantityUpdate, undefined);
         } finally {
@@ -243,7 +222,6 @@ if (!customElements.get('product-info')) {
         this.isSyncingQuantity = true;
         try {
           this.stickyQuantityInput.value = this.quantityInput.value;
-          // Keep constraints in sync as well
           this.syncStickyConstraintsFromMain();
         } finally {
           this.isSyncingQuantity = false;
@@ -556,7 +534,6 @@ if (!customElements.get('product-info')) {
           const destinationSet = new Set(mediaGalleryDestinationItems.map(({ dataset }) => dataset.mediaId));
           let shouldRefresh = false;
 
-          // add items from new data not present in DOM
           for (let i = mediaGalleryDestinationItems.length - 1; i >= 0; i--) {
             if (!sourceSet.has(mediaGalleryDestinationItems[i].dataset.mediaId)) {
               mediaGallerySource.prepend(mediaGalleryDestinationItems[i]);
@@ -564,7 +541,6 @@ if (!customElements.get('product-info')) {
             }
           }
 
-          // remove items from DOM not present in new data
           for (let i = 0; i < mediaGallerySourceItems.length; i++) {
             if (!destinationSet.has(mediaGallerySourceItems[i].dataset.mediaId)) {
               mediaGallerySourceItems[i].remove();
@@ -572,10 +548,8 @@ if (!customElements.get('product-info')) {
             }
           }
 
-          // refresh
           if (shouldRefresh) [mediaGallerySourceItems, sourceSet, sourceMap] = refreshSourceData();
 
-          // if media galleries don't match, sort to match new data order
           mediaGalleryDestinationItems.forEach((destinationItem, destinationIndex) => {
             const sourceData = sourceMap.get(destinationItem.dataset.mediaId);
 
@@ -585,19 +559,16 @@ if (!customElements.get('product-info')) {
                 mediaGallerySource.querySelector(`li:nth-of-type(${destinationIndex + 1})`)
               );
 
-              // refresh source now that it has been modified
               [mediaGallerySourceItems, sourceSet, sourceMap] = refreshSourceData();
             }
           });
         }
 
-        // set featured media as active in the media gallery
         this.querySelector(`media-gallery`)?.setActiveMedia?.(
           `${this.dataset.section}-${variantFeaturedMediaId}`,
           true
         );
 
-        // update media modal
         const modalContent = this.productModal?.querySelector(`.product-media-modal__content`);
         const newModalContent = html.querySelector(`product-modal .product-media-modal__content`);
         if (modalContent && newModalContent) modalContent.innerHTML = newModalContent.innerHTML;
@@ -665,9 +636,7 @@ if (!customElements.get('product-info')) {
                 current.removeAttribute(attribute);
               }
             }
-            // Keep sticky input attributes in sync with main
             this.syncStickyConstraintsFromMain();
-            // Also mirror current value
             this.syncStickyFromMain();
           } else {
             current.innerHTML = updated.innerHTML;
@@ -741,7 +710,6 @@ if (!customElements.get('product-info')) {
           }
         };
 
-        // Try immediately (in case attributes are already present), then again after a short delay.
         updateAlert();
         setTimeout(updateAlert, 100);
 
@@ -783,7 +751,6 @@ if (!customElements.get('product-info')) {
           quantityInput.setAttribute('data-inventory-quantity', inventoryQuantity);
           quantityInput.setAttribute('data-inventory-policy', inventoryPolicy);
 
-          // Mirror to sticky input as well
           if (this.stickyQuantityInput) {
             this.stickyQuantityInput.setAttribute('data-inventory-quantity', inventoryQuantity);
             this.stickyQuantityInput.setAttribute('data-inventory-policy', inventoryPolicy);
@@ -916,6 +883,3 @@ class VariantSelects extends HTMLElement {
 }
 if (!customElements.get("variant-selects"))
   customElements.define("variant-selects", VariantSelects);
-
-// Sticky cart sync is now handled in sticky-add-to-cart.liquid
-// This code has been moved to avoid conflicts

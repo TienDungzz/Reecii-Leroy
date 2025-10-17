@@ -28,7 +28,7 @@
               assign enable_variant_image = false
               case swatch_type
                 when 'variant_image'
-                  assign background_image = variant.image.src | product_img_url: '40x'
+                  assign background_image = variant.image.src | image_url: width: '40x'
                   if variant.image
                     assign enable_variant_image = true
                   endif
@@ -42,7 +42,7 @@
                   assign has_image = false
 
                   if metaobject_image != blank
-                    assign background_image = metaobject_image | product_img_url: '120x'
+                    assign background_image = metaobject_image | image_url: width: '120x'
                     assign enable_variant_image = true
                     assign has_metaobject = true
                     assign has_image = true
@@ -51,7 +51,7 @@
                     assign enable_variant_image = true
                     assign has_metaobject = true
                   elsif variant.image
-                    assign background_image = variant.image.src | product_img_url: '120x'
+                    assign background_image = variant.image.src | image_url: width: '120x'
                     assign enable_variant_image = true
                   endif
               endcase
@@ -68,7 +68,7 @@
                     data-title="{{ color }}"
                     data-value="{{ color | handle }}"
                     data-variant-id="{{ variant.id }}"
-                    data-variant-img="{{ variant.image.src | product_img_url: '800x' }}"
+                    data-variant-img="{{ variant.image.src | image_url: width: '800x' }}"
                   {% else %}
                     class="swatch color-swacth-color--{{ color | handle }} block max-w-full swatch--unavailable"
                   {% endif %}

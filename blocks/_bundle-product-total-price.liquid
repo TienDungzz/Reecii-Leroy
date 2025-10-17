@@ -1,3 +1,4 @@
+{% comment %} INSERT_YOUR_REWRITE_HERE {% endcomment %}
 {%- liquid
   assign block_settings = block.settings
   assign bundle_discount_rate = product.metafields.custom.bundle_discount_rate | plus: 0 | divided_by: 100.00
@@ -44,20 +45,20 @@
   "
   {{ block.shopify_attributes }}
 >
-    <div class="bundle-product-totalPrice">
-        {%- if bundle_discount_rate > 0 -%}
-            <span class="old-price bundle-old-price">
-                {{ cart.total_price | money }}
-            </span>
-            <span class="bundle-price" data-bundle-product-price data-bundle-discount-rate="{{ bundle_discount_rate }}">
-                {%- assign compensation = 1 | minus: bundle_discount_rate -%}
-                {{ cart.total_price | times: compensation | money }}
-            </span>
-        {%- endif -%}
-        <span class="price" data-bundle-product-total>
-            {{ cart.total_price | money }}
-        </span>
-    </div>
+  <div class="bundle-product-totalPrice price{%- if bundle_discount_rate > 0 -%} price--on-sale{%- endif -%}">
+    {%- if bundle_discount_rate > 0 -%}
+      <span class="old-price bundle-old-price price-item--regular">
+        {{ cart.total_price | money }}
+      </span>
+      <span class="bundle-price" data-bundle-product-price data-bundle-discount-rate="{{ bundle_discount_rate }}">
+        {%- assign compensation = 1 | minus: bundle_discount_rate -%}
+        {{ cart.total_price | times: compensation | money }}
+      </span>
+    {%- endif -%}
+    <span class="price-item price-item--sale price-item--last" data-bundle-product-total>
+      {{ cart.total_price | money }}
+    </span>
+  </div>
 </product-price>
 
 {% schema %}
@@ -78,42 +79,15 @@
       "id": "type_preset",
       "label": "t:settings.preset",
       "options": [
-        {
-          "value": "",
-          "label": "t:options.default"
-        },
-        {
-          "value": "paragraph",
-          "label": "t:options.paragraph"
-        },
-        {
-          "value": "h1",
-          "label": "t:options.h1"
-        },
-        {
-          "value": "h2",
-          "label": "t:options.h2"
-        },
-        {
-          "value": "h3",
-          "label": "t:options.h3"
-        },
-        {
-          "value": "h4",
-          "label": "t:options.h4"
-        },
-        {
-          "value": "h5",
-          "label": "t:options.h5"
-        },
-        {
-          "value": "h6",
-          "label": "t:options.h6"
-        },
-        {
-          "value": "custom",
-          "label": "t:options.custom"
-        }
+        { "value": "", "label": "t:options.default" },
+        { "value": "paragraph", "label": "t:options.paragraph" },
+        { "value": "h1", "label": "t:options.h1" },
+        { "value": "h2", "label": "t:options.h2" },
+        { "value": "h3", "label": "t:options.h3" },
+        { "value": "h4", "label": "t:options.h4" },
+        { "value": "h5", "label": "t:options.h5" },
+        { "value": "h6", "label": "t:options.h6" },
+        { "value": "custom", "label": "t:options.custom" }
       ],
       "info": "t:info.edit_presets_in_theme_settings"
     },
@@ -122,14 +96,8 @@
       "id": "width",
       "label": "t:settings.width",
       "options": [
-        {
-          "value": "fit-content",
-          "label": "t:options.fit_content"
-        },
-        {
-          "value": "100%",
-          "label": "t:options.fill"
-        }
+        { "value": "fit-content", "label": "t:options.fit_content" },
+        { "value": "100%", "label": "t:options.fill" }
       ],
       "default": "100%"
     },
@@ -145,22 +113,10 @@
       "id": "font",
       "label": "t:settings.font",
       "options": [
-        {
-          "value": "var(--font-body--family)",
-          "label": "t:options.body"
-        },
-        {
-          "value": "var(--font-subheading--family)",
-          "label": "t:options.subheading"
-        },
-        {
-          "value": "var(--font-heading--family)",
-          "label": "t:options.heading"
-        },
-        {
-          "value": "var(--font-accent--family)",
-          "label": "t:options.accent"
-        }
+        { "value": "var(--font-body--family)", "label": "t:options.body" },
+        { "value": "var(--font-subheading--family)", "label": "t:options.subheading" },
+        { "value": "var(--font-heading--family)", "label": "t:options.heading" },
+        { "value": "var(--font-accent--family)", "label": "t:options.accent" }
       ],
       "default": "var(--font-body--family)",
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
@@ -170,76 +126,23 @@
       "id": "font_size",
       "label": "t:settings.size",
       "options": [
-        {
-          "value": "",
-          "label": "t:options.default"
-        },
-        {
-          "value": "0.625rem",
-          "label": "10px"
-        },
-        {
-          "value": "0.75rem",
-          "label": "12px"
-        },
-        {
-          "value": "0.875rem",
-          "label": "14px"
-        },
-        {
-          "value": "1rem",
-          "label": "16px"
-        },
-        {
-          "value": "1.125rem",
-          "label": "18px"
-        },
-        {
-          "value": "1.25rem",
-          "label": "20px"
-        },
-        {
-          "value": "1.5rem",
-          "label": "24px"
-        },
-        {
-          "value": "2rem",
-          "label": "32px"
-        },
-        {
-          "value": "2.5rem",
-          "label": "40px"
-        },
-        {
-          "value": "3rem",
-          "label": "48px"
-        },
-        {
-          "value": "3.5rem",
-          "label": "56px"
-        },
-        {
-          "value": "4.5rem",
-          "label": "72px"
-        },
-        {
-          "value": "5.5rem",
-          "label": "88px"
-        },
-        {
-          "value": "7.5rem",
-          "label": "120px"
-        },
-        {
-          "value": "9.5rem",
-          "label": "152px"
-        },
-        {
-          "value": "11.5rem",
-          "label": "184px"
-        }
+        { "value": "", "label": "t:options.default" },
+        { "value": "1.0rem", "label": "10px" },
+        { "value": "1.2rem", "label": "12px" },
+        { "value": "1.4rem", "label": "14px" },
+        { "value": "1.6rem", "label": "16px" },
+        { "value": "1.8rem", "label": "18px" },
+        { "value": "2.0rem", "label": "20px" },
+        { "value": "2.4rem", "label": "24px" },
+        { "value": "3.0rem", "label": "30px" },
+        { "value": "4.0rem", "label": "40px" },
+        { "value": "5.0rem", "label": "50px" },
+        { "value": "6.0rem", "label": "60px" },
+        { "value": "8.0rem", "label": "80px" },
+        { "value": "10.0rem", "label": "100px" },
+        { "value": "12.0rem", "label": "120px" }
       ],
-      "default": "1rem",
+      "default": "1.2rem",
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
     },
     {
@@ -247,18 +150,9 @@
       "id": "line_height",
       "label": "t:settings.line_height",
       "options": [
-        {
-          "value": "tight",
-          "label": "t:options.tight"
-        },
-        {
-          "value": "normal",
-          "label": "t:options.normal"
-        },
-        {
-          "value": "loose",
-          "label": "t:options.loose"
-        }
+        { "value": "tight", "label": "t:options.tight" },
+        { "value": "normal", "label": "t:options.normal" },
+        { "value": "loose", "label": "t:options.loose" }
       ],
       "default": "normal",
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
@@ -268,18 +162,9 @@
       "id": "letter_spacing",
       "label": "t:settings.letter_spacing",
       "options": [
-        {
-          "value": "tight",
-          "label": "t:options.tight"
-        },
-        {
-          "value": "normal",
-          "label": "t:options.normal"
-        },
-        {
-          "value": "loose",
-          "label": "t:options.loose"
-        }
+        { "value": "tight", "label": "t:options.tight" },
+        { "value": "normal", "label": "t:options.normal" },
+        { "value": "loose", "label": "t:options.loose" }
       ],
       "default": "normal",
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
@@ -289,14 +174,8 @@
       "id": "case",
       "label": "t:settings.case",
       "options": [
-        {
-          "value": "none",
-          "label": "t:options.default"
-        },
-        {
-          "value": "uppercase",
-          "label": "t:options.uppercase"
-        }
+        { "value": "none", "label": "t:options.default" },
+        { "value": "uppercase", "label": "t:options.uppercase" }
       ],
       "default": "none",
       "visible_if": "{{ block.settings.type_preset == 'custom' }}"
@@ -306,18 +185,9 @@
       "id": "color",
       "label": "t:settings.color",
       "options": [
-        {
-          "value": "var(--color-foreground)",
-          "label": "t:options.text"
-        },
-        {
-          "value": "var(--color-foreground-heading)",
-          "label": "t:options.heading"
-        },
-        {
-          "value": "var(--color-primary)",
-          "label": "t:options.link"
-        }
+        { "value": "var(--color-foreground)", "label": "t:options.text" },
+        { "value": "var(--color-foreground-heading)", "label": "t:options.heading" },
+        { "value": "var(--color-primary)", "label": "t:options.link" }
       ],
       "default": "var(--color-foreground)",
       "visible_if": "{{ block.settings.type_preset != 'rte' }}"

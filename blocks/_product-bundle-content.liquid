@@ -1,37 +1,14 @@
 {%- liquid
   assign scroll_reveal = settings.animations_reveal_on_scroll
+  assign columns_mobile = block.settings.mobile_columns
+  assign columns_desktop = block.settings.columns_carousel
+  assign columns_tablet = 2
+  if columns_desktop == 1
+    assign columns_tablet = 1
+  elsif columns_desktop >= 4
+    assign columns_tablet = 3
+  endif
 -%}
-
-{% stylesheet %}
-  .section-wrapper {
-    --section-height-offset: 0px;
-  }
-
-  .section[data-shopify-visual-preview] {
-    min-height: var(--section-preview-height);
-    padding-top: 0;
-  }
-
-  .section[data-shopify-visual-preview] .custom-section-background {
-    display: none;
-  }
-
-  body:has(> #header-group > .header-section > #header-component[transparent]):not(
-      :has(> #header-group > .header-section + .shopify-section)
-    )
-    > main
-    > .section-wrapper:first-child {
-    --section-height-offset: var(--header-group-height, 0);
-  }
-
-  .custom-section-background {
-    grid-column: 1 / -1;
-  }
-
-  .custom-section-content {
-    z-index: var(--layer-flat);
-  }
-{% endstylesheet %}
 
 {% capture children %}
   <div class="section-resource-list__header">
@@ -42,28 +19,33 @@
       data-shopify-visual-preview
     {%- endif -%}
   >
-    {%- assign space_between = block.settings.items_gap | times: 0.5 -%}
+    {%- liquid
+      assign space_between_desktop = block.settings.items_gap
+      assign space_between_tablet = space_between_desktop | times: 0.75
+      assign space_between_mobile = space_between_desktop | times: 0.5
+    -%}
+    
     {%- capture breakpoints -%}
       {
-        "750": { "slidesPerView": 3, "space_between": {{ block.settings.items_gap | times: 0.75 }} },
-        "1024": { "slidesPerView": 4, "space_between": {{ block.settings.items_gap }} }
+        "750": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ space_between_tablet }} },
+        "1024": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ space_between_desktop }} }
       }
     {%- endcapture -%}
     <swiper-component
       class="product-bundle-carousel-swiper-component size-full block"
       {%- render 'swiper-data',
         settings: block.settings,
-        slides_per_view: 2,
-        space_between: space_between,
+        slides_per_view: columns_mobile,
+        space_between: space_between_mobile,
         watch_slides_progress: true,
         breakpoints: breakpoints
       -%}
       style="
         {% render 'swiper-style',
-          columns_mobile: 2,
-          columns_tablet: 3,
-          columns_desktop: 4,
-          columns_gap: block.settings.items_gap,
+          columns_mobile: columns_mobile,
+          columns_tablet: columns_tablet,
+          columns_desktop: columns_desktop,
+          columns_gap: space_between_desktop,
         %}
       "
     >
@@ -71,15 +53,18 @@
         <ul
           id="Slider-{{ block.id }}"
           data-id="{{ block.id }}"
-          class="swiper-wrapper grid-layout-no-js list-unstyled{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} grid--{{ mobile_columns }}-col-mobile"
-          style="--card-grid-per-row-desktop: {{ columns_desktop }}; --card-grid-per-row-tablet: {{ columns_tablet }}; --card-grid-per-row-mobile: {{ mobile_columns }};"
+          class="swiper-wrapper grid-layout-no-js list-unstyled{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} grid--{{ columns_mobile }}-col-mobile"
+          style="--card-grid-per-row-desktop: {{ columns_desktop }}; --card-grid-per-row-tablet: {{ columns_tablet }}; --card-grid-per-row-mobile: {{ columns_mobile }};"
         >
           <li
             id="Slide-{{ product.id }}-1"
             class="bundle-product-item grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %} {% if product.available %} isChecked{% endif %}"
-            {% if scroll_reveal %}
-              style="--animation-order: 1;"
-            {% endif %}
+            style="
+              {% if scroll_reveal %}
+                --animation-order: 1;
+              {% endif %}
+              --items-gap: {{ block.settings.items_gap }}px;
+            "
             data-bundle-product-item-id="{{ product.id }}"
           >
             {% content_for 'block',
@@ -92,9 +77,12 @@
             <li
               id="Slide-{{ product_item.id }}-{{ forloop.index | plus: 1 }}"
               class="bundle-product-item grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %} {% if product_item.available %} isChecked{% endif %}"
-              {% if scroll_reveal %}
-                style="--animation-order: {{ forloop.index | plus: 1 }};"
-              {% endif %}
+              style="
+                {% if scroll_reveal %}
+                  --animation-order: {{ forloop.index | plus: 1 }};
+                {% endif %}
+                --items-gap: {{ block.settings.items_gap }}px;
+              "
               data-bundle-product-item-id="{{ product_item.id }}"
             >
               {% content_for 'block',
@@ -115,6 +103,15 @@
 {% endcapture %}
 
 {% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
+
+{% stylesheet %}
+  .section-wrapper { --section-height-offset: 0px; }
+  .section[data-shopify-visual-preview] { min-height: var(--section-preview-height); padding-top: 0; }
+  .section[data-shopify-visual-preview] .custom-section-background { display: none; }
+  body:has(> #header-group > .header-section > #header-component[transparent]):not(:has(> #header-group > .header-section + .shopify-section)) > main > .section-wrapper:first-child { --section-height-offset: var(--header-group-height, 0); }
+  .custom-section-background { grid-column: 1 / -1; }
+  .custom-section-content { z-index: var(--layer-flat); }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -372,13 +369,28 @@
     },
     {
       "type": "range",
-      "id": "gap",
-      "label": "t:settings.blocks_gap",
-      "min": 0,
-      "max": 100,
+      "id": "columns_carousel",
+      "min": 1,
+      "max": 5,
       "step": 1,
-      "unit": "px",
-      "default": 12
+      "default": 4,
+      "label": "t:settings.columns"
+    },
+    {
+      "type": "select",
+      "id": "mobile_columns",
+      "label": "t:settings.mobile_columns",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "2"
     },
     {
       "type": "range",

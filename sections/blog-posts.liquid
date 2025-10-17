@@ -155,11 +155,11 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
         </div>
       {% when 'carousel' %}
         {%- assign slides_per_view = mobile_columns -%}
-        {%- assign space_between = section.settings.items_gap | times: 0.5 -%}
+        {%- assign space_between = section.settings.items_gap -%}
         {%- capture breakpoints -%}
           {
             "750": { "slidesPerView": {{ columns_tablet }}, "space_between": {{ section.settings.items_gap | times: 0.75 }} },
-            "1024": { "slidesPerView": {{ columns_desktop }}, "space_between": {{ section.settings.items_gap }} }
+            "1024": { "slidesPerView": {{ columns_desktop }}, "space_between": {{ section.settings.items_gap | times: 0.5 }} }
           }
         {%- endcapture -%}
         <swiper-component
