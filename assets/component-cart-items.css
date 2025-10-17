@@ -8,7 +8,6 @@ cart-items-component .cart-items td {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
 .cart-items th, .cart-items td {
@@ -207,7 +206,7 @@ cart-remove-button .icon-close {
 
 /* ----------- Responsive ----------- */
 
-@media (max-width: 749px) {
+@media screen and (max-width: 749px) {
   .cart-items, .cart-items thead, .cart-items tbody {
     display: block; width: 100%;
   }
@@ -228,7 +227,14 @@ cart-remove-button .icon-close {
   .cart-item__details  { grid-column: 2 / 4; }
   .cart-item__quantity { grid-column: 2 / 5; }
   .cart-item__quantity-wrapper { flex-wrap: wrap; }
-  .cart-item__totals   { display: flex; align-items: flex-start; justify-content: flex-end; }
+
+  .cart-item__totals {
+    text-align: center;
+    order: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
 }
 
 @media (min-width: 750px) {
@@ -239,7 +245,7 @@ cart-remove-button .icon-close {
     width: 100%;
     display: table;
   }
-  cart-items-component .cart-items { display: block; }
+  /* cart-items-component .cart-items { display: block; } */
   .cart-items th { border-bottom: 0.1rem solid rgb(var(--color-foreground-rgb) / var(--opacity-8)); }
   cart-items-component .cart-items th {
     border-bottom: none;
@@ -248,7 +254,7 @@ cart-remove-button .icon-close {
   .cart-items th + th { padding-left: 4rem; }
   cart-items-component .cart-items thead tr { background-color: var(--bg-light-gray); }
   cart-items-component .cart-items th + th { padding-inline: 0; }
-  cart-items-component .cart-items td { padding: var(--size-25) 0; }
+  cart-items-component .cart-items td { padding: var(--size-25) 0; justify-content: center; }
   cart-items-component .cart-items td:first-child { padding-left: var(--size-25); }
   .cart-item { display: table-row; }
   .cart-item__details { width: 35rem; }
@@ -272,7 +278,6 @@ cart-remove-button .icon-close {
 }
 
 /* ----------- Cart Items Table (Custom) ----------- */
-
 cart-items-component .cart__items {
   --cart-item-media-width-min: 2.5rem;
   --cart-item-media-width-max: 7.5rem;
@@ -284,10 +289,10 @@ cart-items-component .cart__items {
 cart-items-component .cart-items__table-row {
   --cart-item-media-width: 11rem;
   --cart-item-details-width: 1fr;
-  --cart-item-price-width: 6rem;
-  --cart-item-quantity-width: 11rem;
-  --cart-item-total-width: 6rem;
-  --cart-item-remove-width: 4.5rem;
+  --cart-item-price-width: 7rem;
+  --cart-item-quantity-width: 13rem;
+  --cart-item-total-width: 7rem;
+  --cart-item-remove-width: 5rem;
 
   display: grid;
   place-items: center;
@@ -299,13 +304,12 @@ cart-items-component .cart-items__table-row {
     var(--cart-item-total-width)
     var(--cart-item-remove-width);
   grid-template-areas: 'media details price quantity total remove';
+  grid-auto-flow: dense;
   column-gap: var(--gap-2xl);
   align-items: start;
   margin-bottom: var(--cart-items-gap);
 }
-cart-items-component .cart-items__table-row:last-child {
-  padding-bottom: 0;
-}
+
 cart-items-component .cart-items__table-row.cart-item__nested-line td:first-child {
   width: 60%;
   justify-self: right;
@@ -326,13 +330,37 @@ cart-items-component .cart-items__table-row.removing {
   }
 }
 
+/* ----------- Cart Items Mobile (Custom) ----------- */
+@media screen and (max-width: 749px) {
+  cart-items-component .cart-items__table-row {
+    --cart-item-price-width: 6rem;
+    display: grid;
+    grid-template-columns: clamp(10.5rem, 17cqi, 15rem) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto);
+    grid-template-areas:
+        "media details totals"
+        "media quantity remove";
+    gap: var(--gap-xs);
+    align-items: start;
+    padding-block: var(--cart-items-gap);
+    padding-inline: 0 var(--cart-items-gap);
+  }
+
+  cart-items-component .cart-item__remove {
+    align-items: flex-end;
+  }
+
+  cart-items-component .cart-item__totals {
+    justify-content: flex-start;
+  }
+}
+
 /* Table columns grid for larger container */
-@container cart__items (min-width: 800px) {
+@container cart__items (min-width: 900px) {
   cart-items-component .cart-items__table-row {
     --cart-item-media-width: 11rem;
-    --cart-item-details-width: 1fr;
+    --cart-item-details-width: 3fr;
     --cart-item-price-width: 1fr;
-    --cart-item-quantity-width: 25rem;
+    --cart-item-quantity-width: 15rem;
     --cart-item-total-width: 1fr;
     --cart-item-remove-width: 10rem;
 
