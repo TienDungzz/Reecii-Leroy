@@ -208,10 +208,10 @@ window.addEventListener("DOMContentLoaded", () => {
   // updateHeaderHeights();
 });
 
-// window.addEventListener("resize", () => {
-//   headerHeight();
-//   updateHeaderHeights();
-// });
+window.addEventListener("resize", () => {
+  headerHeight();
+  updateHeaderHeights();
+});
 
 window.addEventListener("scroll", () => {
 
@@ -362,6 +362,10 @@ function trapFocus(container, elementToFocus = container) {
 
   document.addEventListener("focusout", trapFocusHandlers.focusout);
   document.addEventListener("focusin", trapFocusHandlers.focusin);
+
+  console.log(`%c🔍 Log elementToFocus:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", elementToFocus);
+
+  console.log("clkick");
 
   elementToFocus?.focus();
 
@@ -905,6 +909,30 @@ window.addEventListener("DOMContentLoaded", () => {
   // menuTab();
   // appendTabMenuToMainMenu();
 });
+
+// class HeaderMenu extends HTMLElement {
+//   constructor() {
+//     super();
+//     this.header = document.querySelector(".header-wrapper");
+//   }
+
+//   onToggle() {
+//     if (!this.header) return;
+
+//     if (
+//       document.documentElement.style.getPropertyValue(
+//         "--header-bottom-position-desktop"
+//       ) !== ""
+//     )
+//       return;
+//     document.documentElement.style.setProperty(
+//       "--header-bottom-position-desktop",
+//       `${Math.floor(this.header.getBoundingClientRect().bottom)}px`
+//     );
+//   }
+// }
+// if (!customElements.get("header-menu"))
+//   customElements.define("header-menu", HeaderMenu);
 
 class MenuDrawer extends HTMLElement {
   constructor() {
@@ -1737,7 +1765,6 @@ class SwiperComponent extends HTMLElement {
 if (!customElements.get("swiper-component"))
   customElements.define("swiper-component", SwiperComponent);
 
-
 class ProductRecommendations extends HTMLElement {
   observer = undefined;
 
@@ -2239,6 +2266,10 @@ class RecentlyViewedProducts extends HTMLElement {
 }
 if (!customElements.get("recently-viewed-products"))
   customElements.define("recently-viewed-products", RecentlyViewedProducts);
+
+const moreButton = document.querySelectorAll(
+  ".card__swatch .item-swatch-more .number-showmore"
+);
 
 // Initialize 'show more swatches' buttons; safe to call multiple times
 function initMoreSwatchButtons(root = document) {
@@ -3681,3 +3712,4 @@ class SlideshowAnimated extends HTMLElement {
   }
 }
 if (!customElements.get('slideshow-animated')) customElements.define('slideshow-animated', SlideshowAnimated);
+
