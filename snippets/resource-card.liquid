@@ -217,10 +217,12 @@
         {% if resource_type == 'product' and show_variant_swatches %}
           {%- liquid
             assign product_swatch_option = settings.swatch | downcase
+            assign isColor = false
             assign variant_img = ''
             for option in resource.options_with_values
               assign option_name = option.name | downcase
               if product_swatch_option contains option_name
+                assign isColor = true
                 assign index = forloop.index0
                 assign position = forloop.index | minus: 1
                 assign variant_selected = option.selected_value
@@ -246,14 +248,16 @@
               assign alignment = 'start'
             endif
           -%}
-          <div class="resource-card__variant">
-            {%- render 'product-swatch',
-              product: resource,
-              variant_selected: variant_selected,
-              index: index,
-              alignment: alignment
-            -%}
-          </div>
+          {% if isColor %}
+            <div class="resource-card__variant">
+              {%- render 'product-swatch',
+                product: resource,
+                variant_selected: variant_selected,
+                index: index,
+                alignment: alignment
+              -%}
+            </div>
+          {% endif %}
         {% endif %}
       </div>
     </div>

@@ -1,10 +1,11 @@
 {%- if section.blocks.size > 0 -%}
   <multitasking-bar
-    class="multitasking-bar fixed h-auto z-2 no-js-hidden"
+    class="multitasking-bar fixed h-auto z-3 no-js-hidden"
     id="multitasking-bar"
     style="
       --right: 0.5%;
       --color-background: {{ section.settings.background.rgba }};
+      --color-background-rgb: {{ section.settings.background.rgb }};
       --color-foreground: {{ section.settings.icon.rgba }};
       --color-foreground-rgb: {{ section.settings.icon.rgb }};
       --secondary-icon-background: {{ section.settings.secondary_background.rgba }};
@@ -171,7 +172,6 @@
     transition: opacity var(--duration-long) ease, visibility var(--duration-long) ease,
       transform var(--duration-long) ease;
     will-change: transform;
-    overflow: hidden;
   }
 
   .multi-t__button {
@@ -264,10 +264,11 @@
   }
 
   .multi-t__social {
+    background-color: rgba(var(--color-background));
     right: calc(100% + 0.5rem);
     padding-inline: 0.5rem;
     border-radius: 3rem;
-    box-shadow: 0.2rem 0.4rem 0.9rem 0 rgb(176 173 173 / var(--opacity-35));
+    box-shadow: 0.2rem 0.4rem 0.9rem 0 rgb(var(--color-background-rgb) / var(--opacity-35));
     opacity: var(--opacity-0);
     visibility: hidden;
     transform: translate(2rem);
@@ -377,8 +378,8 @@
     left: 0;
     width: max-content;
     height: auto;
-    background-color: rgba(var(--color-foreground));
-    color: rgba(var(--color-background));
+    background-color: rgba(var(--color-background));
+    color: rgba(var(--color-foreground));
     padding: 0.4rem 0.6rem;
     border-radius: var(--style-border-radius-xl);
     transform: translate(calc(-100% - 2rem), -50%);
@@ -420,28 +421,28 @@
       "id": "background",
       "default": "#ffffff",
       "alpha": true,
-      "label": "t:settings.icon_background"
+      "label": "t:settings.background"
     },
     {
       "type": "color",
       "id": "icon",
       "default": "#000000",
       "alpha": true,
-      "label": "t:settings.icon"
+      "label": "t:settings.text_icon"
     },
     {
       "type": "color",
       "id": "secondary_background",
       "default": "#1199BB",
       "alpha": true,
-      "label": "t:settings.active_icon_background"
+      "label": "t:settings.background_color_active"
     },
     {
       "type": "color",
       "id": "secondary_icon",
       "default": "#FFFFFF",
       "alpha": true,
-      "label": "t:settings.active_icon"
+      "label": "t:settings.text_icon_active"
     }
   ],
   "presets": [

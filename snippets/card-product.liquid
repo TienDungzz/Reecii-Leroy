@@ -72,10 +72,12 @@
     endif
 
     assign product_swatch_option = settings.swatch | downcase
+    assign isColor = false
     assign variant_img = ''
     for option in card_product.options_with_values
       assign option_name = option.name | downcase
       if product_swatch_option contains option_name
+          assign isColor = true
           assign index = forloop.index0
           assign position = forloop.index | minus: 1
           assign variant_selected = option.selected_value
@@ -515,9 +517,11 @@
           </div>
         {%- endif -%}
       </div>
-      <div class="card__bottom">
-          {%- render 'product-swatch', product: card_product, variant_selected: variant_selected, index: index -%}
-      </div>
+      {% if isColor %}
+        <div class="card__bottom">
+            {%- render 'product-swatch', product: card_product, variant_selected: variant_selected, index: index -%}
+        </div>
+      {% endif %}
     </div>
   </div>
 {%- else -%}
