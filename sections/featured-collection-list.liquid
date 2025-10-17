@@ -69,14 +69,20 @@
 -%}
 
 {% comment %} Layout type [tabs-grid] and [tabs-carousel] {% endcomment %}
-{%- capture attr_tabs_header -%}
-  class="tabs-product-header flex md:justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }} overflow-x-a hide-scrollbar-mobile"
+{%- capture attr_tabs_header_wrapper -%}
+  class="tabs-product-header-wrapper flex md:justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }}"
   style="
-    --gap-x: {{ sec_stts.tabs_header_gap }}px;swiper
     {% if sec_stts.tabs_header_style == 'default' %}
       --pt: {{ sec_stts.tabs_header_padding_top | times: 0.1 }}rem;
       --pb: {{ sec_stts.tabs_header_padding_bottom | times: 0.1 }}rem;
     {% endif %}
+  "
+{%- endcapture -%}
+
+{%- capture attr_tabs_header -%}
+  class="tabs-product-header flex justify-start overflow-x-auto hide-scrollbar-mobile"
+  style="
+    --gap-x: {{ sec_stts.tabs_header_gap }}px;
   "
 {%- endcapture -%}
 
@@ -388,23 +394,27 @@
           {%- if section_collections_list != blank -%}
             {% if collection_list_count > 1 and has_tabs_header %}
               <template class="tabs-component-template">
-                <tabs-header {{ attr_tabs_header }}>
-                  {%- capture labels -%}
-                    {%- for collection in section_collections_list -%}
-                      {{ collection.title | escape | default: 'Collection title' }}
-                      {%- unless forloop.last -%}
-                        ,
-                      {%- endunless -%}
-                    {%- endfor -%}
-                  {%- endcapture -%}
+                  <tabs-header class="tabs-header" style="--tabs_header_max_width: {{ sec_stts.tabs_header_max_width }}%;">
+                    <div {{ attr_tabs_header_wrapper }} >
+                      <div {{ attr_tabs_header }} >
+                        {%- capture labels -%}
+                          {%- for collection in section_collections_list -%}
+                            {{ collection.title | escape | default: 'Collection title' }}
+                            {%- unless forloop.last -%}
+                              ,
+                            {%- endunless -%}
+                          {%- endfor -%}
+                        {%- endcapture -%}
 
-                  {%- render 'tab-header-item',
-                    id: sec_id,
-                    labels: labels,
-                    class: class_tabs_header_item,
-                    style: style_tabs_header_item
-                  -%}
-                </tabs-header>
+                        {%- render 'tab-header-item',
+                          id: sec_id,
+                          labels: labels,
+                          class: class_tabs_header_item,
+                          style: style_tabs_header_item
+                        -%}
+                      </div>
+                    </div>
+                  </tabs-header>
               </template>
             {% endif %}
           {%- else -%}
@@ -482,25 +492,27 @@
 
             <tabs-component class="{% if has_media_banner %}block overflow-hidden{% endif %} ">
               {%- if section_collections_list != blank -%}
-                {% if sec_stts.tabs_header_style == 'default' and collection_list_count > 1 and has_tabs_header %}
-                  <div {{ attr_tabs_header }}>
-                    {%- capture labels -%}
-                      {%- for collection in section_collections_list -%}
-                        {{ collection.title | escape | default: 'Collection title' }}
-                        {%- unless forloop.last -%}
-                          ,
-                        {%- endunless -%}
-                      {%- endfor -%}
-                    {%- endcapture -%}
+                <div {{ attr_tabs_header_wrapper }}>
+                  {% if sec_stts.tabs_header_style == 'default' and collection_list_count > 1 and has_tabs_header %}
+                    <div {{ attr_tabs_header }}>
+                      {%- capture labels -%}
+                        {%- for collection in section_collections_list -%}
+                          {{ collection.title | escape | default: 'Collection title' }}
+                          {%- unless forloop.last -%}
+                            ,
+                          {%- endunless -%}
+                        {%- endfor -%}
+                      {%- endcapture -%}
 
-                    {%- render 'tab-header-item',
-                      id: sec_id,
-                      labels: labels,
-                      class: class_tabs_header_item,
-                      style: style_tabs_header_item
-                    -%}
-                  </div>
-                {% endif %}
+                      {%- render 'tab-header-item',
+                        id: sec_id,
+                        labels: labels,
+                        class: class_tabs_header_item,
+                        style: style_tabs_header_item
+                      -%}
+                    </div>
+                  {% endif %}
+                </div>
 
                 {% for collection in section_collections_list %}
                   {%- liquid
@@ -688,226 +700,229 @@
 
             <tabs-component class="{% if has_media_banner %}block overflow-hidden{% endif %}">
               {%- if section_collections_list != blank -%}
-                {% if sec_stts.tabs_header_style == 'default' and collection_list_count > 1 and has_tabs_header %}
-                  <div {{ attr_tabs_header }}>
-                    {%- capture labels -%}
-                      {%- for collection in section_collections_list -%}
-                        {{ collection.title | escape | default: 'Collection title' }}
-                        {%- unless forloop.last -%}
-                          ,
-                        {%- endunless -%}
-                      {%- endfor -%}
-                    {%- endcapture -%}
+                  <div {{ attr_tabs_header_wrapper }} >
+                    {% if sec_stts.tabs_header_style == 'default' and collection_list_count > 1 and has_tabs_header %}
+                      <div {{ attr_tabs_header }}>
+                        {%- capture labels -%}
+                          {%- for collection in section_collections_list -%}
+                            {{ collection.title | escape | default: 'Collection title' }}
+                            {%- unless forloop.last -%}
+                              ,
+                            {%- endunless -%}
+                          {%- endfor -%}
+                        {%- endcapture -%}
 
-                    {%- render 'tab-header-item',
-                      id: sec_id,
-                      labels: labels,
-                      class: class_tabs_header_item,
-                      style: style_tabs_header_item
-                    -%}
-                  </div>
-                {% endif %}
-
-                {% for collection in section_collections_list %}
-                  {%- liquid
-                    assign section_collections = collection.products
-
-                    assign products_to_display = collection.all_products_count
-
-                    assign show_mobile_slider = false
-                    if sec_stts.swipe_on_mobile and products_to_display > columns_mobile_int
-                      assign show_mobile_slider = true
-                    endif
-
-                    assign more_in_collection = false
-                    if collection.all_products_count > max_items
-                      assign more_in_collection = true
-                    endif
-                  -%}
-
-                  <div
-                    id="tabs-{{ sec_id }}-{{ forloop.index }}"
-                    class="{{ class_tabs_product_grid }}{% if forloop.first %} --active{% endif %}"
-                  >
-                    {%- unless forloop.first -%}
-                      <template class="tabs-component-template">
-                    {%- endunless -%}
-                      {%- capture breakpoints -%}
-                        {
-                          "768": { "slidesPerView": {{ columns_tablet }} },
-                          "1024": { "slidesPerView": {{ columns_tablet }} },
-                          "1400": { "slidesPerView": {{ columns_desktop }} }
-                        }
-                      {%- endcapture -%}
-                      <swiper-component
-                        class="collection-carousel-swiper-component{% if section.settings.full_width and section.settings.section_width == 'page-width' %} full-width{% endif %}"
-                        {%- render 'swiper-data',
-                          settings: section.settings,
-                          loop: false,
-                          slides_per_view: columns_mobile,
-                          space_between: columns_gap,
-                          watch_slides_progress: true,
-                          breakpoints: breakpoints
+                        {%- render 'tab-header-item',
+                          id: sec_id,
+                          labels: labels,
+                          class: class_tabs_header_item,
+                          style: style_tabs_header_item
                         -%}
-                        style="
-                          {% render 'swiper-style',
-                            columns_mobile: columns_mobile,
-                            columns_tablet: columns_tablet,
-                            columns_desktop: columns_desktop,
-                            columns_gap: columns_gap,
-                          %}
-                        "
-                      >
-                        <div class="swiper"
-                        style="
-                          {% if sec_stts.pagination_type == 'bullets' and sec_stts.navigation == 'pagination' or sec_stts.navigation == 'arrows-pagination' %}
-                            --dots-top-offset: {{ sec_stts.dots_top_offset }}px;
-                          {% elsif sec_stts.pagination_type == 'progressbar' and sec_stts.navigation == 'pagination' or sec_stts.navigation == 'arrows-pagination' %}
-                            --progress-top-offset: {{ sec_stts.progress_top_offset }}px;
-                          {% endif %}
+                      </div>
+                    {% endif %}
+                  </div>
+                  {% for collection in section_collections_list %}
+                    {%- liquid
+                      assign section_collections = collection.products
+
+                      assign products_to_display = collection.all_products_count
+
+                      assign show_mobile_slider = false
+                      if sec_stts.swipe_on_mobile and products_to_display > columns_mobile_int
+                        assign show_mobile_slider = true
+                      endif
+
+                      assign more_in_collection = false
+                      if collection.all_products_count > max_items
+                        assign more_in_collection = true
+                      endif
+                    -%}
+
+                    <div
+                      id="tabs-{{ sec_id }}-{{ forloop.index }}"
+                      class="{{ class_tabs_product_grid }}{% if forloop.first %} --active{% endif %}"
+                    >
+                      {%- unless forloop.first -%}
+                        <template class="tabs-component-template">
+                      {%- endunless -%}
+                        {%- capture breakpoints -%}
+                          {
+                            "768": { "slidesPerView": {{ columns_tablet }} },
+                            "1024": { "slidesPerView": {{ columns_tablet }} },
+                            "1400": { "slidesPerView": {{ columns_desktop }} }
+                          }
+                        {%- endcapture -%}
+                        <swiper-component
+                          class="collection-carousel-swiper-component{% if section.settings.full_width and section.settings.section_width == 'page-width' %} full-width{% endif %}"
+                          {%- render 'swiper-data',
+                            settings: section.settings,
+                            loop: false,
+                            slides_per_view: columns_mobile,
+                            space_between: columns_gap,
+                            watch_slides_progress: true,
+                            breakpoints: breakpoints
+                          -%}
+                          style="
+                            {% render 'swiper-style',
+                              columns_mobile: columns_mobile,
+                              columns_tablet: columns_tablet,
+                              columns_desktop: columns_desktop,
+                              columns_gap: columns_gap,
+                            %}
                           "
                         >
-                          <ul
-                            id="Slider-{{ sec_id }}"
-                            data-id="{{ sec_id }}"
-                            class="swiper-wrapper grid-layout-no-js list-unstyled  lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+                          <div class="swiper"
+                          style="
+                            {% if sec_stts.pagination_type == 'bullets' and sec_stts.navigation == 'pagination' or sec_stts.navigation == 'arrows-pagination' %}
+                              --dots-top-offset: {{ sec_stts.dots_top_offset }}px;
+                            {% elsif sec_stts.pagination_type == 'progressbar' and sec_stts.navigation == 'pagination' or sec_stts.navigation == 'arrows-pagination' %}
+                              --progress-top-offset: {{ sec_stts.progress_top_offset }}px;
+                            {% endif %}
+                            "
                           >
-                            {% for product in section_collections limit: max_items %}
-                              <li
-                                id="Grid-item-{{ product.id }}-{{ forloop.index }}"
-                                class="grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
-                                {% if scroll_reveal %}
-                                  style="--animation-order: {{ forloop.index }};"
-                                {% endif %}
-                              >
-                                {% content_for 'block', type: 'card-product-flex', id: 'product-slide-item', closest.product: product %}
-                              </li>
-                            {% endfor %}
-                          </ul>
+                            <ul
+                              id="Slider-{{ sec_id }}"
+                              data-id="{{ sec_id }}"
+                              class="swiper-wrapper grid-layout-no-js list-unstyled  lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+                            >
+                              {% for product in section_collections limit: max_items %}
+                                <li
+                                  id="Grid-item-{{ product.id }}-{{ forloop.index }}"
+                                  class="grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
+                                  {% if scroll_reveal %}
+                                    style="--animation-order: {{ forloop.index }};"
+                                  {% endif %}
+                                >
+                                  {% content_for 'block', type: 'card-product-flex', id: 'product-slide-item', closest.product: product %}
+                                </li>
+                              {% endfor %}
+                            </ul>
 
-                          {%- if enable_navigation -%}
-                            <div class="swiper-btns-wrap small-hide">
-                              {%- render 'swiper-button' -%}
-                            </div>
-                          {%- endif -%}
-                          {%- if enable_pagination -%}
-                            <div class="swiper-pagination"></div>
-                          {%- endif -%}
-                        </div>
-                      </swiper-component>
-                      {%- if show_view_all and more_in_collection -%}
-                        <div class="center collection__view-all{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}">
-                          <a
-                            href="{{ collection.url }}"
-                            class="m-x-auto {% if view_all_style == 'link' %}link underlined-link{% elsif view_all_style == 'solid' %}button{% else %}button button-secondary{% endif %}"
-                            aria-label="{{ 'content.view_all_label' | t: collection_name: sec_stts.collection.title | escape }}"
-                          >
-                            {{ 'content.view_all' | t }}
-                          </a>
-                        </div>
-                      {%- endif -%}
-                    {%- unless forloop.first -%}
-                      </template>
-                    {%- endunless -%}
-                  </div>
-                {% endfor %}
+                            {%- if enable_navigation -%}
+                              <div class="swiper-btns-wrap small-hide">
+                                {%- render 'swiper-button' -%}
+                              </div>
+                            {%- endif -%}
+                            {%- if enable_pagination -%}
+                              <div class="swiper-pagination"></div>
+                            {%- endif -%}
+                          </div>
+                        </swiper-component>
+                        {%- if show_view_all and more_in_collection -%}
+                          <div class="center collection__view-all{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}">
+                            <a
+                              href="{{ collection.url }}"
+                              class="m-x-auto {% if view_all_style == 'link' %}link underlined-link{% elsif view_all_style == 'solid' %}button{% else %}button button-secondary{% endif %}"
+                              aria-label="{{ 'content.view_all_label' | t: collection_name: sec_stts.collection.title | escape }}"
+                            >
+                              {{ 'content.view_all' | t }}
+                            </a>
+                          </div>
+                        {%- endif -%}
+                      {%- unless forloop.first -%}
+                        </template>
+                      {%- endunless -%}
+                    </div>
+                  {% endfor %}
               {%- else -%}
-                {%- liquid
-                  assign limit = 4
+                  {%- liquid
+                    assign limit = 4
 
-                  for i in (1..4)
-                    assign section_collections_list = section_collections_list | append: ', '
-                  endfor
+                    for i in (1..4)
+                      assign section_collections_list = section_collections_list | append: ', '
+                    endfor
 
-                  assign section_collections_list = section_collections_list | split: ','
-                -%}
+                    assign section_collections_list = section_collections_list | split: ','
+                  -%}
 
-                {% if sec_stts.tabs_header_style == 'default' and has_tabs_header %}
-                  <div {{ attr_tabs_header }}>
-                    {%- capture labels -%}
-                      {%- for collection in section_collections_list limit: limit -%}
-                        {{ collection.title | escape | default: 'Collection title' }}
-                        {%- unless forloop.last -%}
-                          ,
-                        {%- endunless -%}
-                      {%- endfor -%}
-                    {%- endcapture -%}
+                  <div {{ attr_tabs_header_wrapper }} >
+                    {% if sec_stts.tabs_header_style == 'default' and has_tabs_header %}
+                      <div {{ attr_tabs_header }}>
+                        {%- capture labels -%}
+                          {%- for collection in section_collections_list limit: limit -%}
+                            {{ collection.title | escape | default: 'Collection title' }}
+                            {%- unless forloop.last -%}
+                              ,
+                            {%- endunless -%}
+                          {%- endfor -%}
+                        {%- endcapture -%}
 
-                    {%- render 'tab-header-item',
-                      id: sec_id,
-                      labels: labels,
-                      class: class_tabs_header_item,
-                      style: style_tabs_header_item
-                    -%}
-                  </div>
-                {% endif %}
-
-                {% for collection in section_collections_list limit: limit %}
-                  {%- assign section_collections = collection.products | default: (1..max_items) -%}
-
-                  <div
-                    id="tabs-{{ sec_id }}-{{ forloop.index }}"
-                    class="{{ class_tabs_product_grid }}{% if forloop.first %} --active{% endif %}"
-                  >
-                    <template class="tabs-component-template">
-                      {%- capture breakpoints -%}
-                        {
-                          "768": { "slidesPerView": {{ columns_tablet }} },
-                          "1024": { "slidesPerView": {{ columns_tablet }} },
-                          "1400": { "slidesPerView": {{ columns_desktop }} }
-                        }
-                      {%- endcapture -%}
-                      <swiper-component
-                        class="collection-carousel-swiper-component{% if section.settings.full_width and section.settings.section_width == 'page-width' %} full-width{% endif %}"
-                        {%- render 'swiper-data',
-                          settings: section.settings,
-                          loop: false,
-                          slides_per_view: columns_mobile,
-                          space_between: columns_gap,
-                          watch_slides_progress: true,
-                          breakpoints: breakpoints
+                        {%- render 'tab-header-item',
+                          id: sec_id,
+                          labels: labels,
+                          class: class_tabs_header_item,
+                          style: style_tabs_header_item
                         -%}
-                        style="
-                          {% render 'swiper-style',
-                            columns_mobile: columns_mobile,
-                            columns_tablet: columns_tablet,
-                            columns_desktop: columns_desktop,
-                            columns_gap: columns_gap,
-                          %}
-                        "
-                      >
-                        <div class="swiper">
-                          <ul
-                            id="Slider-{{ sec_id }}"
-                            data-id="{{ sec_id }}"
-                            class="swiper-wrapper grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
-                          >
-                            {% for product in section_collections limit: max_items %}
-                              <li
-                                id="Grid-item-{{ product.id }}-{{ forloop.index }}"
-                                class="grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
-                                {% if scroll_reveal %}
-                                  style="--animation-order: {{ forloop.index }};"
-                                {% endif %}
-                              >
-                                {% content_for 'block', type: 'card-product-flex', id: 'product-slide-item', closest.product: product %}
-                              </li>
-                            {% endfor %}
-                          </ul>
-
-                          {%- if enable_navigation -%}
-                            <div class="swiper-btns-wrap small-hide">
-                              {%- render 'swiper-button' -%}
-                            </div>
-                          {%- endif -%}
-                          {%- if enable_pagination -%}
-                            <div class="swiper-pagination"></div>
-                          {%- endif -%}
-                        </div>
-                      </swiper-component>
-                    </template>
+                      </div>
+                    {% endif %}
                   </div>
-                {% endfor %}
+
+                  {% for collection in section_collections_list limit: limit %}
+                    {%- assign section_collections = collection.products | default: (1..max_items) -%}
+
+                    <div
+                      id="tabs-{{ sec_id }}-{{ forloop.index }}"
+                      class="{{ class_tabs_product_grid }}{% if forloop.first %} --active{% endif %}"
+                    >
+                      <template class="tabs-component-template">
+                        {%- capture breakpoints -%}
+                          {
+                            "768": { "slidesPerView": {{ columns_tablet }} },
+                            "1024": { "slidesPerView": {{ columns_tablet }} },
+                            "1400": { "slidesPerView": {{ columns_desktop }} }
+                          }
+                        {%- endcapture -%}
+                        <swiper-component
+                          class="collection-carousel-swiper-component{% if section.settings.full_width and section.settings.section_width == 'page-width' %} full-width{% endif %}"
+                          {%- render 'swiper-data',
+                            settings: section.settings,
+                            loop: false,
+                            slides_per_view: columns_mobile,
+                            space_between: columns_gap,
+                            watch_slides_progress: true,
+                            breakpoints: breakpoints
+                          -%}
+                          style="
+                            {% render 'swiper-style',
+                              columns_mobile: columns_mobile,
+                              columns_tablet: columns_tablet,
+                              columns_desktop: columns_desktop,
+                              columns_gap: columns_gap,
+                            %}
+                          "
+                        >
+                          <div class="swiper">
+                            <ul
+                              id="Slider-{{ sec_id }}"
+                              data-id="{{ sec_id }}"
+                              class="swiper-wrapper grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+                            >
+                              {% for product in section_collections limit: max_items %}
+                                <li
+                                  id="Grid-item-{{ product.id }}-{{ forloop.index }}"
+                                  class="grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
+                                  {% if scroll_reveal %}
+                                    style="--animation-order: {{ forloop.index }};"
+                                  {% endif %}
+                                >
+                                  {% content_for 'block', type: 'card-product-flex', id: 'product-slide-item', closest.product: product %}
+                                </li>
+                              {% endfor %}
+                            </ul>
+
+                            {%- if enable_navigation -%}
+                              <div class="swiper-btns-wrap small-hide">
+                                {%- render 'swiper-button' -%}
+                              </div>
+                            {%- endif -%}
+                            {%- if enable_pagination -%}
+                              <div class="swiper-pagination"></div>
+                            {%- endif -%}
+                          </div>
+                        </swiper-component>
+                      </template>
+                    </div>
+                  {% endfor %}
               {%- endif -%}
             </tabs-component>
           {% when 'vertical', 'duo' %}
@@ -1640,6 +1655,16 @@
       "label": "t:settings.alignment_on_desktop",
       "default": "center",
       "visible_if": "{{ section.settings.layout_type == 'tabs-grid' or section.settings.layout_type == 'tabs-carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "tabs_header_max_width",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "default": 100,
+      "unit": "%",
+      "label": "t:settings.page_width"
     },
     {
       "type": "range",
