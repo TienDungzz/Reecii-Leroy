@@ -30,6 +30,9 @@
     assign fetch_priority_default = 'auto'
     assign image_fetch_priority = fetch_priority | default: fetch_priority_default
 
+    assign alt_default = image.alt | default: 'Image'
+    assign image_alt = alt | default: alt_default
+
     assign media_width_desktop = '100vw'
     assign media_width_mobile = '100vw'
 
@@ -61,7 +64,7 @@
       sizes: image_sizes,
       fetchpriority: image_fetch_priority,
       style: style_value,
-      alt: alt,
+      alt: image_alt,
       preload: preload,
       width: width
   }}

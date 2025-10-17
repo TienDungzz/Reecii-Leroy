@@ -1,12 +1,15 @@
 {%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}
   {{ 'quantity-popover.css' | asset_url | stylesheet_tag: preload: true }}
-
   {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-cart.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-totals.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-discounts.css' | asset_url | stylesheet_tag: preload: true }}
 
-  {%- render 'cart-drawer' -%}
+  {% capture cart_drawer_product_block %}
+    {% content_for 'block', id: 'cart-product', type: '_cart-product' %}
+  {% endcapture %}
+
+  {%- render 'cart-drawer', cart_drawer_product_block: cart_drawer_product_block -%}
 
   <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
@@ -17,6 +20,7 @@
     "name": "t:names.cart_drawer",
     "tag": "section",
     "class": "section-cart-drawer",
+    "limit": 1,
     "enabled_on": {
       "groups": ["custom.popup"]
     },

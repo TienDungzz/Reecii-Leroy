@@ -319,7 +319,7 @@ class CartItemsComponent extends HTMLElement {
     const cartTotal = this.querySelectorAll('.cart-total text-loader-component');
 
     // Collect all section IDs to update
-    const cartItemsComponents = document.querySelectorAll('cart-items-component');
+    const cartItemsComponents = document.querySelectorAll('cart-items-component, cart-drawer-items');
     const sectionsToUpdate = new Set();
     cartItemsComponents.forEach((item) => {
       if (item.dataset.sectionId) sectionsToUpdate.add(item.dataset.sectionId);

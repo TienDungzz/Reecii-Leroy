@@ -96,22 +96,18 @@
   }
 
   .cart-page__summary {
+    max-width: max(50vw, 75rem);
     padding-top: var(--padding-xl);
   }
 
-  @media screen and (min-width: 750px) {
-    .cart-page {
-      grid-template-columns: 1fr min(50vw, var(--side-cart-width));
-      grid-template-rows: min-content min-content 1fr;
+  @media screen and (min-width: 1025px) {
+    .cart-page__items,
+    .cart-page__summary {
+      grid-column-end: span 2;
     }
 
     .cart-page__summary {
-      display: grid;
       height: 100%;
-      grid-column: 2;
-      grid-row: 1 / 1;
-      align-self: stretch;
-      grid-template-rows: subgrid;
       padding-top: 0;
 
       /* needed to support blurred effect from hero section */
@@ -131,9 +127,16 @@
     }
   }
 
-  @media screen and (min-width: 1400px) {
+  @media screen and (min-width: 1200px) {
     .cart-page {
       grid-template-columns: 1fr var(--side-cart-width);
+      grid-template-rows: 1fr;
+      grid-auto-flow: dense;
+    }
+
+    .cart-page__items,
+    .cart-page__summary {
+      grid-column-end: span 1;
     }
   }
 {% endstylesheet %}

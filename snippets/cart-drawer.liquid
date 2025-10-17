@@ -99,7 +99,7 @@
           <div id="CartDrawer-CartItems" class="drawer__contents flex-grow flex flex-column js-contents">
             {%- if cart != empty -%}
               <div class="drawer__cart-items-wrapper">
-                <table class="cart-items" role="table">
+                {% comment %} <table class="cart-items" role="table">
                   <thead role="rowgroup" class="hidden">
                     <tr role="row">
                       <th id="CartDrawer-ColumnProductImage" role="columnheader">
@@ -495,7 +495,9 @@
                       </tr>
                     {%- endfor -%}
                   </tbody>
-                </table>
+                </table> {% endcomment %}
+
+                {{ cart_drawer_product_block }}
               </div>
             {%- endif -%}
             <p id="CartDrawer-LiveRegionText" class="visually-hidden" role="status"></p>
@@ -506,6 +508,69 @@
           <div id="CartDrawer-CartErrors" role="alert"></div>
         </form>
       </cart-drawer-items>
+
+      {% if section.settings.cart_drawer_collection != blank %}
+        {%- capture breakpoints -%}
+          {
+            "768": { "slidesPerView": 1 },
+            "1024": { "slidesPerView": 1 },
+            "1400": { "slidesPerView": 1 }
+          }
+        {%- endcapture -%}
+        <swiper-component
+          class="cart-drawer__collection collection-carousel-swiper-component overflow-hidden"
+          {%- render 'swiper-data',
+            slides_per_view: 1,
+            space_between: 10,
+            watch_slides_progress: true,
+            breakpoints: breakpoints
+          -%}
+          style="
+            {% render 'swiper-style',
+              columns_mobile: 1,
+              columns_tablet: 1,
+              columns_desktop: 1,
+              columns_gap: 0,
+            %}
+            --m: 0 2.5rem 1.5rem;
+          "
+        >
+          <div
+            class="swiper w-full"
+            style="
+              {% if section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+              --dots-top-offset: {{ section.settings.dots_top_offset }}px;
+              {% elsif section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+              --progress-top-offset: {{ section.settings.progress_top_offset }}px;
+              {% endif %}
+            "
+          >
+            <ul
+              id="Slider-{{ section.settings.cart_drawer_collection.id }}"
+              data-id="{{ section.settings.cart_drawer_collection.id }}"
+              class="swiper-wrapper grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+            >
+              {% for product in section.settings.cart_drawer_collection.products limit: 1 %}
+                <li id="Slide-{{ section.settings.cart_drawer_collection.id }}-{{ product.id }}-{{ forloop.index }}" class="grid__item swiper-slide{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
+                  {% if scroll_reveal %} style="--animation-order: {{ forloop.index }};"{% endif %}
+                >
+                  {{ cart_drawer_product_block }}
+                </li>
+              {% endfor %}
+            </ul>
+
+            {%- if section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' -%}
+              <div class="swiper-pagination"></div>
+            {%- endif -%}
+            {%- if section.settings.navigation == 'arrows-pagination' -%}
+              <div class="swiper-btns-wrap small-hide swiper-btns-wrap--{{ section.settings.arrows_position }}">
+                {%- render 'swiper-button' -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </swiper-component>
+      {% endif %}
+
       <div class="drawer__footer">
         {%- if settings.show_cart_note -%}
           <details id="Details-CartDrawer" is="collapsible-details">
