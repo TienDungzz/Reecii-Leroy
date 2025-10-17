@@ -37,7 +37,7 @@ class MarqueeComponent extends HTMLElement {
    */
   #animation = null;
 
-  #slowDown = debounce(() => {
+  #slowDown = theme.utils.debounce(() => {
     if (this.#animation) return;
 
     const animation = this.wrapper.getAnimations()[0];
@@ -93,7 +93,7 @@ class MarqueeComponent extends HTMLElement {
     return speed;
   }
 
-  #handleResize = debounce(() => {
+  #handleResize = theme.utils.debounce(() => {
     const newNumberOfCopies = this.#calculateNumberOfCopies();
     const currentNumberOfCopies = this.content.children.length;
 
@@ -169,7 +169,7 @@ class MarqueeScroll extends HTMLElement {
     this.speed = parseFloat(this.dataset.speed || 1.6), // 100px going to move for
     this.space = 100, // 100px
     this.isDesktop = window.matchMedia('(min-width: 1025px)').matches;
-    
+
     if (this.isDesktop) {
       Motion.inView(this, this.init.bind(this), { margin: '200px 0px 200px 0px' });
     }
@@ -240,7 +240,7 @@ class MarqueeScroll extends HTMLElement {
   // --- Hover slowdown effect ---
   #animation = null;
 
-  #slowDown = debounce(() => {
+  #slowDown = theme.utils.debounce(() => {
     if (this.#animation) return;
 
     // get the active marquee/parallax animation

@@ -8,7 +8,7 @@ class SearchForm extends HTMLElement {
       this.input.form.addEventListener('reset', this.onFormReset.bind(this));
       this.input.addEventListener(
         'input',
-        debounce((event) => {
+        theme.utils.debounce((event) => {
           this.onChange(event);
         }, 300).bind(this)
       );

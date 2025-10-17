@@ -40,9 +40,11 @@ class HeaderComponent extends HTMLElement {
 
   resizeObserver = new ResizeObserver(([entry]) => {
     if (!entry) return;
-
-    const { height } = entry.target.getBoundingClientRect();
-    document.body.style.setProperty("--header-height", `${height}px`);
+    cancelAnimationFrame(this._resizeRaf);
+    this._resizeRaf = requestAnimationFrame(() => {
+      const { height } = entry.target.getBoundingClientRect();
+      document.body.style.setProperty("--header-height", `${height}px`);
+    });
   });
 
   observeStickyPosition(alwaysSticky = true) {

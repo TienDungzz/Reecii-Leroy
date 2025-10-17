@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
 
-{{ 'section-header.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'section-header.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
   assign sec_stts = section.settings
@@ -213,7 +213,7 @@
   {% endif %}
   id="header-component"
 >
-<div class="row-group" style="{% render 'spacing-padding', settings: sec_stts %} --button-font-size-link: {{ sec_stts.button_type_size_link }};--button-font-weight-link: {{ sec_stts.button_font_weight_link }}; --text-transform: {{ sec_stts.case }};">
+  <div class="row-group" style="{% render 'spacing-padding', settings: sec_stts %} --button-font-size-link: {{ sec_stts.button_type_size_link }};--button-font-weight-link: {{ sec_stts.button_font_weight_link }}; --text-transform: {{ sec_stts.case }};">
     {% for row in rows %}
       {% liquid
         assign scheme = 'color_scheme_' | append: row
@@ -401,8 +401,6 @@
     --color-primary-button-background: inherit;
     --color-primary-button-text: inherit;
     --color-primary-button-border: inherit;
-    --color-primary-button-hover-background: inherit;
-    --color-primary-button-hover-border: inherit;
     --color-primary-button-hover-text: inherit; */
     --color-foreground: inherit;
     --color-foreground-rgb: inherit;
@@ -410,6 +408,10 @@
     --color-border-rgb: inherit;
     --color-primary-button-background: inherit;
     --color-primary-button-text: inherit;
+    --color-primary-button-border: inherit;
+    --color-primary-button-hover-text: inherit;
+    --color-primary-button-hover-border: inherit;
+    --color-primary-button-hover-background: inherit;
   }
 
   .header-section {
@@ -424,29 +426,6 @@
   #header-group:has(#header-component[data-sticky-type]) {
     display: contents;
   }
-
-  .header-section:has(> #header-component[data-sticky-type='always'][data-sticky-state='active']),
-  .header-section:has(> #header-component[data-sticky-type='scroll-up'][data-sticky-state='active']),
-  .header-section:has(> #header-component[data-sticky-type='scroll-up'][data-sticky-state='idle']) {
-
-    /* .header-logo__image-container {
-      width: calc(var(--header-logo-image-width-mobile) * 0.75);
-      height: calc(var(--header-logo-image-height-mobile) * 0.75);
-      transition: width var(--animation-speed-slow) var(--animation-easing), height var(--animation-speed-slow) var(--animation-easing);
-
-      @media screen and (min-width: 750px) {
-        width: calc(var(--header-logo-image-width) * 0.75);
-        height: calc(var(--header-logo-image-height) * 0.75);
-      }
-    } */
-
-    /* .header__row {
-      padding-block-start: min(calc(var(--padding-block-start) * 0.5), 1rem);
-      padding-block-end: min(calc(var(--padding-block-end) * 0.5), 1rem);
-      view-transition-name: header-row;
-    } */
-  }
-
 
   .header-section:has(> #header-component[data-sticky-type='always']),
   .header-section:has(> #header-component[data-sticky-type='scroll-up'][data-sticky-state='active']) {
@@ -465,7 +444,7 @@
   .header[data-sticky-type='always'][data-sticky-state='active'] ,
   .header[data-sticky-type='scroll-up'][data-sticky-state='active'] {
     view-transition-name: header-component;
-    animation: header-sticky-slide-down var(--animation-speed) forwards;
+    animation: header-sticky-slide-down var(--animation-speed-slowest) var(--ease-out-cubic) forwards;
     box-shadow: rgba(var(--color-shadow-rgb) / var(--opacity-20)) 0rem 0.2rem 2rem 0rem;
   }
 
@@ -831,11 +810,6 @@
   src="{{ 'header.js' | asset_url }}"
   defer="defer"
 ></script>
-
-{% javascript %}
-
-
-{% endjavascript %}
 
 {% schema %}
 {

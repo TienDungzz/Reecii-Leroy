@@ -1,3 +1,80 @@
+window.theme = window.theme || {};
+theme.config = {
+  hasSessionStorage: true,
+  hasLocalStorage: true,
+  mqlSmall: false,
+  mql: '(min-width: 750px)',
+  mqlDesktop: '(min-width: 1025px)',
+  motionReduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  isTouch: ('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0),
+  rtl: document.documentElement.getAttribute('dir') === 'rtl' ? true : false
+};
+
+document.documentElement.classList.add(theme.config.isTouch ? 'touch' : 'no-touch');
+
+theme.utils = {
+  rafThrottle: (callback) => {
+    let requestId = null, lastArgs;
+    const later = (context) => () => {
+      requestId = null;
+      callback.apply(context, lastArgs);
+    };
+    const throttled = (...args) => {
+      lastArgs = args;
+      if (requestId === null) {
+        requestId = requestAnimationFrame(later(this));
+      }
+    };
+    throttled.cancel = () => {
+      cancelAnimationFrame(requestId);
+      requestId = null;
+    };
+    return throttled;
+  },
+
+  /**
+   * Debounce a function.
+   * @param {Function} fn The function to debounce.
+   * @param {number} wait The time to wait in milliseconds.
+   * @returns {Function} The debounced function.
+   */
+  debounce: (fn, wait) => {
+    /** @type {number | undefined} */
+    let timer;
+    /** @param {...any} args */
+    const debounced = (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), wait);
+    };
+
+    // Add the .cancel method:
+     debounced.cancel = () => {
+      clearTimeout(timeout);
+    };
+
+    return /** @type {T & { cancel(): void }} */ (debounced);
+  },
+
+  setScrollbarWidth: () => {
+    const scrollbarWidth = window.innerWidth - document.body.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
+    }
+  }
+}
+
+/**
+ * Check if the document is ready/loaded and call the callback when it is.
+ * @param {() => void} callback The function to call when the document is ready.
+ */
+function onDocumentLoaded(callback) {
+  if (document.readyState === 'complete') {
+    callback();
+  } else {
+    window.addEventListener('load', callback);
+  }
+}
+
 // Detect events when page has loaded
 // window.addEventListener('beforeunload', () => {
 //   document.body.classList.add('u-p-loaded');
@@ -16,122 +93,14 @@
 //   }
 // });
 
-// Get Lenis and init
-function initLenis() {
-  if (window.LenisInstance || !window.Lenis) return;
-  window.LenisInstance = new window.Lenis({
-    lerp: 0.1
-    // Add more options here
-  });
-
-  function raf(time) {
-    window.LenisInstance.raf(time);
-    window.LenisInstance._rafId = requestAnimationFrame(raf);
-  }
-
-  window.LenisInstance._rafId = requestAnimationFrame(raf);
-}
-
-// Stop Lenis
-function stopLenis() {
-  if (window.LenisInstance && window.LenisInstance._rafId) {
-    cancelAnimationFrame(window.LenisInstance._rafId);
-    window.LenisInstance._rafId = null;
-  }
-}
-
-// Start Lenis
-function startLenis() {
-  if (window.LenisInstance && !window.LenisInstance._rafId) {
-    function raf(time) {
-      window.LenisInstance.raf(time);
-      window.LenisInstance._rafId = requestAnimationFrame(raf);
-    }
-    window.LenisInstance._rafId = requestAnimationFrame(raf);
-  }
-}
-
-// Auto init Lenis after document load
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.Lenis && window.innerWidth > 750) {
-    initLenis();
-  }
-});
-
 // How to use:
 // Call stopLenis() when you need to stop the smooth scroll effect of Lenis, for example when opening drawer:
 //   stopLenis();
 // To activate again after closing drawer, call startLenis():
 //   startLenis();
 
-
-function getScrollbarWidth() {
-  const width = window.innerWidth - document.documentElement.clientWidth;
-
-  if (width > 17) return;
-  document.documentElement.style.setProperty("--scrollbar-width", `${width}px`);
-}
-
-// getScrollbarWidth();
-
-// Calc height of header
-function headerHeight() {
-  const mainMenu = document.querySelector("[data-main-menu]");
-  if (!mainMenu) return;
-
-  const header = mainMenu.closest(".header__row");
-  if (!header) return;
-
-  const listMenuDesktop = document.querySelector(".list-menu-desktop");
-  if (!listMenuDesktop) return;
-
-  if (document.querySelector("[data-main-menu] .header__inline-menu")) {
-    const headerHeight = header.offsetHeight - 1 + "px";
-    var listMenuWrapper = document.querySelectorAll(".list-menu--wrapper");
-    var sectionHeader = listMenuDesktop.offsetHeight;
-    var listMenu = listMenuDesktop;
-
-    if (sectionHeader > 52) {
-      listMenuWrapper.forEach((summary) => {
-        summary.style.setProperty("--top-position", "auto");
-        summary.style.setProperty("--submenu-height", summary.offsetHeight + "px");
-      });
-      listMenu.style.setProperty("--list-menu-height", "4rem");
-    } else {
-      listMenuWrapper.forEach((summary) => {
-        summary.style.setProperty("--top-position", headerHeight);
-        summary.style.setProperty("--submenu-height", summary.offsetHeight + "px");
-      });
-      listMenu.style.setProperty("--list-menu-height", headerHeight);
-    }
-
-    if (header) {
-      mainMenu.addEventListener("mouseenter", function () {
-
-        const newHeight = header.offsetHeight;
-
-        if (listMenuWrapper && listMenuWrapper.length) {
-          listMenuWrapper.forEach((summary) => {
-            summary.style.setProperty("--top-position", newHeight + "px");
-          });
-        }
-      });
-
-      // mainMenu.addEventListener("mouseleave", function () {
-      //   const newHeight = header.offsetHeight;
-      //   if (sectionHeader > 52) {
-      //     listMenuWrapper.forEach((summary) => {
-      //       summary.style.setProperty("--top-position", "auto");
-      //     });
-      //   } else {
-      //     listMenuWrapper.forEach((summary) => {
-      //       summary.style.setProperty("--top-position", newHeight + "px");
-      //     });
-      //   }
-      // });
-    }
-  }
-}
+onDocumentLoaded(theme.utils.setScrollbarWidth);
+window.addEventListener('resize', theme.utils.rafThrottle(theme.utils.setScrollbarWidth));
 
 // Preloading Screen Annimate
 function logoReveal() {
@@ -161,45 +130,6 @@ function pageReveal() {
   }
 }
 
-/**
- * Check if the document is ready/loaded and call the callback when it is.
- * @param {() => void} callback The function to call when the document is ready.
- */
-function onDocumentLoaded(callback) {
-  if (document.readyState === 'complete') {
-    callback();
-  } else {
-    window.addEventListener('load', callback);
-  }
-}
-
-// Check if the user is interacting with the page and update callback
-function initUserInteractionHandler(callback) {
-  const userInteractionEvents = [
-    "mouseover",
-    "mousemove",
-    "keydown",
-    "touchstart",
-    "touchend",
-    "touchmove",
-    "wheel",
-  ];
-
-  let interactionTimer;
-
-  const handleUserInteraction = () => {
-    clearTimeout(interactionTimer);
-    interactionTimer = setTimeout(() => {
-      callback();
-    }, 100);
-  };
-
-  userInteractionEvents.forEach((eventName) => {
-    window.addEventListener(eventName, handleUserInteraction, { passive: true });
-  });
-}
-
-// initUserInteractionHandler();
 function getFocusableElements(container) {
   return Array.from(
     container.querySelectorAll(
@@ -258,7 +188,7 @@ class HTMLUpdateUtility {
     });
 
     oldNode.parentNode.insertBefore(newNode, oldNode);
-    // oldNode.style.display = "none";
+    oldNode.style.display = "none";
 
     postProcessCallbacks?.forEach((callback) => callback(newNode));
 
@@ -278,28 +208,6 @@ class HTMLUpdateUtility {
     });
   }
 }
-
-// document.querySelectorAll('[id^="Details-"] summary').forEach((summary) => {
-//   summary.setAttribute("role", "button");
-//   summary.setAttribute(
-//     "aria-expanded",
-//     summary.parentNode.hasAttribute("open")
-//   );
-
-//   if (summary.nextElementSibling.getAttribute("id")) {
-//     summary.setAttribute("aria-controls", summary.nextElementSibling.id);
-//   }
-
-//   summary.addEventListener("click", (event) => {
-//     event.currentTarget.setAttribute(
-//       "aria-expanded",
-//       !event.currentTarget.closest("details").hasAttribute("open")
-//     );
-//   });
-
-//   if (summary.closest("header-drawer, menu-drawer")) return;
-//   summary.parentElement.addEventListener("keyup", onKeyUpEscape);
-// });
 
 const trapFocusHandlers = {};
 
@@ -345,10 +253,6 @@ function trapFocus(container, elementToFocus = container) {
 
   document.addEventListener("focusout", trapFocusHandlers.focusout);
   document.addEventListener("focusin", trapFocusHandlers.focusin);
-
-  console.log(`%c🔍 Log elementToFocus:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", elementToFocus);
-
-  console.log("clkick");
 
   elementToFocus?.focus();
 
@@ -581,30 +485,6 @@ class QuantityInput extends HTMLElement {
 }
 if (!customElements.get("quantity-input"))
   customElements.define("quantity-input", QuantityInput);
-
-/**
- * Debounce a function.
- * @param {Function} fn The function to debounce.
- * @param {number} wait The time to wait in milliseconds.
- * @returns {Function} The debounced function.
- */
-function debounce(fn, wait) {
-  /** @type {number | undefined} */
-  let timeout;
-
-  /** @param {...any} args */
-  function debounced(...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => fn.apply(this, args), wait);
-  }
-
-  // Add the .cancel method:
-  debounced.cancel = () => {
-    clearTimeout(timeout);
-  };
-
-  return /** @type {T & { cancel(): void }} */ (debounced);
-}
 
 /**
  * Throttle a function.
@@ -888,35 +768,6 @@ function appendTabMenuToMainMenu() {
   }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  // menuTab();
-  // appendTabMenuToMainMenu();
-});
-
-// class HeaderMenu extends HTMLElement {
-//   constructor() {
-//     super();
-//     this.header = document.querySelector(".header-wrapper");
-//   }
-
-//   onToggle() {
-//     if (!this.header) return;
-
-//     if (
-//       document.documentElement.style.getPropertyValue(
-//         "--header-bottom-position-desktop"
-//       ) !== ""
-//     )
-//       return;
-//     document.documentElement.style.setProperty(
-//       "--header-bottom-position-desktop",
-//       `${Math.floor(this.header.getBoundingClientRect().bottom)}px`
-//     );
-//   }
-// }
-// if (!customElements.get("header-menu"))
-//   customElements.define("header-menu", HeaderMenu);
-
 class MenuDrawer extends HTMLElement {
   constructor() {
     super();
@@ -1026,6 +877,7 @@ class MenuDrawer extends HTMLElement {
     );
     removeTrapFocus(elementToFocus);
     this.closeAnimation(this.mainDetailsToggle);
+    console.log(this.mainDetailsToggle);
 
     if (event instanceof KeyboardEvent)
       elementToFocus?.setAttribute("aria-expanded", false);
@@ -1122,7 +974,7 @@ class HeaderDrawer extends MenuDrawer {
     if (!elementToFocus) return;
     super.closeMenuDrawer(event, elementToFocus);
     this.header.classList.remove("menu-open");
-    window.removeEventListener("resize", this.onResize);
+    window.removeEventListener("resize", theme.utils.rafThrottle(this.onResize));
   }
 
   onResize = () => {
@@ -1351,6 +1203,8 @@ class CardMedia extends HTMLElement {
         this.deferredMedia.pauseMedia();
       }
 
+      if (theme.config.isTouch) return;
+
       this.addEventListener('mouseenter', this.handleMouseEnter.bind(this));
       this.addEventListener('mouseleave', this.handleMouseLeave.bind(this));
     }
@@ -1454,6 +1308,10 @@ class SwiperComponent extends HTMLElement {
     // Small delay to ensure proper initialization
       this.swiperEl = this.querySelector(".swiper");
 
+      this.slidesCount = this.swiperEl.querySelectorAll(".swiper-slide").length;
+
+      if(this.slidesCount <= 1) return;
+
       if (!this.swiperEl) return;
 
       if (this.swiperEl._swiperInitialized) return;
@@ -1506,8 +1364,12 @@ class SwiperComponent extends HTMLElement {
 
       // Options
       this.options = {
+        observer: false,
+        observeParents: false,
+        resistance: false,
+        resistanceRatio: 0.85,
         direction: getOption("direction", "horizontal"),
-        mousewheel: getOption("mousewheel", false),
+        // mousewheel: getOption("mousewheel", false),
         watchSlidesProgress: getOption("watch-slides-progress", false),
         loop: getOption("loop", false),
         speed: getOption("speed", 500),
@@ -1628,9 +1490,9 @@ class SwiperComponent extends HTMLElement {
             onlyInViewport: true,
           },
           // Enable mousewheel
-          mousewheel: {
-            forceToAxis: true,
-          },
+          // mousewheel: {
+          //   forceToAxis: true,
+          // },
           // Enable grab cursor
           grabCursor: true,
           // Enable resistance
@@ -1802,7 +1664,6 @@ class ProductRecommendations extends HTMLElement {
 if (!customElements.get("product-recommendations"))
   customElements.define("product-recommendations", ProductRecommendations);
 
-window.theme = window.theme || {};
 // Init section function when it's visible, then disable observer
 theme.initSectionVisible = function (options) {
   const threshold = options.threshold ? options.threshold : 0;
@@ -2094,7 +1955,7 @@ class GridView extends HTMLElement {
       this.initViewModeLayout(col);
     };
 
-    window.addEventListener("resize", updateViewMode);
+    window.addEventListener("resize", theme.utils.rafThrottle(updateViewMode));
 
     if (!this.mediaView) return;
     updateViewMode();
@@ -2736,6 +2597,8 @@ class ParallaxImg extends HTMLElement {
   }
 
   connectedCallback() {
+    if (theme.config.motionReduced) return;
+
     if (this.getAttribute("data-parallax") !== "true") return;
 
     this.img = this.querySelector(".image-parallax--target");
@@ -2797,6 +2660,8 @@ class ParallaxElement extends HTMLElement {
   }
 
   connectedCallback() {
+    if (theme.config.motionReduced) return;
+
     if (this.getAttribute("data-parallax") !== "true") return;
 
     this.target =
@@ -2909,6 +2774,7 @@ class ParallaxElement extends HTMLElement {
     );
   }
 }
+if (!customElements.get("parallax-element"))
 customElements.define("parallax-element", ParallaxElement);
 
 /**
@@ -2943,9 +2809,13 @@ class StrokeText extends HTMLElement {
   }
 
   connectedCallback() {
+    if (theme.config.motionReduced) return;
+
     this.style.backgroundSize = "0% 100%";
     this.style.backgroundRepeat = "no-repeat";
     this.style.transition = "none";
+
+    if (theme.config.isTouch) return;
 
     this.addEventListener("mouseenter", (e) => {
       this.updatePosition(e);
@@ -3670,6 +3540,7 @@ class SlideshowAnimated extends HTMLElement {
   }
 
   connectedCallback() {
+    if (theme.config.motionReduced) return;
     this.initAnimate()
   }
 
@@ -3696,3 +3567,47 @@ class SlideshowAnimated extends HTMLElement {
 }
 if (!customElements.get('slideshow-animated')) customElements.define('slideshow-animated', SlideshowAnimated);
 
+// Get Lenis and init
+function initLenis() {
+  console.log(window.LenisInstance);
+  console.log(window.Lenis);
+
+  if (window.LenisInstance || !window.Lenis) return;
+  window.LenisInstance = new window.Lenis({
+    lerp: 0.1
+    // Add more options here
+  });
+
+  function raf(time) {
+    window.LenisInstance.raf(time);
+    window.LenisInstance._rafId = requestAnimationFrame(raf);
+  }
+
+  window.LenisInstance._rafId = requestAnimationFrame(raf);
+}
+
+// Stop Lenis
+function stopLenis() {
+  if (window.LenisInstance && window.LenisInstance._rafId) {
+    cancelAnimationFrame(window.LenisInstance._rafId);
+    window.LenisInstance._rafId = null;
+  }
+}
+
+// Start Lenis
+function startLenis() {
+  if (window.LenisInstance && !window.LenisInstance._rafId) {
+    function raf(time) {
+      window.LenisInstance.raf(time);
+      window.LenisInstance._rafId = requestAnimationFrame(raf);
+    }
+    window.LenisInstance._rafId = requestAnimationFrame(raf);
+  }
+}
+
+// Auto init Lenis after document load
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.Lenis && window.innerWidth > 750) {
+    initLenis();
+  }
+});

@@ -56,7 +56,7 @@
 {%- endcapture -%}
 
 {%- capture class_slideshow -%}
-  slideshow slideshow--{{ section.settings.slide_height }} slideshow-mb--{{ section.settings.slide_height_mb }}{% if section.settings.slide_height_mb != 'adapt_image' and section.settings.slide_height_mb != 'height_first_slide' %} slideshow--custom-height-mb{% endif %}
+  slideshow slideshow--{{ section.settings.slide_height }} slideshow-mb--{{ section.settings.slide_height_mb }}{% if section.settings.slide_height_mb != 'adapt_image' %} slideshow--custom-height-mb{% endif %}
   {% if show_left_categories or show_right_banner and is_layout_masonry == false %} flex flex-wrap{% endif %}
   {% if show_left_categories and is_layout_masonry == false %} slideshow--has-categories{% endif %}
   {% if show_right_banner and is_layout_masonry == false %} slideshow--has-right-banner{% endif %}
@@ -72,8 +72,6 @@
     --hero-min-height: 100svh;
   {% elsif section.settings.slide_height != 'adapt_image' %}
     --hero-min-height: var(--section-height-{{ section.settings.slide_height }});
-  {% elsif section.settings.slide_height != 'height_first_slide' %}
-    --hero-min-height: auto;
   {% endif %}
 
   {% if section.settings.slide_height_mb == 'custom' %}
@@ -82,8 +80,6 @@
     --hero-min-height-mb: 100svh;
   {% elsif section.settings.slide_height_mb != 'adapt_image' %}
     --hero-min-height-mb: var(--section-height-{{ section.settings.slide_height_mb }});
-  {% elsif section.settings.slide_height_mb != 'height_first_slide' %}
-    --hero-min-height-mb: auto;
   {% endif %}
 
   {%- if is_layout_masonry -%}
@@ -178,8 +174,15 @@
       assign dot_border_radius = sec_stts.dot_border_radius
       assign swiper_buttons_gap = sec_stts.swiper_buttons_gap
       assign speed = 800
+
+      assign block_size = section.blocks.size
+      if block_size <= 1
+        assign element = 'div'
+      else
+        assign element = 'swiper-component'
+      endif
     -%}
-    <swiper-component
+    <{{ element }}
       class="slideshow__container"
       {%- render 'swiper-data',
         settings: section.settings,
@@ -194,50 +197,52 @@
           {% content_for 'blocks' %}
         </div>
 
-        <div class="swiper-actions{% if enable_navigation %} swiper-actions--{{ arrows_position }}{% endif %} w-full">
-          {%- capture pagi_class -%}
-            swiper-pagination
-            swiper-pagination--{{ dot_style }}
-            {% if only_pagination %} swiper-pagination-pos--{{ pagination_position }}{% endif %}
-            {% if pagination_type == 'fraction' %} body-xl-font-size{% endif %}
-          {%- endcapture -%}
-
-          {% if dot_appearance %}
-            {%- capture pagi_style -%}
-              style="--bg-color: {{ dot_background }}; --corner-radius: {{ dot_border_radius }}px; --p: 0.4rem;"
+        {% if block_size > 1 %}
+          <div class="swiper-actions{% if enable_navigation %} swiper-actions--{{ arrows_position }}{% endif %} w-full">
+            {%- capture pagi_class -%}
+              swiper-pagination
+              swiper-pagination--{{ dot_style }}
+              {% if only_pagination %} swiper-pagination-pos--{{ pagination_position }}{% endif %}
+              {% if pagination_type == 'fraction' %} body-xl-font-size{% endif %}
             {%- endcapture -%}
-          {% endif %}
 
-          {%- capture pagi_html -%}
-            <div class="{{ pagi_class }}" {{ pagi_style }}></div>
-          {%- endcapture -%}
-
-          {%- capture buttons_styles -%}
-            {%- assign min = 10 -%}
-            {%- assign gap = swiper_buttons_gap -%}
-            {%- assign gap_vw = gap | times: 0.1 -%}
-            {%- if gap > min -%}
-              style="--button-gap: clamp({{ min }}px, {{ gap_vw }}vw, {{ gap }}px);"
-            {%- else -%}
-              style="--button-gap: {{ gap }}px;"
-            {%- endif -%}
-          {%- endcapture -%}
-
-          <div
-            class="swiper-btns-wrap{% if enable_navigation %} {{ arrows_position }}{% if arrows_position == 'bottom_right' %} page-width{% endif %}{% endif %}"
-            {{ buttons_styles }}
-          >
-            {% if enable_navigation %}
-              {%- render 'swiper-button' -%}
+            {% if dot_appearance %}
+              {%- capture pagi_style -%}
+                style="--bg-color: {{ dot_background }}; --corner-radius: {{ dot_border_radius }}px; --p: 0.4rem;"
+              {%- endcapture -%}
             {% endif %}
 
-            {% if enable_pagination %}
-              {{ pagi_html }}
-            {% endif %}
+            {%- capture pagi_html -%}
+              <div class="{{ pagi_class }}" {{ pagi_style }}></div>
+            {%- endcapture -%}
+
+            {%- capture buttons_styles -%}
+              {%- assign min = 10 -%}
+              {%- assign gap = swiper_buttons_gap -%}
+              {%- assign gap_vw = gap | times: 0.1 -%}
+              {%- if gap > min -%}
+                style="--button-gap: clamp({{ min }}px, {{ gap_vw }}vw, {{ gap }}px);"
+              {%- else -%}
+                style="--button-gap: {{ gap }}px;"
+              {%- endif -%}
+            {%- endcapture -%}
+
+            <div
+              class="swiper-btns-wrap{% if enable_navigation %} {{ arrows_position }}{% if arrows_position == 'bottom_right' %} page-width{% endif %}{% endif %}"
+              {{ buttons_styles }}
+            >
+              {% if enable_navigation %}
+                {%- render 'swiper-button' -%}
+              {% endif %}
+
+              {% if enable_pagination %}
+                {{ pagi_html }}
+              {% endif %}
+            </div>
           </div>
-        </div>
+        {% endif %}
       </div>
-    </swiper-component>
+    </{{ element }}>
 
     {%- if sec_stts.enable_multi_level_category -%}
       <div class="home-category-filter-sections">
@@ -657,10 +662,6 @@
       "label": "t:settings.height",
       "options": [
         {
-          "value": "height_first_slide",
-          "label": "t:options.adapt_to_first_slide_height"
-        },
-        {
           "value": "adapt_image",
           "label": "t:options.adapt_to_first_image"
         },
@@ -704,10 +705,6 @@
       "id": "slide_height_mb",
       "label": "t:settings.mobile_height",
       "options": [
-        {
-          "value": "height_first_slide",
-          "label": "t:options.adapt_to_first_slide_height"
-        },
         {
           "value": "adapt_image",
           "label": "t:options.adapt_to_first_image"

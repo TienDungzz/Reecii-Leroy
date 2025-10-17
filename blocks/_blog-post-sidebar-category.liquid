@@ -45,7 +45,7 @@
   {% endif %}
 
   {% if text != blank %}
-    <h3 class="blog-posts__sidebar-heading{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}{% if collapse %} blog-posts__sidebar-collapse-button cursor-pointer{% endif %}">
+    <h3 class="blog-posts__sidebar-heading{% if collapse %} blog-posts__sidebar-collapse-button cursor-pointer{% endif %}">
       {{ text }}
     </h3>
   {%- elsif text == blank and collapse == true -%}
@@ -68,7 +68,7 @@
   {% endif %}
 
   <ul
-    class="blog-post__category-list list-unstyled{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
+    class="blog-post__category-list list-unstyled"
     role="menu"
   >
     {% assign collection_list = block.settings.link_list | handleize %}
@@ -164,6 +164,10 @@
 </{{ element }}>
 
 {%- stylesheet -%}
+  .mobile-facets__inner .blog-post__category.blog-posts__sidebar-item {
+    padding-inline: var(--padding-sm);
+  }
+
   .blog-post__category-list-link {
     padding-block: calc(var(--padding-xs) - var(--padding-3xs));
     font-size: var(--body-s-font-size);
@@ -243,7 +247,7 @@
       "options": [
         {
           "value": "1_level",
-          "label": "t:options.one_level"  
+          "label": "t:options.one_level"
         },
         {
           "value": "3_level",

@@ -58,15 +58,28 @@
                   elsif variant.image
                     assign background_image = variant.image.src | image_url: width: '40x'
                     assign enable_variant_image = true
+
+                    assign image_sources = 'jpg,png,webp,avif' | split: ','
+                    assign found_image = false
+                    for ext in image_sources
+                      assign ext = ext | strip
+                      assign item_image = background_color | append: '.' | append: ext
+                      if images[item_image] != blank and found_image == false
+                        assign found_image = true
+                        assign image = item_image | file_url
+                      endif
+                    endfor
                   else
                     assign background_color = color | handle
                     assign has_metaobject = true
                     assign enable_variant_image = true
                   endif
+
               endcase
+
             -%}
             {%- if count < number_limit -%}
-              <li class="swatch-item cursor-pointer relative{% if forloop.first %} active{% endif %}">
+              <li class="swatch-item cursor-pointer thinh-{{ image }} relative{% if forloop.first %} active{% endif %}">
                 <div class="swatch-wrapper">
                   <span
                     {% if enable_variant_image %}

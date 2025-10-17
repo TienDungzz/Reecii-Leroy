@@ -10,7 +10,7 @@ class Toolbarmobile extends HTMLElement {
   }
 
   init() {
-    const header = document.querySelector(".shopify-section-header-hidden");
+    const header = document.querySelector(".header[data-sticky-state='inactive]");
     header === null
       ? this.classList.add("active")
       : this.classList.remove("active");

@@ -256,7 +256,7 @@ if (!customElements.get('quick-order-list')) {
 
       addMultipleDebounce() {
         this.querySelectorAll('quantity-input').forEach((qty) => {
-          const debouncedOnChange = debounce((event) => {
+          const debouncedOnChange = theme.utils.debounce((event) => {
             this.onChange(event);
           }, 100);
           qty.addEventListener('change', debouncedOnChange.bind(this));

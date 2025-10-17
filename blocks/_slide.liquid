@@ -15,31 +15,33 @@
   assign has_image_1 = false
   assign has_image_2 = false
   assign has_video_1 = false
-  assign has_video_2 = false
   assign has_image = false
   assign has_video = false
   assign has_video_multiple = false
   assign has_media = false
   assign media_type_1 = block_stts.media_type_1
-  assign media_type_2 = block_stts.media_type_2
   if block_stts.image_1 != blank and media_type_1 == 'image'
     assign has_image_1 = true
   endif
-  if block_stts.image_2 != blank and media_type_2 == 'image'
+  if block_stts.image_2 != blank and media_type_1 == 'image'
     assign has_image_2 = true
   endif
 
   if block_stts.image_mb_1 != blank and media_type_1 == 'image'
     assign has_image_mb_1 = true
   endif
-  if block_stts.image_mb_2 != blank and media_type_2 == 'image'
+  if block_stts.image_mb_2 != blank and media_type_1 == 'image'
     assign has_image_mb_2 = true
+  endif
+
+  if block_stts.video_1 != blank and media_type_1 == 'video'
+    assign has_video_1 = true
   endif
 
   if has_image_1 or has_image_2
     assign has_image = true
   endif
-  if has_video_1 or has_video_2
+  if has_video_1
     assign has_video = true
   endif
   if has_image or has_video
@@ -98,16 +100,42 @@
   {%- endif -%}
 
   {%- if has_video_1 -%}
+    {% liquid
+      assign preview_image = block_stts.image_1
+      if block_stts.media_type_1 == 'video'
+        assign preview_image = block_stts.video_1.preview_image
+      endif
+    %}
+
+    {%- if preview_image -%}
+      {%- liquid
+        assign height_video_1 = preview_image.width | divided_by: preview_image.aspect_ratio | round
+        assign media_width_desktop = '100vw'
+        assign media_width_mobile = '100vw'
+        assign sizes = '(min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
+        assign lazy_sizes = 'auto, ' | append: sizes
+        assign widths = '832, 1200, 1600, 1920, 2560, 3840'
+      %}
+    {%- endif -%}
+
     {% assign media_count = media_count | plus: 1 %}
+    {%- if block_stts.video_1.preview_image -%}
+      {{
+        block_stts.video_1.preview_image
+        | image_url: width: 3840
+        | image_tag:
+          height: height_video_1,
+          sizes: lazy_sizes,
+          widths: widths,
+          loading: loading,
+          class: 'slide__video-poster',
+          fetchpriority: fetchpriority
+      }}
+    {%- endif -%}
+
     {{
-      section.settings.video_1
-      | video_tag:
-        image_size: '3840x',
-        autoplay: true,
-        loop: true,
-        controls: false,
-        muted: true,
-        class: 'hero__video'
+      block_stts.video_1
+      | video_tag: poster: nil, autoplay: true, loop: true, controls: false, muted: true, class: 'slide__video'
     }}
   {%- endif -%}
 
@@ -132,20 +160,6 @@
         | image_tag: height: height_2, sizes: sizes, widths: widths, loading: loading, fetchpriority: fetchpriority
       }}
     </picture>
-  {%- endif -%}
-
-  {%- if has_video_2 -%}
-    {% assign media_count = media_count | plus: 1 %}
-    {{
-      section.settings.video_2
-      | video_tag:
-        image_size: '3840x',
-        autoplay: true,
-        loop: true,
-        controls: false,
-        muted: true,
-        class: 'hero__video'
-    }}
   {%- endif -%}
 
   {% if has_media == false %}
@@ -221,6 +235,20 @@
       {%- endif -%}
       }
     {%- endif -%}
+    {%- if has_video_1 and sec_stts.slide_height == 'adapt_image' -%}
+      {%- liquid
+        if block_stts.video_1 != blank
+          assign ratio = height_video_1
+        else
+          assign ratio = 1
+        endif
+      -%}
+
+      #slideshow-{{ section.id }} .slideshow__slides {
+        aspect-ratio: {{ ratio }};
+      }
+    {%- endif -%}
+
     {% if block.settings.inherit_color_scheme == false %}
       {% render 'color-scheme-style', settings: block.settings %}
     {% endif %}
@@ -291,6 +319,19 @@
       opacity: var(--opacity-100);
     }
   }
+
+  .slide__img-wrapper > .slide__video,
+  .slide__img-wrapper > .slide__video-poster {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .slide__img-wrapper > .slide__video-poster {
+    position: absolute;
+  }
 {%- endstylesheet -%}
 
 {% schema %}
@@ -348,10 +389,6 @@
       "default": "fit"
     },
     {
-      "type": "header",
-      "content": "t:content.media"
-    },
-    {
       "type": "select",
       "id": "media_type_1",
       "label": "t:settings.type",
@@ -368,48 +405,43 @@
       "default": "image"
     },
     {
+      "type": "header",
+      "content": "t:content.media"
+    },
+    {
       "type": "image_picker",
       "id": "image_1",
       "label": "t:settings.default_image",
-      "visible_if": "{{ block.settings.slide_background }}"
+      "visible_if": "{{ block.settings.slide_background and block.settings.media_type_1 == 'image' }}"
     },
     {
       "type": "image_picker",
       "id": "image_mb_1",
       "label": "t:settings.mobile_image",
-      "visible_if": "{{ block.settings.slide_background }}"
+      "visible_if": "{{ block.settings.slide_background and block.settings.media_type_1 == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video_1",
+      "label": "t:settings.video",
+      "visible_if": "{{ block.settings.media_type_1 == 'video' }}"
     },
     {
       "type": "header",
-      "content": "t:content.media_2"
-    },
-    {
-      "type": "select",
-      "id": "media_type_2",
-      "label": "t:settings.type",
-      "options": [
-        {
-          "value": "image",
-          "label": "t:options.image"
-        },
-        {
-          "value": "video",
-          "label": "t:options.video"
-        }
-      ],
-      "default": "image"
+      "content": "t:content.media_2",
+      "visible_if": "{{ block.settings.media_type_1 == 'image' }}"
     },
     {
       "type": "image_picker",
       "id": "image_2",
       "label": "t:settings.default_image",
-      "visible_if": "{{ block.settings.slide_background }}"
+      "visible_if": "{{ block.settings.slide_background and block.settings.media_type_1 == 'image' }}"
     },
     {
       "type": "image_picker",
       "id": "image_mb_2",
       "label": "t:settings.mobile_image",
-      "visible_if": "{{ block.settings.slide_background }}"
+      "visible_if": "{{ block.settings.slide_background and block.settings.media_type_1 == 'image' }}"
     },
     {
       "type": "header",

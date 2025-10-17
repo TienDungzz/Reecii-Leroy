@@ -271,11 +271,13 @@
   }
 
   .resource-card {
+    --resource-card-image-size: 7.5rem;
+    --resource-card-template-columns: var(--resource-card-image-size) 1fr;
     --resource-card-secondary-image-opacity: 0;
     --resource-card-primary-image-opacity: calc(1 - var(--resource-card-secondary-image-opacity));
 
     display: grid;
-    grid-template-columns: 7.5rem 1fr;
+    grid-template-columns: var(--resource-card-template-columns);
     gap: var(--gap-md);
     position: relative;
     text-decoration: none;
@@ -284,11 +286,11 @@
     animation: fadeIn var(--animation-speed-medium) var(--animation-timing-fade-in) forwards;
 
     @media screen and (max-width: 749px) {
-      grid-template-columns: 5rem 1fr;
+      --resource-card-image-size: 5rem;
     }
 
     &.resource-card--column {
-      grid-template-columns: 1fr;
+      --resource-card-template-columns: 1fr;
       width: 100%;
     }
   }
