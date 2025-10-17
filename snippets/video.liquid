@@ -6,6 +6,7 @@
   @param {boolean} [video_autoplay] - Whether the video should autoplay
   @param {boolean} [video_loop] - Whether the video should loop
   @param {string} [video_class] - Additional classes for the video element
+  @param {string} [video_id] - The video ID
   @param {string} [video_style] - Additional inline styles
   @param {object} [video_preview_image] - Preview image to show before video plays
   @param {string} [video_ratio] - The aspect ratio of the video
@@ -28,7 +29,7 @@
   {% render 'video', video: section.settings.video, video_autoplay: true, video_loop: true, section_id: section.id %}
 {% enddoc %}
 
-{% assign video_id = section.settings.video.id | default: section.settings.video_url.id %}
+{% assign video_id = section.settings.video.id | default: section.settings.video_url.id | default: video_id %}
 {% assign video_alt = video_alt | default: video.alt %}
 {% assign alt = 'content.load_video' | t: description: video_alt | escape %}
 {% assign video_preview_image = video_preview_image | default: video.preview_image %}
@@ -123,7 +124,7 @@
 
 {% if video != blank %}
   <deferred-media
-    class="deferred-media relative overflow-hidden {{ video_class }}"
+    class="deferred-media relative overflow-hidden {{ video_class }} sdasaddasads"
     style="{{ video_style }}"
     data-media-id="{{ video_id }}"
     {% if video_autoplay %}
