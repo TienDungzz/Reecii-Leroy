@@ -10,8 +10,8 @@
 {% endcomment %}
 
 {%- liquid
-  assign actions_type = section.settings.actions_type
-  assign gift_cards_enabled = section.settings.gift_cards_enabled
+  assign actions_type = sec_stts.actions_type
+  assign gift_cards_enabled = sec_stts.gift_cards_enabled
 -%}
 
 {%- capture class_icon_type -%}
@@ -82,10 +82,10 @@
   {%- endcapture -%}
 
   <a
-    {% if section.settings.link_giftcards == blank %}
+    {% if sec_stts.link_giftcards == blank %}
       role="link" aria-disabled="true"
     {% else %}
-      href="{{ section.settings.link_giftcards }}"
+      href="{{ sec_stts.link_giftcards }}"
     {% endif %}
     class="
       header__icon header__icon--giftcards

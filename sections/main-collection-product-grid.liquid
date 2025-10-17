@@ -141,21 +141,6 @@
   {%- endif -%}
 </div>
 
-{%- if section.settings.quick_add != 'none' -%}
-  {%- liquid
-    if section.settings.quick_add == 'standard'
-      assign files = 'product-form.js, quick-add.js'
-    endif
-
-    if section.settings.quick_add == 'bulk'
-      assign files = 'quick-add-bulk.js, quantity-popover.js, price-per-item.js, quick-order-list.js'
-    endif
-
-    assign files = files | split: ', '
-    render 'theme-loader', files: files
-  -%}
-{%- endif -%}
-
 {%- stylesheet -%}
   .main-collection-grid {
     grid-column: var(--grid-column--mobile);
