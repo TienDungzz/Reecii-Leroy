@@ -44,7 +44,7 @@ class AccordionCustom extends HTMLElement {
   }
 
   async transition(value) {
-    this.style.overflow = 'hidden';
+    this.details.style.overflow = 'hidden';
     if (value) {
       this.details.setAttribute("open", "");
       await Motion.timeline([
@@ -134,8 +134,6 @@ class AccordionCustom extends HTMLElement {
     // Toggle the accordion with transition
     const isOpen = this.details.hasAttribute('open');
     await this.transition(!isOpen);
-    
-    console.log('test isOpen', isOpen);
   };
 
   /**

@@ -26,6 +26,8 @@
                 header__menu-item mega-menu__link mega-menu__link--level-2 link
                 {% if childlink.current %} list-menu__item--active{% endif %}
                 {% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: sec_settings %}
+
+                thinh-key-{{ keys }}
               "
               {% if childlink.current %}
                 aria-current="page"
@@ -53,11 +55,13 @@
                         header__menu-item mega-menu__link link link--hover-underline
                         {% if grandchildlink.current %} list-menu__item--active{% endif %}
                         {% render 'highlight-class', order: '3', keys: keys, compare: grandchildlink.title, settings: sec_settings %}
+
+                        thinh-key-{{ keys }}
                       "
                       {% if grandchildlink.current %}
                         aria-current="page"
                       {% endif %}
-                      style="{%  render 'highlight-style', order: '3', key: 'highlighted_item_', compare: grandchildlink.title, color: highlight_color, settings: sec_settings %}"
+                      style="{%  render 'highlight-style', order: '3', keys: keys, compare: grandchildlink.title, color: highlight_color, settings: sec_settings %}"
                     >
                       <span class="text">
                         {{ grandchildlink.title | escape }}

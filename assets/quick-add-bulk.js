@@ -7,7 +7,7 @@ if (!customElements.get('quick-add-bulk')) {
         this.quantity = this.querySelector('quantity-input');
         this.quickAddBulkId = `quick-add-bulk-${this.dataset.index}`;
 
-        const debouncedOnChange = debounce((event) => {
+        const debouncedOnChange = theme.utils.debounce((event) => {
           if (parseInt(event.target.value) === 0) {
             this.startQueue(event.target.dataset.index, parseInt(event.target.value));
           } else {

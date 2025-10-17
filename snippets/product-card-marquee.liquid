@@ -1,4 +1,6 @@
 {%- liquid
+    assign show_product_marquee = section.settings.show_product_marquee
+
     assign product_marquee_type = settings.product_marquee_type
     if product_marquee_type == 'text'
         assign product_marquee_text = settings.product_marquee_text
@@ -27,7 +29,7 @@
     endif
 -%}
 
-{%- if product_marquee_text != blank -%}
+{%- if product_marquee_text != blank and show_product_marquee -%}
     <div class="card-marquee marquee-{{ product_marquee_type }}{{ class }}" style="--bg-color: {{ settings.product_marquee_background_color }}; --fg-color: {{ settings.product_marquee_text_color }};">
         <div class="card-marquee-box flex overflow-hidden">
             {%- capture card_marquee_item_html -%}

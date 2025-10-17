@@ -38,7 +38,7 @@
 .swiper:not(.swiper-initialized) .grid-layout-no-js {
   --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-mobile));
 
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -74,6 +74,7 @@ ul.swiper-wrapper {
 .swiper .swiper-slide {
   overflow: hidden;
   height: auto;
+  will-change: transform;
 }
 
 .swiper-pagination--outlined {
@@ -1018,7 +1019,7 @@ summary {
 /* drawer */
 .drawer__container:not(.blog-posts__sidebar-drawer) {
   [data-drawer-content] {
-    width: min(90%, var(--drawer-max-width,var(--narrow-content-width)));
+    width: min(calc(100% - var(--minimum-touch-target)), var(--drawer-max-width,var(--narrow-content-width)));
     height: 100%;
     background-color: var(--color-background);
     z-index: var(--layer-raised);

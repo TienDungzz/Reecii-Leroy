@@ -142,7 +142,7 @@ class CartItemsComponent extends HTMLElement {
     if (typeof cartLine === 'undefined' || cartLine === null) return;
 
     if (quantity === 0) {
-      this.onLineItemRemove(cartLine);  
+      this.onLineItemRemove(cartLine);
       return;
     }
 
@@ -250,11 +250,11 @@ class CartItemsComponent extends HTMLElement {
   async getSectionHTML(sectionId, url = window.location.href) {
     const targetUrl = new URL(url);
     targetUrl.searchParams.set('section_id', sectionId);
-  
+
     const response = await fetch(targetUrl, { cache: 'no-store' });
     return await response.text();
   }
-  
+
   /**
    * Renders a section by fetching its HTML and updating the DOM.
    * @param {string} sectionId
@@ -460,7 +460,7 @@ class CartItemsComponent extends HTMLElement {
       console.error('Quantity input not found');
       return;
     }
-    
+
     quantityInput.value = quantityInput.defaultValue;
 
     const cartItemError = this.querySelector(`.cart-items__table-row[data-line="${line}"] .cart-item__error-text`);
@@ -820,11 +820,11 @@ class CartDiscountComponent extends HTMLElement {
 
     existingDiscounts.splice(index, 1);
 
-    const bodyObj = { 
+    const bodyObj = {
       discount: existingDiscounts.join(','),
       sections: [this.dataset.sectionId]
     };
-    
+
     const abortController = this.createAbortController();
 
     try {
@@ -874,7 +874,7 @@ if (!customElements.get('cart-note')) {
 
         this.addEventListener(
           'input',
-          debounce((event) => {
+         theme.utils.debounce((event) => {
             const body = JSON.stringify({ note: event.target.value });
             fetch(`${routes.cart_update_url}`, { ...fetchConfig(), ...{ body } }).then(() => {
               const cartPerf = /** @type {any} */ (window).cartPerformance || {};

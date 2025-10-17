@@ -4,8 +4,8 @@ if (!customElements.get('localization-form')) {
     class LocalizationForm extends HTMLElement {
       constructor() {
         super();
-        this.mql = window.matchMedia('(min-width: 750px)');
-        this.mqlDesktop = window.matchMedia('(min-width: 1025px)');
+        this.mql = window.matchMedia(theme.config.mql);
+        this.mqlDesktop = window.matchMedia(theme.config.mqlDesktop);
         this.header = document.querySelector('.header-wrapper');
         this.elements = {
           input: this.querySelector('input[name="locale_code"], input[name="country_code"]'),

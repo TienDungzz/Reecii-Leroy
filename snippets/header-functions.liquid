@@ -18,7 +18,7 @@
     header__icon--{{ actions_type }}
 {%- endcapture -%}
 
-{%- if enable_wishlist -%}
+{% comment %} {%- if enable_wishlist -%}
   {% capture wishlist_icon %}
     <svg
       class="icon icon-heart"
@@ -42,16 +42,10 @@
     arial-label="{{ 'content.wishlist' | t }}"
   >
     {%- if actions_type == 'icon' or actions_type == 'both' -%}
-      {%- if actions_type == 'both' -%}
-        <span class="lg:none">
-      {%- endif -%}
       <span class="svg-wrapper">
         {{ wishlist_icon }}
         {{ wishlist_icon }}
       </span>
-      {%- if actions_type == 'both' -%}
-        </span>
-      {%- endif -%}
     {%- endif -%}
     {%- if actions_type == 'text' or actions_type == 'both' -%}
       <span
@@ -72,7 +66,7 @@
       </div>
     {%- endif -%}
   </a>
-{%- endif -%}
+{%- endif -%} {% endcomment %}
 
 {%- if gift_cards_enabled -%}
   {%- capture gift_cards_icon -%}
@@ -96,17 +90,12 @@
     arial-label="{{ 'gift_cards.title' | t }}"
   >
     {%- if actions_type == 'icon' or actions_type == 'both' -%}
-      {%- if actions_type == 'both' -%}
-        <span class="lg:none">
-      {%- endif -%}
       <span class="svg-wrapper">
         {{ gift_cards_icon }}
         {{ gift_cards_icon }}
       </span>
-      {%- if actions_type == 'both' -%}
-        </span>
-      {%- endif -%}
     {%- endif -%}
+
     {%- if actions_type == 'text' or actions_type == 'both' -%}
       <span class="giftcards-text max-md:hidden{% if actions_type == 'icon' %} visually-hidden{% endif %}">
         {{- 'gift_cards.title' | t -}}
@@ -115,14 +104,14 @@
   </a>
 {%- endif -%}
 
-{%- if enable_cart -%}
+{% comment %} {%- if enable_cart -%}
   {%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}
     <side-drawer-opener
-      class="header__icon header-actions header__icon--cart link no-js-hidden"
+      class="button header__icon header-actions header__icon--cart link no-js-hidden svg-slide-up"
       data-side-drawer="#Cart-Drawer"
     >
       <button
-        class="t-button bor-none cursor-pointer p-0 color-foreground bg-transparent focus-inset cart-icon--drawer"
+        class="t-button bor-none cursor-pointer p-0 text-currentColor focus-inset cart-icon--drawer"
         type="button"
         aria-haspopup="dialog"
         aria-label="{{ 'content.cart_count' | t: count: cart.item_count }}"
@@ -130,17 +119,17 @@
         arial-label="{{ 'content.cart_count' | t: count: cart.item_count }}"
       >
         {%- if actions_type == 'icon' or actions_type == 'both' -%}
-          {%- if actions_type == 'both' -%}
-            <span class="lg:none">
-          {%- endif -%}
           {% if cart == empty %}
-            <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
-          {% else %}
-            <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
-          {% endif %}
-          {%- if actions_type == 'both' -%}
+            <span class="svg-wrapper">
+              {{ 'icon-cart.svg' | inline_asset_content }}
+              {{ 'icon-cart.svg' | inline_asset_content }}
             </span>
-          {%- endif -%}
+          {% else %}
+            <span class="svg-wrapper">
+              {{ 'icon-cart.svg' | inline_asset_content }}
+              {{ 'icon-cart.svg' | inline_asset_content }}
+            </span>
+          {% endif %}
         {%- endif -%}
 
         {%- if actions_type == 'text' or actions_type == 'both' -%}
@@ -172,10 +161,7 @@
         "
         arial-label="{{ 'content.cart_count' | t: count: cart.item_count }}"
       >
-        {%- if actions_type == 'text' or actions_type == 'both' -%}
-          {%- if actions_type == 'text' -%}
-            <span class="lg:none">
-          {%- endif -%}
+        {%- if actions_type == 'icon' or actions_type == 'both' -%}
           {% if cart == empty %}
             <span class="svg-wrapper">
               {{ 'icon-cart.svg' | inline_asset_content }}
@@ -187,9 +173,6 @@
               {{ 'icon-cart.svg' | inline_asset_content }}
             </span>
           {% endif %}
-          {%- if actions_type == 'text' -%}
-            </span>
-          {%- endif -%}
         {%- endif -%}
 
         {%- if actions_type == 'text' or actions_type == 'both' -%}
@@ -222,9 +205,6 @@
       arial-label="{{ 'content.cart_count' | t: count: cart.item_count }}"
     >
       {%- if actions_type == 'icon' or actions_type == 'both' -%}
-        {%- if actions_type == 'both' -%}
-          <span class="lg:none">
-        {%- endif -%}
         {% if cart == empty %}
           <span class="svg-wrapper">
             {{ 'icon-cart.svg' | inline_asset_content }}
@@ -236,9 +216,6 @@
             {{ 'icon-cart.svg' | inline_asset_content }}
           </span>
         {% endif %}
-        {%- if actions_type == 'both' -%}
-          </span>
-        {%- endif -%}
       {%- endif -%}
 
       {%- if actions_type == 'text' or actions_type == 'both' -%}
@@ -260,4 +237,4 @@
       {%- endif -%}
     </a>
   {%- endif -%}
-{%- endif -%}
+{%- endif -%} {% endcomment %}
