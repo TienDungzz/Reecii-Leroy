@@ -598,7 +598,30 @@
                   class="product-infinite-scroll block center"
                   style="--show-more-button-offset: {{ sec_stts.show_more_product_top_offset }}px"
                 >
-                  <button type="button" class="button m-x-auto">
+                  {% capture show_more_size_style %}
+                    {% if sec_stts.show_more_product_width == 'custom' %}
+                      {% if sec_stts.unit == 'pixel' %}
+                        --size-style-width: {{ sec_stts.custom_width_pixel }}px;
+                      {% else %}
+                        --size-style-width: {{ sec_stts.custom_width }}%;
+                      {% endif %}
+                    {% else %}
+                      --size-style-width: {{ sec_stts.show_more_product_width }};
+                    {% endif %}
+                    {% if sec_stts.show_more_product_width_mobile == 'custom' %}
+                      {% if sec_stts.unit_mobile == 'pixel' %}
+                        --size-style-width-mobile: {{ sec_stts.custom_width_mobile_pixel }}px;
+                      {% else %}
+                        --size-style-width-mobile: {{ sec_stts.custom_width_mobile }}%;
+                      {% endif %}
+                    {% else %}
+                      --size-style-width-mobile: {{ sec_stts.show_more_product_width_mobile }};
+                    {% endif %}
+                    --button-font-size: {{ sec_stts.show_more_font_size }};
+                    --button-font-weight: {{ sec_stts.show_more_font_weight }};
+                  {% endcapture %}
+
+                  <button type="button" class="button m-x-auto size-style" style="{{ show_more_size_style }}">
                     <span>{{ sec_stts.show_more_product_text }}</span>
                   </button>
                 </show-more-grid>
@@ -1946,6 +1969,193 @@
       "label": "t:options.text",
       "default": "Show more",
       "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "select",
+      "id": "show_more_font_size",
+      "label": "t:settings.font_size",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        }
+      ],
+      "default": "",
+      "visible_if": "{{ section.settings.show_more_product == true }}"
+    },
+    {
+      "type": "select",
+      "id": "show_more_font_weight",
+      "label": "t:settings.font_weight",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "100",
+          "label": "t:options.thin"
+        },
+        {
+          "value": "300",
+          "label": "t:options.light"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "500",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        },
+        {
+          "value": "900",
+          "label": "t:options.black"
+        }
+      ],
+      "default": "default",
+      "visible_if": "{{ section.settings.show_more_product == true }}"
+    },
+    {
+      "type": "select",
+      "id": "show_more_product_width",
+      "label": "t:settings.width_desktop",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "select",
+      "id": "unit",
+      "label": "t:settings.unit",
+      "visible_if": "{{ section.settings.show_more_product_width == 'custom' }}",
+      "options": [
+        {
+          "value": "pixel",
+          "label": "t:options.pixel"
+        },
+        {
+          "value": "percent",
+          "label": "t:options.percent"
+        }
+      ],
+      "default": "percent"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.show_more_product_width == 'custom' and section.settings.unit == 'percent' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_pixel",
+      "label": "t:settings.custom_width",
+      "min": 100,
+      "max": 500,
+      "step": 5,
+      "unit": "px",
+      "default": 100,
+      "visible_if": "{{ section.settings.show_more_product_width == 'custom' and section.settings.unit == 'pixel' }}"
+    },
+    {
+      "type": "select",
+      "id": "show_more_product_width_mobile",
+      "label": "t:settings.width_mobile",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fit-content"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile",
+      "label": "t:settings.custom_width",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.show_more_product_width_mobile == 'custom' and section.settings.unit_mobile == 'percent' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width_mobile_pixel",
+      "label": "t:settings.custom_width",
+      "min": 100,
+      "max": 500,
+      "step": 5,
+      "unit": "px",
+      "default": 100,
+      "visible_if": "{{ section.settings.show_more_product_width_mobile == 'custom' and section.settings.unit_mobile == 'pixel' }}"
     },
     {
       "type": "range",
