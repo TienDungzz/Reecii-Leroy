@@ -13,7 +13,6 @@ function onIntersection(elements, observer) {
         if (elementTarget.hasAttribute('data-cascade'))
           elementTarget.setAttribute('style', `--animation-order: ${index};`);
       }
-
       observer?.unobserve(elementTarget);
     } else {
       element.target.classList.add(SCROLL_ANIMATION_OFFSCREEN_CLASSNAME);
@@ -37,6 +36,41 @@ function initializeScrollAnimationTrigger(rootEl = document, isDesignModeEvent =
     rootMargin: '0px 0px -50px 0px',
   });
   animationTriggerElements.forEach((element) => observer.observe(element));
+
+  attachSwiperScrollSupport(animationTriggerElements);
+}
+
+// Scroll support for swiper
+function attachSwiperScrollSupport(scrollElements) {
+  const swipers = document.querySelectorAll('.swiper');
+
+  swipers.forEach(swiperEl => {
+    if (!swiperEl.swiper) return; // wait for swiper init
+
+    const swiperInstance = swiperEl.swiper;
+
+    const handleSwiperScroll = () => {
+      const visibleSlides = swiperInstance.slides.filter(slide => slide.classList.contains('swiper-slide-visible'));
+      visibleSlides.forEach(slide => {
+        const triggers = slide.querySelectorAll(`.${SCROLL_ANIMATION_TRIGGER_CLASSNAME}`);
+        triggers.forEach(trigger => {
+          const rect = trigger.getBoundingClientRect();
+          const inView = rect.top < window.innerHeight * 0.9 && rect.bottom > 0;
+          if (inView && trigger.classList.contains(SCROLL_ANIMATION_OFFSCREEN_CLASSNAME)) {
+            trigger.classList.remove(SCROLL_ANIMATION_OFFSCREEN_CLASSNAME);
+          }
+        });
+      });
+    };
+
+    // Attach to key Swiper events
+    swiperInstance.on('slideChangeTransitionEnd', handleSwiperScroll);
+    swiperInstance.on('transitionEnd', handleSwiperScroll);
+    swiperInstance.on('resize', handleSwiperScroll);
+
+    // Trigger immediately when swiper first becomes visible
+    handleSwiperScroll();
+  });
 }
 
 // Zoom in animation logic
@@ -95,6 +129,10 @@ function percentageSeen(element) {
 window.addEventListener('DOMContentLoaded', () => {
   initializeScrollAnimationTrigger();
   initializeScrollZoomAnimationTrigger();
+
+  document.addEventListener('swiper:initialized', () => {
+    initializeScrollAnimationTrigger();
+  });
 });
 
 if (Shopify.designMode) {

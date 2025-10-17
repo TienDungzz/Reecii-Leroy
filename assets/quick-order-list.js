@@ -77,7 +77,7 @@ if (!customElements.get('quick-order-list')) {
         const form = this.querySelector('form');
         this.inputFieldHeight = this.querySelector('.variant-item__quantity-wrapper').offsetHeight;
         this.isListInsideModal = document.querySelector('.quick-add-bulk');
-        this.stickyHeaderElement = document.querySelector('sticky-header');
+        this.stickyHeaderElement = document.querySelector('header-component');
         this.getTableHead();
         this.getTotalBar();
 

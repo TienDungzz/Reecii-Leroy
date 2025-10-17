@@ -250,34 +250,7 @@
   </div>
 {%- endif -%}
 
-{%- if quick_add != 'none' -%}
-  {%- liquid
-    assign files = 'product-form.js'
-
-    if quick_add == 'standard'
-      assign files = files | append: ', quick-add.js'
-    endif
-
-    if quick_add == 'bulk'
-      assign files = files | append: ', quick-add-bulk.js, quantity-popover.js, price-per-item.js, quick-order-list.js'
-    endif
-
-    assign files = files | split: ', '
-    render 'theme-loader', files: files
-  -%}
-{%- endif -%}
-
 {%- stylesheet -%}
-  /* .quick-add {
-  position: relative;
-  grid-row-start: 4;
-  margin: 0.5rem 0;
-  z-index: 1;
-    @media screen and (min-width: 750px) {
-      margin: 1rem 0;
-    }
-  } */
-
   .section-bulk-quick-order-list-padding {
     padding-block: 2.7rem;
     display: block;
