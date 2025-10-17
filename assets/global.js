@@ -90,7 +90,7 @@ function headerHeight() {
     var listMenuWrapper = document.querySelectorAll(".list-menu--wrapper");
     var sectionHeader = listMenuDesktop.offsetHeight;
     var listMenu = listMenuDesktop;
-    const listSubMenuHeight = listMenu.querySelector(".header__submenu")?.offsetHeight;
+    const listSubMenuHeight = listMenu.querySelector(".header__submenu").offsetHeight;
 
     if (sectionHeader > 52) {
       listMenuWrapper.forEach((summary) => {
@@ -166,6 +166,10 @@ function updateHeaderHeights() {
   const headerHeight = header.offsetHeight;
   const headerGroupHeight = calculateHeaderGroupHeight(header);
 
+  console.log(`%c🔍 Log headerHeight:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", headerHeight);
+  console.log(`%c🔍 Log headerGroupHeight:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", headerGroupHeight);
+
+
   document.body.style.setProperty('--header-height', `${headerHeight}px`);
   document.body.style.setProperty('--header-group-height', `${headerGroupHeight}px`);
 }
@@ -205,10 +209,10 @@ window.addEventListener("DOMContentLoaded", () => {
   updateHeaderHeights();
 });
 
-// window.addEventListener("resize", () => {
-//   headerHeight();
-//   updateHeaderHeights();
-// });
+window.addEventListener("resize", () => {
+  headerHeight();
+  updateHeaderHeights();
+});
 
 window.addEventListener("scroll", () => {
   setTimeout(() => {
@@ -362,6 +366,10 @@ function trapFocus(container, elementToFocus = container) {
 
   document.addEventListener("focusout", trapFocusHandlers.focusout);
   document.addEventListener("focusin", trapFocusHandlers.focusin);
+
+  console.log(`%c🔍 Log elementToFocus:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", elementToFocus);
+
+  console.log("clkick");
 
   elementToFocus?.focus();
 
@@ -906,6 +914,30 @@ window.addEventListener("DOMContentLoaded", () => {
   appendTabMenuToMainMenu();
 });
 
+// class HeaderMenu extends HTMLElement {
+//   constructor() {
+//     super();
+//     this.header = document.querySelector(".header-wrapper");
+//   }
+
+//   onToggle() {
+//     if (!this.header) return;
+
+//     if (
+//       document.documentElement.style.getPropertyValue(
+//         "--header-bottom-position-desktop"
+//       ) !== ""
+//     )
+//       return;
+//     document.documentElement.style.setProperty(
+//       "--header-bottom-position-desktop",
+//       `${Math.floor(this.header.getBoundingClientRect().bottom)}px`
+//     );
+//   }
+// }
+// if (!customElements.get("header-menu"))
+//   customElements.define("header-menu", HeaderMenu);
+
 class MenuDrawer extends HTMLElement {
   constructor() {
     super();
@@ -1379,13 +1411,6 @@ class SwiperComponent extends HTMLElement {
     this.arrowOnHeader = this.closest(
       ".arrow-on-header:has(.swiper-btns-on-header)"
     );
-
-    // Performance optimizations
-    this._isInitialized = false;
-    this._isVisible = false;
-    this._observer = null;
-    this._thumbsSwiper = null;
-    this._resizeTimeout = null;
   }
 
   connectedCallback() {
@@ -1397,157 +1422,129 @@ class SwiperComponent extends HTMLElement {
       return;
     }
 
-    // Lazy loading với Intersection Observer
-    this.setupIntersectionObserver();
+    // Ensure DOM is ready
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => {
+        this.initializeSwiper();
+      });
+      return;
+    }
+
+    this.initializeSwiper();
   }
 
   disconnectedCallback() {
-    // Cleanup observer
-    if (this._observer) {
-      this._observer.disconnect();
-      this._observer = null;
+    // Cleanup event listeners and swiper instance
+    if (this.breakpoint && this.breakpointChecker) {
+      this.breakpoint.removeEventListener("change", this.breakpointChecker);
     }
-
-    // Cleanup resize timeout
-    if (this._resizeTimeout) {
-      clearTimeout(this._resizeTimeout);
-      this._resizeTimeout = null;
-    }
-
-    // Cleanup swiper instances
-    if (this._thumbsSwiper) {
-      this._thumbsSwiper.destroy(true, true);
-      this._thumbsSwiper = null;
-    }
-
     if (this.initSwiper) {
       this.initSwiper.destroy(true, true);
       this.initSwiper = null;
     }
-
-    // Remove flags
-    this._isInitialized = false;
-    this._isVisible = false;
-    this.setAttribute('data-visible', 'false');
-
+    // Remove initialization flag
     if (this.swiperEl) {
       this.swiperEl._swiperInitialized = false;
     }
   }
 
-  setupIntersectionObserver() {
-    // Chỉ init khi component visible trên màn hình
-    this._observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && !this._isInitialized) {
-          this._isVisible = true;
-          this.setAttribute('data-visible', 'true');
-          this.initializeSwiper();
-        } else if (!entry.isIntersecting && this._isInitialized) {
-          this._isVisible = false;
-          this.setAttribute('data-visible', 'false');
-        }
-      });
-    }, {
-      rootMargin: '50px', // Init trước khi vào viewport 50px
-      threshold: 0.1
-    });
-
-    this._observer.observe(this);
-  }
-
   initializeSwiper() {
-    if (this._isInitialized) return;
+    // Small delay to ensure proper initialization
+    setTimeout(() => {
+      this.swiperEl = this.querySelector(".swiper");
 
-    this.swiperEl = this.querySelector(".swiper");
-    if (!this.swiperEl) {
-      console.error("❌ No .swiper element found in SwiperComponent");
-      return;
-    }
-
-    if (this.swiperEl._swiperInitialized) {
-      return;
-    }
-
-    this.swiperEl._swiperInitialized = true;
-    this._isInitialized = true;
-
-    const nextButton = this.swiperEl.querySelector(".swiper-button-next");
-    const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
-    const pagination = this.swiperEl.querySelector(".swiper-pagination");
-    const arrowOnHeaderNextButton = this.arrowOnHeader
-      ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next")
-      : nextButton;
-    const arrowOnHeaderPrevButton = this.arrowOnHeader
-      ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev")
-      : prevButton;
-
-    const getOption = (name, defaultValue = undefined) => {
-      const attr = this.getAttribute(`data-${name}`);
-      if (attr === null) return defaultValue;
-
-      try {
-        return JSON.parse(attr);
-      } catch {
-        if (attr === "true") return true;
-        if (attr === "false") return false;
-        if (!isNaN(attr)) return Number(attr);
-        return attr;
+      if (!this.swiperEl) {
+        console.error("❌ No .swiper element found in SwiperComponent");
+        return;
       }
-    };
 
-    const baseSpaceBetween = getOption("space-between", 20);
-    const baseBreakpoints = getOption("breakpoints", null);
-
-    const defaultSpacebetween = !baseBreakpoints
-      ? baseSpaceBetween * 0.5
-      : baseSpaceBetween;
-
-    const spaceBetweenTablet = !baseBreakpoints
-      ? baseSpaceBetween * 0.75
-      : baseSpaceBetween;
-
-    const defaultBreakpoints = !baseBreakpoints
-      ? {
-        750: { spaceBetween: spaceBetweenTablet },
-        990: { spaceBetween: baseSpaceBetween },
+      if (this.swiperEl._swiperInitialized) {
+        console.log("🔍 Swiper already initialized, skipping...");
+        return;
       }
-      : baseBreakpoints;
 
-    this.options = {
-      direction: getOption("direction", "horizontal"),
-      mousewheel: getOption("mousewheel", false),
-      watchSlidesProgress: getOption("watch-slides-progress", false),
-      loop: getOption("loop", false),
-      speed: getOption("speed", 500),
-      parallax: getOption("parallax", false),
-      effect: getOption("effect", false),
-      spaceBetween: defaultSpacebetween,
-      autoplay: {
-        enabled: getOption("slide-autoplay", false),
-        pauseOnMouseEnter: true,
-        disableOnInteraction: false,
-      },
-      slidesPerView: getOption("slides-per-view", 1),
-      centeredSlides: getOption("centered-slides", false),
-      autoHeight: getOption("auto-height", false),
-      navigation: {
-        nextEl: arrowOnHeaderNextButton,
-        prevEl: arrowOnHeaderPrevButton,
-      },
-      pagination: {
-        el: pagination,
-        clickable: true,
-        type: getOption("pagination-type", "bullets"),
-        dynamicBullets: getOption("dynamic-bullets", false),
-      },
-      breakpoints: defaultBreakpoints,
-      thumbs: {
-        swiper: null,
-      },
-    };
+      this.swiperEl._swiperInitialized = true;
 
-    this.initSwiperMobile();
+      // Debug: Check if swiper elements exist
+      const nextButton = this.swiperEl.querySelector(".swiper-button-next");
+      const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
+      const pagination = this.swiperEl.querySelector(".swiper-pagination");
+      const arrowOnHeaderNextButton = this.arrowOnHeader
+        ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next")
+        : nextButton;
+      const arrowOnHeaderPrevButton = this.arrowOnHeader
+        ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev")
+        : prevButton;
+
+      const getOption = (name, defaultValue = undefined) => {
+        const attr = this.getAttribute(`data-${name}`);
+        if (attr === null) return defaultValue;
+
+        try {
+          return JSON.parse(attr);
+        } catch {
+          if (attr === "true") return true;
+          if (attr === "false") return false;
+          if (!isNaN(attr)) return Number(attr);
+          return attr;
+        }
+      };
+
+      const baseSpaceBetween = getOption("space-between", 20);
+      const baseBreakpoints = getOption("breakpoints", null);
+
+      // Calculate default space between slides if not breakpoint provided
+      const defaultSpacebetween = !baseBreakpoints
+        ? baseSpaceBetween * 0.5
+        : baseSpaceBetween; // Mobile
+
+      const spaceBetweenTablet = !baseBreakpoints
+        ? baseSpaceBetween * 0.75
+        : baseSpaceBetween;
+
+      const defaultBreakpoints = !baseBreakpoints
+        ? {
+            750: { spaceBetween: spaceBetweenTablet }, // Tablet
+            990: { spaceBetween: baseSpaceBetween }, // Desktop
+          }
+        : baseBreakpoints;
+
+      // Options
+      this.options = {
+        direction: getOption("direction", "horizontal"),
+        mousewheel: getOption("mousewheel", false),
+        watchSlidesProgress: getOption("watch-slides-progress", false),
+        loop: getOption("loop", false),
+        speed: getOption("speed", 500),
+        parallax: getOption("parallax", false),
+        effect: getOption("effect", false),
+        spaceBetween: defaultSpacebetween,
+        autoplay: {
+          enabled: getOption("slide-autoplay", false),
+          pauseOnMouseEnter: true,
+          disableOnInteraction: false,
+        },
+        slidesPerView: getOption("slides-per-view", 1),
+        centeredSlides: getOption("centered-slides", false),
+        autoHeight: getOption("auto-height", false),
+        navigation: {
+          nextEl: arrowOnHeaderNextButton,
+          prevEl: arrowOnHeaderPrevButton,
+        },
+        pagination: {
+          el: pagination,
+          clickable: true,
+          type: getOption("pagination-type", "bullets"),
+          dynamicBullets: getOption("dynamic-bullets", false),
+        },
+        breakpoints: defaultBreakpoints,
+        thumbs: {
+          swiper: null,
+        },
+      };
+
+      this.initSwiperMobile();
+    }, 100); // Added a small delay
   }
 
   initSwiperMobile() {
@@ -1575,12 +1572,12 @@ class SwiperComponent extends HTMLElement {
       }
 
       try {
-        // Cache thumbnail swiper để không init lại mỗi lần
-        if (!this._thumbsSwiper) {
-          const thumbnailSwiper = this.querySelector('.swiper-controls__thumbnails-container .swiper');
+        // Check for thumbnail swiper - works on both mobile and desktop
+        const thumbnailSwiper = this.querySelector('.swiper-controls__thumbnails-container .swiper');
+        let thumbsSwiper = null;
 
-          if (thumbnailSwiper && !thumbnailSwiper._swiperInitialized) {
-            thumbnailSwiper._swiperInitialized = true;
+        if (thumbnailSwiper && !thumbnailSwiper._swiperInitialized) {
+          thumbnailSwiper._swiperInitialized = true;
 
           // Get thumbnail direction from data attribute
           const thumbnailDirection = this.getAttribute('data-thumbnail-direction') || 'horizontal';
@@ -1590,7 +1587,7 @@ class SwiperComponent extends HTMLElement {
           const thumbnailPosition = this.querySelector('.swiper-controls__thumbnails-container')?.getAttribute('data-thumbnail-position') || 'bottom';
           const slidesPerView = (thumbnailPosition === 'left' || thumbnailPosition === 'right') ? 'auto' : 4;
 
-          this._thumbsSwiper = new Swiper(thumbnailSwiper, {
+          thumbsSwiper = new Swiper(thumbnailSwiper, {
             direction: isVerticalThumbnails ? 'vertical' : 'horizontal',
             spaceBetween: 16,
             slidesPerView: slidesPerView,
@@ -1612,21 +1609,10 @@ class SwiperComponent extends HTMLElement {
             },
           });
         }
-        }
-
-        // Calculate slides count for loop optimization
-        const slides = this.swiperEl.querySelectorAll('.swiper-slide:not(.swiper-slide-duplicate)');
-        const slidesCount = slides.length;
-        const slidesPerView = this.options.slidesPerView || 1;
-        const shouldEnableLoop = this.options.loop && slidesCount > slidesPerView;
 
         // Ensure proper swiper options for both desktop and mobile
-        // Parallax requires progress tracking for correct transforms
-        const isParallax = this.options.parallax === true || this.hasAttribute('data-parallax');
         const swiperOptions = {
           ...this.options,
-          watchSlidesProgress: isParallax ? true : this.options.watchSlidesProgress,
-          loop: shouldEnableLoop,
           // Enable touch/swipe functionality
           allowTouchMove: true,
           // Enable navigation buttons
@@ -1648,42 +1634,25 @@ class SwiperComponent extends HTMLElement {
             enabled: true,
             onlyInViewport: true,
           },
-          // Enable mousewheel only if needed
-          mousewheel: this.options.mousewheel ? {
+          // Enable mousewheel
+          mousewheel: {
             forceToAxis: true,
-          } : false,
+          },
           // Enable grab cursor
           grabCursor: true,
           // Enable resistance
           resistance: true,
           resistanceRatio: 0.85,
           // Connect thumbnail swiper if exists
-          thumbs: this._thumbsSwiper ? {
-            swiper: this._thumbsSwiper,
+          thumbs: thumbsSwiper ? {
+            swiper: thumbsSwiper,
           } : undefined,
-          // Disable observers để tránh lag
-          observer: false,
-          observeParents: false,
-          observeSlideChildren: false,
-          watchOverflow: true,
-          updateOnWindowResize: false,
-          resizeObserver: false
         };
 
         this.initSwiper = new Swiper(this.swiperEl, swiperOptions);
 
-        // If parallax, force size/progress sync to keep data-swiper-parallax correct
-        if (isParallax && this.initSwiper) {
-          this.initSwiper.updateSize && this.initSwiper.updateSize();
-          this.initSwiper.updateSlides && this.initSwiper.updateSlides();
-          this.initSwiper.updateSlidesProgress && this.initSwiper.updateSlidesProgress();
-          this.initSwiper.updateProgress && this.initSwiper.updateProgress();
-          this.initSwiper.updateSlidesClasses && this.initSwiper.updateSlidesClasses();
-        }
-
         // Handle thumbnail clicks - works on both mobile and desktop
-        if (this._thumbsSwiper) {
-          const thumbnailSwiper = this.querySelector('.swiper-controls__thumbnails-container .swiper');
+        if (thumbnailSwiper && thumbsSwiper) {
           const thumbnailButtons = thumbnailSwiper.querySelectorAll('.swiper-controls__thumbnail');
           thumbnailButtons.forEach((button, index) => {
             button.addEventListener('click', (e) => {
@@ -1705,23 +1674,23 @@ class SwiperComponent extends HTMLElement {
             });
 
             const realIndex = this.initSwiper.realIndex;
-            let thumbsPerView = this._thumbsSwiper.params.slidesPerView;
+            let thumbsPerView = thumbsSwiper.params.slidesPerView;
 
             if (thumbsPerView == 'auto') {
-              thumbsPerView = this._thumbsSwiper.slides.filter(slide =>
+              thumbsPerView = thumbsSwiper.slides.filter(slide =>
                 slide.classList.contains('swiper-slide-visible')
               ).length;
             }
 
-            const firstVisible = this._thumbsSwiper.activeIndex;
+            const firstVisible = thumbsSwiper.activeIndex;
             const lastVisible = firstVisible + thumbsPerView - 1;
 
             if (realIndex >= lastVisible - 1) {
-              this._thumbsSwiper.slideTo(realIndex - 2);
+              thumbsSwiper.slideTo(realIndex - 2);
             }
 
             if (realIndex <= firstVisible + 1 && firstVisible > 0) {
-              this._thumbsSwiper.slideTo(realIndex - 2 < 0 ? 0 : realIndex - 2);
+              thumbsSwiper.slideTo(realIndex - 2 < 0 ? 0 : realIndex - 2);
             }
           });
 
@@ -1732,13 +1701,15 @@ class SwiperComponent extends HTMLElement {
           }
         }
 
-        // Update swipers immediately
-        if (this.initSwiper) {
-          this.initSwiper.update();
-          if (this._thumbsSwiper) {
-            this._thumbsSwiper.update();
+        // Force update to ensure proper rendering
+        setTimeout(() => {
+          if (this.initSwiper) {
+            this.initSwiper.update();
+            if (thumbsSwiper) {
+              thumbsSwiper.update();
+            }
           }
-        }
+        }, 200);
       } catch (error) {
         console.error("❌ Error initializing Swiper:", error);
         // Try to reinitialize after a delay
@@ -1772,7 +1743,10 @@ class SwiperComponent extends HTMLElement {
       }
     };
 
-    // Chỉ check breakpoint một lần - không add event listener để tránh lag
+    // Add event listener for breakpoint changes
+    this.breakpoint.addEventListener("change", this.breakpointChecker);
+
+    // Initial check
     this.breakpointChecker();
   }
 
@@ -1784,51 +1758,9 @@ class SwiperComponent extends HTMLElement {
     }
     this.initSwiperMobile();
   }
-
-  // Robust resize updater to keep width/percent and parallax correct
-  updateForResize() {
-    if (!this.initSwiper) return;
-    const s = this.initSwiper;
-
-    // Re-apply breakpoints since updateOnWindowResize is disabled
-    if (typeof s.setBreakpoint === 'function' && s.params && s.params.breakpoints) {
-      s.setBreakpoint();
-    }
-
-    // If loop is enabled, temporarily destroy to recalc widths correctly
-    const hadLoop = !!s.params && !!s.params.loop;
-    if (hadLoop && typeof s.loopDestroy === 'function') {
-      s.loopDestroy();
-    }
-
-    // Full metric refresh
-    s.updateSize && s.updateSize();
-    s.updateSlides && s.updateSlides();
-    s.updateSlidesOffset && s.updateSlidesOffset();
-    s.updateProgress && s.updateProgress();
-    s.updateSlidesClasses && s.updateSlidesClasses();
-
-    // Ensure parallax stays in sync
-    if ((this.options && this.options.parallax) || this.hasAttribute('data-parallax')) {
-      s.updateSlidesProgress && s.updateSlidesProgress();
-      s.updateProgress && s.updateProgress();
-    }
-
-    // Recreate loop if needed
-    if (hadLoop && typeof s.loopCreate === 'function') {
-      s.loopCreate();
-      if (typeof s.slideToLoop === 'function') {
-        s.slideToLoop(s.realIndex || 0, 0, false);
-      }
-    }
-
-    // Keep thumbnails in sync
-    this._thumbsSwiper && this._thumbsSwiper.update && this._thumbsSwiper.update();
-  }
 }
 if (!customElements.get("swiper-component"))
   customElements.define("swiper-component", SwiperComponent);
-
 
 class ProductRecommendations extends HTMLElement {
   observer = undefined;
@@ -2331,6 +2263,10 @@ class RecentlyViewedProducts extends HTMLElement {
 }
 if (!customElements.get("recently-viewed-products"))
   customElements.define("recently-viewed-products", RecentlyViewedProducts);
+
+const moreButton = document.querySelectorAll(
+  ".card__swatch .item-swatch-more .number-showmore"
+);
 
 // Initialize 'show more swatches' buttons; safe to call multiple times
 function initMoreSwatchButtons(root = document) {
@@ -3773,3 +3709,4 @@ class SlideshowAnimated extends HTMLElement {
   }
 }
 if (!customElements.get('slideshow-animated')) customElements.define('slideshow-animated', SlideshowAnimated);
+
