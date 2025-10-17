@@ -200,23 +200,6 @@ function initUserInteractionHandler(callback) {
 }
 
 // initUserInteractionHandler();
-
-window.addEventListener("DOMContentLoaded", () => {
-  // logoReveal();
-  // pageReveal();
-  // headerHeight();
-  // updateHeaderHeights();
-});
-
-window.addEventListener("resize", () => {
-  headerHeight();
-  updateHeaderHeights();
-});
-
-window.addEventListener("scroll", () => {
-
-});
-
 function getFocusableElements(container) {
   return Array.from(
     container.querySelectorAll(
