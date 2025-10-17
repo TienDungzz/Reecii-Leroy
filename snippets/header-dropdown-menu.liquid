@@ -4,129 +4,74 @@
   Usage:
   {% render 'header-dropdown-menu' %}
 {% endcomment %}
-
-<div>
-  <div
-    id="Details-HeaderMenu-{{ forloopIndex }}"
-    class="details--dropdown dropdown-menu"
+<div
+  class="header__submenu-wrapper list-menu--wrapper cus-scrollbar"
+  tabindex="-1"
+  {% if settings.enable_smooth_scroll %}
+    data-lenis-prevent
+  {% endif %}
+>
+  <ul
+    id="HeaderMenu-MenuList-{{ forloopIndex }}"
+    class="header__submenu list-menu caption-large motion-reduce"
+    role="list"
   >
-    <div
-      id="HeaderMenu-{{ link.handle }}"
-      class="header__menu-item list-menu__item link focus-inset link--hover-underline"
-    >
-      {% if is_vertical_menu %}
-        {% liquid
-          assign width = 20
-
-          assign ratio = 1
-
-          assign image_style = 'width: ' | append: width | append: 'px;' | append: ';' | append: '--media-adapt-ratio:' | append: ratio | append: ';'
-
-          assign image_sources = 'jpg,png,webp,avif' | split: ','
-          assign found_image = false
-        -%}
-
-        {% for ext in image_sources %}
-          {% assign ext = ext | strip %}
-          {% assign item_image = link.handle | downcase | replace: ' ', '-' | append: '.' | append: ext %}
-          {% if images[item_image] != blank and found_image == false %}
-            {% assign found_image = true %}
-            {% assign image = item_image | file_url %}
-            <span class="icon-image" style="{{ image_style }}">
-              <img
-                src="{{ image }}"
-                srcset="{{ image }} 450w, {{ image }} 900w"
-                width="450"
-                height="450"
-                sizes="{{ sizes }}"
-                loading="lazy"
-                alt="{{ shop.name | escape }}"
+    {%- for childlink in link.links -%}
+      <li>
+        {%- if childlink.links == blank -%}
+          <a
+            id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+            href="{{ childlink.url }}"
+            class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline caption-large {{ class_item_hover_reveal }}{% if childlink.current %} list-menu__item--active{% endif %}"
+            {% if childlink.current %}
+              aria-current="page"
+            {% endif %}
+          >
+            <span class="text">{{ childlink.title | escape }}</span>
+          </a>
+        {%- else -%}
+          <details
+            id="Details-HeaderSubMenu-{{ link.handle }}-{{ childlink.handle }}"
+            class="relative details--dropdown"
+            is="dropdown-details"
+            activate-event="hover"
+            data-index="0"
+          >
+            <summary
+              id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+              class="details__summary header__menu-item link link--text list-menu__item focus-inset caption-large {{ class_item_hover_reveal }}"
+            >
+              <span class="text">{{ childlink.title | escape }}</span>
+              {% if icon_type == 'caret' %}
+                <span class="svg-wrapper">
+                  {{- 'icon-caret.svg' | inline_asset_content -}}
+                </span>
+              {% endif %}
+            </summary>
+            <div class="details__list header__submenu-wrapper header__submenu-wrapper-grandchild list-menu--wrapper list-menu list-menu--disclosure top-0 left-full z-1 motion-reduce global-settings-popup">
+              <ul
+                id="HeaderMenu-SubMenuList-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
+                class="header__submenu list-menu"
               >
-            </span>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-      <span
-        class="
-          text
-          {%- if link.child_active %}
-            header__active-menu-item
-          {% endif %}
-        "
-      >
-        {{- link.title | escape -}}
-      </span>
-      {% if icon_type == 'caret' %}
-        <span class="svg-wrapper">
-          {{- 'icon-caret.svg' | inline_asset_content -}}
-        </span>
-      {% endif %}
-    </div>
-    <div
-      class="header__submenu-wrapper list-menu--wrapper list-menu--disclosure z-1 global-settings-popup  cus-scrollbar"
-      tabindex="-1"
-      {% if settings.enable_smooth_scroll %}
-        data-lenis-prevent
-      {% endif %}
-    >
-      <ul
-        id="HeaderMenu-MenuList-{{ forloopIndex }}"
-        class="header__submenu list-menu color-{{ block.settings.menu_color_scheme }} caption-large motion-reduce"
-        role="list"
-      >
-        {%- for childlink in link.links -%}
-          <li>
-            {%- if childlink.links == blank -%}
-              <a
-                id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                href="{{ childlink.url }}"
-                class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline caption-large {{ class_item_hover_reveal }}{% if childlink.current %} list-menu__item--active{% endif %}"
-                {% if childlink.current %}
-                  aria-current="page"
-                {% endif %}
-              >
-                <span class="text">{{ childlink.title | escape }}</span>
-              </a>
-            {%- else -%}
-              <div
-                id="Details-HeaderSubMenu-{{ link.handle }}-{{ childlink.handle }}"
-                class="relative details--dropdown"
-              >
-                <div
-                  id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                  class="details__summary header__menu-item link link--text list-menu__item focus-inset caption-large {{ class_item_hover_reveal }}"
-                >
-                  <span class="text">{{ childlink.title | escape }}</span>
-                  {% if icon_type == 'caret' %}
-                    <span class="svg-wrapper">
-                      {{- 'icon-caret.svg' | inline_asset_content -}}
-                    </span>
-                  {% endif %}
-                </div>
-                <ul
-                  id="HeaderMenu-SubMenuList-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                  class="details__list header__submenu header__submenu-wrapper header__submenu-wrapper-grandchild list-menu--wrapper list-menu list-menu--disclosure top-0 left-full z-1 motion-reduce global-settings-popup"
-                >
-                  {%- for grandchildlink in childlink.links -%}
-                    <li>
-                      <a
-                        id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                        href="{{ grandchildlink.url }}"
-                        class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline caption-large {{ class_item_hover_reveal }}{% if grandchildlink.current %} list-menu__item--active{% endif %}"
-                        {% if grandchildlink.current %}
-                          aria-current="page"
-                        {% endif %}
-                      >
-                        <span class="text">{{ grandchildlink.title | escape }}</span>
-                      </a>
-                    </li>
-                  {%- endfor -%}
-                </ul>
-              </div>
-            {%- endif -%}
-          </li>
-        {%- endfor -%}
-      </ul>
-    </div>
-  </div>
+                {%- for grandchildlink in childlink.links -%}
+                  <li>
+                    <a
+                      id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
+                      href="{{ grandchildlink.url }}"
+                      class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline caption-large {{ class_item_hover_reveal }}{% if grandchildlink.current %} list-menu__item--active{% endif %}"
+                      {% if grandchildlink.current %}
+                        aria-current="page"
+                      {% endif %}
+                    >
+                      <span class="text">{{ grandchildlink.title | escape }}</span>
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          </details>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
 </div>

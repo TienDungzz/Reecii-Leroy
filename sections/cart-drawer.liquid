@@ -8,12 +8,17 @@
 
   {%- render 'cart-drawer' -%}
 
-  {%- liquid
+  {% comment %} {%- liquid
     assign files = 'cart.js, quantity-popover.js, cart-drawer.js'
 
     assign files = files | split: ', '
     render 'theme-loader', files: files
-  -%}
+  -%} {% endcomment %}
+
+  <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+
 {%- endif -%}
 
 {% schema %}
