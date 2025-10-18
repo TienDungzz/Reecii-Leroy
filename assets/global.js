@@ -5,7 +5,6 @@ theme.config = {
   mqlSmall: false,
   mql: '(min-width: 750px)',
   mqlDesktop: '(min-width: 1025px)',
-  motionReduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   isTouch: ('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0),
   rtl: document.documentElement.getAttribute('dir') === 'rtl' ? true : false
 };

@@ -88,8 +88,8 @@
                         {% assign image = item_image | file_url %}
                         <span class="icon-image" style="{{ image_style }}">
                           <img
-                            src="{{ image }}"
-                            srcset="{{ image }} 450w, {{ image }} 900w"
+                            src="{{ image | image_url: width: 100 }}"
+                            srcset="{{ image | image_url: width: 100 }} 450w, {{ image | image_url: width: 200 }} 900w"
                             width="450"
                             height="450"
                             sizes="{{ sizes }}"
@@ -602,6 +602,18 @@
     top: 50%;
     bottom: auto;
     transform: translateY(-50%) rotate(270deg);
+  }
+
+  .header-menu .details--dropdown > .details__list {
+    opacity: 0;
+    transform: translateY(-5%);
+    visibility: hidden;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .header-menu .details--dropdown > .details__list.is-active {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
   }
 
   .header__inline-menu .details--dropdown > .list-menu--wrapper:not(.header__submenu-wrapper) {
