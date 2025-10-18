@@ -3475,61 +3475,6 @@ function resetShimmer(container = document.body) {
   });
 }
 
-(function() {
-  if (typeof Fancybox === 'undefined') {
-    console.error('Fancybox library not loaded');
-    return;
-  }
-
-  if (!window._fancyboxInitialized) {
-    window._fancyboxInitialized = true;
-
-    setTimeout(() => {
-      const fancyboxElements = document.querySelectorAll('[data-fancybox]');
-
-      Fancybox.bind('[data-fancybox]', {
-        // Gallery options
-        loop: true,
-        buttons: [
-          "zoom",
-          "slideShow",
-          "fullScreen",
-          "thumbs",
-          "close"
-        ],
-        // Animation settings
-        animated: true,
-        showClass: "fancybox-zoomIn",
-        hideClass: "fancybox-zoomOut",
-        // Thumbnails
-        thumbs: {
-          autoStart: false,
-          axis: "x"
-        },
-        // Image options
-        Image: {
-          zoom: true,
-          click: "close",
-          wheel: "slide"
-        },
-        // Video options
-        Video: {
-          autoplay: false
-        },
-        // Error handling
-        on: {
-          done: (fancybox, slide) => {
-            console.log('Fancybox opened:', slide.src);
-          },
-          error: (fancybox, slide) => {
-            console.error('Fancybox error:', slide.src, slide.error);
-          }
-        }
-      });
-    }, 100);
-  }
-})();
-
 class SlideshowAnimated extends HTMLElement {
   constructor() {
     super();
