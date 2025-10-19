@@ -11,96 +11,88 @@
   tabindex="-1"
   style="--columns-count: {{ block.settings.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
 >
-  <div class="mega-menu__container">
-    <div class="page-width page-width--{{ block.settings.width }}">
-      <ul
-        class="mega-menu__list header__mega-submenu{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
-        role="list"
-      >
-        {%- for childlink in link.links -%}
-          <li>
-            <a
-              id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-              href="{{ childlink.url }}"
-              class="
-                header__menu-item mega-menu__link mega-menu__link--level-2 link
-                {% if childlink.current %} list-menu__item--active{% endif %}
-                {% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: sec_settings %}
-
-                thinh-key-{{ keys }}
-              "
-              {% if childlink.current %}
-                aria-current="page"
-              {% endif %}
-              style="{%  render 'highlight-style', order: '2', keys: keys, compare: childlink.title, color: highlight_color, settings: sec_settings %}"
-            >
-              <span class="text">
-                {{ childlink.title | escape }}
-              </span>
-              {% render 'highlight-label-menu',
-                order: '2',
-                keys: keys,
-                compare: childlink.title,
-                settings: sec_settings
-              %}
-            </a>
-            {%- if childlink.links != blank -%}
-              <ul class="list-unstyled" role="list">
-                {%- for grandchildlink in childlink.links -%}
-                  <li>
-                    <a
-                      id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                      href="{{ grandchildlink.url }}"
-                      class="
-                        header__menu-item mega-menu__link link link--hover-underline
-                        {% if grandchildlink.current %} list-menu__item--active{% endif %}
-                        {% render 'highlight-class', order: '3', keys: keys, compare: grandchildlink.title, settings: sec_settings %}
-
-                        thinh-key-{{ keys }}
-                      "
-                      {% if grandchildlink.current %}
-                        aria-current="page"
-                      {% endif %}
-                      style="{%  render 'highlight-style', order: '3', keys: keys, compare: grandchildlink.title, color: highlight_color, settings: sec_settings %}"
-                    >
-                      <span class="text">
-                        {{ grandchildlink.title | escape }}
-                      </span>
-                      {% render 'highlight-label-menu',
-                        order: '3',
-                        keys: keys,
-                        compare: grandchildlink.title,
-                        settings: sec_settings
-                      %}
-                    </a>
-                  </li>
-                {%- endfor -%}
-              </ul>
-            {%- endif -%}
-          </li>
-        {%- endfor -%}
-      </ul>
-    </div>
+  <div class="mega-menu__container page-width page-width--{{ block.settings.width }}">
+    <ul
+      class="mega-menu__list header__mega-submenu{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
+      role="list"
+    >
+      {%- for childlink in link.links -%}
+        <li>
+          <a
+            id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+            href="{{ childlink.url }}"
+            class="
+              header__menu-item mega-menu__link mega-menu__link--level-2 link
+              {% if childlink.current %} list-menu__item--active{% endif %}
+              {% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: sec_settings %}
+            "
+            {% if childlink.current %}
+              aria-current="page"
+            {% endif %}
+            style="{%  render 'highlight-style', order: '2', keys: keys, compare: childlink.title, color: highlight_color, settings: sec_settings %}"
+          >
+            {{ childlink.title | escape }}
+            {% render 'highlight-label-menu',
+              order: '2',
+              keys: keys,
+              compare: childlink.title,
+              settings: sec_settings
+            %}
+          </a>
+          {%- if childlink.links != blank -%}
+            <ul class="list-unstyled" role="list">
+              {%- for grandchildlink in childlink.links -%}
+                <li>
+                  <a
+                    id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
+                    href="{{ grandchildlink.url }}"
+                    class="
+                      header__menu-item mega-menu__link link link--hover-underline
+                      {% if grandchildlink.current %} list-menu__item--active{% endif %}
+                      {% render 'highlight-class', order: '3', keys: keys, compare: grandchildlink.title, settings: sec_settings %}
+                    "
+                    {% if grandchildlink.current %}
+                      aria-current="page"
+                    {% endif %}
+                    style="{%  render 'highlight-style', order: '3', keys: keys, compare: grandchildlink.title, color: highlight_color, settings: sec_settings %}"
+                  >
+                      {{ grandchildlink.title | escape }}
+                    {% render 'highlight-label-menu',
+                      order: '3',
+                      keys: keys,
+                      compare: grandchildlink.title,
+                      settings: sec_settings
+                    %}
+                  </a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+  {%- liquid
+    assign has_mega_menu_images = false
+    if block.settings.show_promotion_banner
+      if block.settings.image_1 != blank or block.settings.image_2 != blank
+        assign has_mega_menu_images = true
+        assign mega_menu_images_size = 0
+        assign image_index = 0
+      endif
+    endif
+  -%}
+  {%- for i in (1..2) -%}
+    {%- capture capture_image -%}image_{{ i }}{%- endcapture -%}
     {%- liquid
-      assign has_mega_menu_images = false
-      if block.settings.show_promotion_banner
-        if block.settings.image_1 != blank or block.settings.image_2 != blank
-          assign has_mega_menu_images = true
-          assign mega_menu_images_size = 0
-          assign image_index = 0
-        endif
+      assign image = block.settings[capture_image]
+      if image != blank
+        assign mega_menu_images_size = mega_menu_images_size | plus: 1
       endif
     -%}
-    {%- for i in (1..2) -%}
-      {%- capture capture_image -%}image_{{ i }}{%- endcapture -%}
-      {%- liquid
-        assign image = block.settings[capture_image]
-        if image != blank
-          assign mega_menu_images_size = mega_menu_images_size | plus: 1
-        endif
-      -%}
-    {%- endfor -%}
-    <div class="mega-menu__collage-wrapper{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}">
+  {%- endfor -%}
+  <div class="mega-menu__collage-wrapper{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}">
+    {%- if has_mega_menu_images == true or block.settings.show_brand -%}
       <div class="page-width page-width--{{ block.settings.width }}">
         <div
           class="mega-menu__collage collage collage-3-columns collage--{{ block.settings.promotion_banner_layout }} collage--{{ mega_menu_images_size }}-items grid"
@@ -150,6 +142,7 @@
                         | image_url: width: 600
                         | image_tag:
                           loading: 'lazy',
+                          decoding: 'async'
                           widths: '275, 550, 710',
                           sizes: sizes,
                           alt: image_alt,
@@ -161,15 +154,15 @@
               {%- endif -%}
             {%- endfor -%}
           {%- endif -%}
-          {% if block.settings.show_brand %}
+          {%- if block.settings.show_brand -%}
             <div
-              class="                    menu-dropdown__block menu-dropdown__brand collage__item collage__item--3"
+              class="menu-dropdown__block menu-dropdown__brand collage__item collage__item--3"
             >
-              {% if block.settings.brand_title %}
+              {%- if block.settings.brand_title -%}
                 <h3 class="menu-dropdown__block--title h6">
                   <span>{{ block.settings.brand_title | escape }}</span>
                 </h3>
-              {% endif %}
+              {%- endif -%}
               <div class="menu-dropdown__block--content">
                 <ul class="azbrandsTable list-unstyled">
                   {% assign brand_letters = '' %}
@@ -192,7 +185,7 @@
                   {% endfor %}
                 </ul>
               </div>
-              {% if block.settings.brand_text %}
+              {%- if block.settings.brand_text -%}
                 <div style="--mt: var(--margin-md);">
                   <a
                     {% if block.settings.brand_url == blank %}
@@ -205,11 +198,11 @@
                     <span>{{ block.settings.brand_text | escape }}</span>
                   </a>
                 </div>
-              {% endif %}
+              {%- endif -%}
             </div>
-          {% endif %}
+          {%- endif -%}
         </div>
       </div>
-    </div>
+    {%- endif -%}
   </div>
 </div>

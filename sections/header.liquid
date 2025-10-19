@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
 
-{{ 'section-header.css' | asset_url | stylesheet_tag }}
+{% comment %} {{ 'section-header.css' | asset_url | stylesheet_tag }} {% endcomment %}
+<link rel="preload" href="{{ 'section-header.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 
 {%- liquid
   assign sec_stts = section.settings
@@ -301,6 +302,11 @@
     --header-group-height: 0px;
   }
 
+  /* .header[transparent='not-sticky']:not([data-sticky-state]) .header__icon.button ,
+  .header[transparent='not-sticky'][data-sticky-state='inactive'] .header__icon.button {
+    background-color: transparent;
+  } */
+
   .header[transparent] {
     --language-button-background-color: transparent;
     --language-button-border-color: transparent;
@@ -320,6 +326,8 @@
     /* transparent color scheme on .header should never apply its background color */
     background-color: transparent;
     z-index: var(--layer-overlay);
+
+
 
     &[transparent='not-sticky'][data-sticky-state='active'],
     /* Only show opaque background when hovering over menu items with children (mega menu)
@@ -894,9 +902,7 @@
             { "value": "3", "label": "3" },
             { "value": "4", "label": "4" },
             { "value": "5", "label": "5" },
-            { "value": "6", "label": "6" },
-            { "value": "7", "label": "7" },
-            { "value": "8", "label": "8" }
+            { "value": "6", "label": "6" }
           ],
           "default": "4",
           "label": "t:settings.grid_for_menus"
@@ -1035,9 +1041,7 @@
             { "value": "3", "label": "3" },
             { "value": "4", "label": "4" },
             { "value": "5", "label": "5" },
-            { "value": "6", "label": "6" },
-            { "value": "7", "label": "7" },
-            { "value": "8", "label": "8" }
+            { "value": "6", "label": "6" }
           ],
           "default": "4",
           "label": "t:settings.grid_for_menus"
@@ -1199,9 +1203,7 @@
             { "value": "3", "label": "3" },
             { "value": "4", "label": "4" },
             { "value": "5", "label": "5" },
-            { "value": "6", "label": "6" },
-            { "value": "7", "label": "7" },
-            { "value": "8", "label": "8" }
+            { "value": "6", "label": "6" }
           ],
           "default": "4",
           "label": "t:settings.grid_for_menus"

@@ -72,7 +72,7 @@ class SideDrawer extends HTMLElement {
 
     this.classList.add("open");
 
-    Motion.timeline([
+    const sequence = [
       [
         this.overlay,
         {
@@ -93,8 +93,10 @@ class SideDrawer extends HTMLElement {
               : ["translateX(100%)", "translateX(0)"],
         },
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.05" },
-      ],
-    ]);
+      ]
+    ];
+
+    Motion.animate(sequence);
 
     // Stop Lenis smooth scroll
     stopLenis();
@@ -116,7 +118,7 @@ class SideDrawer extends HTMLElement {
       document.querySelector('.header__icon--menu button').classList.remove('active');
     }
 
-    await Motion.timeline([
+    const sequence = [
       [
         contentElement,
         {
@@ -137,8 +139,10 @@ class SideDrawer extends HTMLElement {
               : ["translateX(0)", "translateX(100%)"],
         },
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" },
-      ],
-    ]).finished;
+      ]
+    ];
+
+    await Motion.animate(sequence).finished;
 
     if (detailsElement) {
       detailsElement.removeAttribute("open");
@@ -362,15 +366,19 @@ class CollapsibleDetails extends HTMLDetailsElement {
     if (open) {
       this.setAttribute('open', '');
 
-      await Motion.timeline([
+      const sequence = [
         [this, { height: [`${this.summary.clientHeight}px`, `${this.scrollHeight}px`] }, { duration: 0.45, easing: 'cubic-bezier(0.7, 0, 0.3, 1)' }],
         [this.content, { opacity: [0, 1], transform: ['translateX(-1rem)', 'translateX(0)'] }, { duration: 0.25, at: '-0.1' }]
-      ]).finished;
+      ];
+
+      await Motion.animate(sequence).finished;
     } else {
-      await Motion.timeline([
+      const sequence = [
         [this.content, { opacity: 0, transform: ['translateX(0)', 'translateX(1rem)'] }, { duration: 0.15 }],
         [this, { height: [`${this.clientHeight}px`, `${this.summary.clientHeight}px`] }, { duration: 0.35, at: '<', easing: 'cubic-bezier(0.7, 0, 0.3, 1)' }]
-      ]).finished;
+      ];
+
+      await Motion.animate(sequence).finished;
 
       this.removeAttribute('open');
     }
@@ -405,9 +413,9 @@ if (!customElements.get('collapsible-details')) customElements.define('collapsib
 //     this.elements.button?.addEventListener('click', this._toggleOpen.bind(this));
 
 //     if (this.mqlDesktop.matches && this.getAttribute('activate-event') === 'hover') {
-//       // const hoverEvents = ['focusin', 'pointerenter'];
+//       // const hoverEvents = ['focusin', 'mouseenter'];
 //       // hoverEvents.forEach(event => this.addEventListener(event, this._hoverOpen.bind(this)));
-//       this.addEventListener('pointerenter', () => {
+//       this.addEventListener('mouseenter', () => {
 //         this._animate(true);
 //       })
 //       this.addEventListener('pointerleave', () => {
@@ -531,7 +539,7 @@ if (!customElements.get('collapsible-details')) customElements.define('collapsib
 
 //     // Hover mở ngay (không delay)
 //     if (this.mqlDesktop.matches && this.getAttribute('activate-event') === 'hover') {
-//       this.addEventListener('pointerenter', () => this._animate(true));
+//       this.addEventListener('mouseenter', () => this._animate(true));
 //       this.addEventListener('pointerleave', () => this._animate(false));
 //     }
 //   }
@@ -618,12 +626,16 @@ if (!customElements.get('collapsible-details')) customElements.define('collapsib
 class DropdownDetails extends HTMLDetailsElement {
   constructor() {
     super();
-    this._hoverRaf = null;
-    this._currentAnimation = null;
+
+    if (Shopify.designMode) {
+      this.addEventListener('shopify:block:select', () => this.isOpen = true);
+      this.addEventListener('shopify:block:deselect', () => this.isOpen = false);
+    }
   }
 
   connectedCallback() {
-    this.init();
+    theme.initWhenVisible(this.init.bind(this));
+    // this.init();
   }
 
   init() {
@@ -638,14 +650,20 @@ class DropdownDetails extends HTMLDetailsElement {
 
     this.setAttribute('open', 'false');
     this.elements.button.addEventListener('click', this._toggleOpen.bind(this));
-    this.addEventListener('focusout', this.onFocusOut.bind(this));
-    this.addEventListener('focusin', () => this._animate(true));
+
+    // this.elements.button.addEventListener('click', this._toggleOpen.bind(this));
+    // this.addEventListener('focusout', this.onFocusOut.bind(this));
+    // this.addEventListener('focusin', () => this._animate(true));
+    this.onClickOutsideListener = this.onClickOutside.bind(this);
+    this.onEscKeyboardListener = this.onEscKeyboard.bind(this);
+    this.onFocusOutListener = this.onFocusOut.bind(this);
+
 
     // Hover event (desktop only)
     if (theme.config.isTouch) return;
     if (this.mqlDesktop.matches && this.getAttribute('activate-event') === 'hover') {
-      this.addEventListener('pointerenter', this._handlePointerEnter.bind(this));
-      this.addEventListener('pointerleave', this._handlePointerLeave.bind(this));
+      this.addEventListener('mouseenter', this.onHover.bind(this));
+      this.addEventListener('mouseleave', this.onHover.bind(this));
     }
   }
 
@@ -681,10 +699,38 @@ class DropdownDetails extends HTMLDetailsElement {
     if (!this.contains(document.activeElement)) this.close();
   }
 
+  onClickOutside(event) {
+    if (!this.contains(event.target) && !(event.target.closest('details') instanceof DetailsDropdown)) {
+      this.open = false;
+    }
+  }
+
+  onEscKeyboard(event) {
+    if (event.code === 'Escape') {
+      const targetMenu = event.target.closest('details[open]');
+      if (targetMenu) {
+        targetMenu.open = false;
+      }
+    }
+  }
+
+  onFocusOut(event) {
+    if (event.relatedTarget && !this.contains(event.relatedTarget)) {
+      this.open = false;
+    }
+  }
+
+  onHover(event) {
+    cancelAnimationFrame(this._hoverRaf);
+    this._hoverRaf = requestAnimationFrame(() => {
+      this.isOpen = event.type === 'mouseenter';
+    });
+  }
+
   _toggleOpen(event) {
     if (!event.target.closest('a')) event.preventDefault();
     this.isOpen = !this.isOpen;
-    this._animate(this.isOpen);
+    // this._animate(this.isOpen);
   }
 
   close() {
@@ -692,63 +738,36 @@ class DropdownDetails extends HTMLDetailsElement {
     this._animate(false);
   }
 
-  _handlePointerEnter() {
-    cancelAnimationFrame(this._hoverRaf);
-    this._hoverRaf = requestAnimationFrame(() => {
-      this._animate(true);
-    });
-  }
-
-  _handlePointerLeave() {
-    cancelAnimationFrame(this._hoverRaf);
-    this._hoverRaf = requestAnimationFrame(() => {
-      this._animate(false);
-    });
-  }
-
   _animate(open) {
     if (!this.elements.dropdown || !this.elements.dropdown.firstElementChild) return;
-
-    if (this._currentAnimation?.cancel) {
-      this._currentAnimation.cancel();
-    }
-
-    const dropdown = this.elements.dropdown;
-    const firstChild = dropdown.firstElementChild;
-    const translateYIn = 'translateY(-5%)';
-    const translateYOut = 'translateY(-5%)';
-
-    dropdown.style.willChange = 'transform, opacity, visibility';
 
     if (open) {
       this.setAttribute('open', 'true');
 
-      this._currentAnimation = Promise.all([
-        Motion.animate(dropdown, {
-          overflow: 'visible',
-          opacity: [0, 1],
-          visibility: 'visible'
-        }, { duration: 0.3, delay: 0.1 }),
-
-        Motion.animate(firstChild, {
-          transform: [translateYIn, 'translateY(0px)']
-        }, { duration: 0.4 })
-      ]);
+      document.addEventListener('click', this.onClickOutsideListener);
+      document.addEventListener('keydown', this.onEscKeyboardListener);
+      document.addEventListener('focusout', this.onFocusOutListener);
+      this.transitionIn()
     } else {
-      this._currentAnimation = Promise.all([
-        Motion.animate(dropdown, {
-          overflow: 'hidden',
-          opacity: [1, 0],
-          visibility: 'hidden'
-        }, { duration: 0.2 }),
-
-        Motion.animate(firstChild, {
-          transform: translateYOut
-        }, { duration: 0.2 })
-      ]).then(() => {
-        this.setAttribute('open', 'false');
-      });
+      this.elements.dropdown.removeAttribute('open');
+      document.removeEventListener('click', this.onClickOutsideListener);
+      document.removeEventListener('keydown', this.onEscKeyboardListener);
+      document.removeEventListener('focusout', this.onFocusOutListener);
+      this.transitionOut()
+      if (!this.isOpen) this.removeAttribute('open');
     }
+  }
+
+  transitionIn() {
+    Motion.animate(this.elements.dropdown, { opacity: [0, 1], visibility: 'visible', overflow: 'visible' }, { duration: theme.config.motionReduced ? 0 : 0.3, easing: [.7, 0, .2, 1], delay: theme.config.motionReduced ? 0 : 0.2 });
+    const translateY = '-20%';
+    return Motion.animate(this.elements.dropdown.firstElementChild, { transform: [`translateY(${translateY})`, 'translateY(0)'] }, { duration: theme.config.motionReduced ? 0 : 0.6, easing: [.7, 0, .2, 1] }).finished;
+  }
+
+  transitionOut() {
+    Motion.animate(this.elements.dropdown, { opacity: 0, visibility: 'hidden', overflow: 'hidden' }, { duration: theme.config.motionReduced ? 0 : 0.3, easing: [.7, 0, .2, 1] });
+    const translateY = '-20%';
+    return Motion.animate(this.elements.dropdown.firstElementChild, { transform: `translateY(${translateY})` }, { duration: theme.config.motionReduced ? 0 : 0.6, easing: [.7, 0, .2, 1] }).finished;
   }
 }
 

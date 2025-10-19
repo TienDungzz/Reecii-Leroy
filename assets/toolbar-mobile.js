@@ -1,15 +1,19 @@
 class Toolbarmobile extends HTMLElement {
   constructor() {
     super();
+
+    if (theme.config.mqlSmall || theme.config.isTouch) this.init();
   }
 
-  connectedCallback() {
-    // this.init();
+  init() {
+    console.log('init');
+
+    this.activate();
     this.setHeight();
     window.addEventListener('resize', this.setHeight.bind(this));
   }
 
-  init() {
+  activate() {
     const header = document.querySelector(".header[data-sticky-state='inactive]");
     header === null
       ? this.classList.add("active")
