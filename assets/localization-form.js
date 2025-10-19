@@ -18,6 +18,11 @@ if (!customElements.get('localization-form')) {
           searchIcon: this.querySelector('.country-filter__search-icon'),
           liveRegion: this.querySelector('#sr-country-search-results'),
         };
+
+        theme.initWhenVisible(this.init.bind(this));
+      }
+
+      init() {
         this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
         this.addEventListener('keydown', this.onContainerKeyDown.bind(this));
         if (this.mql.matches) this.addEventListener('focusout', this.closeSelector.bind(this));
@@ -44,12 +49,11 @@ if (!customElements.get('localization-form')) {
         }
 
         this.querySelectorAll('a').forEach((item) => item.addEventListener('click', this.onItemClick.bind(this)));
-
       }
 
       hidePanel() {
-        this.elements.button.setAttribute('aria-expanded', 'false');
-        this.elements.drawer.classList.remove('active');
+        this.elements.button?.setAttribute('aria-expanded', 'false');
+        this.elements.drawer?.classList.remove('active');
         if (this.elements.search) {
           this.elements.search.value = '';
           this.filterCountries();
@@ -121,9 +125,9 @@ if (!customElements.get('localization-form')) {
       }
 
       openSelector() {
-        this.elements.button.focus();
-        this.elements.drawer.classList.toggle('active');
-        this.elements.button.setAttribute('aria-expanded', (this.elements.button.getAttribute('aria-expanded') === 'false').toString());
+        this.elements.button?.focus();
+        this.elements.drawer?.classList.toggle('active');
+        this.elements.button?.setAttribute('aria-expanded', (this.elements.button.getAttribute('aria-expanded') === 'false').toString());
         if (!document.body.classList.contains('overflow-hidden-tablet')) {
           document.body.classList.add('overflow-hidden-mobile');
         }
@@ -147,7 +151,7 @@ if (!customElements.get('localization-form')) {
       _hoverOpen(event) {
         const value = event.type === 'mouseenter' || event.type === 'focusin';
         this.elements.drawer?.classList.toggle('active', value);
-        this.elements.button.setAttribute('aria-expanded', value);
+        this.elements.button?.setAttribute('aria-expanded', value);
         if (!document.body.classList.contains('overflow-hidden-tablet')) document.body.classList.toggle('overflow-hidden-mobile', value);
         if (this.hasAttribute('data-prevent-hide')) this.header.preventHide = value;
         document.querySelector('.menu-drawer').classList.toggle('disclosure-selector-open', value);
@@ -228,7 +232,7 @@ if (!customElements.get('dropdown-localization-component')) {
       }
 
       connectedCallback() {
-        this.init();
+        theme.initWhenVisible(this.init.bind(this));
       }
 
       init() {
@@ -240,10 +244,20 @@ if (!customElements.get('dropdown-localization-component')) {
           drawer: this.querySelector('.selector__dropdown[element-s-up]'),
           panel: this.querySelector('.disclosure__list-wrapper'),
         };
+
+        this.loadTemplate();
         this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
         if (this.mql.matches) this.addEventListener('focusout', this.closeSelector.bind(this));
-        this.elements.button.addEventListener('click', this.openSelector.bind(this));
+        this.elements.button?.addEventListener('click', this.openSelector.bind(this));
         // this.elements.drawer?.addEventListener('click', this.closeSelector.bind(this));
+      }
+
+      loadTemplate() {
+        const template = this.querySelector('template');
+        if (template) {
+          const templateContent = template.content.cloneNode(true);
+          this.appendChild(templateContent);
+        }
       }
 
       onContainerKeyUp(event) {
@@ -295,8 +309,8 @@ if (!customElements.get('dropdown-localization-component')) {
       }
 
       hidePanel() {
-        this.elements.button.setAttribute('aria-expanded', 'false');
-        this.elements.drawer.classList.remove('active');
+        this.elements.button?.setAttribute('aria-expanded', 'false');
+        this.elements.drawer?.classList.remove('active');
       }
     }
   );
@@ -308,13 +322,13 @@ if (!customElements.get('drawer-localization-component')) {
     class DrawerLocalizationComponent extends HTMLElement {
       constructor() {
         super();
-      }
 
-      connectedCallback() {
-        this.init();
+        theme.initWhenVisible(this.init.bind(this));
       }
 
       init() {
+        this.loadTemplate();
+
         this.header = document.querySelector('.header-wrapper');
         this.elements = {
           button: this.querySelector('.drawer-localization__button'),
@@ -324,8 +338,16 @@ if (!customElements.get('drawer-localization-component')) {
         this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
         // this.addEventListener('focusout', this.closeSelector.bind(this));
         this.elements.button.addEventListener('click', this.openSelector.bind(this));
-        this.elements.backButton.addEventListener('click', this.closeSelector.bind(this));
+        this.elements.backButton?.addEventListener('click', this.closeSelector.bind(this));
         // this.elements.drawer?.addEventListener('click', this.closeSelector.bind(this));
+      }
+
+      loadTemplate() {
+        const template = this.querySelector('template');
+        if (template) {
+          const templateContent = template.content.cloneNode(true);
+          this.appendChild(templateContent);
+        }
       }
 
       openSelector() {
@@ -351,10 +373,6 @@ if (!customElements.get('drawer-localization-component')) {
       }
 
       closeSelector(event) {
-        console.log(`%c🔍 Log event.target:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", event.target);
-
-        console.log(`%c🔍 Log event.relatedTarget:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", event.relatedTarget);
-
         event.preventDefault();
         if (!this.contains(event.target) || !this.contains(event.relatedTarget)) {
           this.hidePanel();
@@ -362,8 +380,8 @@ if (!customElements.get('drawer-localization-component')) {
       }
 
       hidePanel() {
-        this.elements.button.setAttribute('aria-expanded', 'false');
-        this.elements.drawer.classList.remove('active');
+        this.elements.button?.setAttribute('aria-expanded', 'false');
+        this.elements.drawer?.classList.remove('active');
         document.body.classList.remove('overflow-hidden-mobile');
         document.querySelector('.menu-drawer').classList.remove('disclosure-selector-open');
       }

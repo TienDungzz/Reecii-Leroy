@@ -4,10 +4,14 @@ theme.config = {
   hasLocalStorage: true,
   mqlSmall: false,
   mql: '(min-width: 750px)',
+  mqlMobile: '(max-width: 749px)',
   mqlDesktop: '(min-width: 1025px)',
   isTouch: ('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0),
   rtl: document.documentElement.getAttribute('dir') === 'rtl' ? true : false
 };
+
+const mql = window.matchMedia(theme.config.mqlMobile);
+theme.config.mqlSmall = mql.matches;
 
 document.documentElement.classList.add(theme.config.isTouch ? 'touch' : 'no-touch');
 
@@ -29,6 +33,18 @@ theme.utils = {
       requestId = null;
     };
     return throttled;
+  },
+
+  waitForEvent: (element, eventName) => {
+    return new Promise((resolve) => {
+      const done = (event) => {
+        if (event.target === element) {
+          element.removeEventListener(eventName, done);
+          resolve(event);
+        }
+      };
+      element.addEventListener(eventName, done);
+    });
   },
 
   /**
@@ -61,6 +77,20 @@ theme.utils = {
     }
   }
 }
+
+// Delay JavaScript until user interaction
+theme.initWhenVisible = (callback, delay = 5000) => {
+  const events = ["mouseover","mousemove","keydown","touchstart","touchend","touchmove","wheel"];
+
+  const run = () => {
+    callback();
+    clearTimeout(timer);
+    events.forEach(e => window.removeEventListener(e, run, { passive: true }));
+  };
+
+  const timer = setTimeout(run, delay);
+  events.forEach(e => window.addEventListener(e, run, { passive: true }));
+};
 
 /**
  * Check if the document is ready/loaded and call the callback when it is.
@@ -98,6 +128,8 @@ function onDocumentLoaded(callback) {
 // To activate again after closing drawer, call startLenis():
 //   startLenis();
 
+
+// Improve initial load time by skipping the rendering of offscreen content
 onDocumentLoaded(theme.utils.setScrollbarWidth);
 window.addEventListener('resize', theme.utils.rafThrottle(theme.utils.setScrollbarWidth));
 
@@ -1244,6 +1276,9 @@ class SwiperComponent extends HTMLElement {
       ".arrow-on-header:has(.swiper-btns-on-header)"
     );
   }
+  get items() {
+    return this._items = this._items || Array.from(this.children);
+  }
 
   connectedCallback() {
     // // Check if Swiper library is available
@@ -1264,7 +1299,8 @@ class SwiperComponent extends HTMLElement {
 
     // this.initializeSwiper();
 
-    this.setupIntersectionObserver();
+    Motion.inView(this, this.initializeSwiper.bind(this), { margin: '200px 0px 200px 0px' });
+    // this.setupIntersectionObserver();
   }
 
   disconnectedCallback() {
@@ -1283,33 +1319,29 @@ class SwiperComponent extends HTMLElement {
     }
   }
 
-  setupIntersectionObserver() {
-    this._observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && !this._isInitialized) {
-          this._isVisible = true;
-          this.setAttribute('data-visible', 'true');
-          this.initializeSwiper();
-        } else if (!entry.isIntersecting && this._isInitialized) {
-          this._isVisible = false;
-          this.setAttribute('data-visible', 'false');
-        }
-      });
-    }, {
-      rootMargin: '50px',
-      threshold: 0.1
-    });
+  // setupIntersectionObserver() {
+  //   this._observer = new IntersectionObserver((entries) => {
+  //     entries.forEach(entry => {
+  //       if (entry.isIntersecting && !this._isInitialized) {
+  //         this._isVisible = true;
+  //         this.setAttribute('data-visible', 'true');
+  //         this.initializeSwiper();
+  //       } else if (!entry.isIntersecting && this._isInitialized) {
+  //         this._isVisible = false;
+  //         this.setAttribute('data-visible', 'false');
+  //       }
+  //     });
+  //   }, {
+  //     rootMargin: '50px',
+  //     threshold: 0.1
+  //   });
 
-    this._observer.observe(this);
-  }
+  //   this._observer.observe(this);
+  // }
 
   initializeSwiper() {
-    // Small delay to ensure proper initialization
+    if(this.items.length > 1) {
       this.swiperEl = this.querySelector(".swiper");
-
-      this.slidesCount = this.swiperEl.querySelectorAll(".swiper-slide").length;
-
-      if(this.slidesCount <= 1) return;
 
       if (!this.swiperEl) return;
 
@@ -1400,6 +1432,7 @@ class SwiperComponent extends HTMLElement {
       };
 
       this.initSwiperMobile();
+    }
   }
 
   initSwiperMobile() {
