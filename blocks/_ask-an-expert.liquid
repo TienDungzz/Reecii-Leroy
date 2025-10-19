@@ -3,9 +3,7 @@
   assign form_id = block.id | default: section.id | prepend: 'ContactForm-'
   assign button_style = block_settings.button_style
   assign button_label = block_settings.button_label
-
   assign notification_message = block.settings.notification_message
-
   capture text_block_classes
     if block_settings.type_preset == 'custom'
       echo ' custom-typography '
@@ -18,7 +16,6 @@
     endif
   endcapture
 %}
-
 <side-drawer-opener
   class="popup ask-an-expert product-popup-modal__opener--keep"
   {{ block.shopify_attributes }}
@@ -37,7 +34,6 @@
     {{- block_settings.heading }}
   </button>
 </side-drawer-opener>
-
 <side-drawer
   class="popup__content product-popup-modal__drawer--keep drawer fixed top-0 left-0 z-10 w-screen h-full flex justify-center no-js-hidden"
   element-s-popup
@@ -89,7 +85,6 @@
     </div>
   </div>
 </side-drawer>
-
 {% stylesheet %}
   .popup.ask-an-expert > .button {
     display: flex;
@@ -97,32 +92,34 @@
     align-items: center;
     gap: 10px;
   }
-
   .popup.ask-an-expert > .button svg {
     top: 0;
   }
-
   .ask-an-expert__content {
     padding: 0 1.5rem;
     width: 100%;
     max-width: 54.5rem;
     margin: 0 auto;
   }
-
   .ask-an-expert__form .button[type="submit"] {
     display: flex;
     justify-content: center;
     margin: 0 auto 2rem;
   }
 {% endstylesheet %}
-
 {% schema %}
 {
   "name": "t:names.ask_an_expert",
   "tag": null,
   "blocks": [
     {
-      "type": "_form-row"
+      "type": "_input"
+    },
+    {
+      "type": "_textarea"
+    },
+    {
+      "type": "_radio"
     }
   ],
   "settings": [
