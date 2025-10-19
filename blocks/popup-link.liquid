@@ -39,7 +39,14 @@
     id="PopupModal-{{ block.id }}"
 >
   <div id="Drawer-Overlay-{{ block.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-  <div class="popup__inner color-{{ settings.popover_color_scheme }} w-auto h-full absolute-c-c flex flex-column global-settings-popup">
+  <div 
+    class="popup__inner color-{{ settings.popover_color_scheme }} w-auto h-full absolute-c-c flex flex-column global-settings-popup"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Popup link"
+    tabindex="-1"
+    style="--modal-max-width: 72rem;"
+  >
     <div class="popup__inner--content relative w-full h-full overflow-auto cus-scrollbar">
       {% content_for 'blocks' %}
       <button

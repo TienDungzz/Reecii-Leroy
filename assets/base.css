@@ -189,9 +189,12 @@ body.overflow-hidden {
   grid-auto-flow: column;
 }
 
-.page-margin,
-.shopify-challenge__container {
+.page-margin {
   margin: 7rem auto;
+}
+
+.shopify-challenge__container {
+  margin: 7rem auto !important;
 }
 
 .rte-width {
@@ -1211,6 +1214,10 @@ img {
 }
 
 @media screen and (max-width: 749px) {
+  .max-sm\:w-full {
+    width: 100%;
+  }
+
   .max-sm\:hidden {
     display: none !important;
   }
@@ -2518,6 +2525,7 @@ button.shopify-payment-button__button--unbranded[disabled],
 
 .button,
 .button-secondary,
+.shopify-challenge__button,
 button.shopify-payment-button__button--unbranded {
   --shadow-horizontal-offset: var(--buttons-shadow-horizontal-offset);
   --shadow-vertical-offset: var(--buttons-shadow-vertical-offset);
@@ -2595,6 +2603,7 @@ input:not(:placeholder-shown)::placeholder {
 }
 
 .button,
+.shopify-challenge__button,
 button.shopify-payment-button__button--unbranded {
   --button-font-family: var(--button-font-family-primary);
   --button-font-size: var(--button-font-size-primary);
@@ -2607,7 +2616,8 @@ button.shopify-payment-button__button--unbranded {
   --button-border-width: var(--style-border-width-primary);
 }
 
-.button:hover,
+.button:hover:not([disabled]):not(.button-unstyled),
+.shopify-challenge__button:hover:not([disabled]):not(.button-unstyled),
 button.shopify-payment-button__button--unbranded:hover:not([disabled]) {
   --shadow-horizontal-offset: 0;
   --shadow-vertical-offset: 0;
@@ -2645,6 +2655,7 @@ button.shopify-payment-button__button--unbranded:hover:not([disabled]) {
   --button-border-color: var(--color-secondary-button-hover-border);
 }
 
+.shopify-challenge__button:hover:not([disabled]),
 button.shopify-payment-button__button--unbranded:hover:not([disabled]) {
   background: var(--button-background-color);
 }

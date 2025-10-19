@@ -1,33 +1,3 @@
-
-
-{% stylesheet %}
-  /* Clear padding on mobile, if not full-width */
-  @media screen and (max-width: 749px) {
-    .product-information.section--page-width .product-details > .group-block {
-      padding-inline: 0;
-    }
-  }
-
-  .view-product-title {
-    display: none;
-  }
-
-  /* Container styles */
-  .product-details {
-    display: flex;
-    position: sticky;
-    top: 0;
-    align-self: start;
-    justify-content: center;
-  }
-
-  @media screen and (min-width: 750px) {
-    .product-details > .group-block {
-      height: min-content;
-    }
-  }
-{% endstylesheet %}
-
 <div
   id="ProductInformation-{{ section.id }}"
   class="product-details{% if block.settings.sticky_details_desktop %} sticky-content--desktop{% endif %}{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}"
@@ -55,6 +25,38 @@
 
   {% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
 </div>
+
+{% stylesheet %}
+  /* Clear padding on mobile, if not full-width */
+  @media screen and (max-width: 749px) {
+    .product-information.section--page-width .product-details > .group-block {
+      padding-inline: 0;
+    }
+  }
+
+  .view-product-title {
+    display: none;
+  }
+
+  /* Container styles */
+  .product-details {
+    padding: 0 1.5rem;
+    display: flex;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    justify-content: center;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-details {
+      padding: 0;
+    }
+    .product-details > .group-block {
+      height: min-content;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -131,6 +133,21 @@
     },
     {
       "type": "_step-by-step-variant-picker"
+    },
+    {
+      "type": "_perks"
+    },
+    {
+      "type": "_color-comparison"
+    },
+    {
+      "type": "_product-positive-vibes"
+    },
+    {
+      "type": "_product-sold-in-last"
+    },
+    {
+      "type": "_product-customer-viewing"
     }
   ],
   "tag": null,

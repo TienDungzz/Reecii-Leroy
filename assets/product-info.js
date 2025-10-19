@@ -77,7 +77,6 @@ if (!customElements.get('product-info')) {
               if (!stickyOption.checked) {
                 stickyVariantSelects.querySelectorAll(`input[type='radio']`).forEach(opt => opt.classList.remove('checked'));
                 stickyOption.classList.add('checked');
-                console.log('syncMainToSticky', mainOption);
                 if (mainOption) {
                   mainVariantSelects.querySelectorAll(`input[type='radio']`).forEach(opt => opt.classList.remove('checked'));
                   mainOption.classList.add('checked');

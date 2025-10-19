@@ -415,6 +415,7 @@
       class="media-gallery__grid list-unstyled"
       data-testid="media-gallery-grid"
     >
+      {% assign index = 0 %}
       {% for media in sorted_media %}
         {%- if bl_stts.video_type == 'inline' -%}
           <li
@@ -474,8 +475,13 @@
             {% endif %}
           </li>
         {% elsif media.media_type != 'video' and bl_stts.video_type == 'dialog' %}
+          {% if index == 0 %}
+            {% assign index_first = true %}
+          {% else %}
+            {% assign index_first = false %}
+          {% endif %}
           <li
-            class="{{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if bl_stts.zoom and media.media_type == 'image' %} product-media-container--zoomable{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}"
+            class="{{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if index == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}"
             style="
               --ratio: {{ media.aspect_ratio | default: 1.0 }};
               --preview-ratio: {{ media.preview_image.aspect_ratio | default: 1.0 }};
@@ -483,25 +489,23 @@
                 --media-preview-ratio: {{ media.preview_image.aspect_ratio | default: 1.0 }};
               {% endif %}
             "
-            {% if bl_stts.zoom and bl_stts.zoom_type == 'dialog' and media.media_type == 'image' %}
-              data-zoom-index="{{ forloop.index0 }}"
-              data-zoom-target="#zoom-dialog-{{ block.id }}"
-            {% endif %}
-            {% if settings.transition_to_main_product and forloop.first %}
+            {% if settings.transition_to_main_product and index_first %}
               data-view-transition-type="product-image-transition"
             {% endif %}
           >
             {%- if bl_stts.zoom and bl_stts.zoom_type == 'dialog' and media.media_type == 'image' -%}
               <button
                 type="button"
-                class="button button-unstyled product-media-container__zoom-button"
+                class="button button-unstyled product-media-container__zoom-button product-media-container--zoomable"
+                data-zoom-index="{{ index }}"
+                data-zoom-target="#zoom-dialog-{{ block.id }}"
                 aria-label="{{ 'actions.zoom' | t }}"
               >
                 <span class="visually-hidden">{{ 'actions.open_image_in_full_screen' | t }}</span>
               </button>
             {%- endif -%}
             {%- liquid
-              if needs_both_sizes and forloop.first
+              if needs_both_sizes and index_first
                 assign media_sizes = sizes_single
               else
                 assign media_sizes = sizes
@@ -514,25 +518,26 @@
               <div class="product-media-constraint-wrapper m-auto">
                 {%- if media.media_type == 'image' -%}
                   <picture class="media media--transparent h-full">
-                    {%- render 'product-media', class: image_class, media: media, sizes: media_sizes, is_main_product_media: forloop.first, bl_stts: bl_stts -%}
+                    {%- render 'product-media', class: image_class, media: media, sizes: media_sizes, is_main_product_media: index_first, bl_stts: bl_stts -%}
                   </picture>
                 {%- elsif media.media_type == 'model' -%}
-                  {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first, bl_stts: bl_stts -%}
+                  {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: index_first, bl_stts: bl_stts -%}
                 {%- endif-%}
               </div>
             {% else %}
               {%- if media.media_type == 'image' -%}
                 <picture class="media media--transparent h-full">
-                  {%- render 'product-media', class: image_class, media: media, sizes: media_sizes, is_main_product_media: forloop.first, bl_stts: bl_stts -%}
+                  {%- render 'product-media', class: image_class, media: media, sizes: media_sizes, is_main_product_media: index_first, bl_stts: bl_stts -%}
                 </picture>
               {%- elsif media.media_type == 'model' -%}
-                {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first, bl_stts: bl_stts -%}
+                {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: index_first, bl_stts: bl_stts -%}
               {%- endif-%}
             {% endif %}
-            {% if forloop.index0 == 0 %}
+            {% if index == 0 %}
               {{ video_dialog_html }}
             {% endif %}
           </li>
+          {% assign index = index | plus: 1 %}
         {% endif %}
       {% endfor %}
     </ul>
@@ -589,6 +594,7 @@
               {% endif %}
             {% elsif bl_stts.video_type == 'dialog' %}
               {% if sorted_media.size > 1 %}
+                {% assign index = 0 %}
                 {%- for media in sorted_media -%}
                   {% if media.media_type != 'video' %}
                     {% liquid
@@ -600,11 +606,11 @@
                     <button
                       type="button"
                       class="button button-unstyled dialog-thumbnails-list__thumbnail"
-                      data-zoom-index="{{ forloop.index0 }}"
+                      data-zoom-index="{{ index }}"
                       data-zoom-target="#zoom-dialog-{{ block.id }}"
                       aria-label="{{ 'accessibility.scroll_to' | t: title: media.alt | default: media.media_type }}"
                       style="--aspect-ratio: {{ aspect_ratio }}; --gallery-aspect-ratio: {{ aspect_ratio }};"
-                      {% if forloop.first %}
+                      {% if index == 0 %}
                         aria-selected="true"
                       {% endif %}
                     >
@@ -619,6 +625,7 @@
                         | escape
                       }}
                     </button>
+                    {% assign index = index | plus: 1 %}
                   {% endif %}
                 {%- endfor -%}
               {% endif %}
@@ -629,38 +636,6 @@
           class="dialog-zoomed-gallery list-unstyled"
         >
           {% if bl_stts.video_type == 'inline' %}
-            {%- for media in sorted_media -%}
-              {% if media.media_type != 'video' %}
-                <li
-                  id="product-{{ media.id}}-{{ forloop.index }}"
-                  class="{{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if media.media_type == 'image' %} product-media-container--zoomable{% endif %}"
-                  style="{% if bl_stts.aspect_ratio == 'adapt' %} --media-preview-ratio: {{ media.preview_image.aspect_ratio | default: 1.0 }};{% endif %}"
-                  {% if media.media_type == 'image' %}
-                    onclick="this.closest('zoom-dialog').closeDialog()"
-                  {% endif %}
-                >
-                  {% if media.media_type == 'image' %}
-                    <drag-zoom-wrapper class="product-media__drag-zoom-wrapper">
-                      {%- render 'product-media',
-                        media: media,
-                        sizes: '100vw',
-                        loading: 'lazy',
-                        is_main_product_media: forloop.first,
-                        data_max_resolution: media | image_url: width: media.width
-                      -%}
-                    </drag-zoom-wrapper>
-                  {% else %}
-                    {%- render 'product-media',
-                      media: media,
-                      sizes: '100vw',
-                      loading: 'lazy',
-                      is_main_product_media: forloop.first
-                    -%}
-                  {% endif %}
-                </li>
-              {% endif %}
-            {%- endfor -%}
-          {% elsif bl_stts.video_type == 'dialog' %}
             {%- for media in sorted_media -%}
               <li
                 id="product-{{ media.id}}-{{ forloop.index }}"
@@ -689,6 +664,45 @@
                   -%}
                 {% endif %}
               </li>
+            {%- endfor -%}
+          {% elsif bl_stts.video_type == 'dialog' %}
+            {% assign index = 0 %}
+            {%- for media in sorted_media -%}
+              {% if media.media_type != 'video' %}
+                {% if index == 0 %}
+                  {% assign index_first = true %}
+                {% else %}
+                  {% assign index_first = false %}
+                {% endif %}
+                <li
+                  id="product-{{ media.id}}-{{ index }}"
+                  class="{{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if media.media_type == 'image' %} product-media-container--zoomable{% endif %}"
+                  style="{% if bl_stts.aspect_ratio == 'adapt' %} --media-preview-ratio: {{ media.preview_image.aspect_ratio | default: 1.0 }};{% endif %}"
+                  {% if media.media_type == 'image' %}
+                    onclick="this.closest('zoom-dialog').closeDialog()"
+                  {% endif %}
+                >
+                  {% if media.media_type == 'image' %}
+                    <drag-zoom-wrapper class="product-media__drag-zoom-wrapper">
+                      {%- render 'product-media',
+                        media: media,
+                        sizes: '100vw',
+                        loading: 'lazy',
+                        is_main_product_media: index_first,
+                        data_max_resolution: media | image_url: width: media.width
+                      -%}
+                    </drag-zoom-wrapper>
+                  {% else %}
+                    {%- render 'product-media',
+                      media: media,
+                      sizes: '100vw',
+                      loading: 'lazy',
+                      is_main_product_media: index_first
+                    -%}
+                  {% endif %}
+                </li>
+                {% assign index = index | plus: 1 %}
+              {% endif %}
             {%- endfor -%}
           {% endif %}
         </ul>
@@ -798,6 +812,10 @@
   }
 
   @media screen and (max-width: 749px) {
+    media-gallery swiper-component .swiper {
+      padding-bottom: 0 !important;
+    }
+
     .dialog-zoomed-gallery {
       /* Prevent scroll wheel or swipe scrolling */
       overscroll-behavior: none;
@@ -885,7 +903,7 @@
   }
 
   .media-gallery__mobile-controls {
-    grid-area: auto;
+    display: none;
   }
 
   .dialog-zoomed-gallery .product-media-container--zoomable.product-media-container--image {

@@ -26,9 +26,9 @@
 <div class="w-full block{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}" {{ attr }}>
   <contact-form id="{{ form_id }}">
     {%- form 'contact', id: form_id -%}
-        {% content_for 'blocks' %}
+      {% content_for 'blocks' %}
 
-        <button class="button{% if button_style == 'outline' %}-secondary{% endif %} whitespace-nowrap" type="submit">{{ button_label }}</button>
+      <button class="button{% if button_style == 'outline' %}-secondary{% endif %} whitespace-nowrap" type="submit">{{ button_label }}</button>
     {%- endform -%}
   </contact-form>
 </div>
@@ -37,6 +37,11 @@
 {
   "name": "t:names.contact_form",
   "tag": null,
+  "blocks": [
+    {
+      "type": "_form-row"
+    }
+  ],
   "settings": [
     {
       "type": "header",
@@ -180,11 +185,6 @@
       "step": 1,
       "unit": "px",
       "default": 0
-    }
-  ],
-  "blocks": [
-    {
-      "type": "_form-row"
     }
   ],
   "presets": [

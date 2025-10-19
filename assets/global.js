@@ -3555,3 +3555,17 @@ document.addEventListener('DOMContentLoaded', () => {
     initLenis();
   }
 });
+
+//Dynamic browser tab title - dukeh
+if (window.dynamicBrowserTitle && window.dynamicBrowserTitle.show && typeof window.dynamicBrowserTitle.text === "string" && window.dynamicBrowserTitle.text.trim() !== "") {
+  const originalTitle = document.title;
+  const customTitle = window.dynamicBrowserTitle.text;
+
+  window.addEventListener("blur", function () {
+    document.title = customTitle;
+  });
+
+  window.addEventListener("focus", function () {
+    document.title = originalTitle;
+  });
+}

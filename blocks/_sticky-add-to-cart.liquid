@@ -67,6 +67,7 @@ style="
   form="{{ product_form_id }}"
   data-sticky-section-id="{{ section.id }}"
 >
+  <overlay-component class="overlay-component fixed inset-0 cursor-pointer md:hidden" aria-controls="StickyAddToCart" aria-expanded="true"></overlay-component>
   {%- unless product.has_only_default_variant -%}
     <div div class="sticky-atc__variant">
       <div class="section section--page-width variant-alignment--{{ variant_alignment }}" {{ attr }}>
@@ -100,7 +101,7 @@ style="
           </div>
         </div>
       </div>
-      <div class="sticky-atc__action flex items-center" style="--gap: {{ action_gap }};">
+      <div class="sticky-atc__action md:flex max-sm:w-full items-center" style="--gap: {{ action_gap }};">
         {%- liquid
           assign check_against_inventory = true
           if product.selected_or_first_available_variant.inventory_management != 'shopify' or product.selected_or_first_available_variant.inventory_policy == 'continue'
@@ -348,21 +349,37 @@ style="
   
   setupToggleButton() {
     const buttonToggleVariants = this.querySelector('.button-toggle-variants');
+    const overlay = this.querySelector('overlay-component');
     if (!buttonToggleVariants) return;
 
+    const closePanel = () => {
+      this.classList.remove('is-active');
+      document.removeEventListener('click', handleClickOutside, true);
+      if (overlay) overlay.removeEventListener('click', closePanel);
+    };
+
+    const handleClickOutside = (evt) => {
+      if (!this.contains(evt.target) && evt.target !== overlay) {
+        closePanel();
+      }
+    };
+
     buttonToggleVariants.addEventListener('click', (e) => {
-      const isOpen = this.classList.contains('show-select-variants');
-      if (!isOpen) {
-        e.preventDefault();
-        e.stopPropagation();
-        this.classList.add('show-select-variants');
+      e.preventDefault();
+      e.stopPropagation();
+
+      const isOpen = this.classList.contains('is-active');
+
+      if (isOpen) {
+        closePanel();
       } else {
-        setTimeout(() => {
-          this.classList.remove('show-select-variants');
-        }, 100);
+        this.classList.add('is-active');
+        document.addEventListener('click', handleClickOutside, true);
+        if (overlay) overlay.addEventListener('click', closePanel);
       }
     });
   }
+
   
   syncInitialState() {
     this.ensureMainVariantInitialization();
@@ -694,12 +711,28 @@ style="
 {% endjavascript %}
 
 {% stylesheet %}
+  .overlay-component {
+    opacity: var(--opacity-0);
+    visibility: hidden;
+    transition: opacity .3s ease, visibility 0s linear .3s;
+  }
+  .is-active .overlay-component {
+    min-height: 100lvh;
+    transform: translateY(-100vh);
+    background-color: rgb(var(--color-shadow-rgb) / var(--opacity-70));
+    z-index: -1;
+    opacity: var(--opacity-100);
+    visibility: visible;
+    transition: opacity .3s ease, visibility 0s linear 0s;
+  }
   .sticky-atc {
+    padding: 1rem;
     z-index: 999;
     opacity: 0;
     visibility: hidden;
     transform: translateY(100%);
     transition: opacity .3s ease, box-shadow .3s ease, transform .3s ease, visibility 0s linear .3s;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
   }
 
   .sticky-cart-visible .sticky-atc {
@@ -717,6 +750,7 @@ style="
   }
 
   .sticky-atc__variant {
+    padding: 1.5rem 0 0;
     width: 100%;
     position: absolute;
     top: 0;
@@ -726,38 +760,48 @@ style="
     opacity: 0;
     pointer-events: none;
     transition: all 0.3s ease-in-out;
+    box-shadow: 0 -0.2rem 1rem rgba(0, 0, 0, 0.2);
   }
 
-  .sticky-atc.show-select-variants .sticky-atc__variant {
+  .sticky-atc.is-active .sticky-atc__variant {
     opacity: 1;
     pointer-events: auto;
   }
 
   .sticky-atc .variant-selects {
+    padding: 2rem 0 0;
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-  }
-
-  .sticky-atc .section {
-    border-top: 1px solid #e5e5e5;
   }
 
   .sticky-atc .add-to-cart-text--add {
     display: none;
   }
 
-  .sticky-atc.show-select-variants .add-to-cart-text--choose-options {
+  .sticky-atc.is-active .add-to-cart-text--choose-options {
     display: none;
   }
 
-  .sticky-atc.show-select-variants .add-to-cart-text--add {
+  .sticky-atc.is-active .add-to-cart-text--add {
     display: block;
   }
 
   @media screen and (min-width: 750px) {
+    .sticky-atc {
+      padding: 0;
+    }
+
+    .sticky-atc .section {
+      border-top: 1px solid #e5e5e5;
+    }
+
     .sticky-atc .variant-selects .variant-option {
       max-width: fit-content;
+    }
+
+    .sticky-atc__variant {
+      padding: 0;
     }
 
     .variant-alignment--left variant-selects {
