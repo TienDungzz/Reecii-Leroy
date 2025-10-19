@@ -7,7 +7,6 @@
     assign label = block.settings.label
     assign label_name = label | handleize
     assign show_label = block.settings.show_label
-    assign label_type_preset = block.settings.label_type_preset
     assign border_style = block.settings.border_style
     assign is_required = block.settings.is_required
     assign placeholder = block.settings.placeholder
@@ -17,16 +16,11 @@
     assign input_border_radius = block.settings.input_border_radius
     assign input_type_preset = block.settings.input_type_preset
     assign input_alignment = block.settings.input_alignment
-    assign input_width = block.settings.input_width
-    assign input_type = 'text'
-
-    if label contains 'mail' or label contains 'mail'
-        assign input_type = 'email'
-    endif
+    assign label_type_preset = block.settings.label_type_preset
 %}
 
 {%- capture attr -%}
-class="border-style--{{ border_style }} w-full block contact-form-input {{ input_type_preset }} {{ input_alignment }}" {{ block.shopify_attributes }}
+class="border-style--{{ border_style }} w-full block contact-form-textarea {{ input_type_preset }} {{ input_alignment }}" {{ block.shopify_attributes }}
 style="
 {% if pl != 0 %}--pl:{{ pl }}px;{% endif %}
 {% if pt != 0 %}--pt:{{ pt }}px;{% endif %}
@@ -34,11 +28,17 @@ style="
 {% if pr != 0 %}--pr:{{ pr }}px;{% endif %}
 {% if input_border_width != 0 %}--border-width: {{ input_border_width }}px;{% endif %}
 {% if input_border_radius != 0 %}--border-radius: {{ input_border_radius }}px;{% endif %}
+  --textarea-height: {{ text_area_height }}px;
 "
 {%- endcapture -%}
 
 {% stylesheet %}
-  .contact-form-input {
+  .contact-form-textarea {
+    height: var(--textarea-height);
+  }
+
+  .contact-form-input,
+  .contact-form-textarea {
     border-radius: var(--border-radius);
   }
 
@@ -55,20 +55,32 @@ style="
   .border-style--none {
     border: none;
   }
+
+  @media screen and (max-width: 1024px) {
+    .form-textarea {
+      height: calc(var(--textarea-height) * 0.75);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .form-textarea {
+      height: calc(var(--textarea-height) * 0.5);
+    }
+  }
 {% endstylesheet %}
 
 {% if label != blank %}
-  <div class="contact-form-row" style="--formRowWidth: {{ input_width }}%;">
+  <div class="contact-form-row" style="--formRowWidth: 100%;">
     {%- if show_label -%}
       <label for="{{ block.id }}" style="--mb:{{ label_mb }}px;" class="block {{ label_type_preset }}">{{ label }}</label>
     {%- endif -%}
-    <input id="{{ block.id }}" type="{{ input_type }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}>
+    <textarea id="{{ block.id }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}></textarea>
   </div>
 {% endif %}
 
 {% schema %}
 {
-  "name": "t:names.input",
+  "name": "Textarea",
   "settings": [
     {
       "type": "text",
@@ -134,13 +146,13 @@ style="
     },
     {
       "type": "range",
-      "id": "input_width",
-      "label": "Width desktop",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "%",
-      "default": 50
+      "id": "text_area_height",
+      "label": "t:settings.textarea_height",
+      "min": 100,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 220
     },
     {
       "type": "select",
@@ -304,7 +316,7 @@ style="
   ],
   "presets": [
     {
-      "name": "t:names.input"
+      "name": "Textarea"
     }
   ]
 }

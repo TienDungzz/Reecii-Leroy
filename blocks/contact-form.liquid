@@ -9,10 +9,13 @@
   assign pt = block.settings.padding_top
   assign pb = block.settings.padding_bottom
 
+  assign gap = block.settings.gap
+
 %}
 
 {%- capture attr -%}
   style="
+    --gap:{{ gap }}px;
     {% if pl != 0 %}--pl:{{ pl }}px;{% endif %}
     {% if pt != 0 %}--pt:{{ pt }}px;{% endif %}
     {% if pb != 0 %}--pb:{{ pb }}px;{% endif %}
@@ -24,20 +27,72 @@
 {%- endcapture -%}
 
 <div class="w-full block{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}" {{ attr }}>
-  <contact-form id="{{ form_id }}">
+  <contact-form class="block-contact-form" id="{{ form_id }}">
     {%- form 'contact', id: form_id -%}
         {% content_for 'blocks' %}
-
         <button class="button{% if button_style == 'outline' %}-secondary{% endif %} whitespace-nowrap" type="submit">{{ button_label }}</button>
     {%- endform -%}
   </contact-form>
 </div>
 
+{% stylesheet %}
+  .block-contact-form .contact-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--gap, 12px) * 0.5);
+
+    @media (min-width: 750px) {
+      gap: var(--gap, 20px);
+    }
+
+    > .shopify-block {
+      display: contents;
+    }
+
+    .contact-form-row {
+      width: 100%;
+
+      @media screen and (min-width: 750px) {
+        width: calc(var(--formRowWidth, 50%) - (var(--gap-desktop, 20px) / 2));
+      }
+    }
+
+    .button {
+      width: 100%;
+    }
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.contact_form",
   "tag": null,
+  "blocks": [
+    {
+      "type": "_input"
+    },
+    {
+      "type": "_textarea"
+    },
+    {
+      "type": "_radio"
+    }
+  ],
   "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
     {
       "type": "header",
       "content": "t:content.submit_button"
@@ -180,11 +235,6 @@
       "step": 1,
       "unit": "px",
       "default": 0
-    }
-  ],
-  "blocks": [
-    {
-      "type": "_form-row"
     }
   ],
   "presets": [

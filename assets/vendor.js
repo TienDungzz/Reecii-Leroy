@@ -39,6 +39,9 @@ var Swiper=function(){"use strict";function e(e){return null!==e&&"object"==type
     if (isLibraryLoaded) return;
     isLibraryLoaded = true;
 
+    console.log("add fancybox")
+
+
     const script = document.createElement('script');
     script.src = libraryScriptPath;
     script.async = true;

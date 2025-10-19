@@ -7,68 +7,57 @@
     assign label = block.settings.label
     assign label_name = label | handleize
     assign show_label = block.settings.show_label
-    assign label_type_preset = block.settings.label_type_preset
-    assign border_style = block.settings.border_style
-    assign is_required = block.settings.is_required
-    assign placeholder = block.settings.placeholder
     assign label_mb = block.settings.label_mb
-    assign text_area_height = block.settings.text_area_height
-    assign input_border_width = block.settings.input_border_width
-    assign input_border_radius = block.settings.input_border_radius
-    assign input_type_preset = block.settings.input_type_preset
-    assign input_alignment = block.settings.input_alignment
-    assign input_width = block.settings.input_width
-    assign input_type = 'text'
+    assign option_type_preset = block.settings.option_type_preset
 
-    if label contains 'mail' or label contains 'mail'
-        assign input_type = 'email'
-    endif
+    assign options = block.settings.options | split: '|'
+    assign options_layout = block.settings.options_layout
 %}
 
 {%- capture attr -%}
-class="border-style--{{ border_style }} w-full block contact-form-input {{ input_type_preset }} {{ input_alignment }}" {{ block.shopify_attributes }}
+class=" w-full block contact-form-select" {{ block.shopify_attributes }}
 style="
 {% if pl != 0 %}--pl:{{ pl }}px;{% endif %}
 {% if pt != 0 %}--pt:{{ pt }}px;{% endif %}
 {% if pb != 0 %}--pb:{{ pb }}px;{% endif %}
 {% if pr != 0 %}--pr:{{ pr }}px;{% endif %}
-{% if input_border_width != 0 %}--border-width: {{ input_border_width }}px;{% endif %}
-{% if input_border_radius != 0 %}--border-radius: {{ input_border_radius }}px;{% endif %}
 "
 {%- endcapture -%}
 
 {% stylesheet %}
-  .contact-form-input {
-    border-radius: var(--border-radius);
-  }
+.form-ratio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.form-ratio--horizontal {
+  flex-direction: row;
+}
+.form-ratio--vertical {
+  flex-direction: column;
+}
 
-  .border-style--all {
-    border: var(--border-width) solid var(--color-input-border);
-  }
-
-  .border-style--underline {
-    border: none;
-    border-radius: 0;
-    border-bottom: var(--border-width) solid var(--color-input-border);
-  }
-
-  .border-style--none {
-    border: none;
-  }
 {% endstylesheet %}
 
 {% if label != blank %}
-  <div class="contact-form-row" style="--formRowWidth: {{ input_width }}%;">
+  <div class="contact-form-row" style="--formRowWidth: 100%;" {{ attr }}>
     {%- if show_label -%}
       <label for="{{ block.id }}" style="--mb:{{ label_mb }}px;" class="block {{ label_type_preset }}">{{ label }}</label>
     {%- endif -%}
-    <input id="{{ block.id }}" type="{{ input_type }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}>
+    <div class="form-ratio form-ratio--{{ options_layout }}">
+      {% for option in options %}
+        <div class="form-ratio-item">
+          <input type="radio" name="contact[{{ label_name }}]" value="{{ option }}" id="{{ block.id }}-{{ option }}"{% if forloop.first %} checked{% endif %}>
+          <label class="{{ option_type_preset }}" for="{{ block.id }}-{{ option }}">{{ option }}</label>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 {% endif %}
 
 {% schema %}
 {
-  "name": "t:names.input",
+  "name": "Radio",
   "settings": [
     {
       "type": "text",
@@ -82,47 +71,6 @@ style="
       "default": true
     },
     {
-      "type": "select",
-      "id": "label_type_preset",
-      "label": "Label font size",
-      "options": [
-        {
-          "value": "",
-          "label": "t:options.default"
-        },
-        {
-          "value": "paragraph",
-          "label": "t:options.paragraph"
-        },
-        {
-          "value": "h1",
-          "label": "t:options.h1"
-        },
-        {
-          "value": "h2",
-          "label": "t:options.h2"
-        },
-        {
-          "value": "h3",
-          "label": "t:options.h3"
-        },
-        {
-          "value": "h4",
-          "label": "t:options.h4"
-        },
-        {
-          "value": "h5",
-          "label": "t:options.h5"
-        },
-        {
-          "value": "h6",
-          "label": "t:options.h6"
-        }
-      ],
-      "default": "paragraph",
-      "info": "t:info.edit_presets_in_theme_settings"
-    },
-    {
       "type": "range",
       "id": "label_mb",
       "label": "t:settings.spacing_bottom",
@@ -133,19 +81,32 @@ style="
       "default": 8
     },
     {
-      "type": "range",
-      "id": "input_width",
-      "label": "Width desktop",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "%",
-      "default": 50
+      "type": "text",
+      "id": "options",
+      "label": "Options",
+      "info": "Separate options with a pipe (|)",
+      "default": "Option 1|Option 2|Option 3"
     },
     {
       "type": "select",
-      "id": "input_type_preset",
-      "label": "t:settings.type_preset",
+      "id": "options_layout",
+      "label": "Options Layout",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "vertical",
+          "label": "Vertical"
+        }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "select",
+      "id": "option_type_preset",
+      "label": "Option font size",
       "options": [
         {
           "value": "",
@@ -182,18 +143,6 @@ style="
       ],
       "default": "paragraph",
       "info": "t:info.edit_presets_in_theme_settings"
-    },
-    {
-      "type": "checkbox",
-      "id": "is_required",
-      "label": "t:settings.is_required",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "placeholder",
-      "label": "t:settings.placeholder",
-      "default": "Please fill in this field"
     },
     {
       "type": "header",
@@ -280,31 +229,11 @@ style="
       "unit": "px",
       "default": 0,
       "visible_if": "{{ block.settings.border_style != 'underline' }}"
-    },
-    {
-      "type": "select",
-      "id": "input_alignment",
-      "label": "t:settings.alignment",
-      "options": [
-        {
-          "value": "left",
-          "label": "t:options.left"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "right",
-          "label": "t:options.right"
-        }
-      ],
-      "default": "left"
     }
   ],
   "presets": [
     {
-      "name": "t:names.input"
+      "name": "Radio"
     }
   ]
 }
