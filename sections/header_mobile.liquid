@@ -19,6 +19,14 @@
         aria-label="{{ 'accessibility.menu' | t }}"
         tabindex="-1"
       >
+        <button
+          class="drawer__close block t-button bor-none cursor-pointer"
+          type="button"
+          onclick="this.closest('side-drawer').close()"
+          aria-label="{{ 'accessibility.close_dialog' | t }}"
+        >
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </button>
         <div class="drawer__wrapper menu-drawer relative h-full motion-reduce color-{{ section.settings.menu_color_scheme }}">
           <div class="header-mobile mobile--multi-tab">
             <div class="section-resource-list">
@@ -52,6 +60,8 @@
   .drawer--menu-multi-tab .menu-drawer__close-button {
     padding: 0 var(--minimum-touch-target) 0 var(--padding-xl);
     height: var(--minimum-touch-target);
+    width: 100%;
+    text-align: left;
   }
 
 
