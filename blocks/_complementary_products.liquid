@@ -25,8 +25,9 @@
   assign columns_mobile = products_count | plus: 0.0 | divided_by: products_per_page | ceil
   assign slides_per_view = columns_mobile
 %}
+
 <product-recommendations
-  class="complementary-products quick-add-hidden{% if make_collapsible_row %} is-accordion{% endif %}{% if enable_quick_add %} complementary-products-contains-quick-add{% endif %}"
+  class="complementary-products-component quick-add-hidden{% if make_collapsible_row %} is-accordion{% endif %}{% if enable_quick_add %} complementary-products-contains-quick-add{% endif %}"
   data-url="{{ routes.product_recommendations_url }}?limit={{ product_list_limit }}&intent=complementary"
   data-section-id="{{ section.id }}"
   data-product-id="{{ product_resource.id }}"
@@ -96,26 +97,9 @@
                 role="list"
                 aria-label="{{ 'content.grid.name' | t }}"
               >
-                {% assign skip_card_product_styles = false %}
                 {%- for product in products -%}
                   <li class="complementary-slide complementary-slide--{{ settings.card_style }} grid__item swiper-slide">
-                    {% if enable_quick_add %}
-                      {% assign quick_add = 'standard' %}
-                    {% else %}
-                      {% assign quick_add = 'none' %}
-                    {% endif %}
-                    {% render 'card-product',
-                      card_product: product,
-                      media_aspect_ratio: image_ratio,
-                      show_secondary_image: false,
-                      lazy_load: false,
-                      skip_styles: skip_card_product_styles,
-                      quick_add: quick_add,
-                      section_id: section.id,
-                      horizontal_class: true,
-                      horizontal_quick_add: true
-                    %}
-                    {% assign skip_card_product_styles = true %}
+                    {% content_for 'block', type: 'card-product-flex', id: 'product-complementary-item', closest.product: product %}
                   </li>
                 {%- endfor -%}
               </ul>
@@ -525,6 +509,12 @@
         "id": "enable_quick_add",
         "default": true,
         "label": "t:settings.enable_quick_add_button"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Complementary products",
+        "category": "t:categories.product"
       }
     ]
   }
