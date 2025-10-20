@@ -2,7 +2,7 @@
 <script src="{{ 'pubsub.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'vendor.js' | asset_url }}" defer="defer"></script>
 {%- if settings.enable_smooth_scroll -%}
-    <script src="{{ 'smooth-scroll.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'smooth-scroll.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'accordion.js' | asset_url }}" defer="defer"></script>
@@ -10,24 +10,24 @@
 <script src="{{ 'tab.js' | asset_url }}" defer="defer"></script>
 
 {%- if settings.animations_reveal_on_scroll -%}
-    <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 <script src="{{ 'text-animation.js' | asset_url }}" defer="defer"></script>
 
 {%- if settings.show_calculator_free_shipping_message -%}
-    <script src="{{ 'free-shipping-message.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'free-shipping-message.js' | asset_url }}" defer="defer"></script>
 {% endif %}
 
 {%- if settings.show_cart_quick_edit -%}
-    <script src="{{ 'edit-cart.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'edit-cart.js' | asset_url }}" defer="defer"></script>
 {% endif %}
 
 {%- if settings.show_countdown -%}
-    <script src="{{ 'countdown.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'countdown.js' | asset_url }}" defer="defer"></script>
 {% endif %}
 
 {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
-    <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
 <script>
@@ -39,11 +39,11 @@
         cart_update_url: '{{ routes.cart_update_url }}',
         cart_url: '{{ routes.cart_url }}',
         predictive_search_url: '{{ routes.predictive_search_url }}',
-        search_url: '{{ routes.search_url }}',
+        search_url: '{{ routes.search_url }}'
     };
 
     window.inventory_text = {
-        warningQuantity: `{{ 'products.product.quantity.warning_quantity' | t : inventory: '[inventory]' }}`,
+        warningQuantity: `{{ 'products.product.quantity.warning_quantity' | t : inventory: '[inventory]' }}`
     };
 
     window.button_load_more = {
@@ -56,7 +56,7 @@
 
     window.cartStrings = {
         error: `{{ 'content.cart_error' | t }}`,
-        quantityError: `{{ 'content.cart_quantity_error_html' | t: quantity: '[quantity]' }}`,
+        quantityError: `{{ 'content.cart_quantity_error_html' | t: quantity: '[quantity]' }}`
     };
 
     window.variantStrings = {
@@ -66,7 +66,7 @@
         soldOut: `{{ 'products.product.sold_out' | t }}`,
         preOrder: `{{ 'products.product.pre_order' | t }}`,
         unavailable: `{{ 'products.product.unavailable' | t }}`,
-        unavailable_with_option: `{{ 'products.product.value_unavailable' | t: option_value: '[value]' }}`,
+        unavailable_with_option: `{{ 'products.product.value_unavailable' | t: option_value: '[value]' }}`
     };
 
     window.quickOrderListStrings = {
@@ -78,7 +78,7 @@
         each: `{{- 'content.each' | t: money: '[money]' }}`,
         min_error: `{{- 'content.min_error' | t: min: '[min]' }}`,
         max_error: `{{- 'content.max_error' | t: max: '[max]' }}`,
-        step_error: `{{- 'content.step_error' | t: step: '[step]' }}`,
+        step_error: `{{- 'content.step_error' | t: step: '[step]' }}`
     };
 
     window.accessibilityStrings = {
@@ -88,14 +88,14 @@
         playSlideshow: `{{ 'content.play_slideshow' | t }}`,
         recipientFormExpanded: `{{ 'gift_cards.expanded' | t }}`,
         recipientFormCollapsed: `{{ 'gift_cards.collapsed' | t }}`,
-        countrySelectorSearchCount: `{{ 'content.country_results_count' | t: count: '[count]' }}`,
+        countrySelectorSearchCount: `{{ 'content.country_results_count' | t: count: '[count]' }}`
     };
 
     window.shippingCalculatorStrings = {
         error: {{ 'content.calculator_shipping.error' | t | json }},
         not_found: {{ 'content.calculator_shipping.not_found' | t | json }},
         one_result: {{ 'content.calculator_shipping.one_result' | t | json }},
-        multiple_results: {{ 'content.calculator_shipping.multiple_results' | t | json }},
+        multiple_results: {{ 'content.calculator_shipping.multiple_results' | t | json }}
     };
 
     window.countdown = {
@@ -113,10 +113,7 @@
         s: `{{ 'content.s' | t }}`
     };
 
-    window.dynamicBrowserTitle = {
-        show: {{ settings.show_dynamic_browser_title }},
-        text: '{{ settings.dynamic_browser_title_content | replace: "'","\'" }}'
-    };
+
 
     {% if settings.show_calculator_free_shipping_message %}
         {% if settings.calculator_free_shipping_message_price != blank %}
@@ -161,8 +158,13 @@
 {% comment %} mint add for fancybox {% endcomment %}
 
 <script>
-    window.myLazyLoadPaths = {
-        script: "{{ 'lib-fancybox.js' | asset_url }}",
-        style: "{{ 'lib-fancybox.css' | asset_url }}"
-    }
+  window.myLazyLoadPaths = {
+    script: "{{ 'lib-fancybox.js' | asset_url }}",
+    style: "{{ 'lib-fancybox.css' | asset_url }}",
+  };
 </script>
+
+{% comment %} window.dynamicBrowserTitle = {
+    show: {{ settings.show_dynamic_browser_title }},
+    text: '{{ settings.dynamic_browser_title_content | replace: "'","\'" }}'
+}; {% endcomment %}
