@@ -90,9 +90,9 @@
   if sec_stts.localization_position == 'left'
     if sec_stts.search_position == 'left'
       if shop.customer_accounts_enabled
-        assign order = 'multi_tab_menu,mobile_search,logo,mobile_logo,message,account,search,localization,menu,actions'
+        assign order = 'multi_tab_menu,mobile_search,logo,mobile_logo,menu,message,account,search,localization,actions'
       else
-        assign order = 'multi_tab_menu,logo,mobile_logo,message,account,search,localization,menu,mobile_search,actions'
+        assign order = 'multi_tab_menu,logo,mobile_logo,menu,message,account,search,localization,mobile_search,actions'
       endif
     else
       if shop.customer_accounts_enabled
@@ -104,9 +104,9 @@
   else
     if sec_stts.search_position == 'left'
       if shop.customer_accounts_enabled
-        assign order = 'multi_tab_menu,mobile_search,logo,mobile_logo,message,account,search,menu,localization,actions'
+        assign order = 'multi_tab_menu,mobile_search,logo,mobile_logo,menu,message,account,search,localization,actions'
       else
-        assign order = 'multi_tab_menu,logo,mobile_logo,message,account,search,menu,localization,mobile_search,actions'
+        assign order = 'multi_tab_menu,logo,mobile_logo,menu,message,account,search,localization,mobile_search,actions'
       endif
     endif
   endif
@@ -301,11 +301,18 @@
   body:has(> #header-group:empty) {
     --header-group-height: 0px;
   }
-
-  /* .header[transparent='not-sticky']:not([data-sticky-state]) .header__icon.button ,
-  .header[transparent='not-sticky'][data-sticky-state='inactive'] .header__icon.button {
-    background-color: transparent;
-  } */
+  .header[transparent='not-sticky']:not([data-sticky-state]) ,
+  .header[transparent='not-sticky'][data-sticky-state='inactive'] {
+    .header__icon.button  {
+      border: none;
+    }
+    &:not(:has(.list-menu__item:is(:hover, [aria-expanded='true'], [data-animating]))),
+    &:not(:has(.details--dropdown:not(.details--dropdown-language):is(:hover))) {
+      .header__icon.button  {
+        background-color: transparent;
+      }
+    }
+  }
 
   .header[transparent] {
     --language-button-background-color: transparent;
@@ -382,12 +389,6 @@
       .button {
         --animation-speed: var(--animation-speed-slow);
       }
-    }
-  }
-
-  .header:has(.header__icon--menu button.active) {
-    .header__icon:not(.header__icon--menu) {
-      opacity: var(--opacity-0);
     }
   }
 
@@ -770,6 +771,13 @@
   /* Single column layout if there are no columns within */
   .header__columns:not(:has(.header__column)) {
     grid-template-columns: 1fr;
+  }
+
+  /*  */
+  .header__columns:not(:has(.header__column--center)) .header__column:has(.header__vertical-menu):has(.header__inline-menu) {
+    @media screen and (min-width: 750px) {
+      --header-template-columns: max-content max-contnet;
+    }
   }
 
 {%- endstylesheet -%}

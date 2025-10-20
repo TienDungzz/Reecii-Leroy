@@ -6,8 +6,6 @@ class Toolbarmobile extends HTMLElement {
   }
 
   init() {
-    console.log('init');
-
     this.activate();
     this.setHeight();
     window.addEventListener('resize', this.setHeight.bind(this));
