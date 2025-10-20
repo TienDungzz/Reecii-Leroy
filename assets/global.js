@@ -64,7 +64,7 @@ theme.utils = {
 
     // Add the .cancel method:
      debounced.cancel = () => {
-      clearTimeout(timeout);
+      clearTimeout(timer);
     };
 
     return /** @type {T & { cancel(): void }} */ (debounced);
@@ -1277,7 +1277,7 @@ class SwiperComponent extends HTMLElement {
     );
   }
   get items() {
-    return this._items = this._items || Array.from(this.children);
+    return this._items = this._items || Array.from(this.querySelector(".swiper-wrapper").children);
   }
 
   connectedCallback() {
