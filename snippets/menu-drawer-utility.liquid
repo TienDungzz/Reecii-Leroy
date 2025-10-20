@@ -16,10 +16,16 @@
     assign country_style = settings.country_selector_style
   %}
 
-  {%- if show_language and localization.available_languages.size > 1 -%}
+  {%- if show_language or show_country -%}
     <div class="{% if class_animated != blank %} {{ class_animated }}{% endif %}">
       <h3 class="menu-drawer__utility-heading h6" id="HeaderLanguageLabel">
-        {{ 'content.localization_region_and_language' | t }}
+        {%- if show_language and show_country -%}
+          {{ 'content.localization_region_and_language' | t }}
+        {%- elsif show_language and show_country == false -%}
+          {{ 'content.language' | t }}
+        {%- elsif show_language == false and show_country -%}
+            {{ 'content.country_label' | t }}
+        {%- endif -%}
       </h3>
       {%- render 'language-country-localization',
         localPosition: 'HeaderLanguage',
@@ -40,12 +46,12 @@
     .disclosure__list.language-selector__list {
       padding-block-end: var(--padding-sm);
     }
-    
+
     .disclosure__list-wrapper {
       position: fixed;
       width: 100%;
       top: 0;
-      height: calc(100dvh - var(--header-height));
+      height: 100dvh;
       left: 0;
       background-color: var(--color-background);
       max-height: initial;
@@ -55,13 +61,17 @@
 
     localization-form:has(.country-selector__list--with-multiple-currencies) {
       width: 100%;
-      max-height: calc(100dvh - 9.5rem - var(--header-height));
+      max-height: calc(100dvh - 9.5rem);
       display: block;
 
       .country-selector__list--with-multiple-currencies {
         width: 100%;
-        max-height: calc(100dvh - 16.5rem - var(--header-height));
+        max-height: calc(100dvh - 16.5rem);
       }
+    }
+
+    .language-selector--only .details--dropdown-language {
+      width: 100%;
     }
   }
 {% endstylesheet %}

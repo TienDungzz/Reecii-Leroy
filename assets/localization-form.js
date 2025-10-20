@@ -236,6 +236,8 @@ if (!customElements.get('dropdown-localization-component')) {
       }
 
       init() {
+        this.loadTemplate();
+
         this.mql = window.matchMedia('(min-width: 750px)');
         this.mqlDesktop = window.matchMedia('(min-width: 1025px)');
         this.header = document.querySelector('.header-wrapper');
@@ -245,7 +247,6 @@ if (!customElements.get('dropdown-localization-component')) {
           panel: this.querySelector('.disclosure__list-wrapper'),
         };
 
-        this.loadTemplate();
         this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
         if (this.mql.matches) this.addEventListener('focusout', this.closeSelector.bind(this));
         this.elements.button?.addEventListener('click', this.openSelector.bind(this));

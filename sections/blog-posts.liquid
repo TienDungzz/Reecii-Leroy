@@ -259,6 +259,7 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
         spacing-style
         layout-panel-flex
         layout-panel-flex--{{ section.settings.content_direction }}
+        tablet-{{ section.settings.content_direction_tablet | default: 'column' }}
         mobile-{{ section.settings.content_direction_mobile | default: 'column' }}
         section-content-wrapper
         {% if section.settings.show_on_header and section.settings.navigation == 'arrows' %}arrow-on-header{% endif %}
@@ -505,7 +506,7 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
       "id": "show_on_header",
       "label": "t:settings.show_arrow_on_header",
       "default": false,
-      "info": "t:info.show_arrow_on_header_info",  
+      "info": "t:info.show_arrow_on_header_info",
       "visible_if": "{{ section.settings.navigation == 'arrows' }}"
     },
     {
@@ -541,6 +542,22 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
       "type": "select",
       "id": "content_direction",
       "label": "t:settings.direction",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "select",
+      "id": "content_direction_tablet",
+      "label": "Content direction on tablet",
       "options": [
         {
           "value": "column",
@@ -604,6 +621,31 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
       ],
       "default": "flex-start",
       "visible_if": "{{ section.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_tablet",
+      "label": "Tablet alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ section.settings.content_direction_tablet == 'row' }}"
     },
     {
       "type": "select",
