@@ -1,14 +1,9 @@
 {%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}
-  {% comment %} {{ 'quantity-popover.css' | asset_url | stylesheet_tag: preload: true }}
+  {{ 'quantity-popover.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-cart.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-totals.css' | asset_url | stylesheet_tag: preload: true }}
-  {{ 'component-discounts.css' | asset_url | stylesheet_tag: preload: true }} {% endcomment %}
-  <link rel="preload" href="{{ 'quantity-popover.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="{{ 'component-cart-drawer.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="{{ 'component-cart.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="{{ 'component-totals.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="{{ 'component-discounts.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  {{ 'component-discounts.css' | asset_url | stylesheet_tag: preload: true }}
 
   {% capture cart_drawer_product_block %}
     {% content_for 'block', id: 'cart-product', type: '_cart-product' %}

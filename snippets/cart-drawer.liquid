@@ -509,7 +509,7 @@
         </form>
       </cart-drawer-items>
 
-      {% if section.settings.cart_drawer_collection != blank %}
+      {% comment %} {% if section.settings.cart_drawer_collection != blank %}
         {%- capture breakpoints -%}
           {
             "768": { "slidesPerView": 1 },
@@ -532,7 +532,6 @@
               columns_desktop: 1,
               columns_gap: 0,
             %}
-            --m: 0 2.5rem 1.5rem;
           "
         >
           <div
@@ -569,30 +568,182 @@
             {%- endif -%}
           </div>
         </swiper-component>
-      {% endif %}
+      {% endif %} {% endcomment %}
 
       <div class="drawer__footer">
-        {%- if settings.show_cart_note -%}
-          <details id="Details-CartDrawer" is="collapsible-details">
-            <summary class="cart__note-summary">
-              <span class="cart__note-label">
-                {{ 'content.note' | t }}
-              </span>
-              <span class="svg-wrapper">
-                {{- 'icon-caret.svg' | inline_asset_content -}}
-              </span>
-            </summary>
-            <cart-note class="cart__note field" style="--inputs-radius: 0.5rem;">
-              <label class="visually-hidden" for="CartDrawer-Note">{{ 'content.note' | t }}</label>
-              <textarea
-                id="CartDrawer-Note"
-                class="text-area text-area--resize-vertical field__input"
-                name="note"
-                placeholder="{{ 'content.note' | t }}"
-              >{{ cart.note }}</textarea>
-            </cart-note>
-          </details>
-        {%- endif -%}
+        <div class="drawer--function-blocks">
+          {% comment %} {%- if settings.show_cart_note -%}
+            <details id="Details-CartDrawer" is="collapsible-details">
+              <summary class="cart__note-summary">
+                <span class="cart__note-label">
+                  {{ 'content.note' | t }}
+                </span>
+                <span class="svg-wrapper">
+                  {{- 'icon-caret.svg' | inline_asset_content -}}
+                </span>
+              </summary>
+              <cart-note class="cart__note field" style="--inputs-radius: 0.5rem;">
+                <label class="visually-hidden" for="CartDrawer-Note">{{ 'content.note' | t }}</label>
+                <textarea
+                  id="CartDrawer-Note"
+                  class="text-area text-area--resize-vertical field__input"
+                  name="note"
+                  placeholder="{{ 'content.note' | t }}"
+                >{{ cart.note }}</textarea>
+              </cart-note>
+            </details>
+          {%- endif -%} {% endcomment %}
+          <button type="button" class="function-block function-block--cart-note button" data-drawer-toggle="#Drawer-CartNote">
+            <span class="svg-wrapper">
+              {{- 'icon-discount.svg' | inline_asset_content -}}
+            </span>
+          </button>
+          <button type="button" class="function-block function-block--cart-gift-card button" data-drawer-toggle="#Drawer-CartGiftCard">
+            <span class="svg-wrapper">
+              {{- 'icon-discount.svg' | inline_asset_content -}}
+            </span>
+          </button>
+          <button type="button" class="function-block function-block--cart-shipping button" data-drawer-toggle="#Drawer-CartShipping">
+            <span class="svg-wrapper">
+              {{- 'icon-discount.svg' | inline_asset_content -}}
+            </span>
+          </button>
+          <button type="button" class="function-block function-block--cart-discount button" data-drawer-toggle="#Drawer-CartDiscount">
+            <span class="svg-wrapper">
+              {{- 'icon-discount.svg' | inline_asset_content -}}
+            </span>
+          </button>
+
+          <modal-component
+            id="Drawer-CartNote"
+            class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
+            data-modal-content
+            data-moved="false"
+          >
+            <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
+            <div
+              class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
+              role="dialog"
+              aria-modal="true"
+              aria-label="{{ 'content.note' | t }}"
+              tabindex="-1"
+              style="--popup-max-height: 50dvh;"
+            >
+              <div class="modal-header flex justify-between items-center relative">
+                <span class="modal-header__title">{{ 'content.note' | t }}</span>
+                <button type="button" class="modal__close block t-button bor-none rounded-full cursor-pointer" data-drawer-toggle="#Drawer-CartNote">
+                  {{- 'icon-close.svg' | inline_asset_content -}}
+                </button>
+              </div>
+              <div class="modal-content">
+                <cart-note class="cart__note field" style="--inputs-radius: 0.5rem;">
+                  <label class="visually-hidden" for="CartDrawer-Note">{{ 'content.note' | t }}</label>
+                  <textarea
+                    id="CartDrawer-Note"
+                    class="text-area text-area--resize-vertical field__input"
+                    name="note"
+                    placeholder="{{ 'content.note' | t }}"
+                  >{{ cart.note }}</textarea>
+                </cart-note>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="button button--full-width" data-drawer-toggle="#Drawer-CartNote">
+                  Save
+                </button>
+              </div>
+            </div>
+          </modal-component>
+
+          <modal-component
+            id="Drawer-CartGiftCard"
+            class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
+            data-modal-content
+            data-moved="false"
+          >
+            <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
+            <div
+              class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
+              role="dialog"
+              aria-modal="true"
+              aria-label="{{ 'content.note' | t }}"
+              tabindex="-1"
+              style="--popup-max-height: 50dvh;"
+            >
+              <div class="modal-content">
+                <span class="svg-wrapper">
+                  {{- 'icon-gift-card.svg' | inline_asset_content -}}
+                </span>
+                <h4 class="modal-content__title">Do you want a gift wrap?</h4>
+              </div>
+              <div class="modal-footer">
+                <form action="{{ routes.cart_add_url }}" method="post" id="CartDrawer-GiftCard-Form" class="cart__form">
+                  <input type="hidden" name="id" value="{{ section.settings.cart_drawer_gift_card.selected_or_first_available_variant.id }}">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" name="add" id="CartDrawer-GiftCard-Add" class="button button--full-width">
+                    Yes, add a gift wrap
+                  </button>
+                </form>
+                <button type="button" class="button button--full-width" data-drawer-toggle="#Drawer-CartGiftCard">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </modal-component>
+
+          <modal-component
+            id="Drawer-CartShipping"
+            class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
+            data-modal-content
+            data-moved="false"
+          >
+            <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
+            <div
+              class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
+              role="dialog"
+              aria-modal="true"
+              aria-label="{{ 'content.note' | t }}"
+              tabindex="-1"
+              style="--popup-max-height: 50dvh;"
+            >
+              <div class="modal-header flex justify-between items-center relative">
+                <span class="modal-header__title">Estimate Shipping Rates</span>
+                <button type="button" class="modal__close block t-button bor-none rounded-full cursor-pointer" data-drawer-toggle="#Drawer-CartShipping">
+                  {{- 'icon-close.svg' | inline_asset_content -}}
+                </button>
+              </div>
+              <div class="modal-content">
+                {% render 'cart-shipping-calculator' %}
+              </div>
+            </div>
+          </modal-component>
+
+          <modal-component
+            id="Drawer-CartDiscount"
+            class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
+            data-modal-content
+            data-moved="false"
+          >
+            <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
+            <div
+              class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
+              role="dialog"
+              aria-modal="true"
+              aria-label="{{ 'content.note' | t }}"
+              tabindex="-1"
+              style="--popup-max-height: 50dvh;"
+            >
+              <div class="modal-header flex justify-between items-center relative">
+                <span class="modal-header__title">Discounts</span>
+                <button type="button" class="modal__close block t-button bor-none rounded-full cursor-pointer" data-drawer-toggle="#Drawer-CartDiscount">
+                  {{- 'icon-close.svg' | inline_asset_content -}}
+                </button>
+              </div>
+              <div class="modal-content">
+                {% render 'cart-discounts' %}
+              </div>
+            </div>
+          </modal-component>
+        </div>
 
         <!-- Start blocks -->
         <!-- Subtotals -->
@@ -666,15 +817,15 @@
           <a
             href="{{ routes.cart_url }}"
             id="CartDrawer-Viewcart"
-            class="cart__viewcart-button button button-secondary button--full-width"
+            class="cart__viewcart-button button button--full-width"
           >
             {{- 'content.cart.view_empty_cart' | t -}}
           </a>
           <button
             type="submit"
             id="CartDrawer-Checkout"
-            class="cart__checkout-button button button--primary button--full-width"
-            name="checkout"
+            class="cart__checkout-button button button--secondary button--full-width"
+            name="checkout
             form="CartDrawer-Form"
             {% if cart == empty %}
               disabled
