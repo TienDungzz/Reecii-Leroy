@@ -8,8 +8,20 @@
 
 {%- if gift_wrap_product_quantity == 0 -%}
   {%- assign gift_wrap_money = gift_wrap_product.variants.first.price | money -%}
-  <gift-wrap-component>
-    <div id="gift-wrap-block" class="gift-card-container">
+
+  {% if gift_card_type == 'cart-drawer' %}
+    <gift-wrap-button
+      class="button button--full-width"
+      id="cart-gift-wrapping-add"
+      data-section-id="{{ section.id }}"
+      data-gift-wrap-variant-id="{{ gift_wrap_product_id }}"
+      type="button"
+    >
+      {%- render 'loading-spinner' -%}
+      {{ 'actions.add' | t }}
+    </gift-wrap-button>
+  {% else %}
+    <div class="cart-gift-card">
       <svg
         class="gift-wrap-icon inline-block v-a-middle"
         aria-hidden="true"
@@ -34,11 +46,5 @@
         {{ 'actions.add' | t }}
       </gift-wrap-button>
     </div>
-  </gift-wrap-component>
+  {% endif %}
 {%- endif -%}
-
-{% stylesheet %}
-  .gift-card-container {
-
-  }
-{% endstylesheet %}

@@ -452,7 +452,17 @@
                         class="button button-unstyled"
                         type="button"
                         aria-label="{{ 'accessibility.remove_item' | t: title: item.title | escape }}"
-                        onclick="this.closest('cart-items-component').dispatchEvent(new CustomEvent('onLineItemRemove', {detail: { line: {{ item.index | plus: 1 }} }, bubbles: true}))" 
+                        onclick="
+                          const container = this.closest('cart-items-component') || this.closest('cart-drawer-items');
+                          if (container) {
+                            container.dispatchEvent(
+                              new CustomEvent('onLineItemRemove', {
+                                detail: { line: {{ item.index | plus: 1 }} },
+                                bubbles: true
+                              })
+                            );
+                          }
+                        "
                         {% assign can_remove = item.instructions.can_remove | default: true, allow_false: true %}
                         {% if can_remove == false %}
                           hidden
