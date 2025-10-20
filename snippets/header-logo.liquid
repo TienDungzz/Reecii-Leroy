@@ -19,10 +19,19 @@
     endif
   endif
 
-  assign logo_height = sec_stts.logo_width | divided_by: settings.logo.aspect_ratio | ceil
-  assign logo_height_mobile = sec_stts.logo_width_mobile | divided_by: settings.logo.aspect_ratio | ceil
+  if sec_stts.logo_width == blank
+    assign logo_width = settings.logo.width
+    assign logo_width_mobile = settings.logo.width
+    assign logo_height = settings.logo.height
+    assign logo_height_mobile = settings.logo.height
+  else
+    assign logo_width = sec_stts.logo_width
+    assign logo_width_mobile = sec_stts.logo_width_mobile
+    assign logo_height = sec_stts.logo_width | divided_by: settings.logo.aspect_ratio | ceil
+    assign logo_height_mobile = sec_stts.logo_width_mobile | divided_by: settings.logo.aspect_ratio | ceil
+  endif
 
-  assign logo_style = '--header-logo-image-width: ' | append: sec_stts.logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: sec_stts.logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: logo_height_mobile | append: 'px;'
+  assign logo_style = '--header-logo-image-width: ' | append: logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: logo_height_mobile | append: 'px;'
 
 -%}
   {% comment %} assign inverse_logo_height = sec_stts.logo_width | divided_by: inverse_logo.aspect_ratio | ceil

@@ -100,6 +100,8 @@ function onDocumentLoaded(callback) {
   if (document.readyState === 'complete') {
     callback();
   } else {
+    logoReveal();
+    pageReveal();
     window.addEventListener('load', callback);
   }
 }
