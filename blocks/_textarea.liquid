@@ -70,13 +70,12 @@ style="
 {% endstylesheet %}
 
 {% if label != blank %}
-    <div class="contact-form-row" style="--formRowWidth: {{ input_width }}%;">
-      <label for="{{ block.id }}" style="--mb:{{ label_mb }}px;" class="block {{ label_type_preset }}">{{ label }}</label>
-      <textarea id="{{ block.id }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}></textarea>
-    </div>
-  {% else %}
+  <div class="contact-form-row" style="--formRowWidth: {{ input_width }}%;">
+    <label for="{{ block.id }}" style="--mb:{{ label_mb }}px;" class="block {{ label_type_preset }}">{{ label }}</label>
     <textarea id="{{ block.id }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}></textarea>
-  {% endif %}
+  </div>
+{% else %}
+  <textarea id="{{ block.id }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}></textarea>
 {% endif %}
 
 {% schema %}
