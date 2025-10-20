@@ -6,18 +6,32 @@
   assign product_list_limit = block_settings.product_list_limit
   assign products_per_page = block_settings.products_per_page
   assign pagination_type = block_settings.pagination_type
+  assign navigation = block_settings.navigation
+  assign dots_top_offset = block_settings.dots_top_offset
+  assign progress_top_offset = block_settings.progress_top_offset
   assign image_ratio = block_settings.image_ratio
   assign icon = block_settings.icon
   assign block_heading = block_settings.block_heading
 %}
 
+{% liquid
+  assign columns_gap = 16
+  assign rows_gap = 16
+
+  assign products = recommendations.products
+  assign products_count = recommendations.products_count
+  assign columns_desktop = products_count | plus: 0.0 | divided_by: products_per_page | ceil
+  assign columns_tablet = products_count | plus: 0.0 | divided_by: products_per_page | ceil
+  assign columns_mobile = products_count | plus: 0.0 | divided_by: products_per_page | ceil
+  assign slides_per_view = columns_mobile
+%}
 <product-recommendations
   class="complementary-products quick-add-hidden{% if make_collapsible_row %} is-accordion{% endif %}{% if enable_quick_add %} complementary-products-contains-quick-add{% endif %}"
   data-url="{{ routes.product_recommendations_url }}?limit={{ product_list_limit }}&intent=complementary"
   data-section-id="{{ section.id }}"
   data-product-id="{{ product_resource.id }}"
 >
-  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+  {%- if recommendations.performed and products_count > 0 -%}
     <aside
       aria-label="{{ 'accessibility.complementary_products' | t }}"
       {{ block.shopify_attributes -}}
@@ -42,110 +56,76 @@
           {{- 'icon-caret.svg' | inline_asset_content -}}
           </summary>
         {%- endif -%}
-        <slideshow-component class="slider-mobile-gutter">
-          {%- assign number_of_slides = recommendations.products_count
-            | plus: 0.0
-            | divided_by: products_per_page
-            | ceil
-          -%}
-          <div
-            id="Slider-{{ block.id }}"
-            class="contains-card contains-card--product complementary-slider grid grid--1-col slider slider--everywhere"
-            role="list"
-            {% if number_of_slides > 1 %}
-              aria-label="{{ 'content.slider.name' | t }}"
-            {% endif %}
+        <div class="complementary-products__slider-container">
+          {%- capture breakpoints -%}
+            {
+              "768": { "slidesPerView": {{ columns_tablet }} },
+              "1400": { "slidesPerView": {{ columns_desktop }} }
+            }
+          {%- endcapture -%}
+          <swiper-component
+            class="complementary-products-swiper w-full block"
+            {%- render 'swiper-data',
+              slides_per_view: slides_per_view,
+              space_between: columns_gap,
+              watch_slides_progress: true,
+              breakpoints: breakpoints
+            -%}
+            style="
+              {% render 'swiper-style',
+                columns_mobile: columns_mobile,
+                columns_tablet: columns_tablet,
+                columns_desktop: columns_desktop,
+                columns_gap: columns_gap,
+              %}
+            "
           >
-            {% assign skip_card_product_styles = false %}
-            {%- for i in (1..number_of_slides) -%}
-              <div
-                id="Slide-{{ block.id }}-{{ forloop.index }}"
-                class="complementary-slide complementary-slide--{{ settings.card_style }} grid__item slider__slide slideshow__slide"
-                tabindex="-1"
-                role="group"
-                {% if number_of_slides > 1 %}
-                  aria-roledescription="{{ 'sections.slideshow.slide' | t }}"
-                  aria-label="{{ forloop.index }} {{ 'general.slider.of' | t }} {{ forloop.length }}"
+            <div class="swiper w-full" 
+              style="
+                {% if pagination_type == 'bullets' and navigation == 'pagination' or navigation == 'arrows-pagination' %}
+                  --dots-top-offset: {{ dots_top_offset }}px;
+                {% elsif pagination_type == 'progressbar' and navigation == 'pagination' or navigation == 'arrows-pagination' %}
+                  --progress-top-offset: {{ progress_top_offset }}px;
                 {% endif %}
+              "
+            >
+              <ul
+                id="ComplementaryGrid-{{ block.id }}"
+                class="grid grid-layout contains-card contains-card--product complementary-slider list-unstyled swiper-wrapper"
+                style="--grid-desktop-horizontal-spacing: {{ columns_gap }}px; --grid-desktop-vertical-spacing: {{ rows_gap }}px;"
+                role="list"
+                aria-label="{{ 'content.grid.name' | t }}"
               >
-                <ul class="list-unstyled" role="list">
-                  {%- for product in recommendations.products
-                    limit: products_per_page
-                    offset: continue
-                  -%}
-                    <li>
-                      {%- if enable_quick_add -%}
-                        {% assign quick_add = 'standard' %}
-                      {%- else -%}
-                        {% assign quick_add = 'none' %}
-                      {%- endif -%}
-                      {% render 'card-product',
-                        card_product: product,
-                        media_aspect_ratio: image_ratio,
-                        show_secondary_image: false,
-                        lazy_load: false,
-                        skip_styles: skip_card_product_styles,
-                        quick_add: enable_quick_add,
-                        section_id: section.id,
-                        horizontal_class: true,
-                        horizontal_quick_add: true
-                      %}
-                    </li>
-                    {%- assign skip_card_product_styles = true -%}
-                  {%- endfor -%}
-                </ul>
+                {% assign skip_card_product_styles = false %}
+                {%- for product in products -%}
+                  <li class="complementary-slide complementary-slide--{{ settings.card_style }} grid__item swiper-slide">
+                    {% if enable_quick_add %}
+                      {% assign quick_add = 'standard' %}
+                    {% else %}
+                      {% assign quick_add = 'none' %}
+                    {% endif %}
+                    {% render 'card-product',
+                      card_product: product,
+                      media_aspect_ratio: image_ratio,
+                      show_secondary_image: false,
+                      lazy_load: false,
+                      skip_styles: skip_card_product_styles,
+                      quick_add: quick_add,
+                      section_id: section.id,
+                      horizontal_class: true,
+                      horizontal_quick_add: true
+                    %}
+                    {% assign skip_card_product_styles = true %}
+                  </li>
+                {%- endfor -%}
+              </ul>
+              <div class="swiper-btns-wrap">
+                {%- render 'swiper-button' -%}
               </div>
-            {%- endfor -%}
-          </div>
-          {%- if number_of_slides > 1 -%}
-            <div class="slider-buttons">
-              <button
-                type="button"
-                class="slider-button slider-button--prev"
-                name="previous"
-                aria-label="{{ 'general.slider.previous_slide' | t }}"
-              >
-                <span class="svg-wrapper">
-                  {{- 'icon-caret.svg' | inline_asset_content -}}
-                </span>
-              </button>
-              <div class="slider-counter slider-counter--{{ pagination_type }}{% if pagination_type == 'counter' or pagination_type == 'numbers' %} caption{% endif %}">
-                {%- if pagination_type == 'counter' -%}
-                  <span class="slider-counter--current">1</span>
-                  <span aria-hidden="true"> / </span>
-                  <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-                  <span class="slider-counter--total">{{ number_of_slides }}</span>
-                {%- else -%}
-                  <div class="slideshow__control-wrapper">
-                    {%- for i in (1..number_of_slides) -%}
-                      <button
-                        class="slider-counter__link slider-counter__link--{{ pagination_type }} link"
-                        aria-label="{{ 'sections.slideshow.load_slide' | t }} {{ forloop.index }} {{ 'general.slider.of' | t }} {{ forloop.length }}"
-                        aria-controls="Slider-{{ block.id }}"
-                      >
-                        {%- if pagination_type == 'numbers' -%}
-                          {{ forloop.index -}}
-                        {%- else -%}
-                          <span class="dot"></span>
-                        {%- endif -%}
-                      </button>
-                    {%- endfor -%}
-                  </div>
-                {%- endif -%}
-              </div>
-              <button
-                type="button"
-                class="slider-button slider-button--next"
-                name="next"
-                aria-label="{{ 'general.slider.next_slide' | t }}"
-              >
-                <span class="svg-wrapper">
-                  {{- 'icon-caret.svg' | inline_asset_content -}}
-                </span>
-              </button>
+              <div class="swiper-pagination"></div>
             </div>
-          {%- endif -%}
-        </slideshow-component>
+          </swiper-component>
+        </div>
         {%- if make_collapsible_row -%}
           </details>
         {%- endif -%}
@@ -440,9 +420,44 @@
         "label": "t:settings.products_per_page"
       },
       {
+        "type": "header",
+        "content": "t:content.carousel"
+      },
+      {
+        "type": "checkbox",
+        "id": "loop",
+        "label": "t:settings.loop",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "navigation",
+        "label": "t:settings.navigation",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:options.none"
+          },
+          {
+            "value": "arrows",
+            "label": "t:options.arrows"
+          },
+          {
+            "value": "pagination",
+            "label": "t:options.pagination"
+          },
+          {
+            "value": "arrows-pagination",
+            "label": "t:settings.arrows_and_pagination"
+          }
+        ],
+        "default": "arrows"
+      },
+      {
         "type": "select",
         "id": "pagination_type",
         "label": "t:settings.pagination_type",
+        "visible_if": "{{ block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' }}",
         "options": [
           {
             "value": "bullets",
@@ -462,6 +477,28 @@
           }
         ],
         "default": "fraction"
+      },
+      {
+        "type": "range",
+        "id": "dots_top_offset",
+        "label": "t:settings.dots_top_offset",
+        "min": 20,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 40,
+        "visible_if": "{{ block.settings.pagination_type == 'bullets' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' }}"
+      },
+      {
+        "type": "range",
+        "id": "progress_top_offset",
+        "label": "t:settings.progress_top_offset",
+        "min": 20,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 40,
+        "visible_if": "{{ block.settings.pagination_type == 'progressbar' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' }}"
       },
       {
         "type": "header",
