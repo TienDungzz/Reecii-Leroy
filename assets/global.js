@@ -100,8 +100,12 @@ function onDocumentLoaded(callback) {
   if (document.readyState === 'complete') {
     callback();
   } else {
-    logoReveal();
-    pageReveal();
+    const preloadScreen = document.querySelector(".preload-screen");
+    if (preloadScreen) {
+      logoReveal(preloadScreen);
+      pageReveal(preloadScreen);
+      linkClick();
+    }
     window.addEventListener('load', callback);
   }
 }
@@ -136,17 +140,15 @@ onDocumentLoaded(theme.utils.setScrollbarWidth);
 window.addEventListener('resize', theme.utils.rafThrottle(theme.utils.setScrollbarWidth));
 
 // Preloading Screen Annimate
-function logoReveal() {
-  const preloadScreen = document.querySelector(".preload-screen");
+function logoReveal(preloadScreen) {
   if (preloadScreen)
     setTimeout(() => {
       preloadScreen.classList.add("off--ready");
     }, 10);
 }
 
-function pageReveal() {
+function pageReveal(preloadScreen) {
   const body = document.body;
-  const preloadScreen = document.querySelector(".preload-screen");
 
   if (preloadScreen) {
     setTimeout(() => {
@@ -158,11 +160,30 @@ function pageReveal() {
       preloadScreen.classList.add("loaded");
       body.classList.add("loaded");
       body.classList.remove("preloading-o-h");
-      getScrollbarWidth();
+      // getScrollbarWidth();
     }, 1200);
   }
 }
 
+function linkClick() {
+  (() => {
+    window.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('a[href]');
+      links.forEach(link => {
+        link.addEventListener('click', function (event) {
+          if (link.getAttribute('href').startsWith('tel:')) {
+            document.querySelector('.preload-screen').classList.remove('off', 'loaded');
+          }
+        });
+      });
+    });
+
+    window.addEventListener('beforeunload', () => {
+      document.body.classList.add('preloading-o-h');
+      document.querySelector('.preload-screen').classList.remove('off', 'loaded');
+    });
+  })();
+}
 function getFocusableElements(container) {
   return Array.from(
     container.querySelectorAll(

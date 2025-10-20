@@ -45,7 +45,7 @@
   {%- if request.page_type == 'index' -%}
     <h1 class="header__heading">
   {%- endif -%}
-  <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset" data-logo-page arial-label="{{ shop.name }}">
+  <a href="{{ routes.root_url }}" class="header__heading-link link--text focus-inset" data-logo-page arial-label="{{ shop.name }}">
     <div class="header__heading-logo-wrapper w-full inline-block">
       {%- capture text_fallback -%}
         <span class="h2">{{ shop.name }}</span>
@@ -63,6 +63,10 @@
         "
       >
       </span>
+
+      {% if preload_screen %}
+        <div class="loading-bar overflow-hidden"></div>
+      {% endif %}
     </div>
   </a>
   {%- if request.page_type == 'index' -%}
