@@ -184,6 +184,8 @@ class HeaderMobileTabs extends HTMLElement {
     this.tabs.forEach((tab) => {
       tab.addEventListener("click", this.handleTabClick.bind(this));
     });
+
+    this.tabContents[0].classList.add("active");
   }
 
   handleTabClick(event) {

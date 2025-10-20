@@ -31,103 +31,140 @@ class AccordionCustom extends HTMLElement {
     return this.summary;
   }
 
-  constructor() {
-    super();
-
-    this._open = this.hasAttribute('open');
-    this.detailsEl = this.querySelector('details');
-    this.summaryEl = this.querySelector('summary');
-    this.contentEl = this.querySelector('summary + *');
-    this.setAttribute('aria-expanded', this._open ? 'true' : 'false');
-
-    this.summaryEl.addEventListener('click', this.onSummaryClick.bind(this));
-
-    if (Shopify.designMode) {
-      this.addEventListener('shopify:block:select', () => {
-        if (this.designModeActive) this.open = true;
-      });
-      this.addEventListener('shopify:block:deselect', () => {
-        if (this.designModeActive) this.open = false;
-      });
-    }
+  get #disableOnMobile() {
+    return this.dataset.disableOnMobile === 'true';
   }
 
-  get designModeActive() {
-    return true;
+  get #disableOnDesktop() {
+    return this.dataset.disableOnDesktop === 'true';
   }
 
-  get controlledElement() {
-    return this.closest('accordions-details');
+  get #closeWithEscape() {
+    return this.dataset.closeWithEscape === 'true';
   }
 
-  static get observedAttributes() {
-    return ['open'];
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'open') {
-      this.detailsEl.setAttribute('aria-expanded', newValue === '' ? 'true' : 'false');
-    }
-  }
-
-  get open() {
-    return this._open;
-  }
-
-  set open(value) {
-    if (value !== this._open) {
-      this._open = value;
-
-      if (this.isConnected) {
-        this.transition(value);
-      }
-      else {
-        value ? this.detailsEl.setAttribute('open', '') : this.detailsEl.removeAttribute('open');
-      }
-    }
-
-    this.detailsEl.setAttribute('aria-expanded', value ? 'true' : 'false');
-    this.dispatchEventHandler();
-  }
-
-  onSummaryClick(event) {
-    event.preventDefault();
-    this.open = !this.open;
-  }
-
-  close() {
-    this._open = false;
-    this.transition(false);
-  }
-
-  transition(value) {
-    this.detailsEl.style.overflow = 'hidden';
-
+  async transition(value) {
     if (value) {
-      this.detailsEl.setAttribute('open', '');
+      this.details.setAttribute("open", "");
+      await Motion.timeline([
+        [
+          this.details,
+          {
+            height: this.contentElement.classList.contains(
+              "floating-panel-component"
+            )
+              ? `${this.summaryElement.clientHeight}px`
+              : [
+              `${this.summaryElement.clientHeight}px`,
+              `${this.summaryElement.clientHeight + this.contentElement.scrollHeight}px`,
+            ],
+          },
+          { duration: 0.25, easing: "ease" },
+        ],
+        [
+          this.contentElement,
+          {
+            opacity: [0, 1],
+            height: [ 0, `${this.contentElement.scrollHeight}px`],
+            transform: ["translateY(10px)", "translateY(0)"],
+          },
+          { duration: 0.15, at: "-0.1" },
+        ],
+      ]).finished;
+    } else {
+      this.summary.focus();
 
-      const sequence = [
-        [this.detailsEl, { height: [`${this.summaryEl.clientHeight}px`, `${this.detailsEl.scrollHeight}px`] }, { duration: 0.25, easing: 'ease' }],
-        [this.contentEl, { opacity: [0, 1], transform: ['translateY(10px)', 'translateY(0)'] }, { duration: 0.15, at: '-0.1' }]
-      ];
-      Motion.animate(sequence);
-    }
-    else {
-      const sequenceOut = [
-        [this.contentEl, { opacity: 0 }, { duration: 0.15 }],
-        [this.detailsEl, { height: [`${this.detailsEl.clientHeight}px`, `${this.summaryEl.clientHeight}px`] }, { duration: 0.25, at: '<', easing: 'ease' }]
-      ];
-      Motion.animate(sequenceOut);
-      this.detailsEl.setAttribute('open', 'false');
-      // this.detailsEl.removeAttribute('open');
-    }
+      await Motion.timeline([
+        [this.contentElement, { opacity: 0, height: 0 }, { duration: 0.15 }],
+        [
+          this.details,
+          {
+            height: [
+              `${this.details.clientHeight}px`,
+              `${this.summaryElement.clientHeight}px`,
+            ],
+          },
+          { duration: 0.25, at: "<", easing: "ease" },
+        ],
+      ]).finished;
 
-    this.detailsEl.style.height = 'auto';
-    this.detailsEl.style.overflow = 'visible';
+      this.details.removeAttribute("open");
+    }
   }
 
-  dispatchEventHandler() {
-    (this.controlledElement ?? this).dispatchEvent(new CustomEvent('toggle', { bubbles: true, detail: { current: this } }));
+  #controller = new AbortController();
+
+  connectedCallback() {
+    const { signal } = this.#controller;
+
+    this.#setDefaultOpenState();
+
+    this.addEventListener('keydown', this.#handleKeyDown, { signal });
+    this.summary.addEventListener('click', this.handleClick, { signal });
+    window.matchMedia('(min-width: 750px)').addEventListener('change', this.#handleMediaQueryChange, { signal });
+  }
+
+  /**
+   * Handles the disconnect event.
+   */
+  disconnectedCallback() {
+    // Disconnect all the event listeners
+    this.#controller.abort();
+  }
+
+  /**
+   * Handles the click event.
+   * @param {Event} event - The event.
+   */
+  handleClick = async (event) => {
+    const isMobile = window.matchMedia('(max-width: 749px)').matches;
+    const isDesktop = !isMobile;
+
+    // Stop default behaviour from the browser
+    if ((isMobile && this.#disableOnMobile) || (isDesktop && this.#disableOnDesktop)) {
+      event.preventDefault();
+      return;
+    }
+
+    // Prevent default behavior to handle transition manually
+    event.preventDefault();
+
+    // Toggle the accordion with transition
+    const isOpen = this.details.hasAttribute('open');
+    await this.transition(!isOpen);
+  };
+
+  /**
+   * Handles the media query change event.
+   */
+  #handleMediaQueryChange = () => {
+    this.#setDefaultOpenState();
+  };
+
+  /**
+   * Sets the default open state of the accordion based on the `open-by-default-on-mobile` and `open-by-default-on-desktop` attributes.
+   */
+  #setDefaultOpenState() {
+    const isMobile = window.matchMedia('(max-width: 749px)').matches;
+
+    this.details.open =
+      (isMobile && this.hasAttribute('open-by-default-on-mobile')) ||
+      (!isMobile && this.hasAttribute('open-by-default-on-desktop'));
+  }
+
+  /**
+   * Handles keydown events for the accordion
+   *
+   * @param {KeyboardEvent} event - The keyboard event.
+   */
+  #handleKeyDown = async (event) => {
+    // Close the accordion when used as a menu
+    if (event.key === 'Escape' && this.#closeWithEscape) {
+      event.preventDefault();
+
+      await this.transition(false);
+      this.summary.focus();
+    }
   }
 }
 if (!customElements.get('accordion-custom')) customElements.define('accordion-custom', AccordionCustom);
