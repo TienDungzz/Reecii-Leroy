@@ -393,6 +393,8 @@ class DropdownDetails extends HTMLDetailsElement {
   constructor() {
     super();
 
+    theme.initWhenVisible(this.init.bind(this));
+
     if (Shopify.designMode) {
       this.addEventListener('shopify:block:select', () => this.isOpen = true);
       this.addEventListener('shopify:block:deselect', () => this.isOpen = false);
@@ -400,7 +402,6 @@ class DropdownDetails extends HTMLDetailsElement {
   }
 
   connectedCallback() {
-    theme.initWhenVisible(this.init.bind(this));
   }
 
   init() {

@@ -37,17 +37,6 @@
   "
 {%- endcapture -%}
 
-{% if label != blank %}
-  {%- if show_label -%}
-    <label for="{{ block.id }}" style="--mb:{{ label_mb }}px;" class="block">{{ label }}</label>
-  {%- endif -%}
-  {% if input_type == 'textarea' %}
-    <textarea id="{{ block.id }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}></textarea>
-  {% else %}
-    <input id="{{ block.id }}" type="{{ input_type }}" name="contact[{{ label_name }}]"{% if input_type == 'email' %} autocomplete="email"{% endif %} placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}>
-  {% endif %}
-{% endif %}
-
 {% stylesheet %}
   .contact-form-input {
     border-radius: var(--border-radius);
@@ -68,14 +57,17 @@
   }
 {% endstylesheet %}
 
-{% if label != blank %}
-  <div class="contact-form-row" style="--formRowWidth: {{ input_width }}%;">
-    {%- if show_label -%}
+{%- if show_label -%}
+  {% if label != blank %}
+    <div class="contact-form-row" style="--formRowWidth: {{ input_width }}%;">
       <label for="{{ block.id }}" style="--mb:{{ label_mb }}px;" class="block {{ label_type_preset }}">{{ label }}</label>
-    {%- endif -%}
+      <input id="{{ block.id }}" type="{{ input_type }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}>
+    </div>
+  {% else %}
     <input id="{{ block.id }}" type="{{ input_type }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}>
-  </div>
-{% endif %}
+  {% endif %}
+{%- endif -%}
+
 
 {% schema %}
 {

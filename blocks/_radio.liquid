@@ -40,10 +40,8 @@ style="
 {% endstylesheet %}
 
 {% if label != blank %}
-  <div class="contact-form-row" style="--formRowWidth: 100%;" {{ attr }}>
-    {%- if show_label -%}
-      <label for="{{ block.id }}" style="--mb:{{ label_mb }}px;" class="block {{ label_type_preset }}">{{ label }}</label>
-    {%- endif -%}
+  <div class="contact-form-row" style="--formRowWidth: {{ input_width }}%;">
+    <label for="{{ block.id }}" style="--mb:{{ label_mb }}px;" class="block {{ label_type_preset }}">{{ label }}</label>
     <div class="form-ratio form-ratio--{{ options_layout }}">
       {% for option in options %}
         <div class="form-ratio-item">
@@ -52,6 +50,15 @@ style="
         </div>
       {% endfor %}
     </div>
+  </div>
+{% else %}
+  <div class="form-ratio form-ratio--{{ options_layout }}">
+    {% for option in options %}
+      <div class="form-ratio-item">
+        <input type="radio" name="contact[{{ label_name }}]" value="{{ option }}" id="{{ block.id }}-{{ option }}"{% if forloop.first %} checked{% endif %}>
+        <label class="{{ option_type_preset }}" for="{{ block.id }}-{{ option }}">{{ option }}</label>
+      </div>
+    {% endfor %}
   </div>
 {% endif %}
 
