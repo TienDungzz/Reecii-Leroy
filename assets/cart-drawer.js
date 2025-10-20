@@ -189,3 +189,117 @@ class CartDrawer extends HTMLElement {
   }
 }
 if (!customElements.get('cart-drawer')) customElements.define('cart-drawer', CartDrawer);
+
+class ModalComponent extends HTMLElement {
+  constructor() {
+    super();
+
+    // Overlay click = close modal
+    this.querySelector('#Modal-Overlay')?.addEventListener('click', this.close.bind(this));
+
+    // Tự động ghép nút mở/đóng tương ứng
+    const modalId = `#${this.id}`;
+    const toggleButtons = document.querySelectorAll(`[data-drawer-toggle="${modalId}"]`);
+
+    toggleButtons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        this.isOpen ? this.close() : this.show(button);
+      });
+    });
+
+    // Shopify Design Mode
+    if (Shopify.designMode && this.hasAttribute('check-shopify-design-mode')) {
+      this.addEventListener('shopify:block:select', () => (this.isOpen = true));
+      this.addEventListener('shopify:block:deselect', () => (this.isOpen = false));
+    }
+  }
+
+  connectedCallback() {
+    // Move to <body> once for isolation
+    if (!this.dataset.moved) {
+      this.dataset.moved = true;
+      document.body.appendChild(this);
+    }
+  }
+
+  static get observedAttributes() {
+    return ['open'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'open') {
+      this.setAttribute('aria-expanded', newValue === '' ? 'true' : 'false');
+    }
+  }
+
+  get isOpen() {
+    return this._isOpen;
+  }
+
+  set isOpen(value) {
+    if (value !== this._isOpen) {
+      this._isOpen = value;
+      if (this.isConnected) {
+        this._animate(value);
+      } else {
+        value ? this.setAttribute('open', '') : this.removeAttribute('open');
+      }
+    }
+    this.setAttribute('aria-expanded', value ? 'true' : 'false');
+  }
+
+  show(opener) {
+    this.openedBy = opener;
+    document.body.classList.add('overflow-hidden');
+    this.isOpen = true;
+    this.trapFocus();
+  }
+
+  close() {
+    this.isOpen = false;
+    document.body.classList.remove('overflow-hidden');
+    removeTrapFocus(this.openedBy);
+  }
+
+  async _animate(open) {
+    const inner = this.querySelector('.modal__inner');
+    const content = this.querySelector('.modal-content');
+    const header = this.querySelector('.modal-header');
+    this.style.overflow = 'hidden';
+
+    if (open) {
+      this.setAttribute('open', '');
+      await Motion.timeline([
+        [inner, { opacity: [0, 1], transform: ['translateY(2rem)', 'translateY(0)'] }, { duration: 0.4, easing: 'cubic-bezier(0.7, 0, 0.3, 1)' }],
+        [content, { opacity: [0, 1], transform: ['translateY(1rem)', 'translateY(0)'] }, { duration: 0.3, at: '-0.15' }],
+        [header, { opacity: [0, 1], transform: ['translateY(-0.5rem)', 'translateY(0)'] }, { duration: 0.3, at: '-0.2' }],
+      ]).finished;
+    } else {
+      await Motion.timeline([
+        [header, { opacity: [1, 0], transform: ['translateY(0)', 'translateY(-0.5rem)'] }, { duration: 0.2 }],
+        [content, { opacity: [1, 0], transform: ['translateY(0)', 'translateY(1rem)'] }, { duration: 0.2 }],
+        [inner, { opacity: [1, 0], transform: ['translateY(0)', 'translateY(2rem)'] }, { duration: 0.25, easing: 'cubic-bezier(0.7, 0, 0.3, 1)' }],
+      ]).finished;
+      this.removeAttribute('open');
+    }
+
+    this.style.overflow = 'visible';
+  }
+
+  trapFocus() {
+    this.addEventListener(
+      'transitionend',
+      () => {
+        const container = this.querySelector('[data-modal-content]');
+        const focusEl = this.querySelector('[data-modal-content]');
+        trapFocus(container, focusEl);
+      },
+      { once: true }
+    );
+  }
+}
+
+if (!customElements.get('modal-component')) {
+  customElements.define('modal-component', ModalComponent);
+}
