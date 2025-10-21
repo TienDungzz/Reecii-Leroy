@@ -1024,8 +1024,8 @@ class MenuDrawer extends HTMLElement {
   onFocusOut() {
     setTimeout(() => {
       if (
-        this.mainDetailsToggle.hasAttribute("open") &&
-        !this.mainDetailsToggle.contains(document.activeElement)
+        this.mainDetailsToggle?.hasAttribute("open") &&
+        !this.mainDetailsToggle?.contains(document.activeElement)
       )
         this.closeMenuDrawer();
     });
@@ -3630,7 +3630,7 @@ class SlideshowAnimated extends HTMLElement {
   constructor() {
     super();
 
-    this.image = this.querySelector('[data-image-trans]')
+    this.image = this.querySelector('[data-image-trans] img')
     this.speed = parseFloat(this.dataset.speed) || 0.5;
   }
 
@@ -3644,16 +3644,12 @@ class SlideshowAnimated extends HTMLElement {
     let yUp = Math.round(n * this.speed)
     let yDown = Math.round(n * this.speed) * -1
     let sectionIdex = this.closest('.section')?.dataset.index;
-    let offset = ["center start", "end start"];
-    if (sectionIdex == 1) {
-      offset = ["start start", "end start"];
-      yDown = 0;
-    }
+    let offset = ["start start", "end start"];
 
     Motion.scroll(
       Motion.animate(
         this.image,
-        { y: [yDown, yUp] },
+        { y: [0, yUp] },
         { easing: 'linear' },
       ),
       { target: this, offset: offset }
