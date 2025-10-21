@@ -7,7 +7,7 @@
 
 <div
   id="MegaMenu-Content-{{ forloopIndex }}"
-  class="list-menu--wrapper"
+  class="list-menu--wrapper mega-menu--2"
   tabindex="-1"
   style="--columns-count: {{ block.settings.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
 >
@@ -95,7 +95,7 @@
     {%- if has_mega_menu_images == true or block.settings.show_brand -%}
       <div class="page-width page-width--{{ block.settings.width }}">
         <div
-          class="mega-menu__collage collage collage-3-columns collage--{{ block.settings.promotion_banner_layout }} collage--{{ mega_menu_images_size }}-items grid"
+          class="mega-menu__collage collage collage-3-columns collage--{{ mega_menu_images_size }}-items grid"
           style="
             --border-radius: {{ block.settings.image_corner_radius | divided_by: 10.0 }}rem;
             --border-width: {{ block.settings.image_border_thickness | divided_by: 10.0 }}rem;
@@ -178,7 +178,7 @@
                         href="{{ block.settings.brand_url | default: '' }}#{{ letter | downcase }}"
                         class="link link--underline{% if brand_letters contains letter %} is-active{% endif %}"
                       >
-                        <span>{{ letter }}</span>
+                       {{ letter }}
                       </a>
                     </li>
                   {% endfor %}
@@ -194,7 +194,7 @@
                     {% endif %}
                     class="link link--underline"
                   >
-                    <span>{{ block.settings.brand_text | escape }}</span>
+                    {{ block.settings.brand_text | escape }}
                   </a>
                 </div>
               {%- endif -%}

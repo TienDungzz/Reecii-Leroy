@@ -23,7 +23,7 @@
 %}
 
 {% capture class %}
-  image-block image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}
+  image-block image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}{% if block.settings.animation_type == 'zoom' %} image-zoomin{% endif %}
 {% endcapture %}
 
 {% capture style %}
@@ -44,11 +44,15 @@
     assign element = 'a'
   elsif block.settings.animation_type == 'parallax'
     assign element = 'parallax-image'
+  elsif block.settings.animation_type == 'zoom'
+    assign element = 'div'
+  elsif block.settings.animation_type == 'reveal_on_scroll'
+    assign element = 'image-reveal'
   endif
 %}
 
 {% capture class_img %}
-  image-block__image{% if block.settings.animation_type == 'parallax' %} image-parallax--target{% endif %}
+  image-block__image{% if block.settings.animation_type == 'parallax' %} image-parallax--target{% endif %}{% if block.settings.animation_type == 'reveal_on_scroll' %} image-reveal__image{% endif %}
 {% endcapture %}
 
 {% capture attributes_fancybox %}
@@ -118,6 +122,30 @@
   .image-block__image {
     object-fit: cover;
     aspect-ratio: var(--ratio);
+  }
+
+  .image-block.image-zoomin {
+    overflow: hidden;
+    .image-block__image {
+      transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+    }
+
+    &:hover .image-block__image {
+      transform: scale(var(--hover-subtle-zoom-amount));
+    }
+  }
+
+  image-reveal .image-reveal__image {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    transition: opacity 0.9s var(--ease-out-cubic), clip-path 0.9s var(--ease-out-cubic), transform 0.9s var(--ease-out-cubic);
+    transform: scale(1.2);
+  }
+
+  image-reveal .image-reveal__image--visible {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: scale(1);
   }
 {%- endstylesheet -%}
 
@@ -420,6 +448,14 @@
         {
           "value": "parallax",
           "label": "t:settings.parallax"
+        },
+        {
+          "value": "zoom",
+          "label": "t:subtle_zoom.subtle_zoom"
+        },
+        {
+          "value": "reveal_on_scroll",
+          "label": "Reveal on scroll"
         }
       ],
       "default": "none"

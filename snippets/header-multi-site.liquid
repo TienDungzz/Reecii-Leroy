@@ -105,7 +105,8 @@
     window.page_active = '{{ page_handle }}';
   </script>
 
-  <script>
+{%- endif -%}
+  {% comment %} <script>
     function setCookie(name, value, days) {
       let expires = '';
       if (days) {
@@ -147,7 +148,7 @@
         menuTabItem = document.querySelector(`[data-handle-page='${handlePageUrl}']`);
         logoTabItem = document
           .querySelector('.header__heading-link')
-          .setAttribute('data-logo-page', `${handlePageUrl}`);
+          ?.setAttribute('data-logo-page', `${handlePageUrl}`);
         menuItem = document
           .querySelector(`[data-handle-page='${handlePageUrl}']~.header__inline-menu`)
           ?.setAttribute('data-menu-page', `${handlePageUrl}`);
@@ -185,6 +186,10 @@
       const mainMenu = document.querySelector('[data-main-menu]');
       const tabMenu = document.querySelector(`[data-menu-page='${handle}']`);
 
+      console.log("handle", handle);
+      console.log("mainMenu", mainMenu);
+      console.log("tabMenu", tabMenu);
+
       if (!mainMenu) {
         // Cannot find main menu element, nothing to do
         return;
@@ -202,14 +207,15 @@
         const template = tabMenu.querySelector('template');
         if (template) {
           const templateContent = template.content.cloneNode(true);
+          console.log("mainMenu", mainMenu);
+          console.log("templateContent", templateContent);
           mainMenu.innerHTML = '';
           mainMenu.appendChild(templateContent);
         }
       }
     }
     appendTabMenuToMainMenu();
-  </script>
-{%- endif -%}
+  </script> {% endcomment %}
 
 {%- stylesheet -%}
   .header .link.link--multi-site {
@@ -238,7 +244,7 @@
     }
   }
 
-  .header-multi-site .divider--right .link--multi-site:not(.link--multi-site--active)::before {
+  .header-multi-site .divider--right:not(:last-child) .link--multi-site:not(.link--multi-site--active)::before {
     content: '';
     position: absolute;
     top: 50%;
