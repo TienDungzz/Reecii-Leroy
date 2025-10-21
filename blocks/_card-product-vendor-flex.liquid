@@ -1,18 +1,22 @@
 {%- liquid
   assign card_product = block.settings.product
 -%}
-<div class="card--block-vendor">
-  <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
-  <div class="opacity-70">
-    {%- if card_product and card_product != empty -%}
-      {%- assign text = card_product.vendor -%}
-      {% render 'text', fallback_text: text, block: block %}
-    {%- else -%}
-      {%- assign placeholder = 'products.product.vendor' | t -%}
-      {% render 'text', fallback_text: placeholder, block: block %}
-    {%- endif -%}
+
+{%- capture card_product_vendor -%}
+  <div class="card--block-vendor hoanghiepne-test-{{ block.settings.alignment }}">
+    <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
+    <div class="opacity-70">
+      {{ card_product.vendor | link_to_vendor }}
+    </div>
   </div>
-</div>
+{%- endcapture -%}
+
+{%- if card_product and card_product != empty -%}
+  {% render 'text', fallback_text: card_product_vendor, block: block %}
+{%- else -%}
+  {%- assign placeholder = 'products.product.vendor' | t -%}
+  {% render 'text', fallback_text: placeholder, block: block %}
+{%- endif -%}
 
 {% schema %}
 {
@@ -45,9 +49,23 @@
       "default": "fit-content"
     },
     {
-      "type": "text_alignment",
+      "type": "select",
       "id": "alignment",
       "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
       "default": "left",
       "visible_if": "{{ block.settings.width == '100%' }}"
     },
