@@ -19,7 +19,11 @@ if (!customElements.get('localization-form')) {
           liveRegion: this.querySelector('#sr-country-search-results'),
         };
 
-        theme.initWhenVisible(this.init.bind(this));
+        if (!theme.config.isTouch || Shopify.designMode) {
+          Motion.inView(this, this.init.bind(this));
+        } else {
+          theme.initWhenVisible(this.init.bind(this));
+        }
       }
 
       init() {
@@ -232,10 +236,16 @@ if (!customElements.get('dropdown-localization-component')) {
       }
 
       connectedCallback() {
-        theme.initWhenVisible(this.init.bind(this));
+        if (!theme.config.isTouch || Shopify.designMode) {
+          Motion.inView(this, this.init.bind(this));
+        } else {
+          theme.initWhenVisible(this.init.bind(this));
+        }
       }
 
       init() {
+        this.loadTemplate();
+
         this.mql = window.matchMedia('(min-width: 750px)');
         this.mqlDesktop = window.matchMedia('(min-width: 1025px)');
         this.header = document.querySelector('.header-wrapper');
@@ -245,7 +255,6 @@ if (!customElements.get('dropdown-localization-component')) {
           panel: this.querySelector('.disclosure__list-wrapper'),
         };
 
-        this.loadTemplate();
         this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
         if (this.mql.matches) this.addEventListener('focusout', this.closeSelector.bind(this));
         this.elements.button?.addEventListener('click', this.openSelector.bind(this));
@@ -323,7 +332,11 @@ if (!customElements.get('drawer-localization-component')) {
       constructor() {
         super();
 
-        theme.initWhenVisible(this.init.bind(this));
+        if (!theme.config.isTouch || Shopify.designMode) {
+          Motion.inView(this, this.init.bind(this));
+        } else {
+          theme.initWhenVisible(this.init.bind(this));
+        }
       }
 
       init() {

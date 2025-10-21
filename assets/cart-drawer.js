@@ -193,11 +193,8 @@ if (!customElements.get('cart-drawer')) customElements.define('cart-drawer', Car
 class ModalComponent extends HTMLElement {
   constructor() {
     super();
-
-    // Overlay click = close modal
     this.querySelector('#Modal-Overlay')?.addEventListener('click', this.close.bind(this));
 
-    // Tự động ghép nút mở/đóng tương ứng
     const modalId = `#${this.id}`;
     const toggleButtons = document.querySelectorAll(`[data-drawer-toggle="${modalId}"]`);
 
@@ -216,7 +213,6 @@ class ModalComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    // Move to <body> once for isolation
     if (!this.dataset.moved) {
       this.dataset.moved = true;
       document.body.appendChild(this);
@@ -251,14 +247,12 @@ class ModalComponent extends HTMLElement {
 
   show(opener) {
     this.openedBy = opener;
-    document.body.classList.add('overflow-hidden');
     this.isOpen = true;
     this.trapFocus();
   }
 
   close() {
     this.isOpen = false;
-    document.body.classList.remove('overflow-hidden');
     removeTrapFocus(this.openedBy);
   }
 
@@ -291,8 +285,8 @@ class ModalComponent extends HTMLElement {
     this.addEventListener(
       'transitionend',
       () => {
-        const container = this.querySelector('[data-modal-content]');
-        const focusEl = this.querySelector('[data-modal-content]');
+        const container = this.querySelector('.modal__inner');
+        const focusEl = this.querySelector('.modal__close');
         trapFocus(container, focusEl);
       },
       { once: true }

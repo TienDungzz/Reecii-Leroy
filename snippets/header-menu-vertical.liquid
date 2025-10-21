@@ -58,71 +58,92 @@
       {% for link in bl_stts.vertical_menu.links %}
         <li>
           {%- if link.links != blank -%}
-            {%- liquid
-              assign mega_menu_1 = blocks | where: 'type', 'mega_menu_1'
-              assign mega_menu_2 = blocks | where: 'type', 'mega_menu_2'
-              assign mega_menu_3 = blocks | where: 'type', 'mega_menu_3'
+            <details
+              id="Details-HeaderMenu-Vertical-{{ forloop.index }}"
+              class="details--dropdown mega-menu"
+              is="dropdown-details"
+              activate-event="hover"
+              data-index="0"
+            >
+              <summary
+                id="HeaderMenu-Vertical-{{ link.handle }}"
+                class="
+                  details__summary
+                  list-menu__item menu__link--level-1 header__menu-item list-menu__item link focus-inset link--hover-underline
+                "
+                {%- if link.links != blank -%}
+                  aria-controls="submenu-{{ forloop.index }}"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                {%- endif -%}
+              >
+                {% liquid
+                  assign width = 20
 
-              assign check_mega_menu_1 = false
-              assign check_mega_menu_2 = false
-              assign check_mega_menu_3 = false
+                  assign ratio = 1
 
-              assign has_mega_menu_1 = false
-              assign has_mega_menu_2 = false
-              assign has_mega_menu_3 = false
+                  assign image_style = 'width: ' | append: width | append: 'px;' | append: ';' | append: '--media-adapt-ratio:' | append: ratio | append: ';'
 
-              assign menu_title = link.title | escape | downcase | handle
+                  assign image_sources = 'jpg,png,webp,avif' | split: ','
+                  assign found_image = false
+                -%}
 
-              if mega_menu_1.size > 0
-                assign check_mega_menu_1 = true
-              endif
-              for block in mega_menu_1
-                assign block_title = block.settings.menu_item | escape | downcase | handle
-                if block_title == menu_title
-                  assign block = block
-                  assign has_mega_menu_1 = true
-                endif
-              endfor
-
-              if mega_menu_2.size > 0
-                assign check_mega_menu_2 = true
-              endif
-              for block in mega_menu_2
-                assign block_title = block.settings.menu_item | escape | downcase | handle
-                if block_title == menu_title
-                  assign block = block
-                  assign has_mega_menu_2 = true
-                endif
-              endfor
-
-              if mega_menu_3.size > 0
-                assign check_mega_menu_3 = true
-              endif
-              for block in mega_menu_3
-                assign block_title = block.settings.menu_item | escape | downcase | handle
-                if block_title == menu_title
-                  assign block = block
-                  assign has_mega_menu_3 = true
-                endif
-              endfor
-
-              assign icon_type = section.settings.icon_type
-
-              if check_mega_menu_1 and has_mega_menu_1
-                render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings, is_vertical_menu: true
-              elsif check_mega_menu_2 and has_mega_menu_2
-                render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings, is_vertical_menu: true
-              elsif check_mega_menu_3 and has_mega_menu_3
-                render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings, is_vertical_menu: true
-              else
-                render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type, settings: section.settings, is_vertical_menu: true
-              endif
-            -%}
+                {% for ext in image_sources %}
+                  {% assign ext = ext | strip %}
+                  {% assign item_image = link.handle | downcase | replace: ' ', '-' | append: '.' | append: ext %}
+                  {% if images[item_image] != blank and found_image == false %}
+                    {% assign found_image = true %}
+                    {% assign image = item_image | file_url %}
+                    <span class="icon-image" style="{{ image_style }}">
+                      <img
+                        src="{{ image | image_url: width: 100 }}"
+                        srcset="{{ image | image_url: width: 100 }} 450w, {{ image | image_url: width: 200 }} 900w"
+                        width="450"
+                        height="450"
+                        sizes="{{ sizes }}"
+                        loading="lazy"
+                        alt="{{ shop.name | escape }}"
+                      >
+                    </span>
+                  {% endif %}
+                {% endfor %}
+                <a
+                  class="text {% if link.child_active %} header__active-menu-item{% endif %}"
+                  {% if link.url != blank %}
+                    href="{{ link.url }}"
+                  {% else %}
+                    role="link" aria-disabled="true"
+                  {% endif %}
+                >
+                  {{- link.title | escape -}}
+                </a>
+                {% if icon_type == 'caret' %}
+                  <span class="svg-wrapper">
+                    {{- 'icon-caret.svg' | inline_asset_content -}}
+                  </span>
+                {% endif %}
+              </summary>
+              <div
+                class="details__list mega-menu__content z-1 motion-reduce global-settings-popup color-{{ section.settings.color_scheme_top }}"
+                tabindex="-1"
+              >
+                {%- render 'header-nav-mega',
+                  blocks: blocks,
+                  link: link,
+                  forloopIndex: forloop.index,
+                  block: block,
+                  icon_type: icon_type,
+                  keys: keys,
+                  sec_settings: section.settings,
+                  class_item_hover_reveal: class_item_hover_reveal
+                -%}
+              </div>
+            </details>
           {%- else -%}
             <a
-              id="HeaderMenu-{{ link.handle }}"
+              id="HeaderMenu-Vertical-{{ link.handle }}"
               href="{{ link.url }}"
-              class="verical-menu__item link link--text focus-inset"
+              class="verical-menu__item header__menu-item link link--text focus-inset"
               {% if link.current %}
                 aria-current="page"
               {% endif %}
@@ -142,7 +163,7 @@
   </nav>
 </details>
 
-{%- stylesheet -%}
+{%- style -%}
   .header__vertical-menu {
     --width-vertical-menu: 26rem;
 
@@ -187,10 +208,6 @@
       }
     }
 
-    .details--dropdown {
-      padding-inline: 10px;
-    }
-
     .list-menu--disclosure {
       left: 100%;
       top: 0;
@@ -212,4 +229,8 @@
     border: none;
     border-radius: var(--style-border-radius-popover);
   }
-{%- endstylesheet -%}
+
+  .header__vertical-menu .mega-menu {
+    position: relative;
+  }
+{%- endstyle -%}

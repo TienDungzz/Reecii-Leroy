@@ -59,7 +59,7 @@ class SideDrawer extends HTMLElement {
     }
   }
 
-  open(triggeredBy) {
+  async open(triggeredBy) {
     if (triggeredBy) this.setActiveElement(triggeredBy);
     setTimeout(() => this.classList.add('active'));
 
@@ -72,7 +72,7 @@ class SideDrawer extends HTMLElement {
 
     this.classList.add("open");
 
-    const sequence = [
+    await Motion.timeline([
       [
         this.overlay,
         {
@@ -94,9 +94,7 @@ class SideDrawer extends HTMLElement {
         },
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.05" },
       ]
-    ];
-
-    Motion.animate(sequence);
+    ]).finished;
 
     // Stop Lenis smooth scroll
     stopLenis();
@@ -118,7 +116,7 @@ class SideDrawer extends HTMLElement {
       document.querySelector('.header__icon--menu button').classList.remove('active');
     }
 
-    const sequence = [
+    await Motion.timeline ([
       [
         contentElement,
         {
@@ -140,9 +138,7 @@ class SideDrawer extends HTMLElement {
         },
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" },
       ]
-    ];
-
-    await Motion.animate(sequence).finished;
+    ]).finished;
 
     if (detailsElement) {
       detailsElement.removeAttribute("open");
@@ -366,19 +362,15 @@ class CollapsibleDetails extends HTMLDetailsElement {
     if (open) {
       this.setAttribute('open', '');
 
-      const sequence = [
+      await Motion.timeline ([
         [this, { height: [`${this.summary.clientHeight}px`, `${this.scrollHeight}px`] }, { duration: 0.45, easing: 'cubic-bezier(0.7, 0, 0.3, 1)' }],
         [this.content, { opacity: [0, 1], transform: ['translateX(-1rem)', 'translateX(0)'] }, { duration: 0.25, at: '-0.1' }]
-      ];
-
-      await Motion.animate(sequence).finished;
+      ]).finished;
     } else {
-      const sequence = [
+      await Motion.timeline ([
         [this.content, { opacity: 0, transform: ['translateX(0)', 'translateX(1rem)'] }, { duration: 0.15 }],
         [this, { height: [`${this.clientHeight}px`, `${this.summary.clientHeight}px`] }, { duration: 0.35, at: '<', easing: 'cubic-bezier(0.7, 0, 0.3, 1)' }]
-      ];
-
-      await Motion.animate(sequence).finished;
+      ]).finished;
 
       this.removeAttribute('open');
     }
@@ -393,7 +385,11 @@ class DropdownDetails extends HTMLDetailsElement {
   constructor() {
     super();
 
-    theme.initWhenVisible(this.init.bind(this));
+    if (!theme.config.isTouch || Shopify.designMode) {
+      Motion.inView(this, this.init.bind(this));
+    } else {
+      theme.initWhenVisible(this.init.bind(this));
+    }
 
     if (Shopify.designMode) {
       this.addEventListener('shopify:block:select', () => this.isOpen = true);
