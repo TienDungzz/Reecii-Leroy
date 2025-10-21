@@ -86,7 +86,7 @@
       if highlight_text_type == 'underline'
         assign style_underline = ' --underline-height: ' | append: bl_stts.underline_height | append: '%; --underline-offset: ' | append: bl_stts.underline_offset | append: '%;'
       endif
-      assign highlight_text_code = highlight | prepend: '<span class="highlight_text--content highlight_text--[highlight_text_type]" style="--color: [highlight_color];[style_underline]">' | append: '</span>' | replace: '[highlight_color]', highlight_color | replace: '[highlight_text_type]', highlight_text_type | replace: '[style_underline]', style_underline
+      assign highlight_text_code = highlight | prepend: '<highlight-text class="highlight_text--content highlight_text--[highlight_text_type]" style="--color: [highlight_color];[style_underline]">' | append: '</highlight-text>' | replace: '[highlight_color]', highlight_color | replace: '[highlight_text_type]', highlight_text_type | replace: '[style_underline]', style_underline
       assign text = text | replace: highlight, highlight_text_code
     endfor
   endif
@@ -236,7 +236,7 @@
     {%- endif -%}
 
     {% if is_card_heading or type_block == 'product' %}
-      <span class="link--hover-underline"> 
+      <span class="link--hover-underline">
     {% endif %}
 
     {{ text }}
@@ -307,6 +307,10 @@
     position: relative;
     display: inline-block;
     z-index: 1;
+
+    &.highlight_text--active:after {
+      transform: scaleX(1);
+    }
   }
   .highlight_text--content.highlight_text--underline:after {
     content: '';
@@ -318,6 +322,9 @@
     height: max(1px, var(--underline-height,0.18em));
     background: var(--color);
     z-index: -1;
+    transition: transform var(--animation-slowest-smooth);
+    transform: scaleX(0);
+    transform-origin: left;
   }
 
   .text-border-style-bottom {

@@ -43,6 +43,16 @@
       --section-min-height: {{ 1 | divided_by: section.settings.background_image.aspect_ratio | times: 100 }}svw;
     {% endif %}
 
+    {% if section.settings.section_height_mobile == 'custom' %}
+      --section-min-height-mobile: {{ section.settings.section_height_mobile_custom }}svh;
+    {% elsif section.settings.section_height_mobile == 'full-screen' %}
+      --section-min-height-mobile: 100svh;
+    {% elsif section.settings.section_height_mobile != '' and section.settings.section_height_mobile != 'adapt_image' %}
+      --section-min-height-mobile: var(--section-height-{{ section.settings.section_height_mobile }});
+    {% elsif section.settings.section_height_mobile == 'adapt_image' %}
+      --section-min-height-mobile: {{ 1 | divided_by: section.settings.background_image.aspect_ratio | times: 100 }}svw;
+    {% endif %}
+
     {% if section.settings.section_height != '' %}
       --section-preview-height: 600px;
     {% endif %}

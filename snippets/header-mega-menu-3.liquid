@@ -66,12 +66,9 @@
   class="list-menu--wrapper mega-menu--3"
   tabindex="-1"
   style="--columns-count: {{ bl_stts.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
-  {% if settings.enable_smooth_scroll %}
-    data-lenis-prevent
-  {% endif %}
 >
   <div class="mega-menu__container page-width page-width--{{ bl_stts.width }}">
-    {%- if banner_row == 'top' -%}
+    {%- if banner_row == 'top' and has_mega_menu_images == true -%}
       <div class="collage collage-2-columns">
     {%- endif -%}
     <ul
@@ -166,7 +163,7 @@
         </li>
       {%- endfor -%}
     </ul>
-    {%- if banner_row == 'top' -%}
+    {%- if banner_row == 'top' and has_mega_menu_images == true -%}
       {{ banner }}
       </div>
     {%- endif -%}
@@ -175,7 +172,7 @@
     <div class="mega-menu__collage-wrapper{% if bl_stts.inherit_color_scheme == false %} color-{{ bl_stts.color_scheme }}{% endif %}{% if divider %} mega-menu__collage-wrapper--divider{% endif %}">
       <div class="page-width page-width--{{ bl_stts.width }}">
         <div
-          class="mega-menu__collage{% if banner_row == 'bottom' %} collage collage-2-columns collage--{{ mega_menu_images_size }}-items{% endif %}"
+          class="mega-menu__collage{% if banner_row == 'bottom' and has_mega_menu_images == true %} collage collage-2-columns collage--{{ mega_menu_images_size }}-items{% endif %}"
           style="
             --border-radius: {{ bl_stts.image_corner_radius | divided_by: 10.0 }}rem;
             --border-width: {{ bl_stts.image_border_thickness | divided_by: 10.0 }}rem;
@@ -255,7 +252,7 @@
                 </ul>
               </div>
             </swiper-component>
-            {%- if banner_row == 'bottom' -%}
+            {%- if banner_row == 'bottom' and has_mega_menu_images == true -%}
               {{ banner }}
             {%- endif -%}
         </div>

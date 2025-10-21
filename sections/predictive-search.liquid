@@ -126,6 +126,12 @@
         or predictive_search.resources.articles.size > 0
         or predictive_search.resources.pages.size > 0
       -%}
+
+        {%- liquid
+          if settings.search_type == 'inline'
+            assign resource_direction = 'column'
+          endif
+        -%}
         <div class="predictive-search__result-group">
           {%- if predictive_search.resources.products.size > 0 -%}
             {% assign products = predictive_search.resources.products %}
@@ -136,7 +142,8 @@
                 products_test_id: products_test_id,
                 title: title,
                 products: products,
-                limit: 9
+                limit: 9,
+                resource_direction: resource_direction
               %}
             {% else %}
               <div class="predictive-search-results__no-results">

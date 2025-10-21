@@ -90,9 +90,6 @@ class CartDrawer extends HTMLElement {
     }, { once: true });
 
     document.body.classList.add('overflow-hidden');
-
-    // Stop Lenis smooth scroll
-    stopLenis();
   }
 
   async close() {
@@ -128,9 +125,6 @@ class CartDrawer extends HTMLElement {
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" },
       ],
     ]).finished;
-
-    // Start Lenis smooth scroll
-    startLenis();
   }
 
   setSummaryAccessibility(cartDrawerNote) {
