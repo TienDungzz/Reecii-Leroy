@@ -10,84 +10,94 @@
     <ul class="list-menu list-menu-desktop list-menu--inline {{block.settings.color_scheme}}" role="list">
       {%- for link in menu -%}
         <li>
-          {%- if link.links != blank -%}
-            {%- liquid
-              assign mega_menu_1 = blocks | where: 'type', 'mega_menu_1'
-              assign mega_menu_2 = blocks | where: 'type', 'mega_menu_2'
-              assign mega_menu_3 = blocks | where: 'type', 'mega_menu_3'
-
-              assign check_mega_menu_1 = false
-              assign check_mega_menu_2 = false
-              assign check_mega_menu_3 = false
-
-              assign has_mega_menu_1 = false
-              assign has_mega_menu_2 = false
-              assign has_mega_menu_3 = false
-
-              assign menu_title = link.title | escape | downcase | handle
-
-              if mega_menu_1.size > 0
-                assign check_mega_menu_1 = true
-              endif
-              for block in mega_menu_1
-                assign block_title = block.settings.menu_item | escape | downcase | handle
-                if block_title == menu_title
-                  assign block = block
-                  assign has_mega_menu_1 = true
-                endif
-              endfor
-
-              if mega_menu_2.size > 0
-                assign check_mega_menu_2 = true
-              endif
-              for block in mega_menu_2
-                assign block_title = block.settings.menu_item | escape | downcase | handle
-                if block_title == menu_title
-                  assign block = block
-                  assign has_mega_menu_2 = true
-                endif
-              endfor
-
-              if mega_menu_3.size > 0
-                assign check_mega_menu_3 = true
-              endif
-              for block in mega_menu_3
-                assign block_title = block.settings.menu_item | escape | downcase | handle
-                if block_title == menu_title
-                  assign block = block
-                  assign has_mega_menu_3 = true
-                endif
-              endfor
-
-              assign icon_type = section.settings.icon_type
-
-              if check_mega_menu_1 and has_mega_menu_1
-                render 'header-mega-menu-1', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
-              elsif check_mega_menu_2 and has_mega_menu_2
-                render 'header-mega-menu-2', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
-              elsif check_mega_menu_3 and has_mega_menu_3
-                render 'header-mega-menu-3', link: link, forloopIndex: forloop.index, block: block, icon_type: icon_type, keys: keys, settings: section.settings
-              else
-                render 'header-dropdown-menu', link: link, forloopIndex: forloop.index, icon_type: icon_type, settings: section.settings
-              endif
-            -%}
-          {%- else -%}
-            <a
-              id="HeaderMenu-{{ link.handle }}"
-              href="{{ link.url }}"
-              class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline"
-              {% if link.current %}
-                aria-current="page"
-              {% endif %}
-            >
-              <span
-                class="text{% if link.current %} header__active-menu-item{% endif %}"
+            {%- if link.links != blank -%}
+              <details
+                id="Details-HeaderMenu-{{ forloopIndex }}"
+                class="details--dropdown mega-menu"
+                is="dropdown-details"
+                activate-event="hover"
+                data-index="0"
               >
-                {{- link.title | escape -}}
-              </span>
-            </a>
-          {%- endif -%}
-        </li>
+                <summary
+                  id="HeaderMenu-{{ link.handle }}"
+                  class="
+                    details__summary
+                    list-menu__item menu__link--level-1 header__menu-item list-menu__item link focus-inset link--hover-underline
+                    {% render 'highlight-class', order: '1', keys: keys, compare: link.title, settings: section.settings %}
+                  "
+                  {%- if link.links != blank -%}
+                    aria-controls="submenu-{{ forloop.index }}"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  {%- endif -%}
+                  style="{%  render 'highlight-style', order: '1', keys: keys, compare: link.title, settings: section.settings %}"
+                >
+                  <a
+                    class="text{% if link.child_active %} header__active-menu-item{% endif %}"
+                    {% if link.url != blank %}
+                      href="{{ link.url }}"
+                    {% else %}
+                      role="link" aria-disabled="true"
+                    {% endif %}
+                  >
+                    {{- link.title | escape -}}
+                  </a>
+                  {% if icon_type == 'caret' %}
+                    <span class="svg-wrapper">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  {% endif %}
+                  {% render 'highlight-label-menu',
+                    order: '1',
+                    keys: keys,
+                    compare: link.title,
+                    settings: section.settings
+                  %}
+                </summary>
+                <div
+                  class="details__list mega-menu__content z-1 motion-reduce global-settings-popup color-{{ section.settings.color_scheme_top }}"
+                  tabindex="-1"
+                >
+                  {%- render 'header-nav-mega',
+                    blocks: blocks,
+                    link: link,
+                    forloopIndex: forloop.index,
+                    block: block,
+                    icon_type: icon_type,
+                    keys: keys,
+                    sec_settings: section.settings,
+                    class_item_hover_reveal: class_item_hover_reveal
+                  -%}
+                </div>
+              </details>
+            {%- else -%}
+              <a
+                id="HeaderMenu-{{ link.handle }}"
+                href="{{ link.url }}"
+                class="
+                  header__menu-item list-menu__item link link--text focus-inset link--hover-underline
+                  {% render 'highlight-class', order: '1', keys: keys, compare: link.title, settings: section.settings %}
+                "
+                {% if link.current %}
+                  aria-current="page"
+                {% endif %}
+                style="{%  render 'highlight-style', order: '1', keys: keys, compare: link.title, settings: section.settings %}"
+              >
+                <span
+                  class="text{% if link.current %} header__active-menu-item{% endif %}"
+                >
+                  {{- link.title | escape -}}
+                </span>
+
+                {% render 'highlight-label-menu',
+                  order: '1',
+                  keys: keys,
+                  compare: link.title,
+                  settings: section.settings
+                %}
+              </a>
+            {%- endif -%}
+          </li>
       {%- endfor -%}
     </ul>
   </template>

@@ -36,14 +36,13 @@
   <a
     href="{% if settings.link_wishlist != blank %}{{ settings.link_wishlist }}{% else %}{{ pages['wish-list'].url }}{% endif %}"
     class="
-      header__icon header-wishlist header__icon--wishlist button focus-inset max-md:hidden svg-slide-up
+      header__icon header-wishlist header__icon--wishlist button focus-inset max-md:hidden
       {{ class_icon_type }}
     "
     aria-label="{{ 'content.wishlist' | t }}"
   >
     {%- if actions_type == 'icon' or actions_type == 'both' -%}
       <span class="svg-wrapper">
-        {{ wishlist_icon }}
         {{ wishlist_icon }}
       </span>
     {%- endif -%}
@@ -84,14 +83,13 @@
     class="
       header__icon header__icon--giftcards
       max-md:hidden
-      button focus-inset focus-inset svg-slide-up
+      button focus-inset focus-inset
       {{ class_icon_type }}
     "
     aria-label="{{ 'gift_cards.title' | t }}"
   >
     {%- if actions_type == 'icon' or actions_type == 'both' -%}
       <span class="svg-wrapper">
-        {{ gift_cards_icon }}
         {{ gift_cards_icon }}
       </span>
     {%- endif -%}
@@ -107,11 +105,12 @@
 {%- if enable_cart -%}
   {%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}
     <side-drawer-opener
-      class="button header__icon header-actions header__icon--cart link no-js-hidden svg-slide-up"
+      class="no-js-hidden"
       data-side-drawer="#Cart-Drawer"
     >
       <button
-        class="t-button bor-none cursor-pointer text-currentColor p-0 focus-inset cart-icon--drawer"
+        class="header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions
+        {{ class_icon_type }}"
         type="button"
         aria-haspopup="dialog"
         aria-label="{{ 'content.cart_count' | t: count: cart.item_count }}"
@@ -121,11 +120,9 @@
           {% if cart == empty %}
             <span class="svg-wrapper">
               {{ 'icon-cart.svg' | inline_asset_content }}
-              {{ 'icon-cart.svg' | inline_asset_content }}
             </span>
           {% else %}
             <span class="svg-wrapper">
-              {{ 'icon-cart.svg' | inline_asset_content }}
               {{ 'icon-cart.svg' | inline_asset_content }}
             </span>
           {% endif %}
@@ -155,7 +152,7 @@
       <a
         href="{{ routes.cart_url }}"
         class="
-          header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions svg-slide-up
+          header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions
           {{ class_icon_type }}
         "
         aria-label="{{ 'content.cart_count' | t: count: cart.item_count }}"
@@ -164,11 +161,9 @@
           {% if cart == empty %}
             <span class="svg-wrapper">
               {{ 'icon-cart.svg' | inline_asset_content }}
-              {{ 'icon-cart.svg' | inline_asset_content }}
             </span>
           {% else %}
             <span class="svg-wrapper">
-              {{ 'icon-cart.svg' | inline_asset_content }}
               {{ 'icon-cart.svg' | inline_asset_content }}
             </span>
           {% endif %}
@@ -197,7 +192,7 @@
     <a
       href="{{ routes.cart_url }}"
       class="
-        header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions svg-slide-up
+        header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions
         {{ class_icon_type }}
       "
       id="cart-icon-bubble"
@@ -207,11 +202,9 @@
         {% if cart == empty %}
           <span class="svg-wrapper">
             {{ 'icon-cart.svg' | inline_asset_content }}
-            {{ 'icon-cart.svg' | inline_asset_content }}
           </span>
         {% else %}
           <span class="svg-wrapper">
-            {{ 'icon-cart.svg' | inline_asset_content }}
             {{ 'icon-cart.svg' | inline_asset_content }}
           </span>
         {% endif %}

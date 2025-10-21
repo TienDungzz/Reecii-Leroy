@@ -209,98 +209,25 @@ function updateHeaderHeights() {
   document.body.style.setProperty('--header-group-height', `${headerGroupHeight}px`);
 }
 
+function setheaderRowHeight() {
+  const headerMenu = document.querySelector('.header__row [data-main-menu]');
+  if (!headerMenu) return;
+
+  const { height } = headerMenu.closest('.header__row').getBoundingClientRect();
+  document.body.style.setProperty('--header-row-menu-height', `${height}px`);
+}
+
 if (document.readyState === "complete") {
-  console.log("complete");
+  setheaderRowHeight();
   updateHeaderHeights();
+  setheaderRowHeight();
 } else {
-  console.log("load");
-  window.addEventListener("load", updateHeaderHeights);
-}
-
-function menuTab() {
-  const menuTabs = document.querySelector('[data-menu-tab]');
-  if (!menuTabs) return;
-
-  document.addEventListener('click', (event) => {
-    const target = event.target.closest('[data-menu-tab] a');
-    if (!target) return;
-
-    const activePage = target.dataset.loadPage;
-    setCookie('page-url', activePage, 1);
+  window.addEventListener("load", () => {
+    updateHeaderHeights();
+    setheaderRowHeight();
   });
-
-  const canonical = document.querySelector('[canonical-url]')?.getAttribute('canonical-url');
-  let handlePageUrl = getCookie('page-url');
-  let menuTabItem, logoTabItem, menuItem;
-
-  if (window.location.pathname.includes('/pages/') && window.page_active && window.page_active !== handlePageUrl) {
-    setCookie('page-url', window.page_active, 1);
-    handlePageUrl = window.page_active;
-  }
-  if (handlePageUrl) {
-    menuTabItem = document.querySelector(`[data-handle-page='${handlePageUrl}']`);
-    logoTabItem = document
-      .querySelector('.header__heading-link')
-      .setAttribute('data-logo-page', `${handlePageUrl}`);
-    menuItem = document
-      .querySelector(`[data-handle-page='${handlePageUrl}']~.header__inline-menu`)
-      ?.setAttribute('data-menu-page', `${handlePageUrl}`);
-
-  } else {
-    menuTabItem = document.querySelector('[data-handle-page].link--multi-site--active');
-    logoTabItem = document.querySelector('[data-logo-page].first');
-    menuItem = document.querySelector('[data-menu-page].link--multi-site--active');
-  }
-
-  const menuTab = menuTabItem?.closest('[data-menu-tab]');
-  if (menuTab) {
-    menuTab.querySelectorAll('[data-handle-page]').forEach((el) => el.classList.remove('link--multi-site--active'));
-    logoTabItem?.parentElement
-      ?.querySelectorAll('[data-logo-page]')
-      .forEach((el) => el.classList.remove('link--multi-site--active'));
-    menuItem?.parentElement?.querySelectorAll('[data-menu-page]').forEach((el) => el.classList.remove('link--multi-site--active'));
-  }
-
-  if (handlePageUrl) {
-    logoTabItem?.classList.add('link--multi-site--active');
-    menuTabItem?.classList.add('link--multi-site--active');
-    menuItem?.classList.add('link--multi-site--active');
-  } else {
-    document.querySelector('[data-handle-page]:nth-child(1)')?.classList.add('link--multi-site--active');
-    document.querySelector('[data-logo-page]:nth-child(1)')?.classList.add('link--multi-site--active');
-    document.querySelector('[data-menu-page]:nth-child(1)')?.classList.add('link--multi-site--active');
-  }
 }
 
-function appendTabMenuToMainMenu() {
-  const handle = getCookie('page-url') || window.page_active;
-  const mainMenu = document.querySelector('[data-main-menu]');
-  const tabMenu = document.querySelector(`[data-menu-page='${handle}']`);
-
-  if (!mainMenu) {
-    // Cannot find main menu element, nothing to do
-    return;
-  }
-
-  if (!handle || handle === 'undefined') {
-    const inlineMenu = mainMenu.querySelector('.list-menu--inline');
-    if (inlineMenu) {
-      inlineMenu.classList.remove('hidden');
-    }
-    return;
-  }
-
-  if (tabMenu) {
-    const template = tabMenu.querySelector('template');
-    if (template) {
-      const templateContent = template.content.cloneNode(true);
-      mainMenu.innerHTML = '';
-      mainMenu.appendChild(templateContent);
-    }
-  }
-}
-
-// class MenuDrawer extends HTMLElement {
 //   constructor() {
 //     super();
 

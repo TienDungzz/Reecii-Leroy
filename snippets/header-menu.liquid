@@ -23,10 +23,7 @@
   {{ 'component-mega-menu.css' | asset_url | stylesheet_tag: preload: true }}
 </noscript>
 
-<div
-  class="header-block header-menu grid__item flex items-center"
-  style="--gap-x: {{ section.settings.gap_x }}px;"
->
+<div class="header-block header-menu grid__item flex items-center">
   {%- liquid
     assign vertical_menu_blocks = blocks | where: 'type', 'vertical_menu'
 
@@ -43,7 +40,7 @@
   -%}
   <div class="header__menu-wrapper" data-main-menu>
     <nav class="header__inline-menu">
-      <ul class="list-menu list-menu-desktop list-menu--inline{% if has_menu_tab %} hidden{% endif %}" role="list">
+      <ul class="list-menu list-menu-desktop list-menu--inline{% if has_menu_tab %} hidden{% endif %}" style="--gap-x: {{ menu_gap }}px;" role="list">
         {%- for link in header_settings.menu.links -%}
           <li>
             {%- if link.links != blank -%}
@@ -166,6 +163,24 @@
     width: auto;
   }
   /* Header icons */
+  .header__icon {
+    @media (hover: hover) {
+      svg {
+        transition: transform var(--animation-speed) var(--animation-easing);
+      }
+      &:hover {
+        svg {
+          transform: scale(1.15);
+        }
+      }
+    }
+  }
+  .header__icon.button:not(.button-secondary,.button-unstyled),
+  .header__icon.button {
+    border: none;
+    outline: none;
+    background-color: transparent;
+  }
   .header__icon:not(.header__icon--summary),
   .header__icon span {
     display: flex;
@@ -547,10 +562,11 @@
     text-transform: capitalize;
     text-align: center;
     border-radius: var(--badge-corner-radius);
-    padding: 0 var(--padding-xs);
+    padding: .1rem var(--padding-xs);
     position: relative;
     color: var(--color-foreground);
     background-color: var(--color-background);
+    line-height: 1;
 
     &::before {
       content: '';
@@ -684,4 +700,6 @@
       grid-template-columns: 11.5rem 1fr;
     }
   }
+
+
 {%- endstylesheet -%}

@@ -14,6 +14,10 @@
       assign has_mega_menu_images = true
       assign mega_menu_images_size = 0
     endif
+
+    if bl_stts.divider and banner_row == 'bottom'
+      assign divider = true
+    endif
   endif
 -%}
 
@@ -59,7 +63,7 @@
 
 <div
   id="MegaMenu-Content-{{ forloopIndex }}"
-  class="list-menu--wrapper"
+  class="list-menu--wrapper mega-menu--3"
   tabindex="-1"
   style="--columns-count: {{ bl_stts.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
   {% if settings.enable_smooth_scroll %}
@@ -168,7 +172,7 @@
     {%- endif -%}
   </div>
   {% if bl_stts.product_collection != blank %}
-    <div class="mega-menu__collage-wrapper{% if bl_stts.inherit_color_scheme == false %} color-{{ bl_stts.color_scheme }}{% endif %}">
+    <div class="mega-menu__collage-wrapper{% if bl_stts.inherit_color_scheme == false %} color-{{ bl_stts.color_scheme }}{% endif %}{% if divider %} mega-menu__collage-wrapper--divider{% endif %}">
       <div class="page-width page-width--{{ bl_stts.width }}">
         <div
           class="mega-menu__collage{% if banner_row == 'bottom' %} collage collage-2-columns collage--{{ mega_menu_images_size }}-items{% endif %}"
