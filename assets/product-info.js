@@ -882,3 +882,43 @@ class VariantSelects extends HTMLElement {
 }
 if (!customElements.get("variant-selects"))
   customElements.define("variant-selects", VariantSelects);
+
+class FeaturedProduct extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    const productInfo = this.querySelector('product-info');
+    if (productInfo) {
+      productInfo.dataset.updateUrl = 'false';
+    }
+
+    const variantSelects = this.querySelector('variant-selects');
+    if (variantSelects) {
+      this.initializeVariantSwatches(variantSelects);
+    }
+
+    this.classList.add('initialized');
+  }
+
+  initializeVariantSwatches(variantSelects) {
+    const selects = variantSelects.querySelectorAll('select, input[type="radio"]');
+
+    selects.forEach((target) => {
+      if (target.tagName === 'INPUT' && !target.checked) return;
+      if (target.tagName === 'SELECT' && !target.selectedOptions.length) return;
+
+      const optionEl =
+        target.tagName === 'SELECT'
+          ? target.selectedOptions[0]
+          : target;
+
+      if (optionEl?.dataset?.optionSwatchValue) {
+        variantSelects.updateSelectionMetadata?.({ target });
+      }
+    });
+  }
+}
+if (!customElements.get('featured-product'))
+  customElements.define('featured-product', FeaturedProduct);

@@ -406,53 +406,106 @@ function handleLookBookAllItemsLayout() {
 }
 
 function initializeLookbook() {
-  class LookbookDot extends HTMLElement {
-      constructor() {
-          super();
-          this.content = this.querySelector('.lookbook-dot__content');
-          this.icon = this.querySelector('[data-product-lookbook]');
-          this.isDesktop = window.innerWidth > 1024;
-          this.handleClick = this.handleClick.bind(this);
-      }
+    class LookbookDot extends HTMLElement {
+        constructor() {
+            super();
+            this.content = this.querySelector('.lookbook-dot__content');
+            this.icon = this.querySelector('[data-product-lookbook]');
+            this.isDesktop = window.innerWidth > 1024;
+            this.handleClick = this.handleClick.bind(this);
+        }
 
-      connectedCallback() {
-          this.addEventListener('click', this.handleClick);
-      }
+        connectedCallback() {
+            this.addEventListener('click', this.handleClick);
+        }
 
-      disconnectedCallback() {
-          this.removeEventListener('click', this.handleClick);
-      }
+        disconnectedCallback() {
+            this.removeEventListener('click', this.handleClick);
+        }
 
-      handleClick(e) {
-          e.preventDefault();
-          e.stopPropagation();
+        handleClick(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-          const allDots = document.querySelectorAll('lookbook-dot');
-          const alreadyActive = this.classList.contains('is-active');
+            const allDots = document.querySelectorAll('lookbook-dot');
+            const alreadyActive = this.classList.contains('is-active');
+            const isShowProductsDot = this.classList.contains('lookbook-dot--showProducts');
 
-          allDots.forEach(dot => {
-              if (!alreadyActive) {
-                  dot.classList.remove('is-active');
-                  dot.querySelector('.lookbook-dot__content')?.classList.remove('is-open');
-              }
-          });
+            allDots.forEach(dot => {
+                if (!alreadyActive) {
+                    dot.classList.remove('is-active');
+                    dot.querySelector('.lookbook-dot__content')?.classList.remove('is-open');
+                }
+            });
 
-          if (!alreadyActive) {
-              this.classList.add('is-active');
-              this.content?.classList.add('is-open');
+            if (!alreadyActive) {
+                this.classList.add('is-active');
+                this.content?.classList.add('is-open');
+            }
 
-              if (!this.isDesktop) {
-                  const lookbookItem = this.closest('.lookbook-item');
-                  const btnShow = lookbookItem?.querySelector('.lookBook__btnShowProducts');
-                  btnShow?.click();
+            // class lookbook-dot--showProducts
+            if (isShowProductsDot) {
+                const productInfoEl = this.querySelector('[data-json-product]');
+                if (!productInfoEl) return;
 
-                  const allDotsArr = Array.from(allDots);
-                  const index = allDotsArr.indexOf(this);
-                  const swiperEl = document.querySelector('.lookbook-popup .swiper');
-                  if (swiperEl?.swiper) swiperEl.swiper.slideTo(index, 600);
-              }
-          }
-      }
-  } 
-  customElements.define('lookbook-dot', LookbookDot);
+                let productData = null;
+                try {
+                    productData = JSON.parse(productInfoEl.getAttribute('data-json-product'));
+                } catch (err) {
+                    console.warn('Invalid product data in lookbook-dot:', err);
+                    return;
+                }
+
+                let popupEl = document.querySelector('.lookbook-popup');
+                if (!popupEl) {
+                    lookbookViewPopup();
+                    popupEl = document.querySelector('.lookbook-popup');
+                }
+
+                const bodyEl = document.body;
+                const popupContentEl = popupEl.querySelector('.lookbook-popup-content');
+                const popupCloseEl = popupEl.querySelector('.close');
+
+                popupContentEl.innerHTML = '';
+                bodyEl.classList.add('openLookbookPopup');
+
+                const productCard = this.querySelector('.product-card-lookbook');
+                if (productCard) {
+                    const wrapper = document.createElement('div');
+                    wrapper.classList.add('lookbook-single-product');
+                    wrapper.appendChild(productCard.cloneNode(true));
+                    popupContentEl.appendChild(wrapper);
+
+                    // Dọn sạch các class column cũ
+                    popupEl.classList.forEach(cls => {
+                        if (
+                            cls.startsWith('column-') ||
+                            cls.startsWith('md-column-') ||
+                            cls.startsWith('sm-column-')
+                        ) popupEl.classList.remove(cls);
+                    });
+                    popupEl.classList.add('column-1', 'md-column-1', 'sm-column-1');
+                }
+
+                popupCloseEl.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    bodyEl.classList.remove('openLookbookPopup');
+                    popupContentEl.innerHTML = '';
+                });
+            }
+
+            // class lookBook__btnShowProducts
+            else if (!this.isDesktop) {
+                const lookbookItem = this.closest('.lookbook-item');
+                const btnShow = lookbookItem?.querySelector('.lookBook__btnShowProducts');
+                btnShow?.click();
+
+                const allDotsArr = Array.from(allDots);
+                const index = allDotsArr.indexOf(this);
+                const swiperEl = document.querySelector('.lookbook-popup .swiper');
+                if (swiperEl?.swiper) swiperEl.swiper.slideTo(index, 600);
+            }
+        }
+    }
+    customElements.define('lookbook-dot', LookbookDot);
 }
