@@ -1,14 +1,4 @@
-<script
-  src="{{ 'product-recommendations.js' | asset_url }}"
-  defer="defer"
-  fetchpriority="low"
-></script>
-
 {{ 'template-collection.css' | asset_url | stylesheet_tag: preload: true }}
-
-{% if section.settings.image_shape == 'blob' %}
-  {{ 'mask-blobs.css' | asset_url | stylesheet_tag: preload: true }}
-{%- endif -%}
 
 {% liquid
   assign sec_stts = section.settings
@@ -44,14 +34,12 @@
 
   assign layout_type = sec_stts.layout_type
   assign page_width = sec_stts.page_width
-
-  assign scroll_reveal = false
 %}
 
 <product-recommendations
   id="product-recommendations-{{ section.id }}"
   class="product-recommendations"
-  data-url="{{ routes.product_recommendations_url }}?limit={{ section.settings.products_to_show }}"
+  data-url="{{ routes.product_recommendations_url }}?limit={{ section.settings.products_to_show }}&intent=complementary"
   data-section-id="{{ section.id }}"
   data-product-id="{{ section.settings.product.id | default: product.id }}"
   data-intent="{{ section.settings.recommendation_type }}"
@@ -112,11 +100,8 @@
         %}
         {% capture list_items %}
           {% for product in products limit: max_items %}
-            {% comment %} <div class="resource-list__item">
-              {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: product %}
-            </div> {% endcomment %}
-            <li id="Slide-{{ section.id }}-{{ product.id }}-{{ forloop.index }}" class="grid__item{% if show_mobile_slider or layout_type == 'carousel' or layout_type == 'widget' %} swiper-slide{% endif %}{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
-              {% if scroll_reveal %} style="--animation-order: {{ forloop.index }};"{% endif %}
+            <li id="Slide-{{ section.id }}-{{ product.id }}-{{ forloop.index }}" class="grid__item{% if show_mobile_slider or layout_type == 'carousel' %} swiper-slide{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+            {% if settings.animations_reveal_on_scroll %} style="--animation-order: {{ forloop.index }};"{% endif %}
             >
               {% content_for "block", type: "card-product-flex", id: "product-slide-item", closest.product: product %}
             </li>
@@ -189,10 +174,7 @@
                   -%}
                     <li
                       id="Slide-{{ section.id }}-{{ product.id }}-{{ forloop.index }}"
-                      class="grid__item{% if show_mobile_slider or layout_type == 'carousel' or layout_type == 'widget' %} swiper-slide{% endif %}{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}"
-                      {% if scroll_reveal %}
-                        style="--animation-order: {{ forloop.index | plus: section.settings.products_to_show }};"
-                      {% endif %}
+                      class="grid__item{% if show_mobile_slider or layout_type == 'carousel' %} swiper-slide{% endif %}"
                     >
                       {% content_for 'block',
                         type: 'card-product-flex',
@@ -327,9 +309,7 @@
 {% stylesheet %}
   .product-recommendations__skeleton-item {
     aspect-ratio: 3 / 4;
-    background-color: var(--color-foreground);
-    opacity: var(--skeleton-opacity);
-    border-radius: 4px;
+    background-color: transparent;
   }
 
   @media screen and (max-width: 749px) {
@@ -398,6 +378,7 @@
 {% schema %}
 {
   "name": "t:names.product_recommendations",
+  "limit": 1,
   "enabled_on": {
     "templates": ["product"]
   },
@@ -903,15 +884,13 @@
     },
     {
       "type": "header",
-      "content": "t:content.mobile_layout",
-      "visible_if": "{{ section.settings.layout_type != 'editorial' and section.settings.layout_type != 'widget' }}"
+      "content": "t:content.mobile_layout"
     },
     {
       "type": "select",
       "id": "columns_mobile",
       "default": "2",
       "label": "t:settings.number_of_columns_on_mobile",
-      "visible_if": "{{ section.settings.layout_type != 'editorial' and section.settings.layout_type != 'widget'}}",
       "options": [
         {
           "value": "1",
