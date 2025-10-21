@@ -1,7 +1,3 @@
-const ANIMATION_OPTIONS = {
-  duration: 500,
-};
-
 class MarqueeComponent extends HTMLElement {
   constructor() {
     super();
@@ -13,15 +9,17 @@ class MarqueeComponent extends HTMLElement {
   connectedCallback() {
     if (this.content.firstElementChild?.children.length === 0) return;
 
-    this.#addRepeatedItems();
-    this.#duplicateContent();
-    this.#setSpeed();
+    theme.onFirstInteraction(() => {
+      this.#addRepeatedItems();
+      this.#duplicateContent();
+      this.#setSpeed();
 
-    if (this.isDesktop) {
-      window.addEventListener("resize", this.#handleResize);
-      this.addEventListener("pointerenter", this.#slowDown);
-      this.addEventListener("pointerleave", this.#speedUp);
-    }
+      if (this.isDesktop) {
+        window.addEventListener("resize", this.#handleResize);
+        this.addEventListener("pointerenter", this.#slowDown);
+        this.addEventListener("pointerleave", this.#speedUp);
+      }
+    }, { timeout: 3000 });
   }
 
   disconnectedCallback() {
@@ -36,6 +34,7 @@ class MarqueeComponent extends HTMLElement {
    * @type {{ cancel: () => void, current: number } | null}
    */
   #animation = null;
+  #duration = 500;
 
   #slowDown = theme.utils.debounce(() => {
     if (this.#animation) return;
@@ -45,7 +44,7 @@ class MarqueeComponent extends HTMLElement {
     if (!animation) return;
 
     this.#animation = animateValue({
-      ...ANIMATION_OPTIONS,
+      duration: this.#duration,
       from: 1,
       to: 0,
       onUpdate: (value) => animation.updatePlaybackRate(value),
@@ -53,7 +52,7 @@ class MarqueeComponent extends HTMLElement {
         this.#animation = null;
       },
     });
-  }, ANIMATION_OPTIONS.duration);
+  }, this.#duration);
 
   #speedUp() {
     this.#slowDown.cancel();
@@ -66,7 +65,7 @@ class MarqueeComponent extends HTMLElement {
     this.#animation?.cancel();
 
     this.#animation = animateValue({
-      ...ANIMATION_OPTIONS,
+      duration: this.#duration,
       from,
       to: 1,
       onUpdate: (value) => animation.updatePlaybackRate(value),
@@ -177,7 +176,7 @@ class MarqueeScroll extends HTMLElement {
 
   connectedCallback() {
     if (this.isDesktop) {
-      this.#toggleHoverEvents(true);
+      theme.onFirstInteraction(() => this.#toggleHoverEvents(true), { timeout: 3000 });
     }
   }
 
@@ -239,6 +238,7 @@ class MarqueeScroll extends HTMLElement {
 
   // --- Hover slowdown effect ---
   #animation = null;
+  #duration = 500;
 
   #slowDown = theme.utils.debounce(() => {
     if (this.#animation) return;
@@ -249,7 +249,7 @@ class MarqueeScroll extends HTMLElement {
     if (!animation) return;
 
     this.#animation = animateValue({
-      ...ANIMATION_OPTIONS,
+      duration: this.#duration,
       from: 1,
       to: 0,
       onUpdate: (value) => animation.updatePlaybackRate(value),
@@ -257,7 +257,7 @@ class MarqueeScroll extends HTMLElement {
         this.#animation = null;
       },
     });
-  }, ANIMATION_OPTIONS.duration);
+  }, this.#duration);
 
   #speedUp() {
     this.#slowDown.cancel();
@@ -270,7 +270,7 @@ class MarqueeScroll extends HTMLElement {
     this.#animation?.cancel();
 
     this.#animation = animateValue({
-      ...ANIMATION_OPTIONS,
+      duration: this.#duration,
       from,
       to: 1,
       onUpdate: (value) => animation.updatePlaybackRate(value),
@@ -279,7 +279,6 @@ class MarqueeScroll extends HTMLElement {
       },
     });
   }
-
 }
 if (!customElements.get('marquee-scroll')) customElements.define('marquee-scroll', MarqueeScroll);
 

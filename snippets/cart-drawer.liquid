@@ -86,30 +86,326 @@
       {%- endif -%}
 
       <cart-drawer-items
-        {% if cart == empty %}
-          class=" is-empty"
+        class="h-full{% if cart == empty %} is-empty{% endif %}"
+        {% if settings.enable_smooth_scroll %}
+          data-lenis-prevent
         {% endif %}
+        data-section-id="{{ section.id }}"
       >
-        {%- render 'loading-spinner' class: 'loading__spinner hidden cart-drawer__loading-spinner absolute-c-c' -%}
-        <form
-          action="{{ routes.cart_url }}"
-          id="CartDrawer-Form"
-          class="cart__contents cart-drawer__form flex-grow flex flex-wrap"
-          method="post"
-        >
-          <div id="CartDrawer-CartItems" class="drawer__contents flex-grow flex flex-column js-contents">
-            {%- if cart != empty -%}
-              <div class="drawer__cart-items-wrapper">
-                {{ cart_drawer_product_block }}
+        <div class="section--main-cart h-full">
+          {%- render 'loading-spinner' class: 'loading__spinner hidden cart-drawer__loading-spinner absolute-c-c' -%}
+          <form
+            action="{{ routes.cart_url }}"
+            id="CartDrawer-Form"
+            class="cart__contents cart-drawer__form flex-grow flex flex-wrap"
+            method="post"
+          >
+            <div id="CartDrawer-CartItems" class="drawer__contents flex-grow flex flex-column js-contents">
+              {%- if cart != empty -%}
+                <div class="drawer__cart-items-wrapper">
+                  {{ cart_drawer_product_block }}
+                </div>
+              {%- endif -%}
+              <p id="CartDrawer-LiveRegionText" class="visually-hidden" role="status"></p>
+              <p id="CartDrawer-LineItemStatus" class="visually-hidden" aria-hidden="true" role="status">
+                {{ 'accessibility.loading' | t }}
+              </p>
+            </div>
+            <div id="CartDrawer-CartErrors" role="alert"></div>
+          </form>
+          <div class="drawer__footer">
+            <div class="drawer--function-blocks">
+              <button
+                class="function-block function-block--cart-note button focus-inset"
+                type="button"
+                aria-haspopup="dialog"
+                aria-label="{{ 'content.note' | t }}"
+                data-drawer-toggle="#Drawer-CartNote"
+              >
+                <span class="svg-wrapper">
+                  {{- 'icon-note.svg' | inline_asset_content -}}
+                </span>
+              </button>
+              {%- liquid
+                assign gift_wrap_product = settings.gift_wrap_product
+                if gift_wrap_product != blank and gift_wrap_product.available
+                  assign gift_wrap_product_id = gift_wrap_product.selected_or_first_available_variant.id | minus: 0
+                  assign gift_wrap_product_quantity = cart | item_count_for_variant: gift_wrap_product_id
+                endif
+              -%}
+
+              {%- if gift_wrap_product_quantity == 0 -%}
+                <button
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-label="{{ 'gift_cards.title' | t }}"
+                  class="function-block function-block--cart-gift-card button focus-inset"
+                  data-drawer-toggle="#Drawer-CartGiftCard"
+                >
+                  <span class="svg-wrapper">
+                    {{- 'icon-gift-card.svg' | inline_asset_content -}}
+                  </span>
+                </button>
+              {% endif %}
+              <button
+                type="button"
+                aria-haspopup="dialog"
+                aria-label="{{ 'content.calculator_shipping.shipping' | t }}"
+                class="function-block function-block--cart-shipping button focus-inset"
+                data-drawer-toggle="#Drawer-CartShipping"
+              >
+                <span class="svg-wrapper" style="width: 3.2rem; height: 3.2rem;">
+                  {{- 'icon-shipping.svg' | inline_asset_content -}}
+                </span>
+              </button>
+              <button
+                type="button"
+                aria-haspopup="dialog"
+                aria-label="{{ 'content.add_coupon' | t }}"
+                class="function-block function-block--cart-coupon button focus-inset"
+                data-drawer-toggle="#Drawer-CartCoupon"
+              >
+                <span class="svg-wrapper">
+                  {{- 'icon-coupon.svg' | inline_asset_content -}}
+                </span>
+              </button>
+
+              <modal-component
+                id="Drawer-CartNote"
+                class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
+                data-modal-content
+                data-moved="false"
+              >
+                <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
+                <div
+                  class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="{{ 'content.note' | t }}"
+                  tabindex="-1"
+                  style="--popup-max-height: 50dvh;"
+                >
+                  <div class="modal-header flex justify-between items-center relative">
+                    <span class="modal-header__title">{{ 'content.note' | t }}</span>
+                    <button
+                      class="modal__close block t-button bor-none rounded-full cursor-pointer"
+                      type="button"
+                      aria-label="{{ 'accessibility.close' | t }}"
+                      data-drawer-toggle="#Drawer-CartNote"
+                    >
+                      {{- 'icon-close.svg' | inline_asset_content -}}
+                    </button>
+                  </div>
+                  <div class="modal-content">
+                    <cart-note class="cart__note field" style="--inputs-radius: 0.5rem;">
+                      <label class="visually-hidden" for="CartDrawer-Note">{{ 'content.note' | t }}</label>
+                      <textarea
+                        id="CartDrawer-Note"
+                        class="text-area text-area--resize-vertical field__input"
+                        name="note"
+                        placeholder="{{ 'content.note' | t }}"
+                      >{{ cart.note }}</textarea>
+                    </cart-note>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="button button--full-width" data-drawer-toggle="#Drawer-CartNote">
+                      {{ 'actions.save' | t }}
+                    </button>
+                  </div>
+                </div>
+              </modal-component>
+
+              <modal-component
+                id="Drawer-CartGiftCard"
+                class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
+                data-modal-content
+                data-moved="false"
+              >
+                <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
+                <div
+                  class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="{{ 'content.cart.gift_wrapping_title' | t }}"
+                  tabindex="-1"
+                  style="--popup-max-height: 50dvh;"
+                >
+                  <div class="modal-content center" style="--p: 0 0 2rem;">
+                    <span class="svg-wrapper">
+                      {{- 'icon-gift-card.svg' | inline_asset_content -}}
+                    </span>
+                    <h4 class="modal-content__title" style="--mt: 1rem;">{{ 'content.cart.gift_wrapping_title' | t }}</h4>
+                  </div>
+                  <div class="modal-footer flex flex-column gap-md">
+                    {% render 'cart-gift-card', gift_card_type: 'cart-drawer' %}
+                    <button
+                      class="button button--full-width cursor-pointer"
+                      type="button"
+                      aria-label="{{ 'content.cancel' | t }}"
+                      data-drawer-toggle="#Drawer-CartGiftCard"
+                    >
+                      {{ 'content.cancel' | t }}
+                    </button>
+                  </div>
+                </div>
+              </modal-component>
+
+              <modal-component
+                id="Drawer-CartShipping"
+                class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
+                data-modal-content
+                data-moved="false"
+              >
+                <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
+                <div
+                  class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="{{ 'content.calculator_shipping.shipping' | t }}"
+                  tabindex="-1"
+                  style="--popup-max-height: 50dvh;"
+                >
+                  <div class="modal-header flex justify-between items-center relative">
+                    <span class="modal-header__title">{{ 'content.calculator_shipping.shipping' | t }}</span>
+                    <button
+                      class="modal__close block t-button bor-none rounded-full cursor-pointer"
+                      type="button"
+                      aria-label="{{ 'accessibility.close' | t }}"
+                      data-drawer-toggle="#Drawer-CartShipping"
+                    >
+                      {{- 'icon-close.svg' | inline_asset_content -}}
+                    </button>
+                  </div>
+                  <div class="modal-content">
+                    {% render 'cart-shipping-calculator' %}
+                  </div>
+                </div>
+              </modal-component>
+
+              <modal-component
+                id="Drawer-CartCoupon"
+                class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
+                data-modal-content
+                data-moved="false"
+              >
+                <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
+                <div
+                  class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="{{ 'content.add_coupon' | t }}"
+                  tabindex="-1"
+                  style="--popup-max-height: 50dvh;"
+                >
+                  <div class="modal-header flex justify-between items-center relative">
+                    <span class="modal-header__title">{{ 'content.add_coupon' | t }}</span>
+                    <button
+                      class="modal__close block t-button bor-none rounded-full cursor-pointer"
+                      type="button"
+                      aria-label="{{ 'accessibility.close' | t }}"
+                      data-drawer-toggle="#Drawer-CartCoupon"
+                    >
+                      {{- 'icon-close.svg' | inline_asset_content -}}
+                    </button>
+                  </div>
+                  <div class="modal-content">
+                    {% render 'cart-discounts', section: section %}
+                  </div>
+                </div>
+              </modal-component>
+            </div>
+
+            <!-- Start blocks -->
+            <!-- Subtotals -->
+
+            <div class="cart-drawer__footer" {{ block.shopify_attributes }}>
+              <div>
+                {%- if cart.cart_level_discount_applications.size > 0 -%}
+                  <ul class="discounts__discount discounts__discount--position discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}" style="--mt: 1rem;">
+                    {%- for discount in cart.cart_level_discount_applications -%}
+                      <li class="discounts__discount-text font-medium">
+                        <span class="svg-wrapper">
+                          {{- 'icon-discount.svg' | inline_asset_content -}}
+                        </span>
+                        {{ discount.title | escape }}
+                        (-{{ discount.total_allocated_amount | money }})
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
               </div>
-            {%- endif -%}
-            <p id="CartDrawer-LiveRegionText" class="visually-hidden" role="status"></p>
-            <p id="CartDrawer-LineItemStatus" class="visually-hidden" aria-hidden="true" role="status">
-              {{ 'accessibility.loading' | t }}
-            </p>
+
+              <div class="totals" role="status">
+                <h2 class="totals__total">{{ 'content.estimated_total' | t }}</h2>
+                <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>
+              </div>
+
+              <small class="tax-note caption-large rte">
+                {%- if cart.duties_included and cart.taxes_included -%}
+                  {%- if shop.shipping_policy.body == blank -%}
+                    {{ 'content.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
+                  {%- else -%}
+                    {{
+                      'content.duties_and_taxes_included_shipping_at_checkout_with_policy_html'
+                      | t: link: shop.shipping_policy.url
+                    }}
+                  {%- endif -%}
+                {%- elsif cart.duties_included == false and cart.taxes_included -%}
+                  {%- if shop.shipping_policy.body == blank -%}
+                    {{ 'content.taxes_included_shipping_at_checkout_without_policy' | t }}
+                  {%- else -%}
+                    {{
+                      'content.taxes_included_shipping_at_checkout_with_policy_html'
+                      | t: link: shop.shipping_policy.url
+                    }}
+                  {%- endif -%}
+                {%- elsif cart.duties_included and cart.taxes_included == false -%}
+                  {%- if shop.shipping_policy.body == blank -%}
+                    {{ 'content.duties_included_taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+                  {%- else -%}
+                    {{
+                      'content.duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_html'
+                      | t: link: shop.shipping_policy.url
+                    }}
+                  {%- endif -%}
+                {%- elsif cart.duties_included == false and cart.taxes_included == false -%}
+                  {%- if shop.shipping_policy.body == blank -%}
+                    {{ 'content.taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+                  {%- else -%}
+                    {{
+                      'content.taxes_at_checkout_shipping_at_checkout_with_policy_html'
+                      | t: link: shop.shipping_policy.url
+                    }}
+                  {%- endif -%}
+                {%- endif -%}
+              </small>
+            </div>
+
+            <!-- CTAs -->
+
+            <div class="cart__ctas cart__ctas-drawer" {{ block.shopify_attributes }}>
+              <a
+                href="{{ routes.cart_url }}"
+                id="CartDrawer-Viewcart"
+                class="cart__viewcart-button button button--full-width"
+              >
+                {{- 'content.cart.view_empty_cart' | t -}}
+              </a>
+              <button
+                type="submit"
+                id="CartDrawer-Checkout"
+                class="cart__checkout-button button button--secondary button--full-width"
+                name="checkout"
+                form="CartDrawer-Form"
+                {% if cart == empty %}
+                  disabled
+                {% endif %}
+              >
+                {{ 'content.checkout' | t }}
+              </button>
+            </div>
           </div>
-          <div id="CartDrawer-CartErrors" role="alert"></div>
-        </form>
+        </div>
       </cart-drawer-items>
 
       {% comment %} {% if section.settings.cart_drawer_collection != blank %}
@@ -173,288 +469,7 @@
         </swiper-component>
       {% endif %} {% endcomment %}
 
-      <div class="drawer__footer">
-        <div class="drawer--function-blocks">
-          <button
-            class="function-block function-block--cart-note button focus-inset"
-            type="button"
-            aria-haspopup="dialog"
-            aria-label="{{ 'content.note' | t }}"
-            data-drawer-toggle="#Drawer-CartNote"
-          >
-            <span class="svg-wrapper">
-              {{- 'icon-note.svg' | inline_asset_content -}}
-            </span>
-          </button>
-          <button
-            type="button"
-            aria-haspopup="dialog"
-            aria-label="{{ 'gift_cards.title' | t }}"
-            class="function-block function-block--cart-gift-card button focus-inset"
-            data-drawer-toggle="#Drawer-CartGiftCard"
-          >
-            <span class="svg-wrapper">
-              {{- 'icon-gift-card.svg' | inline_asset_content -}}
-            </span>
-          </button>
-          <button
-            type="button"
-            aria-haspopup="dialog"
-            aria-label="{{ 'content.calculator_shipping.shipping' | t }}"
-            class="function-block function-block--cart-shipping button focus-inset"
-            data-drawer-toggle="#Drawer-CartShipping"
-          >
-            <span class="svg-wrapper" style="width: 3.2rem; height: 3.2rem;">
-              {{- 'icon-shipping.svg' | inline_asset_content -}}
-            </span>
-          </button>
-          <button
-            type="button"
-            aria-haspopup="dialog"
-            aria-label="{{ 'content.add_coupon' | t }}"
-            class="function-block function-block--cart-coupon button focus-inset"
-            data-drawer-toggle="#Drawer-CartCoupon"
-          >
-            <span class="svg-wrapper">
-              {{- 'icon-coupon.svg' | inline_asset_content -}}
-            </span>
-          </button>
-
-          <modal-component
-            id="Drawer-CartNote"
-            class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
-            data-modal-content
-            data-moved="false"
-          >
-            <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
-            <div
-              class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
-              role="dialog"
-              aria-modal="true"
-              aria-label="{{ 'content.note' | t }}"
-              tabindex="-1"
-              style="--popup-max-height: 50dvh;"
-            >
-              <div class="modal-header flex justify-between items-center relative">
-                <span class="modal-header__title">{{ 'content.note' | t }}</span>
-                <button
-                  class="modal__close block t-button bor-none rounded-full cursor-pointer"
-                  type="button"
-                  aria-label="{{ 'accessibility.close' | t }}"
-                  data-drawer-toggle="#Drawer-CartNote"
-                >
-                  {{- 'icon-close.svg' | inline_asset_content -}}
-                </button>
-              </div>
-              <div class="modal-content">
-                <cart-note class="cart__note field" style="--inputs-radius: 0.5rem;">
-                  <label class="visually-hidden" for="CartDrawer-Note">{{ 'content.note' | t }}</label>
-                  <textarea
-                    id="CartDrawer-Note"
-                    class="text-area text-area--resize-vertical field__input"
-                    name="note"
-                    placeholder="{{ 'content.note' | t }}"
-                  >{{ cart.note }}</textarea>
-                </cart-note>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="button button--full-width" data-drawer-toggle="#Drawer-CartNote">
-                  {{ 'actions.save' | t }}
-                </button>
-              </div>
-            </div>
-          </modal-component>
-
-          <modal-component
-            id="Drawer-CartGiftCard"
-            class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
-            data-modal-content
-            data-moved="false"
-          >
-            <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
-            <div
-              class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
-              role="dialog"
-              aria-modal="true"
-              aria-label="{{ 'content.cart.gift_wrapping_title' | t }}"
-              tabindex="-1"
-              style="--popup-max-height: 50dvh;"
-            >
-              <div class="modal-content center" style="--p: 0 0 2rem;">
-                <span class="svg-wrapper">
-                  {{- 'icon-gift-card.svg' | inline_asset_content -}}
-                </span>
-                <h4 class="modal-content__title" style="--mt: 1rem;">{{ 'content.cart.gift_wrapping_title' | t }}</h4>
-              </div>
-              <div class="modal-footer flex flex-column gap-md">
-                {% render 'cart-gift-card', gift_card_type: 'cart-drawer' %}
-                <button
-                  class="button button--full-width cursor-pointer"
-                  type="button"
-                  aria-label="{{ 'content.cancel' | t }}"
-                  data-drawer-toggle="#Drawer-CartGiftCard"
-                >
-                  {{ 'content.cancel' | t }}
-                </button>
-              </div>
-            </div>
-          </modal-component>
-
-          <modal-component
-            id="Drawer-CartShipping"
-            class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
-            data-modal-content
-            data-moved="false"
-          >
-            <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
-            <div
-              class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
-              role="dialog"
-              aria-modal="true"
-              aria-label="{{ 'content.calculator_shipping.shipping' | t }}"
-              tabindex="-1"
-              style="--popup-max-height: 50dvh;"
-            >
-              <div class="modal-header flex justify-between items-center relative">
-                <span class="modal-header__title">{{ 'content.calculator_shipping.shipping' | t }}</span>
-                <button
-                  class="modal__close block t-button bor-none rounded-full cursor-pointer"
-                  type="button"
-                  aria-label="{{ 'accessibility.close' | t }}"
-                  data-drawer-toggle="#Drawer-CartShipping"
-                >
-                  {{- 'icon-close.svg' | inline_asset_content -}}
-                </button>
-              </div>
-              <div class="modal-content">
-                {% render 'cart-shipping-calculator' %}
-              </div>
-            </div>
-          </modal-component>
-
-          <modal-component
-            id="Drawer-CartCoupon"
-            class="modal-component modal--popup fixed top-0 left-0 z-9 w-full h-full flex justify-center no-js-hidden"
-            data-modal-content
-            data-moved="false"
-          >
-            <div id="Modal-Overlay" class="modal__overlay fixed inset-0 cursor-pointer"></div>
-            <div
-              class="modal__inner absolute bottom-0 left-0 w-full h-auto flex flex-column z-2 color-{{ section.settings.color_scheme }}"
-              role="dialog"
-              aria-modal="true"
-              aria-label="{{ 'content.add_coupon' | t }}"
-              tabindex="-1"
-              style="--popup-max-height: 50dvh;"
-            >
-              <div class="modal-header flex justify-between items-center relative">
-                <span class="modal-header__title">{{ 'content.add_coupon' | t }}</span>
-                <button
-                  class="modal__close block t-button bor-none rounded-full cursor-pointer"
-                  type="button"
-                  aria-label="{{ 'accessibility.close' | t }}"
-                  data-drawer-toggle="#Drawer-CartCoupon"
-                >
-                  {{- 'icon-close.svg' | inline_asset_content -}}
-                </button>
-              </div>
-              <div class="modal-content">
-                {% render 'cart-discounts' %}
-              </div>
-            </div>
-          </modal-component>
-        </div>
-
-        <!-- Start blocks -->
-        <!-- Subtotals -->
-
-        <div class="cart-drawer__footer" {{ block.shopify_attributes }}>
-          <div>
-            {%- if cart.cart_level_discount_applications.size > 0 -%}
-              <ul class="discounts__discount discounts__discount--position discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}" style="--mt: 1rem;">
-                {%- for discount in cart.cart_level_discount_applications -%}
-                  <li class="discounts__discount-text font-medium">
-                    <span class="svg-wrapper">
-                      {{- 'icon-discount.svg' | inline_asset_content -}}
-                    </span>
-                    {{ discount.title | escape }}
-                    (-{{ discount.total_allocated_amount | money }})
-                  </li>
-                {%- endfor -%}
-              </ul>
-            {%- endif -%}
-          </div>
-
-          <div class="totals" role="status">
-            <h2 class="totals__total">{{ 'content.estimated_total' | t }}</h2>
-            <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>
-          </div>
-
-          <small class="tax-note caption-large rte">
-            {%- if cart.duties_included and cart.taxes_included -%}
-              {%- if shop.shipping_policy.body == blank -%}
-                {{ 'content.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
-              {%- else -%}
-                {{
-                  'content.duties_and_taxes_included_shipping_at_checkout_with_policy_html'
-                  | t: link: shop.shipping_policy.url
-                }}
-              {%- endif -%}
-            {%- elsif cart.duties_included == false and cart.taxes_included -%}
-              {%- if shop.shipping_policy.body == blank -%}
-                {{ 'content.taxes_included_shipping_at_checkout_without_policy' | t }}
-              {%- else -%}
-                {{
-                  'content.taxes_included_shipping_at_checkout_with_policy_html'
-                  | t: link: shop.shipping_policy.url
-                }}
-              {%- endif -%}
-            {%- elsif cart.duties_included and cart.taxes_included == false -%}
-              {%- if shop.shipping_policy.body == blank -%}
-                {{ 'content.duties_included_taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
-              {%- else -%}
-                {{
-                  'content.duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_html'
-                  | t: link: shop.shipping_policy.url
-                }}
-              {%- endif -%}
-            {%- elsif cart.duties_included == false and cart.taxes_included == false -%}
-              {%- if shop.shipping_policy.body == blank -%}
-                {{ 'content.taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
-              {%- else -%}
-                {{
-                  'content.taxes_at_checkout_shipping_at_checkout_with_policy_html'
-                  | t: link: shop.shipping_policy.url
-                }}
-              {%- endif -%}
-            {%- endif -%}
-          </small>
-        </div>
-
-        <!-- CTAs -->
-
-        <div class="cart__ctas cart__ctas-drawer" {{ block.shopify_attributes }}>
-          <a
-            href="{{ routes.cart_url }}"
-            id="CartDrawer-Viewcart"
-            class="cart__viewcart-button button button--full-width"
-          >
-            {{- 'content.cart.view_empty_cart' | t -}}
-          </a>
-          <button
-            type="submit"
-            id="CartDrawer-Checkout"
-            class="cart__checkout-button button button--secondary button--full-width"
-            name="checkout"
-            form="CartDrawer-Form"
-            {% if cart == empty %}
-              disabled
-            {% endif %}
-          >
-            {{ 'content.checkout' | t }}
-          </button>
-        </div>
-      </div>
+      
     </div>
   </div>
 </cart-drawer>
