@@ -257,12 +257,13 @@
   {% endstyle %}
 
   {%- if block.settings.slide_background %}
-    <div class="slide__image-container flex size-full overflow-hidden absolute" data-image-trans>
+    <div class="slide__image-container flex size-full overflow-hidden absolute" >
       <div
         class="slide__img-wrapper grid w-full"
         {%- if block_stts.image_1 != blank -%}
           style="--slide-media-count: {{ media_count }};"
         {%- endif -%}
+        data-image-trans
       >
         {{ media }}
       </div>
@@ -283,9 +284,9 @@
 </{{ element }}>
 
 {%- stylesheet -%}
-  /* slideshow-animated .slide__image-container {
-    height: 140%;
-  } */
+  slideshow-animated .slide__img-wrapper img {
+    height: 140% !important;
+  }
 
   .slide__img-wrapper {
     grid-template-columns: repeat(var(--slide-media-count, 1), 1fr);

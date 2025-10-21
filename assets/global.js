@@ -1026,8 +1026,8 @@ class MenuDrawer extends HTMLElement {
   onFocusOut() {
     setTimeout(() => {
       if (
-        this.mainDetailsToggle.hasAttribute("open") &&
-        !this.mainDetailsToggle.contains(document.activeElement)
+        this.mainDetailsToggle?.hasAttribute("open") &&
+        !this.mainDetailsToggle?.contains(document.activeElement)
       )
         this.closeMenuDrawer();
     });
@@ -1390,20 +1390,8 @@ class SwiperComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    // // Check if Swiper library is available
-    // if (typeof Swiper === "undefined") {
-    //   console.error(
-    //     "Swiper library not loaded. Please ensure vendor.js is loaded before this component."
-    //   );
-    //   return;
-    // }
-
-    // Ensure DOM is ready
 
     this.initializeSwiper();
-
-    // Motion.inView(this, this.initializeSwiper.bind(this), { margin: '200px 0px 200px 0px' });
-    // this.setupIntersectionObserver();
   }
 
   disconnectedCallback() {
@@ -3702,7 +3690,7 @@ class SlideshowAnimated extends HTMLElement {
   constructor() {
     super();
 
-    this.image = this.querySelector('[data-image-trans]')
+    this.image = this.querySelector('[data-image-trans] img')
     this.speed = parseFloat(this.dataset.speed) || 0.5;
   }
 
@@ -3716,16 +3704,12 @@ class SlideshowAnimated extends HTMLElement {
     let yUp = Math.round(n * this.speed)
     let yDown = Math.round(n * this.speed) * -1
     let sectionIdex = this.closest('.section')?.dataset.index;
-    let offset = ["center start", "end start"];
-    if (sectionIdex == 1) {
-      offset = ["start start", "end start"];
-      yDown = 0;
-    }
+    let offset = ["start start", "end start"];
 
     Motion.scroll(
       Motion.animate(
         this.image,
-        { y: [yDown, yUp] },
+        { y: [0, yUp] },
         { easing: 'linear' },
       ),
       { target: this, offset: offset }
