@@ -28,12 +28,11 @@
 -%}
 
 {%- if card_product and card_product != empty and isColor -%}
-  <div class="card--block-variant w-full spacing-style" style="{% render 'spacing-style', settings: block.settings %}">
+  <div class="card--block-variant spacing-style" style="{% render 'spacing-style', settings: block.settings %}">
     {%- render 'product-swatch',
       product: card_product,
       variant_selected: variant_selected,
-      index: index,
-      alignment: block.settings.alignment
+      index: index
     -%}
   </div>
 {%- endif -%}
@@ -47,12 +46,6 @@
       "type": "product",
       "id": "product",
       "label": "t:settings.product"
-    },
-    {
-      "type": "text_alignment",
-      "id": "alignment",
-      "label": "t:settings.alignment",
-      "default": "left"
     },
     {
       "type": "header",
