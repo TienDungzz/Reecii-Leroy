@@ -63,6 +63,10 @@
         "
       >
       </span>
+
+      {% if preload_screen %}
+        <div class="loading-bar overflow-hidden"></div>
+      {% endif %}
     </div>
   </a>
   {%- if request.page_type == 'index' -%}
@@ -80,6 +84,11 @@
     @media screen and (max-width: 749px) {
       width: var(--header-logo-image-width-mobile);
       height: var(--header-logo-image-height-mobile);
+    }
+
+    @media screen and (max-width: 375px) {
+      width: calc(var(--header-logo-image-width-mobile) * 0.5);
+      height: calc(var(--header-logo-image-height-mobile) * 0.5);
     }
 
     &::after, &::before {

@@ -19,7 +19,11 @@ if (!customElements.get('localization-form')) {
           liveRegion: this.querySelector('#sr-country-search-results'),
         };
 
-        theme.initWhenVisible(this.init.bind(this));
+        if (!theme.config.isTouch || Shopify.designMode) {
+          Motion.inView(this, this.init.bind(this));
+        } else {
+          theme.initWhenVisible(this.init.bind(this));
+        }
       }
 
       init() {
@@ -232,7 +236,11 @@ if (!customElements.get('dropdown-localization-component')) {
       }
 
       connectedCallback() {
-        theme.initWhenVisible(this.init.bind(this));
+        if (!theme.config.isTouch || Shopify.designMode) {
+          Motion.inView(this, this.init.bind(this));
+        } else {
+          theme.initWhenVisible(this.init.bind(this));
+        }
       }
 
       init() {
@@ -324,7 +332,11 @@ if (!customElements.get('drawer-localization-component')) {
       constructor() {
         super();
 
-        theme.initWhenVisible(this.init.bind(this));
+        if (!theme.config.isTouch || Shopify.designMode) {
+          Motion.inView(this, this.init.bind(this));
+        } else {
+          theme.initWhenVisible(this.init.bind(this));
+        }
       }
 
       init() {

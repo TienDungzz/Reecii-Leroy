@@ -15,6 +15,11 @@ theme.config.mqlSmall = mql.matches;
 
 document.documentElement.classList.add(theme.config.isTouch ? 'touch' : 'no-touch');
 
+theme.passiveEvents = false;
+try {
+  window.addEventListener('passiveCheck', null, Object.defineProperty({}, 'event', { get: () => theme.passiveEvents = true }));
+} catch (_) {}
+
 theme.utils = {
   rafThrottle: (callback) => {
     let requestId = null, lastArgs;
@@ -78,7 +83,6 @@ theme.utils = {
   }
 }
 
-// Delay JavaScript until user interaction
 theme.initWhenVisible = (callback, delay = 5000) => {
   const events = ["mouseover","mousemove","keydown","touchstart","touchend","touchmove","wheel"];
 
@@ -92,61 +96,131 @@ theme.initWhenVisible = (callback, delay = 5000) => {
   events.forEach(e => window.addEventListener(e, run, { passive: true }));
 };
 
-/**
- * Check if the document is ready/loaded and call the callback when it is.
- * @param {() => void} callback The function to call when the document is ready.
- */
+const sectionRenderCache = new Map();
+
+class SectionFetcher extends HTMLElement {
+  constructor() {
+    super();
+    const activateMode = this.dataset.activate || 'inview';
+    if (activateMode === 'interaction') {
+      // Chỉ khởi tạo sau khi có tương tác người dùng (mousemove, keydown, touch, wheel...)
+      theme.initWhenVisible(() => this.initialize(), 0);
+    } else {
+      // Mặc định: tải khi phần tử vào viewport
+      Motion.inView(this, () => this.initialize());
+    }
+  }
+
+  get sectionId() {
+    return this.dataset.sectionId;
+  }
+
+  get targetElementId() {
+    return this.dataset.targetId;
+  }
+
+  initialize() {
+    if (this._initialized) return;
+    this._initialized = true;
+
+    const targetElement = document.getElementById(this.targetElementId);
+    if (!targetElement || targetElement.hasAttribute('data-loaded')) return;
+
+    const url = `${window.routes.root_url}?section_id=${this.sectionId}`;
+
+    if (sectionRenderCache.has(url)) {
+      this.renderFromCache(url);
+    } else {
+      this.fetchAndRender(url);
+    }
+
+    this._cacheListener = (event) => this.onSectionCached(event);
+    document.addEventListener('section:cached', this._cacheListener);
+  }
+
+  renderFromCache(url) {
+    const cachedHTML = sectionRenderCache.get(url);
+    if (cachedHTML) this.updateDOM(cachedHTML);
+  }
+
+  async fetchAndRender(url) {
+    sectionRenderCache.set(url, '');
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+      const htmlText = await response.text();
+
+      this.updateDOM(htmlText);
+      sectionRenderCache.set(url, htmlText);
+
+      document.dispatchEvent(
+        new CustomEvent('section:cached', {
+          detail: { url, sectionId: this.sectionId },
+        })
+      );
+    } catch (error) {
+      console.error('[SectionFetcher]', error);
+    }
+  }
+
+  updateDOM(htmlText) {
+    const parser = new DOMParser();
+    const newDocument = parser.parseFromString(htmlText, 'text/html');
+    const newSection = newDocument.getElementById(this.targetElementId);
+    const oldSection = document.getElementById(this.targetElementId);
+  
+    if (!newSection) {
+      console.warn(`[SectionFetcher] Target #${this.targetElementId} not found in fetched section`);
+      return;
+    }
+    if (!oldSection) {
+      console.warn(`[SectionFetcher] Target #${this.targetElementId} not found in current DOM`);
+      return;
+    }
+  
+    oldSection.replaceWith(newSection);
+    oldSection.setAttribute('data-loaded', 'true');
+    document.removeEventListener('section:cached', this._cacheListener);
+  }  
+
+  onSectionCached(event) {
+    const { url, sectionId } = event.detail;
+    if (sectionId === this.sectionId) {
+      this.renderFromCache(url);
+    }
+  }
+}
+if (!customElements.get('section-fetcher')) customElements.define('section-fetcher', SectionFetcher);
+
+
 function onDocumentLoaded(callback) {
   if (document.readyState === 'complete') {
     callback();
   } else {
-    logoReveal();
-    pageReveal();
+    const preloadScreen = document.querySelector(".preload-screen");
+    if (preloadScreen) {
+      logoReveal(preloadScreen);
+      pageReveal(preloadScreen);
+      linkClick();
+    }
     window.addEventListener('load', callback);
   }
 }
 
-// Detect events when page has loaded
-// window.addEventListener('beforeunload', () => {
-//   document.body.classList.add('u-p-loaded');
-// });
-
-// window.addEventListener('DOMContentLoaded', () => {
-//   document.body.classList.add('p-loaded');
-
-//   document.dispatchEvent(new CustomEvent('page:loaded'));
-// });
-
-// window.addEventListener('pageshow', (event) => {
-//   // Removes unload class when the page was cached by the browser
-//   if (event.persisted) {
-//     document.body.classList.remove('u-p-loaded');
-//   }
-// });
-
-// How to use:
-// Call stopLenis() when you need to stop the smooth scroll effect of Lenis, for example when opening drawer:
-//   stopLenis();
-// To activate again after closing drawer, call startLenis():
-//   startLenis();
-
-
-// Improve initial load time by skipping the rendering of offscreen content
 onDocumentLoaded(theme.utils.setScrollbarWidth);
 window.addEventListener('resize', theme.utils.rafThrottle(theme.utils.setScrollbarWidth));
 
 // Preloading Screen Annimate
-function logoReveal() {
-  const preloadScreen = document.querySelector(".preload-screen");
+function logoReveal(preloadScreen) {
   if (preloadScreen)
     setTimeout(() => {
       preloadScreen.classList.add("off--ready");
     }, 10);
 }
 
-function pageReveal() {
+function pageReveal(preloadScreen) {
   const body = document.body;
-  const preloadScreen = document.querySelector(".preload-screen");
 
   if (preloadScreen) {
     setTimeout(() => {
@@ -158,11 +232,30 @@ function pageReveal() {
       preloadScreen.classList.add("loaded");
       body.classList.add("loaded");
       body.classList.remove("preloading-o-h");
-      getScrollbarWidth();
+      // getScrollbarWidth();
     }, 1200);
   }
 }
 
+function linkClick() {
+  (() => {
+    window.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('a[href]');
+      links.forEach(link => {
+        link.addEventListener('click', function (event) {
+          if (link.getAttribute('href').startsWith('tel:')) {
+            document.querySelector('.preload-screen').classList.remove('off', 'loaded');
+          }
+        });
+      });
+    });
+
+    window.addEventListener('beforeunload', () => {
+      document.body.classList.add('preloading-o-h');
+      document.querySelector('.preload-screen').classList.remove('off', 'loaded');
+    });
+  })();
+}
 function getFocusableElements(container) {
   return Array.from(
     container.querySelectorAll(
@@ -174,17 +267,14 @@ function getFocusableElements(container) {
 class SectionId {
   static #separator = "__";
 
-  // for a qualified section id (e.g. 'template--22224696705326__main'), return just the section id (e.g. 'template--22224696705326')
   static parseId(qualifiedSectionId) {
     return qualifiedSectionId.split(SectionId.#separator)[0];
   }
 
-  // for a qualified section id (e.g. 'template--22224696705326__main'), return just the section name (e.g. 'main')
   static parseSectionName(qualifiedSectionId) {
     return qualifiedSectionId.split(SectionId.#separator)[1];
   }
 
-  // for a section id (e.g. 'template--22224696705326') and a section name (e.g. 'recommended-products'), return a qualified section id (e.g. 'template--22224696705326__recommended-products')
   static getIdForSection(sectionId, sectionName) {
     return `${sectionId}${SectionId.#separator}${sectionName}`;
   }
@@ -409,20 +499,13 @@ Shopify.formatMoney = function (cents, format) {
     precision = defaultOption(precision, 2);
     thousands = defaultOption(thousands, ",");
     decimal = defaultOption(decimal, ".");
-
     if (isNaN(number) || number == null) {
       return 0;
     }
-
-    number = (number / 100.0).toFixed(precision);
-
-    var parts = number.split("."),
-      dollars = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + thousands),
-      cents = parts[1] ? decimal + parts[1] : "";
-
-    return dollars + cents;
+    number = (number / 100).toFixed(precision);
+    let parts = number.split("."), dollarsAmount = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + thousands), centsAmount = parts[1] ? decimal + parts[1] : "";
+    return dollarsAmount + centsAmount;
   }
-
   switch (formatString.match(placeholderRegex)[1]) {
     case "amount":
       value = formatWithDelimiters(cents, 2);
@@ -430,15 +513,33 @@ Shopify.formatMoney = function (cents, format) {
     case "amount_no_decimals":
       value = formatWithDelimiters(cents, 0);
       break;
+    case "amount_with_space_separator":
+      value = formatWithDelimiters(cents, 2, " ", ".");
+      break;
     case "amount_with_comma_separator":
       value = formatWithDelimiters(cents, 2, ".", ",");
+      break;
+    case "amount_with_apostrophe_separator":
+      value = formatWithDelimiters(cents, 2, "'", ".");
       break;
     case "amount_no_decimals_with_comma_separator":
       value = formatWithDelimiters(cents, 0, ".", ",");
       break;
+    case "amount_no_decimals_with_space_separator":
+      value = formatWithDelimiters(cents, 0, " ");
+      break;
+    case "amount_no_decimals_with_apostrophe_separator":
+      value = formatWithDelimiters(cents, 0, "'");
+      break;
+    default:
+      value = formatWithDelimiters(cents, 2);
+      break;
   }
-
-  return formatString.replace(placeholderRegex, value);
+  if (formatString.indexOf("with_comma_separator") !== -1) {
+    return formatString.replace(placeholderRegex, value);
+  } else {
+    return formatString.replace(placeholderRegex, value);
+  }
 };
 
 class QuantityInput extends HTMLElement {
