@@ -3676,17 +3676,15 @@ class MarqueeComponent extends HTMLElement {
   connectedCallback() {
     if (this.content.firstElementChild?.children.length === 0) return;
 
-    theme.onFirstInteraction(() => {
-      this.#addRepeatedItems();
-      this.#duplicateContent();
-      this.#setSpeed();
+    this.#addRepeatedItems();
+    this.#duplicateContent();
+    this.#setSpeed();
 
-      if (this.isDesktop) {
-        window.addEventListener("resize", this.#handleResize);
-        this.addEventListener("pointerenter", this.#slowDown);
-        this.addEventListener("pointerleave", this.#speedUp);
-      }
-    }, { timeout: 3000 });
+    if (this.isDesktop) {
+      window.addEventListener("resize", this.#handleResize);
+      this.addEventListener("pointerenter", this.#slowDown);
+      this.addEventListener("pointerleave", this.#speedUp);
+    }
   }
 
   disconnectedCallback() {
@@ -3840,7 +3838,7 @@ class MarqueeScroll extends HTMLElement {
 
   connectedCallback() {
     if (this.isDesktop) {
-      theme.onFirstInteraction(() => this.#toggleHoverEvents(true), { timeout: 3000 });
+      this.#toggleHoverEvents(true);
     }
   }
 

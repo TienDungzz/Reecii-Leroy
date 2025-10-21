@@ -1,7 +1,5 @@
-{% comment %} Critical CSS - Load synchronously for above-the-fold content {% endcomment %}
 {{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
 
-{% comment %} Non-critical CSS - Load asynchronously to prevent render blocking {% endcomment %}
 <link rel="preload" href="{{ 'base-khinh.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="{{ 'base-dukeh.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <link rel="preload" href="{{ 'base-hyun.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -46,9 +44,6 @@
     <link rel="stylesheet" href="{{ 'vendor.css' | asset_url }}">
     <link rel="stylesheet" href="{{ 'component-card.css' | asset_url }}">
     <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}">
-    {%- if settings.enable_smooth_scroll -%}
-        <link rel="stylesheet" href="{{ 'smooth-scroll.css' | asset_url }}">
-    {%- endif -%}
     {%- if settings.show_countdown -%}
         <link rel="stylesheet" href="{{ 'component-card-countdown.css' | asset_url }}">
     {%- endif -%}
