@@ -385,7 +385,11 @@ class DropdownDetails extends HTMLDetailsElement {
   constructor() {
     super();
 
-    theme.initWhenVisible(this.init.bind(this));
+    if (!theme.config.isTouch || Shopify.designMode) {
+      Motion.inView(this, this.init.bind(this));
+    } else {
+      theme.initWhenVisible(this.init.bind(this));
+    }
 
     if (Shopify.designMode) {
       this.addEventListener('shopify:block:select', () => this.isOpen = true);

@@ -17,6 +17,7 @@
     assign input_type_preset = block.settings.input_type_preset
     assign input_alignment = block.settings.input_alignment
     assign label_type_preset = block.settings.label_type_preset
+    assign form_row_width = block.settings.form_row_width
 %}
 
 {%- capture attr -%}
@@ -70,7 +71,7 @@ style="
 {% endstylesheet %}
 
 {% if label != blank %}
-  <div class="contact-form-row" style="--formRowWidth: {{ input_width }}%;">
+  <div class="contact-form-row" style="--formRowWidth: {{ form_row_width }}%;">
     <label for="{{ block.id }}" style="--mb:{{ label_mb }}px;" class="block {{ label_type_preset }}">{{ label }}</label>
     <textarea id="{{ block.id }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}></textarea>
   </div>
@@ -153,6 +154,16 @@ style="
       "step": 10,
       "unit": "px",
       "default": 220
+    },
+    {
+      "type": "range",
+      "id": "form_row_width",
+      "label": "Width desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100
     },
     {
       "type": "select",
