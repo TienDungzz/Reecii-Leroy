@@ -103,10 +103,8 @@ class SectionFetcher extends HTMLElement {
     super();
     const activateMode = this.dataset.activate || 'inview';
     if (activateMode === 'interaction') {
-      // Chỉ khởi tạo sau khi có tương tác người dùng (mousemove, keydown, touch, wheel...)
       theme.initWhenVisible(() => this.initialize(), 0);
     } else {
-      // Mặc định: tải khi phần tử vào viewport
       Motion.inView(this, () => this.initialize());
     }
   }
@@ -1390,20 +1388,7 @@ class SwiperComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    // // Check if Swiper library is available
-    // if (typeof Swiper === "undefined") {
-    //   console.error(
-    //     "Swiper library not loaded. Please ensure vendor.js is loaded before this component."
-    //   );
-    //   return;
-    // }
-
-    // Ensure DOM is ready
-
     this.initializeSwiper();
-
-    // Motion.inView(this, this.initializeSwiper.bind(this), { margin: '200px 0px 200px 0px' });
-    // this.setupIntersectionObserver();
   }
 
   disconnectedCallback() {
