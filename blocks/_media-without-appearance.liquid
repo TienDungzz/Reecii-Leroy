@@ -6,7 +6,7 @@
   endif
 %}
 
-{% render 'media', unset_image_tag: unset_image_tag %}
+{% render 'media', unset_image_tag: unset_image_tag, animation_type: block.settings.animation_type %}
 
 {% schema %}
 {
@@ -94,6 +94,26 @@
       ],
       "default": "cover",
       "visible_if": "{{ block.settings.media_type == 'video' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.animation"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "t:settings.animation_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "parallax",
+          "label": "t:settings.parallax"
+        }
+      ],
+      "default": "none"
     }
   ],
   "presets": [

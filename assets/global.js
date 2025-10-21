@@ -169,7 +169,7 @@ class SectionFetcher extends HTMLElement {
     const newDocument = parser.parseFromString(htmlText, 'text/html');
     const newSection = newDocument.getElementById(this.targetElementId);
     const oldSection = document.getElementById(this.targetElementId);
-  
+
     if (!newSection) {
       console.warn(`[SectionFetcher] Target #${this.targetElementId} not found in fetched section`);
       return;
@@ -178,11 +178,11 @@ class SectionFetcher extends HTMLElement {
       console.warn(`[SectionFetcher] Target #${this.targetElementId} not found in current DOM`);
       return;
     }
-  
+
     oldSection.replaceWith(newSection);
     oldSection.setAttribute('data-loaded', 'true');
     document.removeEventListener('section:cached', this._cacheListener);
-  }  
+  }
 
   onSectionCached(event) {
     const { url, sectionId } = event.detail;
@@ -1399,14 +1399,8 @@ class SwiperComponent extends HTMLElement {
     // }
 
     // Ensure DOM is ready
-    if (document.readyState === "complete") {
-      console.log(`%c🔍 Log document.readyState:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", document.readyState);
 
-      this.initializeSwiper();
-      return;
-    }
-
-    // this.initializeSwiper();
+    this.initializeSwiper();
 
     // Motion.inView(this, this.initializeSwiper.bind(this), { margin: '200px 0px 200px 0px' });
     // this.setupIntersectionObserver();
@@ -1429,13 +1423,8 @@ class SwiperComponent extends HTMLElement {
   }
 
   initializeSwiper() {
-    console.log(`%c🔍 Log this.items.length:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.items.length);
-
     if(this.items.length > 1) {
       this.swiperEl = this.querySelector(".swiper");
-
-      console.log(this.swiperEl);
-
 
       if (!this.swiperEl) return;
 
@@ -2711,6 +2700,7 @@ if (!customElements.get("show-more-grid")) {
   customElements.define("show-more-grid", ShowMoreGrid);
 }
 
+// Animation item in block scroll up/down according to window
 class ParallaxImg extends HTMLElement {
   constructor() {
     super();
@@ -2773,6 +2763,7 @@ class ParallaxImg extends HTMLElement {
 if (!customElements.get("parallax-image"))
   customElements.define("parallax-image", ParallaxImg);
 
+// Animation block scroll up/down according to window
 class ParallaxElement extends HTMLElement {
   constructor() {
     super();
@@ -2901,7 +2892,114 @@ class ParallaxElement extends HTMLElement {
 if (!customElements.get("parallax-element"))
 customElements.define("parallax-element", ParallaxElement);
 
-/**
+
+// Animation large banner background image scroll up/down according to window
+class ParallaxBackground extends HTMLElement {
+  constructor() {
+    super();
+    this.image = null;
+  }
+
+  connectedCallback() {
+    if (theme.config.motionReduced) return;
+
+    this.parallax();
+  }
+
+  parallax() {
+    this.image = this.querySelector("img");
+
+    Motion.scroll(
+      Motion.animate(
+        this.image,
+        { y: ['-30%', '30%'] },
+        {
+          ease: "none",
+          duration: 1,
+        }
+      ),
+      { target: this, offset: ["start end", "end start"] }
+    );
+  }
+}
+if (!customElements.get("parallax-background"))
+  customElements.define("parallax-background", ParallaxBackground);
+
+
+class ImageReveal extends HTMLElement {
+  constructor() {
+    super();
+    this.image = this.querySelector('.image-reveal__image');
+
+    if (theme.config.motionReduced) return;
+    Motion.inView(this, this.init.bind(this), { margin: '20px 0px 20px 0px' });
+  }
+
+  init() {
+    // this.image.classList.add('image-reveal__image--visible');
+    // this.image.style
+    Motion.animate(
+      this.image,
+      { opacity: [0, 1], scale: [1.2, 1], clipPath: ['inset(0 100% 0 0)', 'inset(0 0 0 0)'] },
+      {
+        ease: [0.25, 0.1, 0.25, 1],
+        duration: 0.9,
+        delay: 0.2,
+      }
+    );
+  }
+
+}
+if (!customElements.get('image-reveal')) customElements.define('image-reveal', ImageReveal);
+
+// Reveal highlight color underline on scroll
+class HighlightText extends HTMLElement {
+  constructor() {
+    super();
+
+    if (theme.config.motionReduced) return;
+  }
+
+  connectedCallback() {
+    if (theme.config.motionReduced) return;
+    Motion.inView(this, this.active.bind(this), { margin: '20px 0px 20px 0px' });
+  }
+
+  disconnectedCallback() {
+    if (theme.config.motionReduced) return;
+    this.classList.remove('highlight_text--active');
+  }
+
+  active() {
+    this.classList.add('highlight_text--active');
+  }
+}
+if (!customElements.get('highlight-text')) customElements.define('highlight-text', HighlightText);
+
+// Animation footer scroll up/down according to window
+class FooterParallax extends HTMLElement {
+  constructor() {
+    super();
+
+    if (theme.config.motionReduced) return;
+    if (this.mobileDisabled && (theme.config.isTouch || theme.config.mqlSmall)) return;
+    this.parallax();
+  }
+
+  get mobileDisabled() {
+    return true;
+  }
+
+  parallax() {
+    Motion.scroll(
+      Motion.animate(this, { transform: ['translateY(-50%)', 'translateY(0)'] }),
+      { target: this, offset: Motion.ScrollOffset.Enter }
+    );
+  }
+}
+if (!customElements.get('footer-parallax')) customElements.define('footer-parallax', FooterParallax);
+
+  /**
  * A custom element that formats rte content for easier styling
  */
 class RTEFormatter extends HTMLElement {
@@ -3636,51 +3734,6 @@ class SlideshowAnimated extends HTMLElement {
 }
 if (!customElements.get('slideshow-animated')) customElements.define('slideshow-animated', SlideshowAnimated);
 
-// Get Lenis and init
-function initLenis() {
-  console.log(window.LenisInstance);
-  console.log(window.Lenis);
-
-  if (window.LenisInstance || !window.Lenis) return;
-  window.LenisInstance = new window.Lenis({
-    lerp: 0.1
-    // Add more options here
-  });
-
-  function raf(time) {
-    window.LenisInstance.raf(time);
-    window.LenisInstance._rafId = requestAnimationFrame(raf);
-  }
-
-  window.LenisInstance._rafId = requestAnimationFrame(raf);
-}
-
-// Stop Lenis
-function stopLenis() {
-  if (window.LenisInstance && window.LenisInstance._rafId) {
-    cancelAnimationFrame(window.LenisInstance._rafId);
-    window.LenisInstance._rafId = null;
-  }
-}
-
-// Start Lenis
-function startLenis() {
-  if (window.LenisInstance && !window.LenisInstance._rafId) {
-    function raf(time) {
-      window.LenisInstance.raf(time);
-      window.LenisInstance._rafId = requestAnimationFrame(raf);
-    }
-    window.LenisInstance._rafId = requestAnimationFrame(raf);
-  }
-}
-
-// Auto init Lenis after document load
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.Lenis && window.innerWidth > 750) {
-    initLenis();
-  }
-});
-
 //Dynamic browser tab title - dukeh
 if (window.dynamicBrowserTitle && window.dynamicBrowserTitle.show && typeof window.dynamicBrowserTitle.text === "string" && window.dynamicBrowserTitle.text.trim() !== "") {
   const originalTitle = document.title;
@@ -3694,18 +3747,3 @@ if (window.dynamicBrowserTitle && window.dynamicBrowserTitle.show && typeof wind
     document.title = originalTitle;
   });
 }
-
-class ImageReveal extends HTMLElement {
-  constructor() {
-    super();
-    this.image = this.querySelector('.image-reveal__image');
-
-    if (theme.config.motionReduced) return;
-    Motion.inView(this, this.init.bind(this), { margin: '200px 0px 200px 0px' });
-  }
-
-  init() {
-    this.image.classList.add('image-reveal__image--visible');
-  }
-}
-if (!customElements.get('image-reveal')) customElements.define('image-reveal', ImageReveal);

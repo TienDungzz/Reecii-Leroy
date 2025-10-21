@@ -3,6 +3,13 @@
 {% comment %} {{ 'section-header.css' | asset_url | stylesheet_tag }} {% endcomment %}
 <link rel="preload" href="{{ 'section-header.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 
+<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+<noscript>
+  {{ 'component-list-menu.css' | asset_url | stylesheet_tag: preload: true }}
+  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag: preload: true }}
+</noscript>
+
 {%- liquid
   assign sec_stts = section.settings
 
@@ -296,10 +303,6 @@
   </div>
 </{{ header_wrapper }}>
 
-{%- if settings.cart_type == 'notification' -%}
-  {%- render 'cart-notification', color_scheme: sec_stts.color_scheme -%}
-{%- endif -%}
-
 {%- stylesheet -%}
   body {
     --header-height: 0px;
@@ -440,6 +443,16 @@
     --color-primary-button-hover-text: inherit;
     --color-primary-button-hover-border: inherit;
     --color-primary-button-hover-background: inherit;
+    --color-primary: inherit;
+    --color-primary-rgb: inherit;
+    --color-input-text: inherit;
+    --color-input-border: inherit;
+
+    .search--inline {
+      --color-input-text: inherit;
+      --color-input-border: inherit;
+      --color-primary-button-text: inherit;
+    }
   }
 
   .header-section {
@@ -506,7 +519,7 @@
 
   /* Header padding styles */
   .header {
-    --last-item-minus-margin: 1.2rem;
+    --last-item-minus-margin: 0rem;
     .header__row--top {
       padding-block-start: var(--padding-block-start-top);
       padding-block-end: var(--padding-block-end-top);
@@ -646,6 +659,7 @@
     &:has(.header__column--center .header__search .search--inline) {
       .header__search .predictive-search--center {
         width: 100%;
+        max-height: 70dvh;
       }
 
       .header__search .details__list {
@@ -675,6 +689,10 @@
         padding: 1.5rem 0 1.5rem 2rem;
       }
 
+      .header__search--underline .search__input.field__input {
+        padding-left: 0;
+      }
+
       .header__search .details__list {
         opacity: 0;
         transition: opacity var(--animation-speed) var(--animation-easing),
@@ -690,6 +708,7 @@
 
       .predictive-search {
         padding-inline: var(--padding-2xl);
+        max-height: 70dvh;
       }
     }
 
@@ -790,10 +809,24 @@
   }
 
   /* If header column has header vertical menu */
-  .header__columns:has(.header__column--left .header__vertical-menu) ,
+  .header__columns:has(.header__column--left .header__vertical-menu)  {
+    @media screen and (min-width: 750px) {
+      --header-left: 1fr;
+      --header-right: max-content;
+    }
+  }
   .header__columns:has(.header__column--right .header__vertical-menu) {
     @media screen and (min-width: 750px) {
-      --header-template-columns: max-content max-contnet;
+      --header-left: max-content;
+      --header-right: 1fr;
+    }
+  }
+
+  /* If header column has only header menu and localization */
+  .header__columns:has(.header__column--left):has(.header__column--right):has(.header-menu):has(.header-localization):not(:has(.header__column--center)) {
+    @media screen and (min-width: 750px) {
+      --header-left: 1fr;
+      --header-right: max-content;
     }
   }
 
@@ -1389,33 +1422,6 @@
           "id": "link_url_1",
           "label": "t:settings.link",
           "visible_if": "{{ block.settings.show_promotion_banner == true }}"
-        },
-        {
-          "type": "header",
-          "content": "t:content.a_to_z_brands"
-        },
-        {
-          "type": "checkbox",
-          "id": "show_brand",
-          "label": "t:settings.show_a_to_z_brands",
-          "default": false
-        },
-        {
-          "type": "text",
-          "id": "brand_title",
-          "label": "t:settings.title",
-          "default": "All Brands A-Z"
-        },
-        {
-          "type": "text",
-          "id": "brand_text",
-          "label": "t:settings.button_label",
-          "default": "See All Brands"
-        },
-        {
-          "type": "url",
-          "id": "brand_url",
-          "label": "t:settings.button_link"
         },
         {
           "type": "header",

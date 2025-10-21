@@ -1,44 +1,45 @@
 {% comment %}theme-check-disable UndefinedObject{% endcomment %}
 {% comment %} {{ 'section-footer.css' | asset_url | stylesheet_tag: preload: true }} {% endcomment %}
 
-<div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<div
-  class="
-    section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}
-    {% if section.settings.section_height != "" %} {{ section.settings.section_height | prepend: "section--height-" }}{% endif %}
-  "
-  style="
-    {% if section.settings.section_width == 'custom' %}
-      --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
-      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
-    {% endif %}
-  "
->
-  {% render 'background-media',
-    background_media: section.settings.background_media,
-    background_video: section.settings.video,
-    background_video_position: section.settings.video_position,
-    background_image: section.settings.background_image,
-    background_image_position: section.settings.background_image_position
-  %}
-
+<{% if section.settings.animation_type == 'parallax' %}footer-parallax class="block relative z--1"{% else %}div{% endif %}>
+  <div class="section-background color-{{ section.settings.color_scheme }}"></div>
   <div
     class="
-      spacing-style
-      layout-panel-flex
-      layout-panel-flex--{{ section.settings.content_direction }}
-      section-content-wrapper
-      {% if section.settings.vertical_on_mobile %} mobile-column{% endif %}
+      section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}
+      {% if section.settings.section_height != "" %} {{ section.settings.section_height | prepend: "section--height-" }}{% endif %}
     "
     style="
-      {% render 'layout-panel-style', settings: section.settings %}
-      {%  render 'spacing-style', settings: section.settings %}
+      {% if section.settings.section_width == 'custom' %}
+        --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
+        --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+      {% endif %}
     "
   >
-    {% content_for 'blocks' %}
-  </div>
-</div>
+    {% render 'background-media',
+      background_media: section.settings.background_media,
+      background_video: section.settings.video,
+      background_video_position: section.settings.video_position,
+      background_image: section.settings.background_image,
+      background_image_position: section.settings.background_image_position
+    %}
 
+    <div
+      class="
+        spacing-style
+        layout-panel-flex
+        layout-panel-flex--{{ section.settings.content_direction }}
+        section-content-wrapper
+        {% if section.settings.vertical_on_mobile %} mobile-column{% endif %}
+      "
+      style="
+        {% render 'layout-panel-style', settings: section.settings %}
+        {%  render 'spacing-style', settings: section.settings %}
+      "
+    >
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</{% if section.settings.animation_type == 'parallax' %}footer-parallax{% else %}div{% endif %}>
 {% schema %}
 {
   "name": "t:names.footer_group",
@@ -293,6 +294,26 @@
         }
       ],
       "default": ""
+    },
+    {
+      "type": "header",
+      "content": "t:content.animations"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "t:settings.animation_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "parallax",
+          "label": "t:settings.parallax"
+        }
+      ],
+      "default": "none"
     },
     {
       "type": "header",

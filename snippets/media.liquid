@@ -21,7 +21,13 @@
   endif
 %}
 
-<div
+{% if animation_type == 'parallax' %}
+  {% assign animation_element = 'parallax-background' %}
+{% else' %}
+  {% assign animation_element = 'div' %}
+{% endif %}
+
+<{{ animation_element }}
   class="
     media-block
     spacing-style
@@ -47,8 +53,9 @@
       {% if block.settings.image != blank %}
         {% render 'image',
           image: block.settings.image,
-          class: 'media-block__media border-style',
-          unset_image_tag: unset_image_tag
+          class: 'media-block__media border-style parallax-image',
+          unset_image_tag: unset_image_tag,
+          animation_type: animation_type
         %}
       {% else %}
         <div class="media-block__media border-style placeholder-svg" style="height: 100%;">
@@ -90,12 +97,11 @@
       ></placeholder-image>
     </div>
   {%- endif -%}
-</div>
+</{{ animation_element }}>
 
 {% stylesheet %}
   .media-banner {
     min-height: var(--media-height, auto);
-    /* aspect-ratio: {{ aspect_ratio }}; */
     align-items: center;
   }
 
