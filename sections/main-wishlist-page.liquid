@@ -10,7 +10,8 @@
   data-section-type="wishlist"
   id="WishlistSection-{{ section.id }}"
   data-section="{{ section.id }}"
-  class="section section-{{ section_width }} color-{{ color_scheme }}"
+  class="section section-{{ section_width }} color-{{ color_scheme }} spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
 >
   <div class="wishlist-container">
     <div class="section-global__header">
@@ -59,9 +60,7 @@
                 {%- render 'icon', icon: 'mail' -%}
             </svg>
           </div>
-          <span class="text">
-            {{ 'content.share' | t }}
-          </span>
+          <span class="text">Share my wish list via email</span>
         </a>
         <ul class="pagination__list list-unstyled" role="list" id="wishlist-paginate"></ul>
       </div>
@@ -520,6 +519,30 @@ if (!customElements.get('wishlist-view')) customElements.define('wishlist-view',
       "default": 4,
       "label": "t:settings.number_of_columns_on_desktop"
     },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
   ]
 }
 {% endschema %}
