@@ -250,69 +250,6 @@
 
 <script src="{{ 'lookbook.js' | asset_url }}" defer="defer"></script>
 
-{% javascript %}
-  class LookbookDot extends HTMLElement {
-    constructor() {
-      super();
-      this.content = this.querySelector('.lookbook-dot__content');
-      this.icon = this.querySelector('[data-product-lookbook]');
-      this.isDesktop = window.innerWidth > 1024;
-      this.handleClick = this.handleClick.bind(this);
-      this.handleOutsideClick = this.handleOutsideClick.bind(this);
-    }
-
-    connectedCallback() {
-      this.addEventListener('click', this.handleClick);
-      document.addEventListener('click', this.handleOutsideClick);
-    }
-
-    disconnectedCallback() {
-      this.removeEventListener('click', this.handleClick);
-      document.removeEventListener('click', this.handleOutsideClick);
-    }
-
-    handleClick(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const allDots = document.querySelectorAll('lookbook-dot');
-      const alreadyActive = this.classList.contains('is-active');
-
-      allDots.forEach(dot => {
-        dot.classList.remove('is-active');
-        dot.querySelector('.lookbook-dot__content')?.classList.remove('is-open');
-      });
-
-      if (!alreadyActive) {
-        this.classList.add('is-active');
-        this.content?.classList.add('is-open');
-
-        if (!this.isDesktop) {
-          const lookbookItem = this.closest('.lookbook-item');
-          const btnShow = lookbookItem?.querySelector('.lookBook__btnShowProducts');
-          btnShow?.click();
-
-          const allDotsArr = Array.from(allDots);
-          const index = allDotsArr.indexOf(this);
-          const swiperEl = document.querySelector('.lookbook-popup .swiper');
-          if (swiperEl?.swiper) swiperEl.swiper.slideTo(index, 600);
-        }
-      }
-    }
-
-    handleOutsideClick(e) {
-      if (!e.target.closest('lookbook-dot')) {
-        document.querySelectorAll('lookbook-dot.is-active').forEach(dot => {
-          dot.classList.remove('is-active');
-          dot.querySelector('.lookbook-dot__content')?.classList.remove('is-open');
-        });
-      }
-    }
-  }
-
-  if (!customElements.get('lookbook-dot')) customElements.define('lookbook-dot', LookbookDot);
-{% endjavascript %}
-
 {% schema %}
 {
   "name": "t:names.lookbook_section",

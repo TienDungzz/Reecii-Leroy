@@ -12,9 +12,7 @@ if (!customElements.get("quick-view-modal")) {
         }
 
         hide(preventFocus = false) {
-          const cartNotification =
-            document.querySelector("cart-notification") ||
-            document.querySelector("cart-drawer");
+          const cartNotification = document.querySelector("cart-drawer");
           if (cartNotification)
             cartNotification.setActiveElement(this.openedBy);
           setTimeout(() => (this.modalContent.innerHTML = ""), 500);
@@ -28,7 +26,7 @@ if (!customElements.get("quick-view-modal")) {
           opener.classList.add("loading");
           opener.querySelector(".loading__spinner").classList.remove("hidden");
 
-          fetch(opener.getAttribute("data-product-url"))
+          fetch(opener.getAttribute("data-product-url").split("?")[0])
             .then((response) => response.text())
             .then((responseText) => {
               const responseHTML = new DOMParser().parseFromString(

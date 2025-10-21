@@ -1,9 +1,9 @@
 {% liquid
-  assign block_stts = block.settings
-  assign movement_direction = block_stts.movement_direction
-  assign gap_between_elements = block_stts.gap_between_elements
+  assign bl_stts = block.settings
+  assign movement_direction = bl_stts.movement_direction
+  assign gap_between_elements = bl_stts.gap_between_elements
 
-  assign marquee_type = block_stts.marquee_type
+  assign marquee_type = bl_stts.marquee_type
   if marquee_type == 'auto'
     assign element_scroll = 'div'
   else
@@ -20,20 +20,20 @@
     block w-full overflow-hidden
     spacing-style
     gap-style
-    {% if block_stts.inherit_color_scheme == false %}color-scheme-custom{% endif %}
-    {% if block_stts.positions_type == 'floating' %}position-style{% endif %}
+    {% if bl_stts.inherit_color_scheme == false %}color-scheme-custom{% endif %}
+    {% if bl_stts.positions_type == 'floating' %}position-style{% endif %}
   "
   style="
     --marquee-direction: {{ movement_direction }};
-    {%- render 'spacing-style', settings: block_stts %};
+    {%- render 'spacing-style', settings: bl_stts %};
     {% render 'gap-style', value: gap_between_elements, name: 'marquee-gap' %}
-    {% if block_stts.inherit_color_scheme == false %}
-      {% render 'color-scheme-style', settings: block_stts %}
+    {% if bl_stts.inherit_color_scheme == false %}
+      {% render 'color-scheme-style', settings: bl_stts %}
     {% endif %}
-    {%- if block_stts.positions_type == 'floating' -%}{%- render 'position-style', settings: block_stts -%}{%- endif -%}
-    {%- if block_stts.transparent_background == true -%}background-color: transparent;{%- endif -%}
+    {%- if bl_stts.positions_type == 'floating' -%}{%- render 'position-style', settings: bl_stts -%}{%- endif -%}
+    {%- if bl_stts.transparent_background == true -%}background-color: transparent;{%- endif -%}
   "
-  data-speed-factor="{{ block_stts.speed }}"
+  data-speed-factor="{{ bl_stts.speed }}"
   data-movement-direction="{{ movement_direction }}"
   {{ block.shopify_attributes }}
 >

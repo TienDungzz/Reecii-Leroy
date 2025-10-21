@@ -1,7 +1,9 @@
 {%- liquid
   assign scroll_reveal = settings.animations_reveal_on_scroll
-  assign columns_mobile = block.settings.mobile_columns
-  assign columns_desktop = block.settings.columns_carousel
+  assign columns_mobile = block.settings.columns_mobile
+
+
+  assign columns_desktop = block.settings.columns_desktop
   assign columns_tablet = 2
   if columns_desktop == 1
     assign columns_tablet = 1
@@ -24,19 +26,21 @@
       assign space_between_tablet = space_between_desktop | times: 0.75
       assign space_between_mobile = space_between_desktop | times: 0.5
     -%}
-    
+
+    {%- assign slides_per_view = columns_mobile -%}
     {%- capture breakpoints -%}
       {
-        "750": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ space_between_tablet }} },
-        "1024": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ space_between_desktop }} }
+        "768": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ space_between_mobile }} },
+        "1024": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ space_between_tablet }} },
+        "1400": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ space_between_desktop }} }
       }
     {%- endcapture -%}
     <swiper-component
       class="product-bundle-carousel-swiper-component size-full block"
       {%- render 'swiper-data',
         settings: block.settings,
-        slides_per_view: columns_mobile,
-        space_between: space_between_mobile,
+        slides_per_view: slides_per_view,
+        space_between: space_between_desktop,
         watch_slides_progress: true,
         breakpoints: breakpoints
       -%}
@@ -369,28 +373,12 @@
     },
     {
       "type": "range",
-      "id": "columns_carousel",
+      "id": "columns_desktop",
       "min": 1,
-      "max": 5,
+      "max": 6,
       "step": 1,
       "default": 4,
-      "label": "t:settings.columns"
-    },
-    {
-      "type": "select",
-      "id": "mobile_columns",
-      "label": "t:settings.mobile_columns",
-      "options": [
-        {
-          "value": "1",
-          "label": "1"
-        },
-        {
-          "value": "2",
-          "label": "2"
-        }
-      ],
-      "default": "2"
+      "label": "t:settings.number_of_columns_on_desktop"
     },
     {
       "type": "range",
@@ -401,6 +389,26 @@
       "step": 1,
       "unit": "px",
       "default": 30
+    },
+    {
+      "type": "header",
+      "content": "t:content.mobile_layout"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "default": "2",
+      "label": "t:settings.number_of_columns_on_mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:options.one_column"
+        },
+        {
+          "value": "2",
+          "label": "t:options.two_columns"
+        }
+      ]
     },
     {
       "type": "header",

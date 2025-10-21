@@ -103,10 +103,8 @@ class SectionFetcher extends HTMLElement {
     super();
     const activateMode = this.dataset.activate || 'inview';
     if (activateMode === 'interaction') {
-      // Chỉ khởi tạo sau khi có tương tác người dùng (mousemove, keydown, touch, wheel...)
       theme.initWhenVisible(() => this.initialize(), 0);
     } else {
-      // Mặc định: tải khi phần tử vào viewport
       Motion.inView(this, () => this.initialize());
     }
   }
@@ -1390,7 +1388,6 @@ class SwiperComponent extends HTMLElement {
   }
 
   connectedCallback() {
-
     this.initializeSwiper();
   }
 
@@ -1710,60 +1707,6 @@ class SwiperComponent extends HTMLElement {
 }
 if (!customElements.get("swiper-component"))
   customElements.define("swiper-component", SwiperComponent);
-
-class ProductRecommendations extends HTMLElement {
-  observer = undefined;
-
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    this.initializeRecommendations(this.dataset.productId);
-  }
-
-  initializeRecommendations(productId) {
-    this.observer?.unobserve(this);
-    this.observer = new IntersectionObserver(
-      (entries, observer) => {
-        if (!entries[0].isIntersecting) return;
-        observer.unobserve(this);
-        this.loadRecommendations(productId);
-      },
-      { rootMargin: "0px 0px 400px 0px" }
-    );
-    this.observer.observe(this);
-  }
-
-  loadRecommendations(productId) {
-    fetch(
-      `${this.dataset.url}&product_id=${productId}&section_id=${this.dataset.sectionId}`
-    )
-      .then((response) => response.text())
-      .then((text) => {
-        const html = document.createElement("div");
-        html.innerHTML = text;
-        const recommendations = html.querySelector("product-recommendations");
-
-        if (recommendations?.innerHTML.trim().length) {
-          this.innerHTML = recommendations.innerHTML;
-        }
-
-        if (this.classList.contains("complementary-products")) {
-          this.remove();
-        }
-
-        if (html.querySelector(".grid__item")) {
-          this.classList.add("product-recommendations--loaded");
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  }
-}
-if (!customElements.get("product-recommendations"))
-  customElements.define("product-recommendations", ProductRecommendations);
 
 // Init section function when it's visible, then disable observer
 theme.initSectionVisible = function (options) {
@@ -3718,7 +3661,323 @@ class SlideshowAnimated extends HTMLElement {
 }
 if (!customElements.get('slideshow-animated')) customElements.define('slideshow-animated', SlideshowAnimated);
 
-//Dynamic browser tab title - dukeh
+class MarqueeComponent extends HTMLElement {
+  constructor() {
+    super();
+    this.wrapper = this.querySelector(".marquee__wrapper");
+    this.content = this.querySelector(".marquee__content");
+    this.isDesktop = window.matchMedia('(min-width: 1025px)').matches;
+  }
+
+  connectedCallback() {
+    if (this.content.firstElementChild?.children.length === 0) return;
+
+    this.#addRepeatedItems();
+    this.#duplicateContent();
+    this.#setSpeed();
+
+    if (this.isDesktop) {
+      window.addEventListener("resize", this.#handleResize);
+      this.addEventListener("pointerenter", this.#slowDown);
+      this.addEventListener("pointerleave", this.#speedUp);
+    }
+  }
+
+  disconnectedCallback() {
+    if (this.isDesktop) {
+      window.removeEventListener("resize", this.#handleResize);
+      this.removeEventListener("pointerenter", this.#slowDown);
+      this.removeEventListener("pointerleave", this.#speedUp);
+    }
+  }
+
+  #animation = null;
+  #duration = 500;
+
+  #slowDown = theme.utils.debounce(() => {
+    if (this.#animation) return;
+
+    const animation = this.wrapper.getAnimations()[0];
+
+    if (!animation) return;
+
+    this.#animation = animateValue({
+      duration: this.#duration,
+      from: 1,
+      to: 0,
+      onUpdate: (value) => animation.updatePlaybackRate(value),
+      onComplete: () => {
+        this.#animation = null;
+      },
+    });
+  }, this.#duration);
+
+  #speedUp() {
+    this.#slowDown.cancel();
+
+    const animation = this.wrapper.getAnimations()[0];
+
+    if (!animation || animation.playbackRate === 1) return;
+
+    const from = this.#animation?.current ?? 0;
+    this.#animation?.cancel();
+
+    this.#animation = animateValue({
+      duration: this.#duration,
+      from,
+      to: 1,
+      onUpdate: (value) => animation.updatePlaybackRate(value),
+      onComplete: () => {
+        this.#animation = null;
+      },
+    });
+  }
+
+  get clonedContent() {
+    const lastChild = this.wrapper.lastElementChild;
+
+    return this.content !== lastChild ? lastChild : null;
+  }
+
+  #setSpeed(value = this.#calculateSpeed()) {
+    this.style.setProperty("--marquee-speed", `${value}s`);
+  }
+
+  #calculateSpeed() {
+    const speedFactor = Number(this.getAttribute("data-speed-factor"));
+    const marqueeWidth = this.offsetWidth;
+    const speed = Math.ceil(marqueeWidth / speedFactor / 2);
+    return speed;
+  }
+
+  #handleResize = theme.utils.debounce(() => {
+    const newNumberOfCopies = this.#calculateNumberOfCopies();
+    const currentNumberOfCopies = this.content.children.length;
+
+    if (newNumberOfCopies > currentNumberOfCopies) {
+      this.#addRepeatedItems(newNumberOfCopies - currentNumberOfCopies);
+    } else if (newNumberOfCopies < currentNumberOfCopies) {
+      this.#removeRepeatedItems(currentNumberOfCopies - newNumberOfCopies);
+    }
+
+    this.#duplicateContent();
+    this.#setSpeed();
+    this.#restartAnimation();
+  }, 250);
+
+  #restartAnimation() {
+    const animations = this.wrapper.getAnimations();
+
+    requestAnimationFrame(() => {
+      for (const animation of animations) {
+        animation.currentTime = 0;
+      }
+    });
+  }
+
+  #duplicateContent() {
+
+    this.clonedContent?.remove();
+
+    const clone = (
+      this.content.cloneNode(true)
+    );
+
+    clone.setAttribute("aria-hidden", "true");
+
+    this.wrapper.appendChild(clone);
+  }
+
+  #addRepeatedItems(numberOfCopies = this.#calculateNumberOfCopies()) {
+    if (!this.wrapper) return;
+
+    for (let i = 0; i < numberOfCopies - 1; i++) {
+      const clone = this.wrapper.querySelector('.marquee__repeated-items').cloneNode(true);
+
+      this.content.appendChild(clone);
+    }
+  }
+
+  #removeRepeatedItems(numberOfCopies = this.#calculateNumberOfCopies()) {
+
+    for (let i = 0; i < numberOfCopies - 1; i++) {
+      this.content.lastElementChild?.remove();
+    }
+  }
+
+  #calculateNumberOfCopies() {
+    const marqueeWidth = this.offsetWidth;
+    const marqueeRepeatedItemWidth =
+      this.content.firstElementChild instanceof HTMLElement
+        ? this.content.firstElementChild.offsetWidth
+        : 1;
+
+    return marqueeRepeatedItemWidth === 0
+      ? 1
+      : Math.ceil(marqueeWidth / marqueeRepeatedItemWidth);
+  }
+}
+if (!customElements.get('marquee-component')) customElements.define('marquee-component', MarqueeComponent);
+
+class MarqueeScroll extends HTMLElement {
+  constructor() {
+    super();
+
+    this.speed = parseFloat(this.dataset.speed || 1.6), // 100px going to move for
+    this.space = 100, // 100px
+    this.isDesktop = window.matchMedia('(min-width: 1025px)').matches;
+
+    if (this.isDesktop) {
+      Motion.inView(this, this.init.bind(this), { margin: '200px 0px 200px 0px' });
+    }
+  }
+
+  connectedCallback() {
+    if (this.isDesktop) {
+      this.#toggleHoverEvents(true);
+    }
+  }
+
+  disconnectedCallback() {
+    if (this.isDesktop) {
+      this.#toggleHoverEvents(false);
+    }
+  }
+
+  get childElement() {
+    return this.firstElementChild;
+  }
+
+  get maximum() {
+    return parseInt(this.dataset.maximum || 10);
+  }
+
+  get direction() {
+    return this.dataset.direction || 'left';
+  }
+
+  get parallax() {
+    return this.dataset.parallax ? parseFloat(this.dataset.parallax) : false;
+  }
+
+  init() {
+    if (this.parallax && this.isDesktop) {
+      let translate = this.parallax * 100 / (1 + this.parallax);
+      if (this.direction === 'right') {
+        translate = translate * -1;
+      }
+
+      Motion.scroll(
+        Motion.animate(this, { transform: [`translateX(${translate}%)`, `translateX(0px)`] }, { ease: 'linear' }),
+        { target: this, offset: ['start end', 'end start'] }
+      );
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries, _observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          this.classList.remove('paused');
+        }
+        else {
+          this.classList.add('paused');
+        }
+      });
+    }, { rootMargin: '0px 0px 50px 0px' });
+    observer.observe(this);
+  }
+
+  #toggleHoverEvents(enable) {
+    const action = enable ? 'addEventListener' : 'removeEventListener';
+    this[action]("pointerenter", this.#slowDown);
+    this[action]("pointerleave", this.#speedUp);
+  }
+
+  #animation = null;
+  #duration = 500;
+
+  #slowDown = theme.utils.debounce(() => {
+    if (this.#animation) return;
+
+    const animation = this.querySelector('.marquee__content').getAnimations()[0];
+
+    if (!animation) return;
+
+    this.#animation = animateValue({
+      duration: this.#duration,
+      from: 1,
+      to: 0,
+      onUpdate: (value) => animation.updatePlaybackRate(value),
+      onComplete: () => {
+        this.#animation = null;
+      },
+    });
+  }, this.#duration);
+
+  #speedUp() {
+    this.#slowDown.cancel();
+
+    const animation = this.querySelector('.marquee__content').getAnimations()[0];
+
+    if (!animation || animation.playbackRate === 1) return;
+
+    const from = this.#animation?.current ?? 0;
+    this.#animation?.cancel();
+
+    this.#animation = animateValue({
+      duration: this.#duration,
+      from,
+      to: 1,
+      onUpdate: (value) => animation.updatePlaybackRate(value),
+      onComplete: () => {
+        this.#animation = null;
+      },
+    });
+  }
+}
+if (!customElements.get('marquee-scroll')) customElements.define('marquee-scroll', MarqueeScroll);
+
+function animateValue({
+  from,
+  to,
+  duration,
+  onUpdate,
+  easing = (t) => t * t * (3 - 2 * t),
+  onComplete,
+}) {
+  const startTime = performance.now();
+  let cancelled = false;
+  let currentValue = from;
+
+  function animate(currentTime) {
+    if (cancelled) return;
+
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easedProgress = easing(progress);
+    currentValue = from + (to - from) * easedProgress;
+
+    onUpdate(currentValue);
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else if (typeof onComplete === "function") {
+      onComplete();
+    }
+  }
+
+  requestAnimationFrame(animate);
+
+  return {
+    get current() {
+      return currentValue;
+    },
+    cancel() {
+      cancelled = true;
+    },
+  };
+}
+
 if (window.dynamicBrowserTitle && window.dynamicBrowserTitle.show && typeof window.dynamicBrowserTitle.text === "string" && window.dynamicBrowserTitle.text.trim() !== "") {
   const originalTitle = document.title;
   const customTitle = window.dynamicBrowserTitle.text;

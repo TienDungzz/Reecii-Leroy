@@ -35,20 +35,37 @@ class GiftWrapButton extends HTMLElement {
   }
 
   updateSections(sections) {
+    // Try to find cart items component in this order: drawer first, then main cart
     const cartItemsComponent =
-      document.querySelector('cart-items-component') ||
-      document.querySelector('cart-drawer-items');
+      document.querySelector('cart-drawer-items') ||
+      document.querySelector('cart-items-component');
+    
+    console.log('GiftWrapButton updateSections - cartItemsComponent:', cartItemsComponent);
+    console.log('GiftWrapButton updateSections - sections:', sections);
+    
     if (cartItemsComponent && typeof cartItemsComponent.updateSections === 'function') {
+      console.log('GiftWrapButton calling updateSections');
       cartItemsComponent.updateSections(sections);
+    } else {
+      console.error('GiftWrapButton: No cart items component found or updateSections method not available');
     }
   }
 
   renderSection(sectionId, html) {
+    // Try to find cart items component in this order: drawer first, then main cart
     const cartItemsComponent =
-      document.querySelector('cart-items-component') ||
-      document.querySelector('cart-drawer-items');
+      document.querySelector('cart-drawer-items') ||
+      document.querySelector('cart-items-component');
+    
+    console.log('GiftWrapButton renderSection - cartItemsComponent:', cartItemsComponent);
+    console.log('GiftWrapButton renderSection - sectionId:', sectionId);
+    console.log('GiftWrapButton renderSection - html:', html);
+    
     if (cartItemsComponent && typeof cartItemsComponent.renderSection === 'function') {
+      console.log('GiftWrapButton calling renderSection');
       cartItemsComponent.renderSection(sectionId, html);
+    } else {
+      console.error('GiftWrapButton: No cart items component found or renderSection method not available');
     }
   }
 
@@ -66,11 +83,19 @@ class GiftWrapButton extends HTMLElement {
       const response = await fetch(`${routes.cart_add_url}`, fetchOptions);
       const data = await response.json();
 
+      console.log('data', data);
+      console.log('this.id', this.id);
+      console.log('sectionId', sectionId);
+      console.log('data.sections', data.sections);
+      console.log('data.sections[sectionId]', data.sections[sectionId]);
+
       document.dispatchEvent(new CustomEvent('GiftWrapUpdateEvent', { detail: { data, id: this.id } }));
 
       if (data.sections) {
+        console.log('data.sections', data.sections);
         this.updateSections(data.sections);
       } else if (sectionId && data.sections && data.sections[sectionId]) {
+        console.log('data.sections[sectionId]', data.sections[sectionId]);
         this.renderSection(sectionId, data.sections[sectionId]);
       }
     } catch (error) {
@@ -81,8 +106,6 @@ class GiftWrapButton extends HTMLElement {
 if (!customElements.get('gift-wrap-button')) customElements.define('gift-wrap-button', GiftWrapButton);
 
 class CartItemsComponent extends HTMLElement {
-  #debouncedOnChange;
-
   constructor() {
     super();
     this.handleQuantityUpdate = this.handleQuantityUpdate.bind(this);
@@ -93,17 +116,6 @@ class CartItemsComponent extends HTMLElement {
         this.onLineItemRemove(event.detail.line);
       }
     });
-  }
-
-  // Debounce utility as a private method
-  #debounce(fn, wait) {
-    let timeout;
-    function debounced(...args) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => fn.apply(this, args), wait);
-    }
-    debounced.cancel = () => clearTimeout(timeout);
-    return debounced;
   }
 
   // Animation end utility
@@ -147,7 +159,6 @@ class CartItemsComponent extends HTMLElement {
     }
 
     const lineItemRow = this.querySelector(`.cart-items__table-row[data-line="${cartLine}"]`);
-    console.log('lineItemRow', lineItemRow);
     if (lineItemRow) {
       const textComponent = lineItemRow.querySelectorAll?.('text-loader-component');
       textComponent?.forEach?.((component) => {
@@ -161,33 +172,6 @@ class CartItemsComponent extends HTMLElement {
       action: 'change',
     });
   }
-
-  /**
-   * Handles QuantitySelectorUpdateEvent change event.
-   * @param {QuantitySelectorUpdateEvent} event - The event.
-   */
-  // #onQuantityChange(event) {
-  //   const { quantity, cartLine: line } = event.detail || {};
-  //   if (!line) return;
-
-  //   if (quantity === 0) {
-  //     this.onLineItemRemove(line);
-  //     return;
-  //   }
-
-  //   // Find the cart row by its class and data-line attribute (cart-items__table-row)
-  //   const lineItemRow = this.querySelector(`.cart-items__table-row[data-line="${line}"]`);
-  //   if (lineItemRow) {
-  //     const textComponent = lineItemRow.querySelector?.('text-loader-component');
-  //     textComponent?.spinner();
-  //   }
-
-  //   this.updateQuantity({
-  //     line,
-  //     quantity,
-  //     action: 'change',
-  //   });
-  // }
 
   /**
    * Handles the line item removal.
@@ -262,36 +246,64 @@ class CartItemsComponent extends HTMLElement {
   async renderSection(sectionId) {
     // Fetch the new section HTML
     const html = await this.getSectionHTML(sectionId);
-    const newDOM = new DOMParser().parseFromString(html, 'text/html');
-    // Find the new and old section containers
-    const newSection = newDOM.querySelector(`[data-section-id="${sectionId}"] .section--page-width`);
-    const oldSection = document.querySelector(`[data-section-id="${sectionId}"] .section--page-width`);
+    this.#updateSingleSection(sectionId, html);
+  }
 
-    // Only proceed if both new and old sections exist
-    if (newSection && oldSection) {
-      // For each child in the new section, update the corresponding child in the old section
-      Array.from(newSection.children).forEach(child => {
-        // Skip message and shipping blocks
-        if (
-          !child.classList.contains('cart-page__message') &&
-          !child.classList.contains('cart-page__shipping')
-        ) {
-          let target = null;
-          // Prefer matching by id
-          if (child.id) {
-            target = oldSection.querySelector(`#${child.id}`);
-          }
-          // Fallback: match by first class name
-          if (!target && child.classList.length > 0) {
-            target = oldSection.querySelector(`.${child.classList[0]}`);
-          }
-          // If a target is found, replace it with the new child
-          if (target) {
-            target.replaceWith(child.cloneNode(true));
-          }
-        }
-      });
+  /**
+   * Optimized method to find target section element
+   * @param {string} sectionId - The section ID
+   * @returns {Element|null} The target element
+   */
+  #findTargetSection(sectionId) {
+    return document.querySelector(`[data-section-id="${sectionId}"] .section--main-cart`);
+  }
+
+  /**
+   * Optimized method to find new section element from HTML
+   * @param {string} sectionId - The section ID
+   * @param {string} html - The HTML content
+   * @returns {Element|null} The new section element
+   */
+  #findNewSection(sectionId, html) {
+    const newDOM = new DOMParser().parseFromString(html, 'text/html');
+    return newDOM.querySelector(`[data-section-id="${sectionId}"] .section--main-cart`);
+  }
+
+  /**
+   * Optimized method to update a single section
+   * @param {string} sectionId - The section ID
+   * @param {string} html - The HTML content
+   */
+  #updateSingleSection(sectionId, html) {
+    const target = this.#findTargetSection(sectionId);
+    const newSection = this.#findNewSection(sectionId, html);
+
+    if (!target || !newSection) {
+      return;
     }
+
+    // Update children efficiently
+    Array.from(newSection.children).forEach(child => {
+      // Skip message and shipping blocks
+      if (
+        !child.classList.contains('cart-page__message') &&
+        !child.classList.contains('cart-page__shipping')
+      ) {
+        let targetChild = null;
+        // Prefer matching by id
+        if (child.id) {
+          targetChild = target.querySelector(`#${child.id}`);
+        }
+        // Fallback: match by first class name
+        if (!targetChild && child.classList.length > 0) {
+          targetChild = target.querySelector(`.${child.classList[0]}`);
+        }
+        // If a target child is found, replace it with the new child
+        if (targetChild) {
+          targetChild.replaceWith(child.cloneNode(true));
+        }
+      }
+    });
   }
 
   /**
@@ -351,11 +363,7 @@ class CartItemsComponent extends HTMLElement {
 
     try {
       const response = await fetch(`${routes.cart_change_url}`, fetchOptions);
-
       const json = await response.json();
-
-      console.log('json', json);
-      console.log('json.errors', json.errors);
 
       if (json.errors) {
         resetSpinner(this);
@@ -393,49 +401,14 @@ class CartItemsComponent extends HTMLElement {
   }
 
   updateSections(sections) {
-    console.log('updateSections', sections);
     if (!sections) return;
 
     resetSpinner(this);
     resetShimmer(this);
 
+    // Process all sections efficiently using the optimized method
     Object.entries(sections).forEach(([id, html]) => {
-      const target = document.querySelector(`[data-section-id="${id}"]`);
-      if (!target) return;
-
-      const newDOM = new DOMParser().parseFromString(html, 'text/html');
-      const newSection = newDOM.querySelector(`[data-section-id="${id}"] .section--page-width`);
-
-      console.log('newSection', newSection);
-      console.log('target', target);
-
-      // Only proceed if both new and old sections exist
-      if (newSection && target) {
-        // For each child in the new section, update the corresponding child in the old section
-        Array.from(newSection.children).forEach(child => {
-          // Skip message and shipping blocks
-          if (
-            !child.classList.contains('cart-page__message') &&
-            !child.classList.contains('cart-page__shipping')
-          ) {
-            let targetChild = null;
-            // Prefer matching by id
-            if (child.id) {
-              targetChild = target.querySelector(`#${child.id}`);
-            }
-            // Fallback: match by first class name
-            if (!targetChild && child.classList.length > 0) {
-              targetChild = target.querySelector(`.${child.classList[0]}`);
-            }
-            // If a target child is found, replace it with the new child
-            if (targetChild) {
-              targetChild.replaceWith(child.cloneNode(true));
-            }
-          }
-        });
-      }
-      // If you want to replace the whole section instead, uncomment the following:
-      // if (newSection) target.replaceWith(newSection);
+      this.#updateSingleSection(id, html);
     });
   }
 
@@ -455,7 +428,7 @@ class CartItemsComponent extends HTMLElement {
    */
   #handleCartError = (line, json) => {
     const quantitySelector = this.querySelector(`.cart-items__table-row[data-line="${line}"]`);
-    const quantityInput = quantitySelector?.querySelector?.('input');
+    const quantityInput = quantitySelector?.querySelector('input');
     if (!quantityInput) {
       console.error('Quantity input not found');
       return;
@@ -508,24 +481,110 @@ class CartItemsComponent extends HTMLElement {
 if (!customElements.get('cart-items-component')) customElements.define('cart-items-component', CartItemsComponent);
 
 class CartDrawerItems extends CartItemsComponent {
-  getSectionsToRender() {
-    return [
-      {
-        id: 'CartDrawer',
-        section: 'cart-drawer',
-        selector: 'cart-drawer-items'
-      },
-      {
-        id: 'CartDrawer',
-        section: 'cart-drawer',
-        selector: '.drawer__footer'
-      },
-      {
-        id: 'cart-icon-bubble',
-        section: 'cart-icon-bubble',
-        selector: '.shopify-section',
-      },
-    ];
+  constructor() {
+    super();
+    // CartDrawerItems inherits all functionality from CartItemsComponent
+    // but we can add drawer-specific logic here if needed
+  }
+
+  /**
+   * Override the sectionId getter to handle drawer-specific section ID
+   * @returns {string} The section id.
+   */
+  get sectionId() {
+    const { sectionId } = this.dataset || {};
+    if (!sectionId) {
+      // Fallback to parent cart drawer section ID
+      const cartDrawer = this.closest('cart-drawer');
+      if (cartDrawer && cartDrawer.dataset.sectionId) {
+        return cartDrawer.dataset.sectionId;
+      }
+      throw new Error('Section id missing for cart drawer items');
+    }
+    return sectionId;
+  }
+
+  /**
+   * Optimized method to find target section element
+   * @param {string} sectionId - The section ID
+   * @returns {Element|null} The target element
+   */
+  #findTargetSection(sectionId) {
+    return document.querySelector(`[data-section-id="${sectionId}"] .section--main-cart`);
+  }
+
+  /**
+   * Optimized method to find new section element from HTML
+   * @param {string} sectionId - The section ID
+   * @param {string} html - The HTML content
+   * @returns {Element|null} The new section element
+   */
+  #findNewSection(sectionId, html) {
+    const newDOM = new DOMParser().parseFromString(html, 'text/html');
+    return newDOM.querySelector(`[data-section-id="${sectionId}"] .section--main-cart`);
+  }
+
+  /**
+   * Optimized method to update a single section
+   * @param {string} sectionId - The section ID
+   * @param {string} html - The HTML content
+   */
+  #updateSingleSection(sectionId, html) {
+    const target = this.#findTargetSection(sectionId);
+    const newSection = this.#findNewSection(sectionId, html);
+
+    if (!target || !newSection) {
+      console.log(`CartDrawerItems: Cannot update section ${sectionId} - missing target or newSection`);
+      return;
+    }
+
+    // Update children efficiently
+    Array.from(newSection.children).forEach(child => {
+      // Skip message and shipping blocks
+      if (
+        !child.classList.contains('cart-page__message') &&
+        !child.classList.contains('cart-page__shipping')
+      ) {
+        let targetChild = null;
+        // Prefer matching by id
+        if (child.id) {
+          targetChild = target.querySelector(`#${child.id}`);
+        }
+        // Fallback: match by first class name
+        if (!targetChild && child.classList.length > 0) {
+          targetChild = target.querySelector(`.${child.classList[0]}`);
+        }
+        // If a target child is found, replace it with the new child
+        if (targetChild) {
+          targetChild.replaceWith(child.cloneNode(true));
+        }
+      }
+    });
+  }
+
+  /**
+   * Override updateSections to handle drawer-specific updates
+   * @param {Object} sections - The sections object from the response.
+   */
+  updateSections(sections) {
+    if (!sections) return;
+
+    resetSpinner(this);
+    resetShimmer(this);
+
+    // Process all sections efficiently
+    Object.entries(sections).forEach(([id, html]) => {
+      this.#updateSingleSection(id, html);
+    });
+  }
+
+  /**
+   * Override renderSection to handle drawer-specific section rendering
+   * @param {string} sectionId
+   * @param {string} html
+   */
+  renderSection(sectionId, html) {
+    this.#updateSingleSection(sectionId, html);
   }
 }
 if (!customElements.get('cart-drawer-items')) customElements.define('cart-drawer-items', CartDrawerItems);
@@ -613,13 +672,11 @@ class CartDiscountComponent extends HTMLElement {
 
     const discountForm = this.querySelector('form.cart-discount__form');
     if (discountForm) {
-      console.log('discountForm', discountForm);
       discountForm.addEventListener('submit', this.applyDiscount);
     }
 
     this.addEventListener('click', (event) => {
       if (event.target.closest('.cart-discount__pill')) {
-        console.log('event', event);
         this.removeDiscount(event);
       }
     });
@@ -666,10 +723,19 @@ class CartDiscountComponent extends HTMLElement {
    * @param {Object} sections - The sections object from the response.
    */
   updateSections(sections) {
-    // Use CartItemsComponent's updateSections
-    const cartItemsComponent = document.querySelector('cart-items-component') || document.querySelector('cart-drawer-items');
+    // Try to find cart items component in this order: drawer first, then main cart
+    const cartItemsComponent = 
+      document.querySelector('cart-drawer-items') || 
+      document.querySelector('cart-items-component');
+    
+    console.log('CartDiscountComponent updateSections - cartItemsComponent:', cartItemsComponent);
+    console.log('CartDiscountComponent updateSections - sections:', sections);
+    
     if (cartItemsComponent && typeof cartItemsComponent.updateSections === 'function') {
+      console.log('CartDiscountComponent calling updateSections');
       cartItemsComponent.updateSections(sections);
+    } else {
+      console.error('CartDiscountComponent: No cart items component found or updateSections method not available');
     }
   }
 
@@ -679,10 +745,20 @@ class CartDiscountComponent extends HTMLElement {
    * @param {string} html
    */
   renderSection(sectionId, html) {
-    // Use CartItemsComponent's renderSection
-    const cartItemsComponent = document.querySelector('cart-items-component') || document.querySelector('cart-drawer-items');
+    // Try to find cart items component in this order: drawer first, then main cart
+    const cartItemsComponent = 
+      document.querySelector('cart-drawer-items') || 
+      document.querySelector('cart-items-component');
+    
+    console.log('CartDiscountComponent renderSection - cartItemsComponent:', cartItemsComponent);
+    console.log('CartDiscountComponent renderSection - sectionId:', sectionId);
+    console.log('CartDiscountComponent renderSection - html:', html);
+    
     if (cartItemsComponent && typeof cartItemsComponent.renderSection === 'function') {
+      console.log('CartDiscountComponent calling renderSection');
       cartItemsComponent.renderSection(sectionId, html);
+    } else {
+      console.error('CartDiscountComponent: No cart items component found or renderSection method not available');
     }
   }
 
@@ -750,8 +826,6 @@ class CartDiscountComponent extends HTMLElement {
       const parsedHtml = newHtml ? new DOMParser().parseFromString(newHtml, 'text/html') : null;
       const section = parsedHtml ? parsedHtml.getElementById(`shopify-section-${this.dataset.sectionId}`) : null;
       const discountPills = section?.querySelectorAll('.cart-discount__pill') || [];
-      console.log('section', section);
-      console.log('discountPills', discountPills);
       if (section) {
         const codes = Array.from(discountPills)
           .map((element) => (element instanceof HTMLLIElement ? element.dataset.discountCode : null))
@@ -772,9 +846,6 @@ class CartDiscountComponent extends HTMLElement {
 
       document.dispatchEvent(new CustomEvent('DiscountUpdateEvent', { detail: { data, id: this.id } }));
 
-      // Use CartItemsComponent's updateSections and renderSection
-      console.log('data.sections', data.sections);
-      console.log('newHtml', newHtml);
       if (data.sections) {
         this.updateSections(data.sections);
       } else if (newHtml) {

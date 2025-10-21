@@ -7,6 +7,7 @@ function loadFunction() {
         handleViewLookbook();
         renderDotsNumber();
         handleLookBookAllItemsLayout();
+        initializeLookbook();
     }
 }
 
@@ -146,7 +147,6 @@ function lookbookViewPopup() {
         initPopupSwiper(slidesContainer);
     }
 
-    // Handle lookbook popup from button
     document.addEventListener('click', function (e) {
         const clickedButton = e.target.closest('.lookBook__btnShowProducts');
         const allButtons = document.querySelectorAll('.lookBook__btnShowProducts');
@@ -200,7 +200,6 @@ function lookbookViewPopup() {
         }
     });
 
-    // Close popup
     popupCloseEl.addEventListener('click', function (e) {
         e.preventDefault();
         const allButtons = document.querySelectorAll('.lookBook__btnShowProducts');
@@ -303,68 +302,157 @@ function renderDotsNumber() {
 }
 
 function handleLookBookAllItemsLayout() {
-    const lookbookAllItemsLayout = document.querySelectorAll('.lookbook-section-list.lookbook-all-items-layout');
+  const lookbookAllItemsLayout = document.querySelectorAll('.lookbook-section-list.lookbook-all-items-layout');
 
-    if (!lookbookAllItemsLayout) return;
+  if (!lookbookAllItemsLayout.length) return;
 
-    lookbookAllItemsLayout.forEach(function(item){
-        const dots = item.querySelectorAll('lookbook-dot .lookbook-dot__content');
-        const showProductsBtn = item.querySelector('.lookBook__btnShowProducts');
+  lookbookAllItemsLayout.forEach(function(item) {
+      const dots = item.querySelectorAll('lookbook-dot .lookbook-dot__content');
+      const showProductsBtn = item.querySelector('.lookBook__btnShowProducts');
+      const dotElements = item.querySelectorAll('lookbook-dot');
+      const allItemsSwiper = item.querySelector('.swiper');
 
-        if (showProductsBtn) {
-            showProductsBtn.remove();
-        }
+      if (showProductsBtn) {
+          showProductsBtn.remove();
+      }
 
-        dots.forEach(function(content){
-            content.classList.add('hidden');
-        });
+      dots.forEach(function(content) {
+          content.classList.add('hidden');
+      });
 
-        // Click a dot -> read its product title -> scroll matching slide in the all-items swiper
-        const dotElements = item.querySelectorAll('lookbook-dot');
-        const allItemsSwiper = item.querySelector('.swiper');
+      function getDotProductId(dot) {
+          const productInfoEl = dot.querySelector('[data-json-product]');
+          if (!productInfoEl) return null;
+          
+          try {
+              const productInfoJson = JSON.parse(productInfoEl.getAttribute('data-json-product'));
+              return productInfoJson.id;
+          } catch (error) {
+              console.warn('Error parsing product info:', error);
+              return null;
+          }
+      }
 
-        dotElements.forEach(function(dot){
-            dot.addEventListener('click', function(e) {
+      function getSlideProductId(slide) {
+          const productIdEl = slide.querySelector('[data-product-card-id]');
+          return productIdEl ? productIdEl.getAttribute('data-product-card-id') : null;
+      }
 
-                const titleEl = dot.querySelector('.product-title');
-                const productName = titleEl ? (titleEl.textContent || '').trim().toLowerCase() : '';
+      function updateActiveDot(productId) {
+          if (!productId) return;
 
-                if (!allItemsSwiper) return;
-                e.preventDefault();
-                e.stopPropagation();
+          dotElements.forEach(function(dot) {
+              const dotProductId = getDotProductId(dot);
+              const dotElement = dot.closest('lookbook-dot');
+              
+              if (dotProductId == productId) {
+                  dotElement.classList.add('is-active');
+              } else {
+                  dotElement.classList.remove('is-active');
+              }
+          });
+      }
 
-                const swiperInstance = allItemsSwiper.swiper;
+      function initializeActiveDot() {
+          if (!allItemsSwiper || !allItemsSwiper.swiper) return;
 
-                // Find slide index by matching product title text
-                const slides = Array.from(allItemsSwiper.querySelectorAll('.swiper-slide'));
-                let targetIndex = -1;
-                if (productName) {
-                    for (let i = 0; i < slides.length; i++) {
-                        const slideTitleEl = slides[i].querySelector('.product-title');
-                        const slideTitle = (slideTitleEl && slideTitleEl.textContent) ? slideTitleEl.textContent.trim().toLowerCase() : '';
-                        if (slideTitle && slideTitle === productName) {
-                            targetIndex = i;
-                            break;
-                        }
-                    }
-                }
+          const activeSlide = allItemsSwiper.querySelector('.swiper-slide-active');
+          if (activeSlide) {
+              const activeProductId = getSlideProductId(activeSlide);
+              updateActiveDot(activeProductId);
+          }
+      }
 
-                // Fallback: if no name match (or no name), slide to same index as the clicked dot
-                if (targetIndex < 0) {
-                    const dotIndex = Array.from(dotElements).indexOf(dot);
-                    if (dotIndex >= 0 && dotIndex < slides.length) {
-                        targetIndex = dotIndex;
-                    }
-                }
+      function handleDotClick(dot) {
+          const productId = getDotProductId(dot);
+          if (!productId || !allItemsSwiper || !allItemsSwiper.swiper) return;
 
-                if (targetIndex >= 0) {
-                    console.log(targetIndex);
+          const swiperInstance = allItemsSwiper.swiper;
+          const slides = Array.from(allItemsSwiper.querySelectorAll('.swiper-slide'));
+          
+          const targetSlideIndex = slides.findIndex(slide => {
+              const slideProductId = getSlideProductId(slide);
+              return slideProductId == productId;
+          });
 
-                    try {
-                        swiperInstance.slideTo(targetIndex, 600);
-                    } catch (_) {}
-                }
-            });
-        });
-    });
+          if (targetSlideIndex >= 0) {
+              swiperInstance.slideTo(targetSlideIndex, 600);
+              // Update active dot after slide transition
+              setTimeout(() => {
+                  updateActiveDot(productId);
+              }, 100);
+          }
+      }
+
+      dotElements.forEach(function(dot) {
+          dot.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              handleDotClick(dot);
+          });
+      });
+
+      if (allItemsSwiper && allItemsSwiper.swiper) {
+          initializeActiveDot();
+          allItemsSwiper.swiper.on('slideChangeTransitionEnd', function() {
+              const activeSlide = this.el.querySelector('.swiper-slide-active');
+              if (activeSlide) {
+                  const activeProductId = getSlideProductId(activeSlide);
+                  updateActiveDot(activeProductId);
+              }
+          });
+      }
+  });
+}
+
+function initializeLookbook() {
+  class LookbookDot extends HTMLElement {
+      constructor() {
+          super();
+          this.content = this.querySelector('.lookbook-dot__content');
+          this.icon = this.querySelector('[data-product-lookbook]');
+          this.isDesktop = window.innerWidth > 1024;
+          this.handleClick = this.handleClick.bind(this);
+      }
+
+      connectedCallback() {
+          this.addEventListener('click', this.handleClick);
+      }
+
+      disconnectedCallback() {
+          this.removeEventListener('click', this.handleClick);
+      }
+
+      handleClick(e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const allDots = document.querySelectorAll('lookbook-dot');
+          const alreadyActive = this.classList.contains('is-active');
+
+          allDots.forEach(dot => {
+              if (!alreadyActive) {
+                  dot.classList.remove('is-active');
+                  dot.querySelector('.lookbook-dot__content')?.classList.remove('is-open');
+              }
+          });
+
+          if (!alreadyActive) {
+              this.classList.add('is-active');
+              this.content?.classList.add('is-open');
+
+              if (!this.isDesktop) {
+                  const lookbookItem = this.closest('.lookbook-item');
+                  const btnShow = lookbookItem?.querySelector('.lookBook__btnShowProducts');
+                  btnShow?.click();
+
+                  const allDotsArr = Array.from(allDots);
+                  const index = allDotsArr.indexOf(this);
+                  const swiperEl = document.querySelector('.lookbook-popup .swiper');
+                  if (swiperEl?.swiper) swiperEl.swiper.slideTo(index, 600);
+              }
+          }
+      }
+  } 
+  customElements.define('lookbook-dot', LookbookDot);
 }
