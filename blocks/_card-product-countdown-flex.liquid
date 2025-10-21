@@ -1,15 +1,5 @@
 {%- liquid
   assign card_product = block.settings.product
-
-  assign alignment = settings.card_text_alignment
-  assign alignment_class = ''
-  if alignment == 'left'
-    assign alignment_class = 'm-r-auto'
-  elsif alignment == 'center'
-    assign alignment_class = 'm-x-auto'
-  elsif alignment == 'right'
-    assign alignment_class = 'm-l-auto'
-  endif
 -%}
 
 {%- if card_product and card_product != empty -%}
@@ -20,7 +10,7 @@
       assign countdown_collection = settings.countdown_collection | downcase | handle
     -%}
 
-    <div class="card--block-countdown w-max {{ alignment_class }}">
+    <div class="card--block-countdown">
       <div class="card__countdown" style="--bottom: 4rem;">
         {% render 'product-countdown',
           type: 'card',

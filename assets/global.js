@@ -1406,7 +1406,7 @@ class SwiperComponent extends HTMLElement {
       return;
     }
 
-    // this.initializeSwiper();
+    this.initializeSwiper();
 
     // Motion.inView(this, this.initializeSwiper.bind(this), { margin: '200px 0px 200px 0px' });
     // this.setupIntersectionObserver();
