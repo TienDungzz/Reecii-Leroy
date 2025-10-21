@@ -109,6 +109,8 @@ class CartItemsComponent extends HTMLElement {
   constructor() {
     super();
     this.handleQuantityUpdate = this.handleQuantityUpdate.bind(this);
+    this.handleCartUpdate = this.handleCartUpdate.bind(this);
+    this.handleDiscountUpdate = this.handleDiscountUpdate.bind(this);
 
     // Listen for custom remove events from on:click handlers
     this.addEventListener('onLineItemRemove', (event) => {
@@ -138,13 +140,13 @@ class CartItemsComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    document.addEventListener('cart:update', this.handleCartUpdate);
+    document.addEventListener('cart:updated', this.handleCartUpdate);
     document.addEventListener('discount:update', this.handleDiscountUpdate);
     document.addEventListener('quantity-selector:update', this.handleQuantityUpdate);
   }
 
   disconnectedCallback() {
-    document.removeEventListener('cart:update', this.handleCartUpdate);
+    document.removeEventListener('cart:updated', this.handleCartUpdate);
     document.removeEventListener('discount:update', this.handleDiscountUpdate);
     document.removeEventListener('quantity-selector:update', this.handleQuantityUpdate);
   }
@@ -458,6 +460,9 @@ class CartItemsComponent extends HTMLElement {
    * @param {DiscountUpdateEvent | CustomEvent | CartAddEvent} event
    */
   handleCartUpdate(event) {
+    console.log('CartDrawerItems received cart:update event:', event);
+    console.log('Event detail:', event.detail);
+    
     // Accept both {data: {sections}} and {sections} in event.detail
     let sections = undefined;
     if (event?.detail?.data?.sections) {
@@ -465,7 +470,14 @@ class CartItemsComponent extends HTMLElement {
     } else if (event?.detail?.sections) {
       sections = event.detail.sections;
     }
-    if (sections) this.updateSections(sections);
+    
+    console.log('Extracted sections:', sections);
+    if (sections) {
+      console.log('Calling updateSections with:', sections);
+      this.updateSections(sections);
+    } else {
+      console.log('No sections found in event');
+    }
   };
 
   /**
@@ -567,15 +579,89 @@ class CartDrawerItems extends CartItemsComponent {
    * @param {Object} sections - The sections object from the response.
    */
   updateSections(sections) {
-    if (!sections) return;
+    console.log('CartDrawerItems updateSections called with:', sections);
+    
+    if (!sections) {
+      console.log('CartDrawerItems updateSections: No sections provided');
+      return;
+    }
 
     resetSpinner(this);
     resetShimmer(this);
 
+    // Handle cart-drawer section specially
+    if (sections['cart-drawer']) {
+      console.log('CartDrawerItems: Handling cart-drawer section');
+      this.#updateCartDrawerFromHTML(sections['cart-drawer']);
+      return;
+    }
+
     // Process all sections efficiently
     Object.entries(sections).forEach(([id, html]) => {
+      console.log(`CartDrawerItems: Processing section ${id}`);
       this.#updateSingleSection(id, html);
     });
+  }
+
+  /**
+   * Update cart drawer from full HTML response
+   * @param {string} html - The full cart drawer HTML
+   */
+  #updateCartDrawerFromHTML(html) {
+    console.log('CartDrawerItems: updateCartDrawerFromHTML called with HTML length:', html.length);
+    
+    const newDOM = new DOMParser().parseFromString(html, 'text/html');
+    const newCartDrawerItems = newDOM.querySelector('cart-drawer-items');
+    const newCartDrawerFooter = newDOM.querySelector('.cart-drawer__footer');
+    
+    console.log('CartDrawerItems: Found newCartDrawerItems:', newCartDrawerItems);
+    console.log('CartDrawerItems: Found newCartDrawerFooter:', newCartDrawerFooter);
+    
+    // Update cart drawer items content more carefully
+    if (newCartDrawerItems) {
+      const target = document.querySelector('cart-drawer-items');
+      console.log('CartDrawerItems: Found target cart-drawer-items:', target);
+      
+      if (target) {
+        // Update specific containers instead of replacing entire innerHTML
+        const targetForm = target.querySelector('#CartDrawer-Form');
+        const targetCartItems = target.querySelector('#CartDrawer-CartItems');
+        const newForm = newCartDrawerItems.querySelector('#CartDrawer-Form');
+        const newCartItems = newCartDrawerItems.querySelector('#CartDrawer-CartItems');
+        
+        console.log('CartDrawerItems: Target form:', targetForm);
+        console.log('CartDrawerItems: New form:', newForm);
+        console.log('CartDrawerItems: Target cart items:', targetCartItems);
+        console.log('CartDrawerItems: New cart items:', newCartItems);
+        
+        if (targetForm && newForm) {
+          console.log('CartDrawerItems: Updating form content');
+          targetForm.innerHTML = newForm.innerHTML;
+        }
+        if (targetCartItems && newCartItems) {
+          console.log('CartDrawerItems: Updating cart items content');
+          targetCartItems.innerHTML = newCartItems.innerHTML;
+        }
+        
+        // Update any other specific elements that need updating
+        const targetLiveRegion = target.querySelector('#CartDrawer-LiveRegionText');
+        const newLiveRegion = newCartDrawerItems.querySelector('#CartDrawer-LiveRegionText');
+        if (targetLiveRegion && newLiveRegion) {
+          targetLiveRegion.textContent = newLiveRegion.textContent;
+        }
+      }
+    }
+    
+    // Update cart drawer footer
+    if (newCartDrawerFooter) {
+      const target = document.querySelector('.cart-drawer__footer');
+      if (target) {
+        console.log('CartDrawerItems: Updating footer');
+        target.innerHTML = newCartDrawerFooter.innerHTML;
+      }
+    }
+    
+    console.log('CartDrawerItems: updateCartDrawerFromHTML completed');
   }
 
   /**
