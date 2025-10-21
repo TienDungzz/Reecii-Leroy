@@ -11,22 +11,14 @@
 {%- endif -%}
 
 {% liquid
-  assign sec_id = section.id
   assign sec_stts = section.settings
 
-  assign products_to_display = sec_stts.collection.all_products_count
-
-  assign max_tiems = sec_stts.products_to_show
-
-  if sec_stts.collection.all_products_count > max_tiems
-    assign products_to_display = max_tiems
-    assign more_in_collection = true
-  endif
+  assign max_items = sec_stts.products_to_show
 
   assign columns_mobile = sec_stts.columns_mobile
   assign columns_mobile_int = columns_mobile | plus: 0
   assign show_mobile_slider = false
-  if sec_stts.swipe_on_mobile and products_to_display > columns_mobile_int
+  if sec_stts.swipe_on_mobile and max_items > columns_mobile_int
     assign show_mobile_slider = true
   endif
 
@@ -37,8 +29,8 @@
   elsif columns_desktop >= 4
     assign columns_tablet = 3
   endif
-
-  assign section_collections = sec_stts.collection.products | default: (1..max_tiems)
+  assign columns_gap = sec_stts.columns_gap
+  assign rows_gap = sec_stts.rows_gap
 
   assign enable_navigation = false
   if sec_stts.navigation == 'arrows-pagination' or sec_stts.navigation == 'arrows'
@@ -51,41 +43,6 @@
   endif
 
   assign layout_type = sec_stts.layout_type
-
-  assign has_media_banner = false
-  if sec_stts.banner_image != blank or sec_stts.video != blank or sec_stts.video_url != blank
-    assign has_media_banner = true
-  elsif sec_stts.banner_image == blank and layout_type == 'widget'
-    assign has_media_banner = true
-  endif
-
-  assign is_widget = false
-  if layout_type == 'widget'
-    assign is_widget = true
-  endif
-
-  assign widget_layout = sec_stts.widget_layout
-
-  assign section_has_settings_media = false
-  if layout_type == 'grid' or layout_type == 'widget' or layout_type == 'carousel'
-    assign section_has_settings_media = true
-  endif
-
-  assign has_video = false
-  if sec_stts.video != blank or sec_stts.video_url != blank
-    assign has_video = true
-  endif
-
-  assign pos_media_banner = sec_stts.position
-  if widget_layout == 'spotlight'
-    assign pos_media_banner = 'right'
-  endif
-
-  assign show_more_product = false
-  if sec_stts.show_more_product and collections[sec_stts.collection].all_products_count > max_tiems
-    assign show_more_product = true
-  endif
-
   assign page_width = sec_stts.page_width
 
   assign scroll_reveal = false
@@ -154,7 +111,7 @@
           endif
         %}
         {% capture list_items %}
-          {% for product in products limit: section.settings.products_to_show %}
+          {% for product in products limit: max_items %}
             {% comment %} <div class="resource-list__item">
               {% content_for 'block', type: '_product-card', id: 'static-product-card', closest.product: product %}
             </div> {% endcomment %}
@@ -180,6 +137,12 @@
 
         {% case section.settings.layout_type %}
           {% when 'grid' %}
+            {% liquid
+              assign show_more_product = false
+              if sec_stts.show_more_product and products.size > max_items
+                assign show_more_product = true
+              endif
+            %}
             <div
               class="collection--grid-layout"
               data-has-recommendations="{{ has_recommendations }}"
@@ -213,7 +176,7 @@
                 role="list"
                 data-products-to-show="{{ section.settings.products_to_show }}"
                 aria-label="{{ 'content.grid.name' | t }}"
-                style="--grid-desktop-horizontal-spacing: {{ columns_gap }}; --grid-desktop-vertical-spacing: {{ rows_gap }};"
+                style="--grid-desktop-horizontal-spacing: {{ columns_gap }}px; --grid-desktop-vertical-spacing: {{ rows_gap }}px;"
               >
                 {{ list_items }}
               </ul>
@@ -282,20 +245,16 @@
               {%- endif -%}
             </div>
           {% when 'carousel' %}
-            {%- if is_widget -%}
-              {%- assign slides_per_view = 1 -%}
-            {%- else -%}
-              {%- assign slides_per_view = columns_mobile -%}
-            {%- endif -%}
+            {%- assign slides_per_view = columns_mobile -%}
             {%- capture breakpoints -%}
               {
-                "768": { "slidesPerView": {% if is_widget %}1{% else %}{{ columns_tablet }}{% endif %} },
-                "1024": { "slidesPerView": {% if is_widget %}{{ sec_stts.columns_desktop_widget }}{% else %}{{ columns_tablet }}{% endif %} },
-                "1400": { "slidesPerView": {% if is_widget %}{{ sec_stts.columns_desktop_widget }}{% else %}{{ columns_desktop }}{% endif %} }
+                "768": { "slidesPerView": {{ columns_tablet }} },
+                "1024": { "slidesPerView": {{ columns_tablet }} },
+                "1400": { "slidesPerView": {{ columns_desktop }} }
               }
             {%- endcapture -%}
             <swiper-component
-              class="collection-carousel-swiper-component{% if has_media_banner %} overflow-hidden{% endif %}{% if sec_stts.full_width and page_width == 'page-width' %} full-width{% endif %}{% if widget_layout == 'spotlight' %} relative z-2 flex flex-column justify-end{% endif %}"
+              class="collection-carousel-swiper-component{% if sec_stts.full_width and page_width == 'page-width' %} full-width{% endif %}"
               {%- render 'swiper-data',
                 settings: section.settings,
                 slides_per_view: slides_per_view,
@@ -326,7 +285,7 @@
                 <ul
                   id="Slider-{{ section.id }}"
                   data-id="{{ section.id }}"
-                  class="swiper-wrapper grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
+                  class="swiper-wrapper grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} grid--{{ columns_mobile }}-col-mobile"
                 >
                   {{ list_items }}
                 </ul>
@@ -342,40 +301,23 @@
               </div>
             </swiper-component>
         {% endcase %}
-
-        {% comment %} {% if section.settings.carousel_on_mobile and section.settings.layout_type != 'carousel' %}
-          {% liquid
-            assign mobile_carousel_gap = section.settings.columns_gap
-          %}
-          <div
-            class="
-              resource-list
-              hidden--desktop
-              force-full-width
-            "
-            style="
-              --resource-list-gap: {{ mobile_carousel_gap }}px;
-              --column-count: {{ section.settings.columns }};
-            "
-          >
-            {% render 'resource-list-carousel',
-              ref: 'resourceListCarouselMobile',
-              slides: slides,
-              slide_count: recommendations.products.size,
-              settings: section.settings
-            %}
-          </div>
-        {% endif %} {% endcomment %}
       {%- else -%}
         <div
-          class="resource-list resource-list--grid"
+          class="collection--grid-layout"
         >
-          {% for i in (1..section.settings.columns_desktop) %}
-            <div
-              class="product-recommendations__skeleton-item"
-              aria-label="{{ 'accessibility.loading_product_recommendations' | t }}"
-            ></div>
-          {% endfor %}
+          <ul
+            class="grid grid-layout list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} grid--{{ columns_mobile }}-col-mobile"
+            role="list"
+            aria-label="{{ 'content.grid.name' | t }}"
+            style="--grid-desktop-horizontal-spacing: {{ columns_gap }}px; --grid-desktop-vertical-spacing: {{ rows_gap }}px;"
+          >
+            {% for i in (1..section.settings.columns_desktop) %}
+              <li
+                class="grid__item product-recommendations__skeleton-item"
+                aria-label="{{ 'accessibility.loading_product_recommendations' | t }}"
+              ></li>
+            {% endfor %}
+          </ul>
         </div>
       {%- endif -%}
     </div>
@@ -449,38 +391,6 @@
 
     .content-inside-media__inner {
       max-width: 500px;
-    }
-  }
-
-  .collection-banner .video-wrapper {
-    .content-inside-media,
-    .deferred-media__poster {
-      pointer-events: none;
-    }
-
-    .content-inside-media__inner {
-      pointer-events: visible;
-    }
-
-    .deferred-media__poster-icon {
-      pointer-events: visible;
-      cursor: pointer;
-    }
-
-    &:has(.deferred-media[loaded='true']) {
-      .video-wrapper__caption {
-        display: none;
-      }
-    }
-  }
-
-  .collection-banner .video-poster-button {
-    width: 6.4rem;
-    height: 6.4rem;
-
-    .button {
-      height: 100%;
-      min-width: 100%;
     }
   }
 {% endstylesheet %}
