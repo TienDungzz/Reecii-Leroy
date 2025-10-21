@@ -13,7 +13,7 @@ if (!customElements.get('product-form-component')) {
         if (!this.form) return;
         this.variantIdInput.disabled = false;
         this.form.addEventListener('submit', this.onSubmitHandler.bind(this));
-        this.cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
+        this.cart = document.querySelector('cart-drawer');
         this.submitButton = this.form?.querySelector('.add-to-cart-button');
         this.submitButtonText = this.submitButton ? this.submitButton.querySelector('span') : null;
         this.checkbox = this.form?.querySelector('[id^="agree_condition-"]');
