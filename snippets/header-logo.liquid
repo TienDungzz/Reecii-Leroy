@@ -20,10 +20,10 @@
   endif
 
   if sec_stts.logo_width == blank
-    assign logo_width = settings.logo.width
-    assign logo_width_mobile = settings.logo.width
-    assign logo_height = settings.logo.height
-    assign logo_height_mobile = settings.logo.height
+    assign logo_width = settings.logo_width
+    assign logo_width_mobile = settings.logo_width_mobile
+    assign logo_height = logo_width | divided_by: settings.logo.aspect_ratio | ceil
+    assign logo_height_mobile = logo_width_mobile | divided_by: settings.logo.aspect_ratio | ceil
   else
     assign logo_width = sec_stts.logo_width
     assign logo_width_mobile = sec_stts.logo_width_mobile
@@ -79,7 +79,7 @@
     width: var(--header-logo-image-width);
     height: var(--header-logo-image-height);
     display: block;
-    transition: .3s;
+    transition: transform var(--animation-speed-slowest);
 
     @media screen and (max-width: 749px) {
       width: var(--header-logo-image-width-mobile);
@@ -125,7 +125,6 @@
     --header-logo-inverse-opacity: 1;
   } */
 
-  /* mint update */
   /* .header[transparent]:has(.details--dropdown:is(:hover)) .header-logo:has(.header-logo__image-container--inverse) .header-logo__image-container--original,
   .header[data-sticky-state="active"] .header-logo:has(.header-logo__image-container--inverse) .header-logo__image-container--original {
     --header-logo-opacity: 0;
@@ -134,17 +133,7 @@
   .header.header--reveal-logo-on-sticky[data-scroll-direction='down'] .header-logo__image-container ,
   .header.header--reveal-logo-on-sticky[data-sticky-state='idle'] .header-logo__image-container ,
   .header.header--reveal-logo-on-sticky[data-sticky-state='active'] .header-logo__image-container {
-    width: calc(var(--header-logo-image-width) * 0.5);
-    height: calc(var(--header-logo-image-height) * 0.5);
+    transform: scale(0.6);
 
-    @media (min-width: 376px) and (max-width: 749px) {
-      width: calc(var(--header-logo-image-width-mobile) * 0.5);
-      height: calc(var(--header-logo-image-height-mobile) * 0.5);
-    }
-
-    @media screen and (max-width: 375px) {
-      width: calc(var(--header-logo-image-width-mobile) * 0.5);
-      height: calc(var(--header-logo-image-height-mobile) * 0.5);
-    }
   }
 {%- endstylesheet -%}
