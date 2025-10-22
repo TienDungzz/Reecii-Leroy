@@ -162,7 +162,6 @@ function updateHeaderHeights() {
   // Calculate initial height(s
   // const headerHeight = header.offsetHeight;
   const headerGroupHeight = calculateHeaderGroupHeight(header);
-  console.log("headerGroupHeight", headerGroupHeight);
 
   // document.body.style.setProperty('--header-height', `${headerHeight}px`);
   document.body.style.setProperty('--header-group-height', `${headerGroupHeight}px`);

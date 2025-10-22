@@ -1015,7 +1015,6 @@ class MenuDrawer extends HTMLElement {
     );
     removeTrapFocus(elementToFocus);
     this.closeAnimation(this.mainDetailsToggle);
-    console.log(this.mainDetailsToggle);
 
     if (event instanceof KeyboardEvent)
       elementToFocus?.setAttribute("aria-expanded", false);

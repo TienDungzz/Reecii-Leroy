@@ -152,7 +152,6 @@ class EditCartAddMore extends HTMLElement {
 
     // If you have a function to update attributes, call it here
     if (typeof updateClonedProductAttributes === 'function') {
-      console.log(count);
 
       updateClonedProductAttributes(cloneProduct, count);
     }
@@ -211,12 +210,10 @@ class AddAllEditCart extends HTMLElement {
         const selectedProductsArray = Array.from(selectedProducts);
         const variantIds = []; // Store all variant IDs for later use
         
-        console.log('AddAllEditCart: Starting with selectedProductsArray:', selectedProductsArray.length);
 
         selectedProductsArray.forEach((element, i) => {
           const variantId = element.querySelector('input[name="id"]').value;
           variantIds.push(variantId); // Store variant ID
-          console.log(`AddAllEditCart: Processing item ${i}, variantId: ${variantId}, variantIds array:`, variantIds);
           
           let qtyInput = element.querySelector('input[name="updates[]"]');
           if (!qtyInput) {
@@ -259,9 +256,6 @@ class AddAllEditCart extends HTMLElement {
                   return response.text();
                 })
                 .then((data) => {
-                  console.log('Edit cart response data:', data);
-                  
-                  // Dispatch cart update event to let CartDrawerItems handle the update properly
                   const event = new CustomEvent('cart:updated', { 
                     detail: { 
                       sections: { 
@@ -270,14 +264,10 @@ class AddAllEditCart extends HTMLElement {
                     } 
                   });
                   
-                  console.log('Dispatching cart:update event:', event);
                   document.dispatchEvent(event);
                   
-                  // Also try to find and call CartDrawerItems directly as fallback
                   const cartDrawerItems = document.querySelector('cart-drawer-items');
-                  console.log('Found cart-drawer-items:', cartDrawerItems);
                   if (cartDrawerItems && typeof cartDrawerItems.updateSections === 'function') {
-                    console.log('Calling cartDrawerItems.updateSections directly');
                     cartDrawerItems.updateSections({ 'cart-drawer': data });
                   }
                 })
@@ -301,9 +291,6 @@ class AddAllEditCart extends HTMLElement {
                   spinner.classList.add('hidden');
                   this.closest('modal-dialog').hide();
 
-                  // document.dispatchEvent(new CustomEvent('cart-update', { detail: cart }));
-                  console.log('Publishing cart update with variantIds:', variantIds);
-                  // Update both cart-items-component and cart-drawer-items via pubsub
                   publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items-component', cartData: cart, variantIds: variantIds });
                   publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-drawer-items', cartData: cart, variantIds: variantIds });
                 });
