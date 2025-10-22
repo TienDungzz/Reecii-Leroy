@@ -83,10 +83,18 @@
       data-swiper-parallax="35%"
     >
       {%- if has_image_mb_1 -%}
+        {% assign max_w = block_stts.image_mb_1.width %}
         <source
           media="(max-width: 749px)"
-          srcset="{{ block_stts.image_mb_1 | image_url: width: '400x' }} 400w, {{ block_stts.image_mb_1 | image_url: width: '600x' }} 600w, {{ block_stts.image_mb_1 | image_url: width: '800x' }} 800w, {{ block_stts.image_mb_1 | image_url: width: '1000x' }} 1000w"
-          alt="{{ block_stts.image_mb_1.alt }}"
+          sizes="100vw"
+          srcset="
+            {{ block_stts.image_mb_1 | image_url: width: 360 | escape }} 360w,
+            {{ block_stts.image_mb_1 | image_url: width: 480 | escape }} 480w,
+            {{ block_stts.image_mb_1 | image_url: width: 600 | escape }} 600w
+            {%- if max_w >= 750 -%}, {{ block_stts.image_mb_1 | image_url: width: 750 | escape }} 750w{%- endif -%}
+            {%- if max_w >= 828 -%}, {{ block_stts.image_mb_1 | image_url: width: 828 | escape }} 828w{%- endif -%}
+            {%- if max_w >= 1080 -%}, {{ block_stts.image_mb_1 | image_url: width: 1080 | escape }} 1080w{%- endif -%}
+          "
           width="{{ block_stts.image_mb_1.width }}"
           height="{{ block_stts.image_mb_1.height }}"
         >
@@ -94,7 +102,7 @@
 
       {{
         block_stts.image_1
-        | image_url: width: 3840
+        | image_url: width: block_stts.image_1.width
         | image_tag: height: height_1, sizes: sizes, widths: widths, loading: loading, alt: block_stts.image_1.alt, fetchpriority: fetchpriority
       }}
     </picture>

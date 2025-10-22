@@ -102,9 +102,10 @@ body.loaded .image--hover-effect img {
 }
 
 .preload-screen .loading-bar{
+    --initial-loading-width: var(--header-logo-image-width-mobile);
     display: block;
     position: relative;
-    width: var(--header-logo-image-width);
+    width: var(--header-logo-image-width-mobile);
     height: .2rem;
     border-radius: .2rem;
     background-color: #00f5d4;
@@ -131,11 +132,26 @@ body.loaded .image--hover-effect img {
 
     50% {
         -webkit-transform: translate(9.6rem);
-        transform: translate(calc(var(--header-logo-image-width) - 10px));
+        transform: translate(calc(var(--initial-loading-width) - 10px));
     }
 
     100% {
         -webkit-transform: translate(-3.4rem);
         transform: translate(-3.4rem);
+    }
+}
+
+@media screen and (min-width: 750px) {
+    .preload-screen .loading-bar{
+        --initial-loading-width: var(--header-logo-image-width);
+        width: var(--header-logo-image-width);
+    }
+    
+}
+
+@media screen and (max-width: 375px) {
+    .preload-screen .loading-bar {
+        --initial-loading-width: calc(var(--header-logo-image-width-mobile) * .5);
+        width: calc(var(--header-logo-image-width-mobile) * .5);
     }
 }
