@@ -48,7 +48,6 @@ class PredictiveSearch extends SearchForm {
   }
 
   onFormSubmit(event) {
-    console.log('onFormSubmit', event);
     if (!this.getQuery().length || this.querySelector('[aria-selected="true"] a')) event.preventDefault();
   }
 
@@ -103,7 +102,6 @@ class PredictiveSearch extends SearchForm {
   }
 
   onFocus() {
-    console.log('onFocus');
     const currentSearchTerm = this.getQuery();
 
     if (!currentSearchTerm.length) return;
@@ -119,9 +117,6 @@ class PredictiveSearch extends SearchForm {
   }
 
   onFocusOut() {
-    console.log('onFocusOut');
-    console.log(`%c🔍 Log this.contains(document.activeElement):`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.contains(document.activeElement));
-
     setTimeout(() => {
       if (!this.contains(document.activeElement)) this.close();
     });

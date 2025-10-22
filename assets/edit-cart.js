@@ -152,7 +152,6 @@ class EditCartAddMore extends HTMLElement {
 
     // If you have a function to update attributes, call it here
     if (typeof updateClonedProductAttributes === 'function') {
-      console.log(count);
 
       updateClonedProductAttributes(cloneProduct, count);
     }
@@ -205,66 +204,17 @@ class AddAllEditCart extends HTMLElement {
     addAllBtn.classList.add('loading');
     spinner.classList.remove('hidden');
 
-    // Step 1: remove current product
     Shopify.removeItem(productLine, index, (cart)  => {
-      // try {
-      //   // Step 2: add all selected products
-      //   const requests = Array.from(selectedProducts).map((item, i) => {
-      //     const variantId = item.querySelector('input[name="id"]').value;
-      //     const qty = parseInt(item.querySelector('input[name="updates[]"]').value) || 1;
-
-      //     var formData = new URLSearchParams(window.location.search);
-
-      //     formData.append('id', variantId);
-      //     formData.append('quantity', qty);
-      //     // 👇 properties để phân biệt clone (nếu có nhiều dòng cùng variantId)
-      //     formData.append('properties[_clone]', `item-${i + 1}`);
-
-      //     return fetch(`${window.routes.root}/cart/add.js`, {
-      //       method: 'POST',
-      //       headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-      //       body: formData.toString(),
-      //       credentials: 'same-origin',
-      //     });
-      //   });
-
-      //   await Promise.all(requests);
-
-      //   // Step 3: fetch updated cart
-      //   Shopify.getCart((updatedCart) => {
-      //     console.log("✅ Updated cart:", updatedCart);
-
-      //     document.body.classList.remove('edit-cart-show');
-
-      //     fetch(`${window.routes.root}?section_id=cart-drawer`)
-      //       .then((res) => res.text())
-      //       .then((htmlText) => {
-      //         const html = new DOMParser().parseFromString(htmlText, 'text/html');
-      //         const selectors = ['cart-drawer-items', '.cart-drawer__footer'];
-
-      //         selectors.forEach((selector) => {
-      //           const target = document.querySelector(selector);
-      //           const source = html.querySelector(selector);
-      //           if (target && source) target.replaceWith(source);
-      //         });
-      //       })
-      //       .catch(console.error);
-      //   });
-      // } catch (error) {
-      //   console.error("❌ Error replacing items:", error);
-      // } finally {
-      //   addAllBtn.classList.remove('is-loading');
-      // }
-
-      // Convert jQuery code to vanilla JS
-
       if (cart && Object.keys(cart).length > 0) {
         const productHandleQueue = [];
         const selectedProductsArray = Array.from(selectedProducts);
+        const variantIds = []; // Store all variant IDs for later use
+        
 
         selectedProductsArray.forEach((element, i) => {
           const variantId = element.querySelector('input[name="id"]').value;
-          // Try both 'updates[]' and 'quantity' for compatibility
+          variantIds.push(variantId); // Store variant ID
+          
           let qtyInput = element.querySelector('input[name="updates[]"]');
           if (!qtyInput) {
             qtyInput = element.querySelector('input[name="quantity"]');
@@ -306,16 +256,20 @@ class AddAllEditCart extends HTMLElement {
                   return response.text();
                 })
                 .then((data) => {
-
-                  const html = new DOMParser().parseFromString(data, 'text/html');
-                  const selectors = ['cart-drawer-items', '.cart-drawer__footer'];
-
-                  selectors.forEach((selector) => {
-                    const target = document.querySelector(selector);
-                    const source = html.querySelector(selector);
-                    if (target && source) target.replaceWith(source);
+                  const event = new CustomEvent('cart:updated', { 
+                    detail: { 
+                      sections: { 
+                        'cart-drawer': data 
+                      } 
+                    } 
                   });
-
+                  
+                  document.dispatchEvent(event);
+                  
+                  const cartDrawerItems = document.querySelector('cart-drawer-items');
+                  if (cartDrawerItems && typeof cartDrawerItems.updateSections === 'function') {
+                    cartDrawerItems.updateSections({ 'cart-drawer': data });
+                  }
                 })
                 .catch((err) => {
                 })
@@ -337,8 +291,8 @@ class AddAllEditCart extends HTMLElement {
                   spinner.classList.add('hidden');
                   this.closest('modal-dialog').hide();
 
-                  // document.dispatchEvent(new CustomEvent('cart-update', { detail: cart }));
-                  publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cartData: cart, variantId: variantId });
+                  publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items-component', cartData: cart, variantIds: variantIds });
+                  publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-drawer-items', cartData: cart, variantIds: variantIds });
                 });
             });
           });

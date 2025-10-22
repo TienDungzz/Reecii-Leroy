@@ -699,17 +699,35 @@
         "content": "t:content.animation"
       },
       {
-        "type": "checkbox",
+        "type": "select",
         "id": "enable_parallax",
         "label": "t:settings.enable_parallax_scroll",
-        "default": false
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:options.none"
+          },
+          {
+            "value": "parallax_items",
+            "label": "Items"
+          },
+          {
+            "value": "parallax_background",
+            "label": "Background"
+          },
+          {
+            "value": "reveal_on_scroll",
+            "label": "Reveal on scroll"
+          }
+        ]
       },
       {
         "type": "checkbox",
         "id": "disable_parallax_mobile",
         "label": "t:settings.disable_parallax_scroll_on_mobile",
         "default": false,
-        "visible_if": "{{ block.settings.enable_parallax }}"
+        "visible_if": "{{ block.settings.enable_parallax == 'parallax_items' }}"
       },
       {
         "type": "range",
@@ -719,7 +737,7 @@
         "max": 4,
         "step": 0.5,
         "default": 0.5,
-        "visible_if": "{{ block.settings.enable_parallax }}"
+        "visible_if": "{{ block.settings.enable_parallax == 'parallax_items' }}"
       },
       {
         "type": "range",
@@ -730,7 +748,7 @@
         "unit": "%",
         "label": "t:settings.horizontal_position",
         "default": 0,
-        "visible_if": "{{ block.settings.enable_parallax }}"
+        "visible_if": "{{ block.settings.enable_parallax == 'parallax_items' }}"
       },
       {
         "type": "range",
@@ -741,7 +759,7 @@
         "unit": "%",
         "label": "t:settings.vertical_position",
         "default": 0,
-        "visible_if": "{{ block.settings.enable_parallax }}"
+        "visible_if": "{{ block.settings.enable_parallax == 'parallax_items' }}"
       },
       {
         "type": "header",

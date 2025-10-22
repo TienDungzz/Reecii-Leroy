@@ -69,7 +69,7 @@ class JumboText extends HTMLElement {
           }
         });
       },
-      { threshold: 0.1, rootMargin: '50px' }
+      { threshold: 0.3 }
     );
 
     this.intersectionObserver.observe(this);

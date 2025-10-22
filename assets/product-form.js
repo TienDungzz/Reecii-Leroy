@@ -60,7 +60,6 @@ if (!customElements.get('product-form-component')) {
 
         const formData = new FormData(this.form);
 
-        console.log(this.cart);
         if (this.cart) {
           formData.append('sections', this.cart.getSectionsToRender().map((section) => section.id));
           formData.append('sections_url', window.location.pathname);

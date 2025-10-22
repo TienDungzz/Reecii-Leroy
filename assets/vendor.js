@@ -16,80 +16,80 @@ var Swiper=function(){"use strict";function e(e){return null!==e&&"object"==type
 //# sourceMappingURL=swiper-bundle.min.js.map
 
 // Mint update fancybox
-(function() {
-  'use strict';
+// (function() {
+//   'use strict';
 
-  let isLibraryLoaded = false;
-  const lazyPaths = window.myLazyLoadPaths || {};
-  const libraryScriptPath = lazyPaths.script;
-  const libraryStylePath = lazyPaths.style;
+//   let isLibraryLoaded = false;
+//   const lazyPaths = window.myLazyLoadPaths || {};
+//   const libraryScriptPath = lazyPaths.script;
+//   const libraryStylePath = lazyPaths.style;
 
-  if (!libraryScriptPath || !libraryStylePath) return;
+//   if (!libraryScriptPath || !libraryStylePath) return;
 
-  const interactionEvents = ['scroll', 'click', 'touchstart', 'mousemove'];
-  const fancyboxItems = document.querySelectorAll("[data-fancybox]");
+//   const interactionEvents = ['scroll', 'click', 'touchstart', 'mousemove'];
+//   const fancyboxItems = document.querySelectorAll("[data-fancybox]");
 
-  if (fancyboxItems.length === 0) return;
+//   if (fancyboxItems.length === 0) return;
 
-  function loadLibrary() {
-    if (isLibraryLoaded) return;
-    isLibraryLoaded = true;
+//   function loadLibrary() {
+//     if (isLibraryLoaded) return;
+//     isLibraryLoaded = true;
 
-    console.log("add fancybox")
+//     console.log("add fancybox")
 
 
-    const script = document.createElement('script');
-    script.src = libraryScriptPath;
-    script.async = true;
+//     const script = document.createElement('script');
+//     script.src = libraryScriptPath;
+//     script.async = true;
 
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = libraryStylePath;
-    link.media = 'all';
+//     const link = document.createElement('link');
+//     link.rel = 'stylesheet';
+//     link.type = 'text/css';
+//     link.href = libraryStylePath;
+//     link.media = 'all';
 
-    script.onload = () => {
-      if (typeof Fancybox === 'undefined') {
-        return;
-      }
+//     script.onload = () => {
+//       if (typeof Fancybox === 'undefined') {
+//         return;
+//       }
 
-      if (!window._fancyboxInitialized) {
-        window._fancyboxInitialized = true;
+//       if (!window._fancyboxInitialized) {
+//         window._fancyboxInitialized = true;
 
-        Fancybox.bind('[data-fancybox]', {
-          loop: true,
-          buttons: [
-            "zoom",
-            "slideShow",
-            "fullScreen",
-            "thumbs",
-            "close"
-          ],
-          animated: true,
-          showClass: "fancybox-zoomIn",
-          hideClass: "fancybox-zoomOut",
-          thumbs: {
-            autoStart: false,
-            axis: "x"
-          },
-          Image: {
-            zoom: true,
-            click: "close",
-            wheel: "slide"
-          }
-        });
-      }
-    };
+//         Fancybox.bind('[data-fancybox]', {
+//           loop: true,
+//           buttons: [
+//             "zoom",
+//             "slideShow",
+//             "fullScreen",
+//             "thumbs",
+//             "close"
+//           ],
+//           animated: true,
+//           showClass: "fancybox-zoomIn",
+//           hideClass: "fancybox-zoomOut",
+//           thumbs: {
+//             autoStart: false,
+//             axis: "x"
+//           },
+//           Image: {
+//             zoom: true,
+//             click: "close",
+//             wheel: "slide"
+//           }
+//         });
+//       }
+//     };
 
-    script.onerror = () => {
-      isLibraryLoaded = false;
-    };
+//     script.onerror = () => {
+//       isLibraryLoaded = false;
+//     };
 
-    document.head.appendChild(script);
-    document.head.appendChild(link);
-  }
+//     document.head.appendChild(script);
+//     document.head.appendChild(link);
+//   }
 
-  interactionEvents.forEach(event => {
-    document.addEventListener(event, loadLibrary, { once: true, passive: true });
-  });
-})();
+//   interactionEvents.forEach(event => {
+//     document.addEventListener(event, loadLibrary, { once: true, passive: true });
+//   });
+// })();

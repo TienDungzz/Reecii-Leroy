@@ -294,8 +294,7 @@ class WishlistView extends HTMLElement {
 
   async setProductForWishlistPage(handle, index, wishlistListLength) {
     try {
-      const res = await fetch(`${window.routes.root}/products/${handle}?view=block_wishlist_card`)
-      console.log(res);
+      const res = await fetch(`${window.routes.root}/products/${handle}?view=block_wishlist_card`);
       const data = await res.text();
 
       const productHTML = new DOMParser().parseFromString(data, 'text/html').getElementsByClassName('card--block')[0];
@@ -340,7 +339,6 @@ class WishlistView extends HTMLElement {
 
     if (this.totalPages <= 1) {
       [...this.gridViewContainer.children].forEach(child => {
-        console.log(child)
         child.style.display = 'block';
       });
       this.gridViewContainer.classList.add('is-loaded');

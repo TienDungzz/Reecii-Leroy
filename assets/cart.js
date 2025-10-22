@@ -35,16 +35,11 @@ class GiftWrapButton extends HTMLElement {
   }
 
   updateSections(sections) {
-    // Try to find cart items component in this order: drawer first, then main cart
     const cartItemsComponent =
       document.querySelector('cart-drawer-items') ||
       document.querySelector('cart-items-component');
     
-    console.log('GiftWrapButton updateSections - cartItemsComponent:', cartItemsComponent);
-    console.log('GiftWrapButton updateSections - sections:', sections);
-    
     if (cartItemsComponent && typeof cartItemsComponent.updateSections === 'function') {
-      console.log('GiftWrapButton calling updateSections');
       cartItemsComponent.updateSections(sections);
     } else {
       console.error('GiftWrapButton: No cart items component found or updateSections method not available');
@@ -52,17 +47,11 @@ class GiftWrapButton extends HTMLElement {
   }
 
   renderSection(sectionId, html) {
-    // Try to find cart items component in this order: drawer first, then main cart
     const cartItemsComponent =
       document.querySelector('cart-drawer-items') ||
       document.querySelector('cart-items-component');
     
-    console.log('GiftWrapButton renderSection - cartItemsComponent:', cartItemsComponent);
-    console.log('GiftWrapButton renderSection - sectionId:', sectionId);
-    console.log('GiftWrapButton renderSection - html:', html);
-    
     if (cartItemsComponent && typeof cartItemsComponent.renderSection === 'function') {
-      console.log('GiftWrapButton calling renderSection');
       cartItemsComponent.renderSection(sectionId, html);
     } else {
       console.error('GiftWrapButton: No cart items component found or renderSection method not available');
@@ -83,19 +72,11 @@ class GiftWrapButton extends HTMLElement {
       const response = await fetch(`${routes.cart_add_url}`, fetchOptions);
       const data = await response.json();
 
-      console.log('data', data);
-      console.log('this.id', this.id);
-      console.log('sectionId', sectionId);
-      console.log('data.sections', data.sections);
-      console.log('data.sections[sectionId]', data.sections[sectionId]);
-
       document.dispatchEvent(new CustomEvent('GiftWrapUpdateEvent', { detail: { data, id: this.id } }));
 
       if (data.sections) {
-        console.log('data.sections', data.sections);
         this.updateSections(data.sections);
       } else if (sectionId && data.sections && data.sections[sectionId]) {
-        console.log('data.sections[sectionId]', data.sections[sectionId]);
         this.renderSection(sectionId, data.sections[sectionId]);
       }
     } catch (error) {
@@ -109,8 +90,9 @@ class CartItemsComponent extends HTMLElement {
   constructor() {
     super();
     this.handleQuantityUpdate = this.handleQuantityUpdate.bind(this);
+    this.handleCartUpdate = this.handleCartUpdate.bind(this);
+    this.handleDiscountUpdate = this.handleDiscountUpdate.bind(this);
 
-    // Listen for custom remove events from on:click handlers
     this.addEventListener('onLineItemRemove', (event) => {
       if (event?.detail?.line) {
         this.onLineItemRemove(event.detail.line);
@@ -118,7 +100,6 @@ class CartItemsComponent extends HTMLElement {
     });
   }
 
-  // Animation end utility
   #onAnimationEnd(elements, callback, options = { subtree: true }) {
     const animations = Array.isArray(elements)
       ? elements.flatMap((element) => element.getAnimations(options))
@@ -132,19 +113,18 @@ class CartItemsComponent extends HTMLElement {
     return Promise.allSettled(animationPromises).then(callback);
   }
 
-  // Reduced motion check
   #prefersReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
   connectedCallback() {
-    document.addEventListener('cart:update', this.handleCartUpdate);
+    document.addEventListener('cart:updated', this.handleCartUpdate);
     document.addEventListener('discount:update', this.handleDiscountUpdate);
     document.addEventListener('quantity-selector:update', this.handleQuantityUpdate);
   }
 
   disconnectedCallback() {
-    document.removeEventListener('cart:update', this.handleCartUpdate);
+    document.removeEventListener('cart:updated', this.handleCartUpdate);
     document.removeEventListener('discount:update', this.handleDiscountUpdate);
     document.removeEventListener('quantity-selector:update', this.handleQuantityUpdate);
   }
@@ -173,15 +153,9 @@ class CartItemsComponent extends HTMLElement {
     });
   }
 
-  /**
-   * Handles the line item removal.
-   * @param {number} line - The line item index (1-based).
-   */
   async onLineItemRemove(line) {
-    // Animate removal of the row(s) in the UI
     const cartItemRowToRemove = this.querySelector(`.cart-items__table-row[data-line="${line}"]`);
     if (!cartItemRowToRemove) {
-      // Still attempt to update quantity to 0 in backend
       await this.updateQuantity({
         line,
         quantity: 0,
@@ -190,9 +164,7 @@ class CartItemsComponent extends HTMLElement {
       return;
     }
 
-    // Remove any child rows (e.g., bundled items) that have this row as parent
     let rowsToRemove = [cartItemRowToRemove];
-    // NodeList returned by querySelectorAll does not have filter in all browsers, so convert to array
     const allRows = Array.from(this.querySelectorAll(`.cart-items__table-row`));
     if (cartItemRowToRemove.dataset.key) {
       rowsToRemove = rowsToRemove.concat(
@@ -202,7 +174,6 @@ class CartItemsComponent extends HTMLElement {
       );
     }
 
-    // Animate and remove rows
     for (const row of rowsToRemove) {
       const remove = () => row.remove();
       if (this.#prefersReducedMotion()) {
@@ -214,7 +185,6 @@ class CartItemsComponent extends HTMLElement {
       }
     }
 
-    // After animation, update backend
     await this.updateQuantity({
       line,
       quantity: 0,
@@ -239,41 +209,20 @@ class CartItemsComponent extends HTMLElement {
     return await response.text();
   }
 
-  /**
-   * Renders a section by fetching its HTML and updating the DOM.
-   * @param {string} sectionId
-   */
   async renderSection(sectionId) {
-    // Fetch the new section HTML
     const html = await this.getSectionHTML(sectionId);
     this.#updateSingleSection(sectionId, html);
   }
 
-  /**
-   * Optimized method to find target section element
-   * @param {string} sectionId - The section ID
-   * @returns {Element|null} The target element
-   */
   #findTargetSection(sectionId) {
     return document.querySelector(`[data-section-id="${sectionId}"] .section--main-cart`);
   }
 
-  /**
-   * Optimized method to find new section element from HTML
-   * @param {string} sectionId - The section ID
-   * @param {string} html - The HTML content
-   * @returns {Element|null} The new section element
-   */
   #findNewSection(sectionId, html) {
     const newDOM = new DOMParser().parseFromString(html, 'text/html');
     return newDOM.querySelector(`[data-section-id="${sectionId}"] .section--main-cart`);
   }
 
-  /**
-   * Optimized method to update a single section
-   * @param {string} sectionId - The section ID
-   * @param {string} html - The HTML content
-   */
   #updateSingleSection(sectionId, html) {
     const target = this.#findTargetSection(sectionId);
     const newSection = this.#findNewSection(sectionId, html);
@@ -282,23 +231,18 @@ class CartItemsComponent extends HTMLElement {
       return;
     }
 
-    // Update children efficiently
     Array.from(newSection.children).forEach(child => {
-      // Skip message and shipping blocks
       if (
         !child.classList.contains('cart-page__message') &&
         !child.classList.contains('cart-page__shipping')
       ) {
         let targetChild = null;
-        // Prefer matching by id
         if (child.id) {
           targetChild = target.querySelector(`#${child.id}`);
         }
-        // Fallback: match by first class name
         if (!targetChild && child.classList.length > 0) {
           targetChild = target.querySelector(`.${child.classList[0]}`);
         }
-        // If a target child is found, replace it with the new child
         if (targetChild) {
           targetChild.replaceWith(child.cloneNode(true));
         }
@@ -306,15 +250,7 @@ class CartItemsComponent extends HTMLElement {
     });
   }
 
-  /**
-   * Updates the quantity for a cart line.
-   * @param {Object} config - The config.
-   * @param {number} config.line - The line (1-based).
-   * @param {number} config.quantity - The quantity.
-   * @param {string} config.action - The action ('change' or 'clear').
-   */
   async updateQuantity(config) {
-    // Use CartPerformance from global.js if available
     let cartPerformanceUpdateMarker = null;
     const cartPerf = /** @type {any} */ (window).cartPerformance || {};
     if (
@@ -330,7 +266,6 @@ class CartItemsComponent extends HTMLElement {
     const { line, quantity } = config;
     const cartTotal = this.querySelectorAll('.cart-total text-loader-component');
 
-    // Collect all section IDs to update
     const cartItemsComponents = document.querySelectorAll('cart-items-component, cart-drawer-items');
     const sectionsToUpdate = new Set();
     cartItemsComponents.forEach((item) => {
@@ -458,14 +393,16 @@ class CartItemsComponent extends HTMLElement {
    * @param {DiscountUpdateEvent | CustomEvent | CartAddEvent} event
    */
   handleCartUpdate(event) {
-    // Accept both {data: {sections}} and {sections} in event.detail
     let sections = undefined;
     if (event?.detail?.data?.sections) {
       sections = event.detail.data.sections;
     } else if (event?.detail?.sections) {
       sections = event.detail.sections;
     }
-    if (sections) this.updateSections(sections);
+    
+    if (sections) {
+      this.updateSections(sections);
+    }
   };
 
   /**
@@ -533,10 +470,7 @@ class CartDrawerItems extends CartItemsComponent {
     const target = this.#findTargetSection(sectionId);
     const newSection = this.#findNewSection(sectionId, html);
 
-    if (!target || !newSection) {
-      console.log(`CartDrawerItems: Cannot update section ${sectionId} - missing target or newSection`);
-      return;
-    }
+    if (!target || !newSection) return;
 
     // Update children efficiently
     Array.from(newSection.children).forEach(child => {
@@ -572,10 +506,59 @@ class CartDrawerItems extends CartItemsComponent {
     resetSpinner(this);
     resetShimmer(this);
 
+    // Handle cart-drawer section specially
+    if (sections['cart-drawer']) {
+      this.#updateCartDrawerFromHTML(sections['cart-drawer']);
+      return;
+    }
+
     // Process all sections efficiently
     Object.entries(sections).forEach(([id, html]) => {
       this.#updateSingleSection(id, html);
     });
+  }
+
+  /**
+   * Update cart drawer from full HTML response
+   * @param {string} html - The full cart drawer HTML
+   */
+  #updateCartDrawerFromHTML(html) {
+    const newDOM = new DOMParser().parseFromString(html, 'text/html');
+    const newCartDrawerItems = newDOM.querySelector('cart-drawer-items');
+    const newCartDrawerFooter = newDOM.querySelector('.cart-drawer__footer');
+    
+    if (newCartDrawerItems) {
+      const target = document.querySelector('cart-drawer-items');
+      
+      if (target) {
+        const targetForm = target.querySelector('#CartDrawer-Form');
+        const targetCartItems = target.querySelector('#CartDrawer-CartItems');
+        const newForm = newCartDrawerItems.querySelector('#CartDrawer-Form');
+        const newCartItems = newCartDrawerItems.querySelector('#CartDrawer-CartItems');
+        
+        if (targetForm && newForm) {
+          targetForm.innerHTML = newForm.innerHTML;
+        }
+        if (targetCartItems && newCartItems) {
+          targetCartItems.innerHTML = newCartItems.innerHTML;
+        }
+        
+        // Update any other specific elements that need updating
+        const targetLiveRegion = target.querySelector('#CartDrawer-LiveRegionText');
+        const newLiveRegion = newCartDrawerItems.querySelector('#CartDrawer-LiveRegionText');
+        if (targetLiveRegion && newLiveRegion) {
+          targetLiveRegion.textContent = newLiveRegion.textContent;
+        }
+      }
+    }
+    
+    // Update cart drawer footer
+    if (newCartDrawerFooter) {
+      const target = document.querySelector('.cart-drawer__footer');
+      if (target) {
+        target.innerHTML = newCartDrawerFooter.innerHTML;
+      }
+    }
   }
 
   /**
@@ -728,34 +711,19 @@ class CartDiscountComponent extends HTMLElement {
       document.querySelector('cart-drawer-items') || 
       document.querySelector('cart-items-component');
     
-    console.log('CartDiscountComponent updateSections - cartItemsComponent:', cartItemsComponent);
-    console.log('CartDiscountComponent updateSections - sections:', sections);
-    
     if (cartItemsComponent && typeof cartItemsComponent.updateSections === 'function') {
-      console.log('CartDiscountComponent calling updateSections');
       cartItemsComponent.updateSections(sections);
     } else {
       console.error('CartDiscountComponent: No cart items component found or updateSections method not available');
     }
   }
 
-  /**
-   * Use CartItemsComponent.renderSection to render a single section by id and html.
-   * @param {string} sectionId
-   * @param {string} html
-   */
   renderSection(sectionId, html) {
-    // Try to find cart items component in this order: drawer first, then main cart
     const cartItemsComponent = 
       document.querySelector('cart-drawer-items') || 
       document.querySelector('cart-items-component');
     
-    console.log('CartDiscountComponent renderSection - cartItemsComponent:', cartItemsComponent);
-    console.log('CartDiscountComponent renderSection - sectionId:', sectionId);
-    console.log('CartDiscountComponent renderSection - html:', html);
-    
     if (cartItemsComponent && typeof cartItemsComponent.renderSection === 'function') {
-      console.log('CartDiscountComponent calling renderSection');
       cartItemsComponent.renderSection(sectionId, html);
     } else {
       console.error('CartDiscountComponent: No cart items component found or renderSection method not available');

@@ -1015,7 +1015,6 @@ class MenuDrawer extends HTMLElement {
     );
     removeTrapFocus(elementToFocus);
     this.closeAnimation(this.mainDetailsToggle);
-    console.log(this.mainDetailsToggle);
 
     if (event instanceof KeyboardEvent)
       elementToFocus?.setAttribute("aria-expanded", false);
@@ -1024,8 +1023,8 @@ class MenuDrawer extends HTMLElement {
   onFocusOut() {
     setTimeout(() => {
       if (
-        this.mainDetailsToggle.hasAttribute("open") &&
-        !this.mainDetailsToggle.contains(document.activeElement)
+        this.mainDetailsToggle?.hasAttribute("open") &&
+        !this.mainDetailsToggle?.contains(document.activeElement)
       )
         this.closeMenuDrawer();
     });
@@ -1495,215 +1494,212 @@ class SwiperComponent extends HTMLElement {
         },
       };
 
-      this.initSwiper = new Swiper(this.swiperEl, this.options);
+      // this.initSwiper = new Swiper(this.swiperEl, this.options);
 
-      // this.initSwiperMobile();
+      this.initSwiperMobile();
     }
   }
 
-  // initSwiperMobile() {
-  //   const nextButton = this.swiperEl.querySelector(".swiper-button-next");
-  //   const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
-  //   const arrowOnHeaderNextButton = this.arrowOnHeader
-  //     ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next")
-  //     : nextButton;
-  //   const arrowOnHeaderPrevButton = this.arrowOnHeader
-  //     ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev")
-  //     : prevButton;
+  initSwiperMobile() {
+    const nextButton = this.swiperEl.querySelector(".swiper-button-next");
+    const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
+    const arrowOnHeaderNextButton = this.arrowOnHeader
+      ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next")
+      : nextButton;
+    const arrowOnHeaderPrevButton = this.arrowOnHeader
+      ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev")
+      : prevButton;
 
-  //   this.breakpoint = window.matchMedia("(min-width:750px)");
+    this.breakpoint = window.matchMedia("(min-width:750px)");
 
-  //   const enableSwiper = () => {
-  //     if (!this.swiperEl || !this.options) {
-  //       return;
-  //     }
+    const enableSwiper = () => {
+      if (!this.swiperEl || !this.options) return;
 
-  //     if (this.initSwiper) {
-  //       console.log("🔍 Destroying existing swiper instance");
-  //       this.initSwiper.destroy(true, true);
-  //       this.initSwiper = null;
-  //     }
+      if (this.initSwiper) {
+        this.initSwiper.destroy(true, true);
+        this.initSwiper = null;
+      }
 
-  //     try {
-  //       // Check for thumbnail swiper - works on both mobile and desktop
-  //       const thumbnailSwiper = this.querySelector('.swiper-controls__thumbnails-container .swiper');
-  //       let thumbsSwiper = null;
+      try {
+        // Check for thumbnail swiper - works on both mobile and desktop
+        const thumbnailSwiper = this.querySelector('.swiper-controls__thumbnails-container .swiper');
+        let thumbsSwiper = null;
 
-  //       if (thumbnailSwiper && !thumbnailSwiper._swiperInitialized) {
-  //         thumbnailSwiper._swiperInitialized = true;
+        if (thumbnailSwiper && !thumbnailSwiper._swiperInitialized) {
+          thumbnailSwiper._swiperInitialized = true;
 
-  //         // Get thumbnail direction from data attribute
-  //         const thumbnailDirection = this.getAttribute('data-thumbnail-direction') || 'horizontal';
-  //         const isVerticalThumbnails = thumbnailDirection === 'vertical';
+          // Get thumbnail direction from data attribute
+          const thumbnailDirection = this.getAttribute('data-thumbnail-direction') || 'horizontal';
+          const isVerticalThumbnails = thumbnailDirection === 'vertical';
 
-  //         // Get thumbnail position to determine slidesPerView
-  //         const thumbnailPosition = this.querySelector('.swiper-controls__thumbnails-container')?.getAttribute('data-thumbnail-position') || 'bottom';
-  //         const slidesPerView = (thumbnailPosition === 'left' || thumbnailPosition === 'right') ? 'auto' : 4;
+          // Get thumbnail position to determine slidesPerView
+          const thumbnailPosition = this.querySelector('.swiper-controls__thumbnails-container')?.getAttribute('data-thumbnail-position') || 'bottom';
+          const slidesPerView = (thumbnailPosition === 'left' || thumbnailPosition === 'right') ? 'auto' : 4;
 
-  //         thumbsSwiper = new Swiper(thumbnailSwiper, {
-  //           direction: isVerticalThumbnails ? 'vertical' : 'horizontal',
-  //           spaceBetween: 16,
-  //           slidesPerView: slidesPerView,
-  //           freeMode: false,
-  //           watchSlidesProgress: true,
-  //           allowTouchMove: true,
-  //           grabCursor: true,
-  //           slideToClickedSlide: true,
-  //           loop: false,
-  //           breakpoints: {
-  //             768: { slidesPerView: slidesPerView },
-  //             1024: { slidesPerView: slidesPerView },
-  //             1400: { slidesPerView: slidesPerView }
-  //           },
-  //           pagination: {
-  //             el: '.swiper-controls__thumbnails-container .swiper-pagination',
-  //             type: 'bullets',
-  //             clickable: true,
-  //           },
-  //         });
-  //       }
+          thumbsSwiper = new Swiper(thumbnailSwiper, {
+            direction: isVerticalThumbnails ? 'vertical' : 'horizontal',
+            spaceBetween: 16,
+            slidesPerView: slidesPerView,
+            freeMode: false,
+            watchSlidesProgress: true,
+            allowTouchMove: true,
+            grabCursor: true,
+            slideToClickedSlide: true,
+            loop: false,
+            breakpoints: {
+              768: { slidesPerView: slidesPerView },
+              1024: { slidesPerView: slidesPerView },
+              1400: { slidesPerView: slidesPerView }
+            },
+            pagination: {
+              el: '.swiper-controls__thumbnails-container .swiper-pagination',
+              type: 'bullets',
+              clickable: true,
+            },
+          });
+        }
 
-  //       // Ensure proper swiper options for both desktop and mobile
-  //       const swiperOptions = {
-  //         ...this.options,
-  //         // Enable touch/swipe functionality
-  //         allowTouchMove: true,
-  //         // Enable navigation buttons
-  //         navigation: {
-  //           nextEl: arrowOnHeaderNextButton,
-  //           prevEl: arrowOnHeaderPrevButton,
-  //           disabledClass: "swiper-button-disabled",
-  //           hiddenClass: "swiper-button-hidden",
-  //         },
-  //         // Enable pagination
-  //         pagination: {
-  //           el: this.swiperEl.querySelector(".swiper-pagination"),
-  //           clickable: true,
-  //           type: this.options.pagination?.type || "bullets",
-  //           dynamicBullets: this.options.pagination?.dynamicBullets || false,
-  //         },
-  //         // Enable keyboard navigation
-  //         keyboard: {
-  //           enabled: true,
-  //           onlyInViewport: true,
-  //         },
-  //         // Enable mousewheel
-  //         // mousewheel: {
-  //         //   forceToAxis: true,
-  //         // },
-  //         // Enable grab cursor
-  //         grabCursor: true,
-  //         // Enable resistance
-  //         resistance: true,
-  //         resistanceRatio: 0.85,
-  //         // Connect thumbnail swiper if exists
-  //         thumbs: thumbsSwiper ? {
-  //           swiper: thumbsSwiper,
-  //         } : undefined,
-  //       };
+        // Ensure proper swiper options for both desktop and mobile
+        const swiperOptions = {
+          ...this.options,
+          // Enable touch/swipe functionality
+          allowTouchMove: true,
+          // Enable navigation buttons
+          navigation: {
+            nextEl: arrowOnHeaderNextButton,
+            prevEl: arrowOnHeaderPrevButton,
+            disabledClass: "swiper-button-disabled",
+            hiddenClass: "swiper-button-hidden",
+          },
+          // Enable pagination
+          pagination: {
+            el: this.swiperEl.querySelector(".swiper-pagination"),
+            clickable: true,
+            type: this.options.pagination?.type || "bullets",
+            dynamicBullets: this.options.pagination?.dynamicBullets || false,
+          },
+          // Enable keyboard navigation
+          keyboard: {
+            enabled: true,
+            onlyInViewport: true,
+          },
+          // Enable mousewheel
+          // mousewheel: {
+          //   forceToAxis: true,
+          // },
+          // Enable grab cursor
+          grabCursor: true,
+          // Enable resistance
+          resistance: true,
+          resistanceRatio: 0.85,
+          // Connect thumbnail swiper if exists
+          thumbs: thumbsSwiper ? {
+            swiper: thumbsSwiper,
+          } : undefined,
+        };
 
-  //       this.initSwiper = new Swiper(this.swiperEl, swiperOptions);
+        this.initSwiper = new Swiper(this.swiperEl, swiperOptions);
 
-  //       // Handle thumbnail clicks - works on both mobile and desktop
-  //       if (thumbnailSwiper && thumbsSwiper) {
-  //         const thumbnailButtons = thumbnailSwiper.querySelectorAll('.swiper-controls__thumbnail');
-  //         thumbnailButtons.forEach((button, index) => {
-  //           button.addEventListener('click', (e) => {
-  //             e.preventDefault();
-  //             this.initSwiper.slideTo(index);
-  //           });
-  //         });
+        // Handle thumbnail clicks - works on both mobile and desktop
+        if (thumbnailSwiper && thumbsSwiper) {
+          const thumbnailButtons = thumbnailSwiper.querySelectorAll('.swiper-controls__thumbnail');
+          thumbnailButtons.forEach((button, index) => {
+            button.addEventListener('click', (e) => {
+              e.preventDefault();
+              this.initSwiper.slideTo(index);
+            });
+          });
 
-  //         // Update active thumbnail on slide change
-  //         this.initSwiper.on('slideChange', () => {
-  //           thumbnailButtons.forEach((button, index) => {
-  //             if (index === this.initSwiper.activeIndex) {
-  //               button.setAttribute('aria-selected', 'true');
-  //               button.classList.add('active');
-  //             } else {
-  //               button.removeAttribute('aria-selected');
-  //               button.classList.remove('active');
-  //             }
-  //           });
+          // Update active thumbnail on slide change
+          this.initSwiper.on('slideChange', () => {
+            thumbnailButtons.forEach((button, index) => {
+              if (index === this.initSwiper.activeIndex) {
+                button.setAttribute('aria-selected', 'true');
+                button.classList.add('active');
+              } else {
+                button.removeAttribute('aria-selected');
+                button.classList.remove('active');
+              }
+            });
 
-  //           const realIndex = this.initSwiper.realIndex;
-  //           let thumbsPerView = thumbsSwiper.params.slidesPerView;
+            const realIndex = this.initSwiper.realIndex;
+            let thumbsPerView = thumbsSwiper.params.slidesPerView;
 
-  //           if (thumbsPerView == 'auto') {
-  //             thumbsPerView = thumbsSwiper.slides.filter(slide =>
-  //               slide.classList.contains('swiper-slide-visible')
-  //             ).length;
-  //           }
+            if (thumbsPerView == 'auto') {
+              thumbsPerView = thumbsSwiper.slides.filter(slide =>
+                slide.classList.contains('swiper-slide-visible')
+              ).length;
+            }
 
-  //           const firstVisible = thumbsSwiper.activeIndex;
-  //           const lastVisible = firstVisible + thumbsPerView - 1;
+            const firstVisible = thumbsSwiper.activeIndex;
+            const lastVisible = firstVisible + thumbsPerView - 1;
 
-  //           if (realIndex >= lastVisible - 1) {
-  //             thumbsSwiper.slideTo(realIndex - 2);
-  //           }
+            if (realIndex >= lastVisible - 1) {
+              thumbsSwiper.slideTo(realIndex - 2);
+            }
 
-  //           if (realIndex <= firstVisible + 1 && firstVisible > 0) {
-  //             thumbsSwiper.slideTo(realIndex - 2 < 0 ? 0 : realIndex - 2);
-  //           }
-  //         });
+            if (realIndex <= firstVisible + 1 && firstVisible > 0) {
+              thumbsSwiper.slideTo(realIndex - 2 < 0 ? 0 : realIndex - 2);
+            }
+          });
 
-  //         // Set initial active state
-  //         if (thumbnailButtons.length > 0) {
-  //           thumbnailButtons[0].setAttribute('aria-selected', 'true');
-  //           thumbnailButtons[0].classList.add('active');
-  //         }
-  //       }
+          // Set initial active state
+          if (thumbnailButtons.length > 0) {
+            thumbnailButtons[0].setAttribute('aria-selected', 'true');
+            thumbnailButtons[0].classList.add('active');
+          }
+        }
 
-  //       // Force update to ensure proper rendering
-  //       setTimeout(() => {
-  //         if (this.initSwiper) {
-  //           this.initSwiper.update();
-  //           if (thumbsSwiper) {
-  //             thumbsSwiper.update();
-  //           }
-  //         }
-  //       }, 200);
-  //     } catch (error) {
-  //       console.error("❌ Error initializing Swiper:", error);
-  //       // Try to reinitialize after a delay
-  //       setTimeout(() => {
-  //         console.log("🔄 Attempting to reinitialize Swiper...");
-  //         enableSwiper();
-  //       }, 500);
-  //     }
-  //   };
+        // Force update to ensure proper rendering
+        setTimeout(() => {
+          if (this.initSwiper) {
+            this.initSwiper.update();
+            if (thumbsSwiper) {
+              thumbsSwiper.update();
+            }
+          }
+        }, 200);
+      } catch (error) {
+        console.error("❌ Error initializing Swiper:", error);
+        // Try to reinitialize after a delay
+        setTimeout(() => {
+          console.log("🔄 Attempting to reinitialize Swiper...");
+          enableSwiper();
+        }, 500);
+      }
+    };
 
-  //   this.breakpointChecker = () => {
-  //     if (this.isMobileOnly) {
-  //       // For mobile-only swipers, only enable on mobile
-  //       if (this.breakpoint.matches) {
-  //         // Desktop - destroy swiper
-  //         if (this.initSwiper) {
-  //           this.initSwiper.destroy(true, true);
-  //           this.initSwiper = null;
-  //         }
-  //       } else {
-  //         // Mobile - enable swiper
-  //         if (!this.initSwiper) {
-  //           enableSwiper();
-  //         }
-  //       }
-  //     } else {
-  //       // For regular swipers, always enable (works on both mobile and desktop)
-  //       if (!this.initSwiper) {
-  //         enableSwiper();
-  //       }
-  //     }
-  //   };
+    this.breakpointChecker = () => {
+      if (this.isMobileOnly) {
+        // For mobile-only swipers, only enable on mobile
+        if (this.breakpoint.matches) {
+          // Desktop - destroy swiper
+          if (this.initSwiper) {
+            this.initSwiper.destroy(true, true);
+            this.initSwiper = null;
+          }
+        } else {
+          // Mobile - enable swiper
+          if (!this.initSwiper) {
+            enableSwiper();
+          }
+        }
+      } else {
+        // For regular swipers, always enable (works on both mobile and desktop)
+        if (!this.initSwiper) {
+          enableSwiper();
+        }
+      }
+    };
 
-  //   // Add event listener for breakpoint changes
-  //   if (this.isMobileOnly) {
-  //     this.breakpoint.addEventListener("change", this.breakpointChecker);
-  //   }
+    // Add event listener for breakpoint changes
+    if (this.isMobileOnly) {
+      this.breakpoint.addEventListener("change", this.breakpointChecker);
+    }
 
-  //   // Initial check
-  //   this.breakpointChecker();
-  // }
+    // Initial check
+    this.breakpointChecker();
+  }
 }
 if (!customElements.get("swiper-component"))
   customElements.define("swiper-component", SwiperComponent);
@@ -3633,7 +3629,7 @@ class SlideshowAnimated extends HTMLElement {
   constructor() {
     super();
 
-    this.image = this.querySelector('[data-image-trans]')
+    this.image = this.querySelector('[data-image-trans] img')
     this.speed = parseFloat(this.dataset.speed) || 0.5;
   }
 
@@ -3647,16 +3643,12 @@ class SlideshowAnimated extends HTMLElement {
     let yUp = Math.round(n * this.speed)
     let yDown = Math.round(n * this.speed) * -1
     let sectionIdex = this.closest('.section')?.dataset.index;
-    let offset = ["center start", "end start"];
-    if (sectionIdex == 1) {
-      offset = ["start start", "end start"];
-      yDown = 0;
-    }
+    let offset = ["start start", "end start"];
 
     Motion.scroll(
       Motion.animate(
         this.image,
-        { y: [yDown, yUp] },
+        { y: [0, yUp] },
         { easing: 'linear' },
       ),
       { target: this, offset: offset }
