@@ -1387,7 +1387,11 @@ class SwiperComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    this.initializeSwiper();
+    // this.initializeSwiper();
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) this.initializeSwiper();
+    });
+    observer.observe(this);
   }
 
   disconnectedCallback() {
