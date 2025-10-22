@@ -1,11 +1,15 @@
-{{ 'component-cart.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'component-cart-items.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'component-totals.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'component-discounts.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'quantity-popover.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'component-cart.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'component-totals.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'component-discounts.css' | asset_url | stylesheet_tag: preload: true }}
+<link rel="stylesheet" href="{{ 'component-cart.css' | asset_url }}" media="print" fetchpriority="low" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" fetchpriority="low" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-totals.css' | asset_url }}" media="print" fetchpriority="low" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'quantity-popover.css' | asset_url }}" media="print" fetchpriority="low" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-discounts.css' | asset_url }}" media="print" fetchpriority="low" onload="this.media='all'">
+<noscript>
+  <link rel="stylesheet" href="{{ 'component-cart.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'component-totals.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'component-discounts.css' | asset_url }}">
+  <link rel="stylesheet" href="{{ 'quantity-popover.css' | asset_url }}">
+</noscript>
 
 <cart-items-component
   id="main-cart"
@@ -196,7 +200,7 @@
         },
         {
           "value": "custom",
-          "label": "t:options.custom" 
+          "label": "t:options.custom"
         }
       ],
       "default": "page-width"

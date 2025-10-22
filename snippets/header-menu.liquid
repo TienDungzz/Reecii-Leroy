@@ -47,7 +47,8 @@
               <details
                 id="Details-HeaderMenu-{{ forloopIndex }}"
                 class="details--dropdown mega-menu"
-                is="dropdown-details"
+                is="mega-menu-details"
+                data-mega-menu-item
                 activate-event="hover"
                 data-index="0"
               >
@@ -87,21 +88,23 @@
                     settings: section.settings
                   %}
                 </summary>
-                <div
-                  class="details__list mega-menu__content z-1 motion-reduce global-settings-popup color-{{ section.settings.color_scheme_top }}"
-                  tabindex="-1"
-                >
-                  {%- render 'header-nav-mega',
-                    blocks: blocks,
-                    link: link,
-                    forloopIndex: forloop.index,
-                    block: block,
-                    icon_type: icon_type,
-                    keys: keys,
-                    sec_settings: section.settings,
-                    class_item_hover_reveal: class_item_hover_reveal
-                  -%}
-                </div>
+                <template>
+                  <div
+                    class="details__list mega-menu__content z-1 motion-reduce global-settings-popup color-{{ section.settings.color_scheme_top }}"
+                    tabindex="-1"
+                  >
+                    {%- render 'header-nav-mega',
+                      blocks: blocks,
+                      link: link,
+                      forloopIndex: forloop.index,
+                      block: block,
+                      icon_type: icon_type,
+                      keys: keys,
+                      sec_settings: section.settings,
+                      class_item_hover_reveal: class_item_hover_reveal
+                    -%}
+                  </div>
+                </template>
               </details>
             {%- else -%}
               <a

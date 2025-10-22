@@ -71,7 +71,7 @@
     }
 
     // On resize/document height change, force update
-    window.addEventListener('resize', updateProgress);
+    window.addEventListener('resize', theme.utils.rafThrottle(updateProgress));
     // Also recalc immediately, in case load in scrolled state
     updateProgress();
     // Start the rAF loop

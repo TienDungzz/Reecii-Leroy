@@ -292,7 +292,7 @@ class CollapsibleDetails extends HTMLDetailsElement {
 
     if (this.hasAttribute('collapsible-mobile')) {
       this.resizeHandler();
-      window.addEventListener('resize', this.resizeHandler.bind(this));
+      window.addEventListener('resize', theme.utils.rafThrottle(this.resizeHandler.bind(this)));
       document.addEventListener('unmatchSmall', this.resizeHandler.bind(this));
     }
 
@@ -524,3 +524,25 @@ class DropdownDetails extends HTMLDetailsElement {
 if (!customElements.get('dropdown-details')) {
   customElements.define('dropdown-details', DropdownDetails, { extends: 'details' });
 }
+
+class MegaMenuDetails extends DropdownDetails {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    theme.initWhenVisible(() => {
+      this.renderContent();
+      this.init();
+    });
+  }
+
+  renderContent() {
+    const template = this.querySelector('template');
+    if (template) {
+      const templateContent = theme.renderTemplate(template);
+      this.appendChild(templateContent);
+    }
+  }
+}
+if (!customElements.get('mega-menu-details')) customElements.define('mega-menu-details', MegaMenuDetails, { extends: 'details' });

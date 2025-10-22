@@ -613,14 +613,23 @@
                   e.preventDefault();
                 });
 
-                document.addEventListener('mousemove', function(e) {
+                // document.addEventListener('mousemove', function(e) {
+                //   if (isDragging && progressBar) {
+                //     const rect = progressBar.getBoundingClientRect();
+                //     const clickX = e.clientX - rect.left;
+                //     const percentage = Math.max(0, Math.min(1, clickX / rect.width));
+                //     video.currentTime = percentage * video.duration;
+                //   }
+                // });
+
+                document.addEventListener('mousemove', theme.utils.rafThrottle((e) => {
                   if (isDragging && progressBar) {
                     const rect = progressBar.getBoundingClientRect();
                     const clickX = e.clientX - rect.left;
                     const percentage = Math.max(0, Math.min(1, clickX / rect.width));
                     video.currentTime = percentage * video.duration;
                   }
-                });
+                }));
 
                 document.addEventListener('mouseup', function() {
                   isDragging = false;
