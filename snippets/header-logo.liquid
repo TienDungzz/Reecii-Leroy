@@ -20,10 +20,10 @@
   endif
 
   if sec_stts.logo_width == blank
-    assign logo_width = settings.logo.width
-    assign logo_width_mobile = settings.logo.width
-    assign logo_height = settings.logo.height
-    assign logo_height_mobile = settings.logo.height
+    assign logo_width = settings.logo_width
+    assign logo_width_mobile = settings.logo_width_mobile
+    assign logo_height = logo_width | divided_by: settings.logo.aspect_ratio | ceil
+    assign logo_height_mobile = logo_width_mobile | divided_by: settings.logo.aspect_ratio | ceil
   else
     assign logo_width = sec_stts.logo_width
     assign logo_width_mobile = sec_stts.logo_width_mobile
