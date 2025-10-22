@@ -143,7 +143,15 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
                 %}
               "
             >
-              <div class="swiper">
+              <div class="swiper"
+                style="
+                  {% if section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                  --dots-top-offset: {{ section.settings.dots_top_offset }}px;
+                  {% elsif section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                  --progress-top-offset: {{ section.settings.progress_top_offset }}px;
+                  {% endif %}
+                "
+              >
           {%- endif -%}
           <ul
             id="Grid-{{ section.id }}"
@@ -187,7 +195,13 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
             %}
           "
         >
-          <div class="swiper size-full" style="--swiper-navigation-top-offset: 50%;">
+          <div class="swiper size-full" style="--swiper-navigation-top-offset: 50%;
+                {% if section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                --dots-top-offset: {{ section.settings.dots_top_offset }}px;
+                {% elsif section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                --progress-top-offset: {{ section.settings.progress_top_offset }}px;
+                {% endif %}
+                ">
             <ul
               id="Slider-{{ section.id }}"
               data-id="{{ section.id }}"
@@ -520,7 +534,7 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
       "type": "select",
       "id": "pagination_type",
       "label": "t:settings.pagination_type",
-      "visible_if": "{{ section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
       "options": [
         {
           "value": "bullets",
@@ -540,6 +554,28 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
         }
       ],
       "default": "bullets"
+    },
+    {
+      "type": "range",
+      "id": "dots_top_offset",
+      "label": "t:settings.dots_top_offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "range",
+      "id": "progress_top_offset",
+      "label": "t:settings.progress_top_offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "header",
@@ -1131,7 +1167,7 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
               "type": "_card-article-group-media",
               "static": true,
               "settings": {
-                "article": ""
+                "article": "{{ closest.article }}"
               },
               "blocks": {
                 "image": {
