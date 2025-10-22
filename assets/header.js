@@ -20,7 +20,8 @@ class HeaderComponent extends HTMLElement {
       this.observeStickyPosition(this.stickyMode === "always");
 
       if (this.stickyMode === "scroll-up" || this.stickyMode === "always") {
-        document.addEventListener("scroll", this.handleWindowScroll.bind(this));
+        // document.addEventListener("scroll", this.handleWindowScroll.bind(this));
+        document.addEventListener("scroll", theme.utils.rafThrottle(this.handleWindowScroll.bind(this)));
       }
     }
   }

@@ -34,6 +34,9 @@ class PredictiveSearch extends SearchForm {
     }
 
     // Update the term asap, don't wait for the predictive search query to finish loading
+    console.log(`%c🔍 Log this.searchTerm:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.searchTerm);
+    console.log(`%c🔍 Log newSearchTerm:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", newSearchTerm);
+
     this.updateSearchForTerm(this.searchTerm, newSearchTerm);
 
     this.searchTerm = newSearchTerm;
@@ -158,10 +161,10 @@ class PredictiveSearch extends SearchForm {
     const searchForTextElement = this.querySelector('[data-predictive-search-search-for-text]');
     const currentButtonText = searchForTextElement?.innerText;
     if (currentButtonText) {
-      if (currentButtonText.match(new RegExp(previousTerm, 'g')).length > 1) {
-        // The new term matches part of the button text and not just the search term, do not replace to avoid mistakes
-        return;
-      }
+      // if (currentButtonText.match(new RegExp(previousTerm, 'g')).length > 1) {
+      //   // The new term matches part of the button text and not just the search term, do not replace to avoid mistakes
+      //   return;
+      // }
       const newButtonText = currentButtonText.replace(previousTerm, newTerm);
       searchForTextElement.innerText = newButtonText;
     }

@@ -5,13 +5,18 @@
   {% render 'header-mega-menu' %}
 {% endcomment %}
 
+{%- liquid
+  assign bl_stts = block.settings
+  assign divider = bl_stts.divider
+-%}
+
 <div
   id="MegaMenu-Content-{{ forloopIndex }}"
   class="list-menu--wrapper mega-menu--2"
   tabindex="-1"
-  style="--columns-count: {{ block.settings.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
+  style="--columns-count: {{ bl_stts.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
 >
-  <div class="mega-menu__container page-width page-width--{{ block.settings.width }}">
+  <div class="mega-menu__container page-width page-width--{{ bl_stts.width }}">
     <ul
       class="mega-menu__list header__mega-submenu{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
       role="list"
@@ -56,7 +61,7 @@
                     {% endif %}
                     style="{%  render 'highlight-style', order: '3', keys: keys, compare: grandchildlink.title, color: highlight_color, settings: sec_settings %}"
                   >
-                      {{ grandchildlink.title | escape }}
+                    {{ grandchildlink.title | escape }}
                     {% render 'highlight-label-menu',
                       order: '3',
                       keys: keys,
@@ -74,8 +79,8 @@
   </div>
   {%- liquid
     assign has_mega_menu_images = false
-    if block.settings.show_promotion_banner
-      if block.settings.image_1 != blank or block.settings.image_2 != blank
+    if bl_stts.show_promotion_banner
+      if bl_stts.image_1 != blank or bl_stts.image_2 != blank
         assign has_mega_menu_images = true
         assign mega_menu_images_size = 0
         assign image_index = 0
@@ -85,20 +90,20 @@
   {%- for i in (1..2) -%}
     {%- capture capture_image -%}image_{{ i }}{%- endcapture -%}
     {%- liquid
-      assign image = block.settings[capture_image]
+      assign image = bl_stts[capture_image]
       if image != blank
         assign mega_menu_images_size = mega_menu_images_size | plus: 1
       endif
     -%}
   {%- endfor -%}
-  <div class="mega-menu__collage-wrapper{% if block.settings.inherit_color_scheme == false %} color-{{ block.settings.color_scheme }}{% endif %}">
-    {%- if has_mega_menu_images == true or block.settings.show_brand -%}
-      <div class="page-width page-width--{{ block.settings.width }}">
+  {%- if has_mega_menu_images == true or bl_stts.show_brand -%}
+    <div class="mega-menu__collage-wrapper{% if bl_stts.inherit_color_scheme == false %} color-{{ bl_stts.color_scheme }}{% endif %}{% if divider %} mega-menu__collage-wrapper--divider{% endif %}">
+      <div class="page-width page-width--{{ bl_stts.width }}">
         <div
           class="mega-menu__collage collage collage-3-columns collage--{{ mega_menu_images_size }}-items grid"
           style="
-            --border-radius: {{ block.settings.image_corner_radius | divided_by: 10.0 }}rem;
-            --border-width: {{ block.settings.image_border_thickness | divided_by: 10.0 }}rem;
+            --border-radius: {{ bl_stts.image_corner_radius | divided_by: 10.0 }}rem;
+            --border-width: {{ bl_stts.image_border_thickness | divided_by: 10.0 }}rem;
             --gap-x: 1rem;
             --gap-y: 1rem;
           "
@@ -108,8 +113,8 @@
               {%- capture capture_image -%}image_{{ i }}{%- endcapture -%}
               {%- capture capture_link_url -%}link_url_{{ i }}{%- endcapture -%}
               {%- liquid
-                assign image = block.settings[capture_image]
-                assign link_url = block.settings[capture_link_url]
+                assign image = bl_stts[capture_image]
+                assign link_url = bl_stts[capture_link_url]
               -%}
               {%- if image != blank -%}
                 {%- assign image_index = image_index | plus: 1 -%}
@@ -132,34 +137,35 @@
                     {%- liquid
                       assign ratio = image.aspect_ratio | default: 1
                       assign image_alt = image.alt | default: shop.name | escape
+                      assign widths = '275, 550, 710'
+                      assign sizes = 'auto, (min-width: 750px) 50vw, 100vw'
+                      assign class = 'motion-reduce'
                     -%}
                     <div
                       class="media media--transparent media--adapt"
                       style="--media-adapt-ratio: {{ ratio }};"
                     >
-                      {{
-                        image
-                        | image_url: width: 600
-                        | image_tag:
-                          loading: 'lazy',
-                          widths: '275, 550, 710',
-                          sizes: sizes,
-                          alt: image_alt,
-                          class: 'motion-reduce'
-                      }}
+                      {%- render 'image',
+                        image: image,
+                        sizes: sizes,
+                        widths: widths,
+                        loading: 'lazy',
+                        alt: image_alt,
+                        class: class
+                      -%}
                     </div>
                   </a>
                 </div>
               {%- endif -%}
             {%- endfor -%}
           {%- endif -%}
-          {%- if block.settings.show_brand -%}
+          {%- if bl_stts.show_brand -%}
             <div
               class="menu-dropdown__block menu-dropdown__brand collage__item collage__item--3"
             >
-              {%- if block.settings.brand_title -%}
+              {%- if bl_stts.brand_title -%}
                 <h3 class="menu-dropdown__block--title h6">
-                  <span>{{ block.settings.brand_title | escape }}</span>
+                  {{ bl_stts.brand_title | escape }}
                 </h3>
               {%- endif -%}
               <div class="menu-dropdown__block--content">
@@ -175,26 +181,26 @@
                   {% for letter in alphabet %}
                     <li>
                       <a
-                        href="{{ block.settings.brand_url | default: '' }}#{{ letter | downcase }}"
+                        href="{{ bl_stts.brand_url | default: '' }}#{{ letter | downcase }}"
                         class="link link--underline{% if brand_letters contains letter %} is-active{% endif %}"
                       >
-                       {{ letter }}
+                        {{ letter }}
                       </a>
                     </li>
                   {% endfor %}
                 </ul>
               </div>
-              {%- if block.settings.brand_text -%}
+              {%- if bl_stts.brand_text -%}
                 <div style="--mt: var(--margin-md);">
                   <a
-                    {% if block.settings.brand_url == blank %}
+                    {% if bl_stts.brand_url == blank %}
                       role="link" aria-disabled="true"
                     {% else %}
-                      href="{{ block.settings.brand_url }}"
+                      href="{{ bl_stts.brand_url }}"
                     {% endif %}
                     class="link link--underline"
                   >
-                    {{ block.settings.brand_text | escape }}
+                    {{ bl_stts.brand_text | escape }}
                   </a>
                 </div>
               {%- endif -%}
@@ -202,6 +208,6 @@
           {%- endif -%}
         </div>
       </div>
-    {%- endif -%}
-  </div>
+    </div>
+  {%- endif -%}
 </div>

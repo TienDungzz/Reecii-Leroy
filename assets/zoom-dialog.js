@@ -41,7 +41,7 @@ class ZoomDialog extends HTMLElement {
       } else {
         this.dialog.setAttribute('open', '');
       }
-      
+
       for (const target of [targetThumbnail, targetImage]) {
         target?.scrollIntoView({ behavior: 'smooth' });
       }
@@ -276,7 +276,7 @@ class ZoomDialog extends HTMLElement {
             ancestor.scrollTop
         )
         : ancestor.scrollTop;
-  
+
     const scrollLeft =
       ancestor.scrollWidth > ancestor.clientWidth
         ? Math.max(0, calculateScrollOffset(
@@ -288,7 +288,7 @@ class ZoomDialog extends HTMLElement {
             ancestor.scrollLeft
           ))
         : ancestor.scrollLeft;
-    
+
     ancestor.scrollTo({
       left: scrollLeft,
       top: scrollTop,
@@ -317,7 +317,7 @@ document.addEventListener('click', e => {
 
   if (trigger.classList.contains('dialog-thumbnails-list__thumbnail')) {
     zoomDialog.handleThumbnailClick(index);
-    
+
     const swiperThumbnail = document.querySelector(`.swiper-controls__thumbnail[data-index="${index}"]`);
     if (swiperThumbnail) {
       swiperThumbnail.click();
@@ -327,7 +327,7 @@ document.addEventListener('click', e => {
 
 class ScrollHint extends HTMLElement {
   connectedCallback() {
-    this.addEventListener('scroll', this.update);
+    this.addEventListener('scroll', theme.utils.rafThrottle(this.update.bind(this)));
     this.resizeObserver.observe(this);
   }
 

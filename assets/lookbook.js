@@ -323,7 +323,7 @@ function handleLookBookAllItemsLayout() {
       function getDotProductId(dot) {
           const productInfoEl = dot.querySelector('[data-json-product]');
           if (!productInfoEl) return null;
-          
+
           try {
               const productInfoJson = JSON.parse(productInfoEl.getAttribute('data-json-product'));
               return productInfoJson.id;
@@ -344,7 +344,7 @@ function handleLookBookAllItemsLayout() {
           dotElements.forEach(function(dot) {
               const dotProductId = getDotProductId(dot);
               const dotElement = dot.closest('lookbook-dot');
-              
+
               if (dotProductId == productId) {
                   dotElement.classList.add('is-active');
               } else {
@@ -369,7 +369,7 @@ function handleLookBookAllItemsLayout() {
 
           const swiperInstance = allItemsSwiper.swiper;
           const slides = Array.from(allItemsSwiper.querySelectorAll('.swiper-slide'));
-          
+
           const targetSlideIndex = slides.findIndex(slide => {
               const slideProductId = getSlideProductId(slide);
               return slideProductId == productId;
