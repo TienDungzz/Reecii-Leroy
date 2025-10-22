@@ -156,7 +156,7 @@ class WishlistView extends HTMLElement {
       viewCol.addEventListener('click', this.onViewColClick.bind(this));
     })
 
-    window.addEventListener('resize', this.onResize.bind(this));
+    window.addEventListener('resize', theme.utils.rafThrottle(this.onResize.bind(this)));
 
     this.initWishlistPage();
   }
