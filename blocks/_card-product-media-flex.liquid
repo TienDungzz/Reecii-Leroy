@@ -69,7 +69,13 @@
 
 {%- if card_product and card_product != empty -%}
   {%- if card_product.featured_media -%}
-    <div class="card--block-media overflow-hidden card-badge-is-{{ check_pos_badge }} relative group-block w-full" style="{%- if block.settings.width_option == 'custom' -%} --globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}">
+    <div 
+      class="card--block-media overflow-hidden card-badge-is-{{ check_pos_badge }} relative group-block w-full{% if block.settings.border != 'none' %} border-style{% endif %}" 
+      style="
+        {%- if block.settings.width_option == 'custom' -%}--globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}
+        {% if block.settings.border != 'none' %}{% render 'border-override', settings: block.settings %}{% endif %}
+        "
+      >
       <div class="ratio" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
         {%- render 'card-product-media', show_secondary_image: show_secondary_image, card_product: card_product -%}
 
@@ -184,6 +190,59 @@
       "unit": "%",
       "default": 80,
       "visible_if": "{{ block.settings.width_option == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.borders",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "label": "t:settings.border_width",
+      "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.border_opacity",
+      "default": 100,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.border != 'none' }}"
     }
   ],
   "presets": [

@@ -17,7 +17,9 @@
 
 {%- if card_product and card_product != empty -%}
   <div class="card-product__group-wrapper{% if quick_add_is_icon %} {{ class_group }} quick-add-type-icon{% endif %}">
-    <div class="card--block-group card-product__group flex flex-column spacing-style{% if quick_add_hidden %} {{ class_group }}{% endif %}{% if quick_add_is_icon %} {{ class_group_inner }}{% endif %}" style="--gap-y: 1rem; {% render 'spacing-style', settings: block.settings, scale_min: 10 %}">
+    <div 
+      class="card--block-group card-product__group flex flex-column spacing-style{% if quick_add_hidden %} {{ class_group }}{% endif %}{% if quick_add_is_icon %} {{ class_group_inner }}{% endif %}" 
+      style="--gap-y: 1rem;--border_radius:{{ block.settings.border_radius }}px; {% render 'spacing-style', settings: block.settings, scale_min: 10 %}">
       {%- assign class_button = 'card-product__group-btn rounded-full bor-none center cursor-pointer flex items-center justify-center relative leading-none' -%}
       {%- assign class_text = 'text whitespace-nowrap overflow-hidden pointer-events-none absolute-c-y z--1 opacity-0' -%}
       {%- assign class_text_inner = 'text-inner text-sm inline-block' -%}
@@ -55,6 +57,20 @@
       "type": "product",
       "id": "product",
       "label": "t:settings.product"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 50
     },
     {
       "type": "header",

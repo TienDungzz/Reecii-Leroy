@@ -54,7 +54,7 @@
     group-block relative
     group-block--height-{{ settings.height }}
     group-block--width-{{ settings.width }}
-    border-style
+    {% if settings.border != 'none' %}border-style{% endif %}
     spacing-style
     size-style
     shadow-style
@@ -64,7 +64,9 @@
     {{ class }}
   "
   style="
-    {% render 'border-override', settings: settings %}
+    {% if settings.border != 'none' %}
+      {% render 'border-override', settings: settings %}
+    {% endif %}
     {% render 'spacing-style', settings: settings %}
     {% render 'size-style', settings: settings %}
     {% render 'shadow-style', settings: settings %}
