@@ -95,7 +95,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
         {%- endif -%}
       "
     >
-      <div class="email-signup__input-group">
+      <div class="email-signup__input-group" style="--focus-border-color: {{ block.settings.focus_border_color }};">
         <label
           for="EmailInput-{{ block.id }}"
           class="visually-hidden"
@@ -108,7 +108,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
         </label>
         <input
           id="EmailInput-{{ block.id }}"
-          class="email-signup__input email-signup__input--{{ block.settings.border_style }} {{ block.settings.input_alignment }} {{ block.settings.input_type_preset }}"
+          class="email-signup__input email-signup__input--{{ block.settings.border_style }} {{ block.settings.input_alignment }} {{ block.settings.input_type_preset }}{% if block.settings.input_focus_effect != 'none' %} has-focus-border input-{{ block.settings.input_focus_effect }}{% endif %}"
           type="email"
           name="contact[email]"
           autocorrect="off"
@@ -124,6 +124,11 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
             aria-describedby="Email-signup__message-success-{{ block.id }}"
           {% endif %}
         >
+        {% if block.settings.input_focus_effect != 'none' %}
+          <span class="focus-border">
+            <i></i>
+          </span>
+        {% endif %}
       </div>
 
       <button
@@ -478,6 +483,38 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
     .submit-icon-size svg {
       width: var(--icon-size-mobile);
       height: var(--icon-size-mobile);
+    }
+  }
+
+  /* mint update hover effect */
+  .input-effect-1{transition: 0.4s;}
+  .input-effect-1 ~ .focus-border:before,
+  .input-effect-1 ~ .focus-border:after{content: ""; position: absolute; top: 0; right: 0; width: 0; height: 2px; background-color: var(--focus-border-color,#3399FF); transition: 0.2s; transition-delay: 0.2s;}
+  .input-effect-1 ~ .focus-border:after{top: auto; bottom: 0; right: auto; left: 0; transition-delay: 0.6s;}
+  .input-effect-1 ~ .focus-border i:before,
+  .input-effect-1 ~ .focus-border i:after{content: ""; position: absolute; top: 0; left: 0; width: 2px; height: 0; background-color: var(--focus-border-color,#3399FF); transition: 0.2s;}
+  .input-effect-1 ~ .focus-border i:after{left: auto; right: 0; top: auto; bottom: 0; transition-delay: 0.4s;}
+  .input-effect-1.has-focus-border:focus {border-color: transparent;}
+  .input-effect-1.has-focus-border:focus::placeholder {opacity: 0;}
+  .input-effect-1:focus ~ .focus-border:before,
+  .input-effect-1:focus ~ .focus-border:after{width: 100%; transition: 0.2s; transition-delay: 0.6s;}
+  .input-effect-1:focus ~ .focus-border:after{transition-delay: 0.2s;}
+  .input-effect-1:focus ~ .focus-border i:before,
+  .input-effect-1:focus ~ .focus-border i:after{height: 100%; transition: 0.2s;}
+  .input-effect-1:focus ~ .focus-border i:after{transition-delay: 0.4s;}
+
+  .email-signup__button {
+    cursor: pointer;
+
+    svg {
+      transition: all 0.2s ease-in-out;
+    }
+
+    &:hover {
+      svg {
+        color: var(--color-primary);
+        transform:  scale(1.05);
+      }
     }
   }
 {% endstylesheet %}
@@ -991,6 +1028,29 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
       ],
       "default": "paragraph",
       "info": "t:info.edit_presets_in_theme_settings"
+    },
+    {
+      "type": "select",
+      "id": "input_focus_effect",
+      "label": "Input focus effect",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "effect-1",
+          "label": "Outline effect"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "focus_border_color",
+      "label": "Focus border color",
+      "default": "#3399FF",
+      "visible_if": "{{ block.settings.input_focus_effect != 'none' }}"
     },
     {
       "type": "checkbox",
