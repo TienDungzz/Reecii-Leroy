@@ -2178,6 +2178,9 @@ class RecentlyViewedProducts extends HTMLElement {
     const listItems = JSON.parse(
       localStorage.getItem("_halo_recently_viewed") || "[]"
     );
+
+    console.log(`%c🔍 Log listItems:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", listItems);
+
     if (
       this.dataset.productId &&
       listItems.includes(parseInt(this.dataset.productId))

@@ -36,34 +36,51 @@
   }
 }
 
-.swiper:not(.swiper-initialized) .grid-layout-no-js {
-  --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-mobile));
+.swiper:not(.swiper-initialized) {
+  .swiper-btns-wrap {
+    opacity: 0;
+  }
+}
 
-  overflow-x: hidden;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+.swiper:not(.swiper-initialized) {
 
-  &::-webkit-scrollbar{ height: 8px; }
+  .grid-layout-no-js {
+    --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-mobile));
 
-  > .swiper-slide {
-    scroll-snap-align: center;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
 
-    &:last-child {
-      margin-right: 0;
+    &::-webkit-scrollbar{ height: 8px; }
+
+    > .swiper-slide {
+      scroll-snap-align: center;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    @media screen and (min-width: 750px){
+      --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-tablet));
+    }
+    @media screen and (min-width: 1024px){
+      --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-tablet));
+    }
+    @media screen and (min-width: 1400px){
+      --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-desktop));
     }
   }
 
-  @media screen and (min-width: 750px){
-    --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-tablet));
+  .swiper-wrapper.grid-layout--1 .swiper-slide:not(:first-child) {
+    display: none;
   }
-  @media screen and (min-width: 1024px){
-    --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-tablet));
-  }
-  @media screen and (min-width: 1400px){
-    --card-grid-per-row: var(--card-grid-per-row-init, var(--card-grid-per-row-desktop));
-  }
+}
+
+.swiper.swiper-initialized .swiper-wrapper.grid-layout {
+  display: flex;
 }
 
 ul.swiper-wrapper {

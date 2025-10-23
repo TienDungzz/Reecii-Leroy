@@ -1,4 +1,4 @@
-{% comment %}
+{% doc %}
   Renders a set of links for paginated results. Must be used within paginate tags.
 
   Usage:
@@ -9,11 +9,11 @@
   Accepts:
   - paginate: {Object}
   - anchor: {String} (optional) This can be added so that on page reload it takes you to wherever you've placed your anchor tag.
-{% endcomment %}
+{% enddoc %}
 
 {% liquid
-  assign settings = settings | default: section.settings
-  assign pagination_type = settings.pagination_type
+  assign sec_stts = section.settings
+  assign pagination_type = sec_stts.pagination_type
 %}
 
 {% capture list_class %}
@@ -25,7 +25,7 @@
 {% endcapture %}
 
 {% capture icons_style %}
-  {% if settings.pagination_icons_type == 'chevron' %}
+  {% if sec_stts.pagination_icons_type == 'chevron' %}
     {{- 'icon-caret.svg' | inline_asset_content -}}
   {% else %}
     {{- 'icon-arrow.svg' | inline_asset_content -}}
@@ -37,11 +37,12 @@
     class="
       pagination-wrapper
       spacing-style
+      {{ pagination_type }}
     "
     style="
-      {% render 'spacing-style', settings: settings, suffix: suffix %}
-      {% render 'border-override', settings: settings %}
-      --pagination-alignment: {{ settings.pagination_alignment | default: 'center' }};
+      {% render 'spacing-style', settings: sec_stts, suffix: suffix %}
+      {% render 'border-override', settings: sec_stts %}
+      --pagination-alignment: {{ sec_stts.pagination_alignment | default: 'center' }};
     "
   >
     <nav
@@ -110,7 +111,7 @@
       </ul>
     </nav>
 
-    {% if settings.pagination_type == 'infinite' %}
+    {% if sec_stts.pagination_type == 'infinite' %}
       <!-- Infinite Scrolling Button -->
       <infinite-scrolling class="infinite-scrolling-wrapper block center">
         <div class="pagination-page-item pagination-page-total flex-center flex-wrap gap-2xs">
@@ -272,6 +273,11 @@
   /* Infinite Scrolling Styles */
   .infinite-scrolling-wrapper {
     margin-top: 2rem;
+  }
+
+  .infinite-scrolling-btn {
+    width: 100%;
+    max-width: 29rem;
   }
 
   .infinite-scrolling-btn.loading {
