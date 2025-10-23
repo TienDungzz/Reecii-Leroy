@@ -15,7 +15,7 @@
     assign paginate_by = section.settings.products_per_page
   endif
 
-  assign collection_products_per_page = paginate_by
+  assign limit = paginate_by
 
   if section.settings.enable_sorting or section.settings.enable_grid_view or section.settings.enable_products_per_page
     assign show_sort = true
@@ -43,7 +43,8 @@
     type: 'filters',
     id: 'filters',
     results: collection,
-    results_size: collection.products_count
+    results_size: collection.products_count,
+    limit: limit
   %}
 
   {% content_for 'block', type: '_collection-header', id: 'collection-header' %}

@@ -35,22 +35,24 @@
 <div class="facets-container w-full{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
   {%- if filter_type == 'vertical' or filter_type == 'horizontal' -%}
     {% comment %} Sorting and product count are the last elements when filter type is horizontal {% endcomment %}
-    <div class="results-count results-count--mobile flex items-center lg:none{% if filter_type == 'vertical' %} hidden{% endif %}">
-      <span class="results">
-        <span id="ProductCountMobile">
-          {%- if results.results_count -%}
-            {{ 'content.results_with_count' | t: terms: results.terms, count: results.results_count }}
-          {%- elsif results.products_count == results.all_products_count -%}
-            {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
-          {%- else -%}
-            {{
-              'products.facets.product_count'
-              | t: product_count: results.products_count, count: results.all_products_count
-            }}
-          {%- endif -%}
+    {% if enable_count %}
+      <div class="results-count results-count--mobile flex items-center lg:none{% if filter_type == 'vertical' %} hidden{% endif %}">
+        <span class="results">
+          <span id="ProductCountMobile">
+            {%- if results.results_count -%}
+              {{ 'content.results_with_count' | t: terms: results.terms, count: results.results_count }}
+            {%- elsif results.products_count == results.all_products_count -%}
+              {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+            {%- else -%}
+              {{
+                'products.facets.product_count'
+                | t: product_count: results.products_count, count: results.all_products_count
+              }}
+            {%- endif -%}
+          </span>
         </span>
-      </span>
-    </div>
+      </div>
+    {% endif %}
 
     <facet-filters-form class="facets">
       <form
@@ -119,21 +121,23 @@
                         <span>{{ 'products.facets.clear_all' | t }}</span>
                       </a>
                     </facet-remove>
-                    <div class="results-count w-full">
-                      {%- if results.results_count -%}
-                        {{
-                          'content.results_with_count'
-                          | t: terms: results.terms, count: results.results_count
-                        }}
-                      {%- elsif results.products_count == results.all_products_count -%}
-                        {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
-                      {%- else -%}
-                        {{
-                          'products.facets.product_count'
-                          | t: product_count: results.products_count, count: results.all_products_count
-                        }}
-                      {%- endif -%}
-                    </div>
+                    {% if enable_count %}
+                      <div class="results-count w-full">
+                        {%- if results.results_count -%}
+                          {{
+                            'content.results_with_count'
+                            | t: terms: results.terms, count: results.results_count
+                          }}
+                        {%- elsif results.products_count == results.all_products_count -%}
+                          {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+                        {%- else -%}
+                          {{
+                            'products.facets.product_count'
+                            | t: product_count: results.products_count, count: results.all_products_count
+                          }}
+                        {%- endif -%}
+                      </div>
+                    {% endif %}
                   </div>
                   {%- for filter in results.filters -%}
                     {%- for value in filter.active_values -%}
@@ -142,7 +146,7 @@
                           href="{{ value.url_to_remove }}"
                           class="active-facets__button block decoration-none active-facets__button--light"
                         >
-                          <span class="active-facets__button-inner button button--tertiary">
+                          <span class="active-facets__button-inner button button--tertiary button-unstyled">
                             {{ value.label | escape }}
                             <span class="svg-wrapper">
                               {{- 'icon-close-small.svg' | inline_asset_content -}}
@@ -161,7 +165,7 @@
                             href="{{ filter.url_to_remove }}"
                             class="active-facets__button block decoration-none active-facets__button--light"
                           >
-                            <span class="active-facets__button-inner button button--tertiary">
+                            <span class="active-facets__button-inner button button--tertiary button-unstyled">
                               {{ min | default: 0 | money }} - {{ max | default: filter.range_max | money }}
                               <span class="svg-wrapper">
                                 {{- 'icon-close-small.svg' | inline_asset_content -}}
@@ -779,7 +783,7 @@
                           href="{{ value.url_to_remove }}"
                           class="active-facets__button block decoration-none active-facets__button--light"
                         >
-                          <span class="active-facets__button-inner button button--tertiary">
+                          <span class="active-facets__button-inner button button--tertiary button-unstyled">
                             {{ value.label | escape }}
                             <span class="svg-wrapper">
                               {{- 'icon-close-small.svg' | inline_asset_content -}}
@@ -798,7 +802,7 @@
                             href="{{ filter.url_to_remove }}"
                             class="active-facets__button block decoration-none active-facets__button--light"
                           >
-                            <span class="active-facets__button-inner button button--tertiary">
+                            <span class="active-facets__button-inner button button--tertiary button-unstyled">
                               {{ min | default: 0 | money }} - {{ max | default: filter.range_max | money }}
                               <span class="svg-wrapper">
                                 {{- 'icon-close-small.svg' | inline_asset_content -}}
@@ -836,22 +840,24 @@
 
           <div class="sorting-wrapper flex items-center gap-lg">
             {% comment %} Sorting and product count are the last elements when filter type is horizontal {% endcomment %}
-            <div class="results-count none lg:block">
-              <span class="results">
-                <span id="ProductCount">
-                  {%- if results.results_count -%}
-                    {{ 'content.results_with_count' | t: terms: results.terms, count: results.results_count }}
-                  {%- elsif results.products_count == results.all_products_count -%}
-                    {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
-                  {%- else -%}
-                    {{
-                      'products.facets.product_count'
-                      | t: product_count: results.products_count, count: results.all_products_count
-                    }}
-                  {%- endif -%}
+            {% if enable_count %}
+              <div class="results-count none lg:block">
+                <span class="results">
+                  <span id="ProductCount">
+                    {%- if results.results_count -%}
+                      {{ 'content.results_with_count' | t: terms: results.terms, count: results.results_count }}
+                    {%- elsif results.products_count == results.all_products_count -%}
+                      {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+                    {%- else -%}
+                      {{
+                        'products.facets.product_count'
+                        | t: product_count: results.products_count, count: results.all_products_count
+                      }}
+                    {%- endif -%}
+                  </span>
                 </span>
-              </span>
-            </div>
+              </div>
+            {% endif %}
             {%- if enable_grid_view -%}
               {% render 'switcher-grid',
                 columns_desktop: section.settings.columns_desktop,
@@ -983,7 +989,7 @@
                           href="{{ value.url_to_remove }}"
                           class="active-facets__button block decoration-none active-facets__button--light"
                         >
-                          <span class="active-facets__button-inner button button--tertiary">
+                          <span class="active-facets__button-inner button button--tertiary button-unstyled">
                             {{ value.label | escape }}
                             <span class="svg-wrapper">
                               {{- 'icon-close-small.svg' | inline_asset_content -}}
@@ -1003,7 +1009,7 @@
                             href="{{ filter.url_to_remove }}"
                             class="active-facets__button block decoration-none active-facets__button--light"
                           >
-                            <span class="active-facets__button-inner button button--tertiary">
+                            <span class="active-facets__button-inner button button--tertiary button-unstyled">
                               {{ min | default: 0 | money }} - {{ max | default: filter.range_max | money }}
                               <span class="svg-wrapper">
                                 {{- 'icon-close-small.svg' | inline_asset_content -}}
@@ -1052,7 +1058,11 @@
                             data-index="mobile-{{ forloop.index }}"
                           >
                             <summary class="mobile-facets__summary focus-inset">
-                              <div class="flex items-center justify-between w-full">
+                              <div class="flex items-center justify-between w-full"
+                                {%- if heading_label_case == 'uppercase' -%}
+                                  style="--facet-label-transform: uppercase;"
+                                {%- endif -%}
+                              >
                                 <span>{{ filter.label | escape }}</span>
                                 <span class="mobile-facets__arrow svg-wrapper">
                                   {{- 'icon-caret.svg' | inline_asset_content -}}
@@ -1194,7 +1204,11 @@
                             data-index="mobile-{{ forloop.index }}"
                           >
                             <summary class="mobile-facets__summary focus-inset">
-                              <div class="flex items-center justify-between w-full">
+                              <div class="flex items-center justify-between w-full"
+                              {%- if heading_label_case == 'uppercase' -%}
+                                style="--font-heading--case: uppercase;"
+                              {%- endif -%}
+                              >
                                 <span>{{ filter.label | escape }}</span>
                                 <span class="mobile-facets__arrow svg-wrapper">
                                   {{- 'icon-caret.svg' | inline_asset_content -}}
@@ -1315,7 +1329,7 @@
               href="{{ value.url_to_remove }}"
               class="active-facets__button block decoration-none active-facets__button--light"
             >
-              <span class="active-facets__button-inner button button--tertiary">
+              <span class="active-facets__button-inner button button--tertiary button-unstyled">
                 {{ filter.label | escape }}: {{ value.label | escape }}
                 <span class="svg-wrapper">
                   {{- 'icon-close-small.svg' | inline_asset_content -}}
@@ -1335,7 +1349,7 @@
                 href="{{ filter.url_to_remove }}"
                 class="active-facets__button block decoration-none active-facets__button--light"
               >
-                <span class="active-facets__button-inner button button--tertiary">
+                <span class="active-facets__button-inner button button--tertiary button-unstyled">
                   {{ min | default: 0 | money }} - {{ max | default: filter.range_max | money }}
                   <span class="svg-wrapper">
                     {{- 'icon-close-small.svg' | inline_asset_content -}}
@@ -1420,7 +1434,7 @@
                   href="{{ value.url_to_remove }}"
                   class="active-facets__button block decoration-none active-facets__button--light"
                 >
-                  <span class="active-facets__button-inner button button--tertiary">
+                  <span class="active-facets__button-inner button button--tertiary button-unstyled">
                     {{ filter.label | escape }}: {{ value.label | escape }}
                     <span class="svg-wrapper">
                       {{- 'icon-close-small.svg' | inline_asset_content -}}
@@ -1440,7 +1454,7 @@
                     href="{{ filter.url_to_remove }}"
                     class="active-facets__button block decoration-none active-facets__button--light"
                   >
-                    <span class="active-facets__button-inner button button--tertiary">
+                    <span class="active-facets__button-inner button button--tertiary button-unstyled">
                       {{ min | default: 0 | money }} - {{ max | default: filter.range_max | money }}
                       <span class="svg-wrapper">
                         {{- 'icon-close-small.svg' | inline_asset_content -}}

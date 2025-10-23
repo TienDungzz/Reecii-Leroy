@@ -39,6 +39,13 @@ style="
   --gap-x: {{ gap }}px;
   --gap-y: {{ gap }}px;
   --font-size: {{ font_size }};
+  --accordion-gap: {{ accordion_gap }}px;
+  --accordion-bg: {{ accordion_bg }};
+  --accordion-pl: {{ accordion_pl }}px;
+  --accordion-pr: {{ accordion_pr }}px;
+  --accordion-pt: {{ accordion_pt }}px;
+  --accordion-pb: {{ accordion_pb }}px;
+  --accordion-border-color: {{ accordion_border_color }};
 "
 {%- endcapture -%}
 
@@ -145,14 +152,14 @@ style="
                       {%- when 'review' -%}
                       {%- if title == blank or product.reviews.rating_average == blank -%}{%- continue -%}{%- endif -%}
                         <div class="tab-content{% if forloop.first %} is-active{% endif %} {% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                          <div class="toggle-title">
-                            <a href="#" class="toggle-link">
+                          <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
+                            <button class="toggle-link cursor-pointer">
                               <span class="text">{{ title }}</span>
                               <span class="svg-wrapper icon-caret-wrapper">
                                 {{- icon -}}
                               </span>
-                            </a>
-                          </div>
+                            </button>
+                          </side-drawer-opener>
                           <div class="toggle-content">
                             {{ product.reviews.rating_average }}
                           </div>
@@ -162,14 +169,14 @@ style="
                         {%- if page_title == blank or block.settings.content == blank and block.settings.page.content == blank -%}{%- continue -%}{%- endif -%}
 
                         <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                          <div class="toggle-title">
-                            <a href="#" class="toggle-link">
+                          <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
+                            <button class="toggle-link cursor-pointer">
                               <span class="text">{{ title }}</span>
                               <span class="svg-wrapper icon-caret-wrapper">
                                 {{- icon -}}
                               </span>
-                            </a>
-                          </div>
+                            </button>
+                          </side-drawer-opener>
                           <div class="toggle-content">
                             <div class="rte">{{ block.settings.content }}</div>
                             {{ block.settings.page.content }}
@@ -179,14 +186,14 @@ style="
                         {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
 
                         <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                          <div class="toggle-title">
-                            <a href="#" class="toggle-link">
+                          <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
+                            <button class="toggle-link cursor-pointer">
                               <span class="text">{{ title }}</span>
                               <span class="svg-wrapper icon-caret-wrapper">
                                 {{- icon -}}
                               </span>
-                            </a>
-                          </div>
+                            </button>
+                          </side-drawer-opener>
                           <div class="toggle-content">
                             {{ block.settings.custom_liquid }}
                           </div>
@@ -295,11 +302,11 @@ style="
         </div>
       </side-drawer>
 
-      {% render 'global-sidebar' %}
+      
     {%- endif -%}
   {%- endif -%}
 </div>
-
+{% render 'global-sidebar' %}
 {% javascript %}
   document.addEventListener('DOMContentLoaded', function() {
     const tabTitles = document.querySelectorAll('.tab-title');
@@ -338,7 +345,7 @@ style="
           const content = toggleLink.closest('.toggle-title').nextElementSibling;
           const cloneContent = content.cloneNode(true);
           if (viewContentType === 'sidebar') {
-            const drawerContent = document.querySelector('#Global-Drawer').querySelector('[data-drawer-content]');
+            const drawerContent = document.querySelector('#Global-Drawer .drawer__wrapper');
             drawerContent.innerHTML = '';
             drawerContent.appendChild(cloneContent);
           } else if (viewContentType === 'popup') {
@@ -490,7 +497,8 @@ style="
       },
       {
         "type": "header",
-        "content": "t:content.accordion_settings"
+        "content": "t:content.accordion_settings",
+        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
       },
       {
         "type": "range",

@@ -14,7 +14,7 @@
 .tabs-item .tab-title:after {
     content: "";
     position: absolute;
-    bottom: calc((var(--border-bottom-gap) * -1) - 0px);
+    bottom: calc((var(--border-bottom-gap) * -1) + 4px);
     left: 0;
     width: 0;
     height: 2px;
@@ -26,6 +26,10 @@
 }
 .tabs-content:not(.style-accordion) .tab-content {
     display: none;
+
+    @media (max-width: 749px) {
+        display: block;
+    }
 }
 .tabs-content:not(.style-accordion) .tab-content.is-active {
     display: block;
@@ -65,6 +69,10 @@
     .tabs-content .toggle-content {
         display: none;
         padding: 15px 0;
+    }
+
+    .tabs-content .toggle-title.is-open ~ .toggle-content {
+        display: block;
     }
 }
 .tabs-content .toggle-title {

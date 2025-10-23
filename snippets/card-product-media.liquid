@@ -5,11 +5,14 @@
 {%- liquid
     assign f_media = card_product.featured_media
     assign media = card_product.media
+    
+    assign media_alt = media.alt | default: card_product.title
+    assign f_media_alt = f_media.alt | default: card_product.title | append: ' Hover Image'
 
     assign sizes = sizes
 
-    assign f_widths = widths | default: '240, 352, 832, 1200'
-    assign m_widths = widths | default: '240, 352, 832, 1200'
+    assign f_widths = widths | default: '240, 352, 650, 832, 1200'
+    assign m_widths = widths | default: '240, 352, 650, 832, 1200'
 
     unless lazy_load == false
         assign loading = "lazy"
@@ -18,11 +21,11 @@
 
 <div class="card__media block{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }}{% endif %}">
     <div class="media media--transparent media--hover-effect">
-        {{ f_media | image_url: width: 800 | image_tag: sizes: sizes , widths: f_widths, loading: 'lazy', alt: f_media.alt, class: 'motion-reduce', loading: loading }}
+        {{ f_media | image_url: width: 650 | image_tag: sizes: sizes , widths: f_widths, loading: 'lazy', alt: f_media_alt, class: 'motion-reduce', loading: loading }}
         {%- if media[1] != null and show_secondary_image -%}
             {%- case media[1].media_type -%}
                 {%- when 'image' -%}
-                    {{ media[1] | image_url: width: 800 | image_tag: sizes: sizes, widths: m_widths, loading: 'lazy', alt: media.alt, class: 'motion-reduce', loading: 'lazy' }}
+                    {{ media[1] | image_url: width: 650 | image_tag: sizes: sizes, widths: m_widths, loading: 'lazy', alt: media_alt, class: 'motion-reduce', loading: 'lazy' }}
                 {%- when 'video', 'external_video' -%}
                     {%- render 'video',
                         video: media[1],

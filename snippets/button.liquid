@@ -79,9 +79,8 @@
       </span>
     </span>
   {%- else -%}
-    {{ label }}
+    <span class="text">{{ label }}</span>
   {%- endif -%}
-
   {% if link_reveal and style_class == 'link' %}
     <span class="text-mask link none{% if link_hover_underline and style_class == 'link' and link_underline == false %} link--hover-underline{% endif %}" data-text="{{ label }}">{{ label }}</span>
   {% endif %}
@@ -186,14 +185,14 @@
     transition: background-size var(--animation-values-slow), opacity var(--animation-speed)  var(--animation-delay, 0s) var(--animation-easing), color var(--animation-speed) var(--animation-delay, 0s) var(--animation-easing);
   }
 
-  .link--underline,
+  .link--underline .text,
   .link--hover-underline .text,
   .link--hover-underline:not(:has(.text)) {
     --line-link-gap: min(100%, 1.35em);
     text-decoration: none;
   }
 
-  .link--underline {
+  .link--underline .text {
     background: linear-gradient(to right, var(--link-underline-color, currentColor), var(--link-underline-color, currentColor)) 0 var(--line-link-gap) / 0 1px no-repeat;
     background-position-y: bottom;
     background-position-x: left;
@@ -250,7 +249,7 @@
       background-size: 100% 1px;
     }
 
-    .link--underline:hover {
+    .link--underline:hover .text {
       background-position-x: right;
       background-size: 0% 1px;
     }

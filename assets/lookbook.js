@@ -4,10 +4,10 @@ function loadFunction() {
     if (check_JS_load) {
         check_JS_load = false;
 
+        initializeLookbook();
         handleViewLookbook();
         renderDotsNumber();
         handleLookBookAllItemsLayout();
-        initializeLookbook();
     }
 }
 
@@ -312,6 +312,18 @@ function handleLookBookAllItemsLayout() {
       const dotElements = item.querySelectorAll('lookbook-dot');
       const allItemsSwiper = item.querySelector('.swiper');
 
+      const observer = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting){
+          initializeActiveDot();
+          
+          setTimeout(() => {
+            handleSliderChange();
+          }, 100);
+        }
+      });
+      observer.observe(item);
+
+
       if (showProductsBtn) {
           showProductsBtn.remove();
       }
@@ -335,10 +347,12 @@ function handleLookBookAllItemsLayout() {
 
       function getSlideProductId(slide) {
           const productIdEl = slide.querySelector('[data-product-card-id]');
+          
           return productIdEl ? productIdEl.getAttribute('data-product-card-id') : null;
       }
 
       function updateActiveDot(productId) {
+        
           if (!productId) return;
 
           dotElements.forEach(function(dot) {
@@ -354,9 +368,10 @@ function handleLookBookAllItemsLayout() {
       }
 
       function initializeActiveDot() {
-          if (!allItemsSwiper || !allItemsSwiper.swiper) return;
+          if (!allItemsSwiper) return;
 
-          const activeSlide = allItemsSwiper.querySelector('.swiper-slide-active');
+          const activeSlide = allItemsSwiper.querySelector('.swiper-slide');
+          
           if (activeSlide) {
               const activeProductId = getSlideProductId(activeSlide);
               updateActiveDot(activeProductId);
@@ -377,7 +392,6 @@ function handleLookBookAllItemsLayout() {
 
           if (targetSlideIndex >= 0) {
               swiperInstance.slideTo(targetSlideIndex, 600);
-              // Update active dot after slide transition
               setTimeout(() => {
                   updateActiveDot(productId);
               }, 100);
@@ -392,15 +406,16 @@ function handleLookBookAllItemsLayout() {
           });
       });
 
-      if (allItemsSwiper && allItemsSwiper.swiper) {
-          initializeActiveDot();
-          allItemsSwiper.swiper.on('slideChangeTransitionEnd', function() {
-              const activeSlide = this.el.querySelector('.swiper-slide-active');
-              if (activeSlide) {
-                  const activeProductId = getSlideProductId(activeSlide);
-                  updateActiveDot(activeProductId);
-              }
-          });
+      function handleSliderChange() {
+        if (allItemsSwiper || allItemsSwiper.swiper) {
+            allItemsSwiper.swiper.on('slideChangeTransitionEnd', function() {
+                const activeSlide = this.el.querySelector('.swiper-slide-active');
+                if (activeSlide) {
+                    const activeProductId = getSlideProductId(activeSlide);
+                    updateActiveDot(activeProductId);
+                }
+            });
+        }
       }
   });
 }
@@ -430,6 +445,7 @@ function initializeLookbook() {
             const allDots = document.querySelectorAll('lookbook-dot');
             const alreadyActive = this.classList.contains('is-active');
             const isShowProductsDot = this.classList.contains('lookbook-dot--showProducts');
+            const isAllItemsLayout = this.closest('.lookbook-section-list.lookbook-all-items-layout');
 
             allDots.forEach(dot => {
                 if (!alreadyActive) {
@@ -467,7 +483,10 @@ function initializeLookbook() {
                 const popupCloseEl = popupEl.querySelector('.close');
 
                 popupContentEl.innerHTML = '';
-                bodyEl.classList.add('openLookbookPopup');
+
+                if (!isAllItemsLayout) {
+                    bodyEl.classList.add('openLookbookPopup');
+                }
 
                 const productCard = this.querySelector('.product-card-lookbook');
                 if (productCard) {
@@ -476,7 +495,6 @@ function initializeLookbook() {
                     wrapper.appendChild(productCard.cloneNode(true));
                     popupContentEl.appendChild(wrapper);
 
-                    // Dọn sạch các class column cũ
                     popupEl.classList.forEach(cls => {
                         if (
                             cls.startsWith('column-') ||

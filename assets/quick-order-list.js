@@ -138,37 +138,6 @@ if (!customElements.get('quick-order-list')) {
         this.allInputsArray = Array.from(this.querySelectorAll('input[type="number"]'));
         this.quickOrderListTable = this.querySelector('.quick-order-list__table');
         this.quickOrderListTable.addEventListener('focusin', this.switchVariants.bind(this));
-
-        // if (this.closest('.popup__inner')) {
-        //   this.addEventListener('focusout', (event) => {
-        //     console.log(event.relatedTarget);
-        //     if (event.relatedTarget == null) {
-        //       document.body.querySelector(this).focus();
-        //       this.openedBy = event.relatedTarget;
-        //       removeTrapFocus(this.openedBy);
-        //       setTimeout(() => {
-        //         console.log('true');
-        //         this.closest('.popup__inner').querySelector('.drawer__close').focus();
-        //       }, 1000);
-        //     };
-        //   });
-        // }
-
-        // this.addEventListener('focusout', (event) => {
-        //   if (document.activeElement !== document.body) {
-        //     document.activeElement.blur();
-        //   }
-        //   if (!event.relatedTarget) {
-        //     console.log('ra ngoài website');
-
-        //     removeTrapFocus(document.activeElement.blur());
-        //     document.body.focus();
-        //     console.log(this.closest('.drawer__close').focus());
-        //     this.closest('.drawer__close').focus();
-        //   } else {
-        //     console.log('vào trong website');
-        //   }
-        // });
       }
 
       onChange(event) {

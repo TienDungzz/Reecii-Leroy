@@ -25,12 +25,17 @@
   else
     assign element = 'div'
   endif
+
+  assign ratio = image.aspect_ratio
 -%}
 
-<{{element}} class="blog-post__sidebar-image blog-posts__sidebar-item" {% if is_open %}
-  open-by-default-on-desktop
-  open-by-default-on-mobile
-{% endif %}>
+<{{ element }}
+  class="blog-post__sidebar-image blog-posts__sidebar-item"
+  {% if is_open %}
+    open-by-default-on-desktop
+    open-by-default-on-mobile
+  {% endif %}
+>
   {% if collapse %}
     <details
       {% if is_open %}
@@ -63,12 +68,15 @@
     <div class="details-content">
   {% endif %}
 
-  <div class="blog-post__sidebar-image-content{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}">
+  <div
+    class="blog-post__sidebar-image-content image-block"
+    style="{% if image != blank %}--ratio: {{ ratio }};{% endif %}"
+  >
     {%- if image != blank -%}
       {%- if link != blank -%}
         {{ link_wrapper }}
       {%- endif -%}
-      {%- render 'image', image: image, class: 'blog-post__sidebar-image-img' -%}
+      {%- render 'image', image: image, class: 'blog-post__sidebar-image-img image-block__image' -%}
       {%- if link != blank -%}
         {{ link_wrapper_end }}
       {%- endif -%}
@@ -84,7 +92,7 @@
     </div>
     </details>
   {% endif %}
-</{{element}}>
+</{{ element }}>
 
 {% schema %}
 {
