@@ -746,6 +746,7 @@ if (!customElements.get('product-info')) {
           if (!productForm) return;
 
           const quantityInput = productForm.querySelector('.quantity__input');
+          if (!quantityInput) return;
 
           quantityInput.setAttribute('data-inventory-quantity', inventoryQuantity);
           quantityInput.setAttribute('data-inventory-policy', inventoryPolicy);
@@ -759,7 +760,9 @@ if (!customElements.get('product-info')) {
           const addButtonText = productForm.querySelector('[name="add"] > .add-to-cart-text');
           const maxInventory = parseInt(quantityInput.getAttribute('data-inventory-quantity'));
 
-          if (addButton.hasAttribute('disabled')) return;
+          if (!addButton || !addButtonText) return;
+
+          if (addButton?.hasAttribute('disabled')) return;
 
           if (maxInventory <= 0 && inventoryPolicy === 'continue') {
             addButtonText.innerHTML = window.variantStrings.preOrder;
