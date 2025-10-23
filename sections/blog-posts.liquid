@@ -18,7 +18,7 @@
   endif
   assign mobile_columns_int = mobile_columns | plus: 0
   assign show_mobile_slider = false
-  if section.settings.carousel_on_mobile and section.blocks.size > mobile_columns_int
+  if section.settings.carousel_on_mobile and section.settings.blog.articles.size > mobile_columns_int
     assign show_mobile_slider = true
   endif
 
@@ -36,61 +36,61 @@
 -%}
 
 {% stylesheet %}
-.section-wrapper {
-  --section-height-offset: 0px;
-}
-
-.section[data-shopify-visual-preview] {
-  min-height: var(--section-preview-height);
-  padding-top: 0;
-}
-
-.section[data-shopify-visual-preview] .custom-section-background {
-  display: none;
-}
-
-body:has(> #header-group > .header-section > #header-component[transparent]):not(
-    :has(> #header-group > .header-section + .shopify-section)
-  )
-  > main
-  > .section-wrapper:first-child {
-  --section-height-offset: var(--header-group-height, 0);
-}
-
-.custom-section-background {
-  grid-column: 1 / -1;
-}
-
-.custom-section-content {
-  z-index: var(--layer-flat);
-}
-
-@media (min-width: 750px) {
-  .blog-posts-section.layout-panel-flex--row .section-resource-list__header {
-    width: calc(var(--header-width) - var(--gap) / 2);
+  .section-wrapper {
+    --section-height-offset: 0px;
   }
 
-  .blog-posts-section.layout-panel-flex--row .blog-posts-block {
-    width: calc(100% - var(--header-width) - var(--gap) / 2);
-  }
-}
-
-@media (min-width: 750px) and (max-width: 1024px) {
-  .tablet-column.blog-posts-section.layout-panel-flex--row .section-resource-list__header,
-  .tablet-column.blog-posts-section.layout-panel-flex--row .blog-posts-block {
-    width: 100%;
-  }
-}
-
-@media (max-width: 749px) {
-  .blog-posts-section.mobile-direction--row:not(.tablet-column) .section-resource-list__header {
-    width: calc(var(--header-width) - var(--gap) / 2);
+  .section[data-shopify-visual-preview] {
+    min-height: var(--section-preview-height);
+    padding-top: 0;
   }
 
-  .blog-posts-section.mobile-direction--row:not(.tablet-column) .blog-posts-block {
-    width: calc(100% - var(--header-width) - var(--gap) / 2);
+  .section[data-shopify-visual-preview] .custom-section-background {
+    display: none;
   }
-}
+
+  body:has(> #header-group > .header-section > #header-component[transparent]):not(
+      :has(> #header-group > .header-section + .shopify-section)
+    )
+    > main
+    > .section-wrapper:first-child {
+    --section-height-offset: var(--header-group-height, 0);
+  }
+
+  .custom-section-background {
+    grid-column: 1 / -1;
+  }
+
+  .custom-section-content {
+    z-index: var(--layer-flat);
+  }
+
+  @media (min-width: 750px) {
+    .blog-posts-section.layout-panel-flex--row .section-resource-list__header {
+      width: calc(var(--header-width) - var(--gap) / 2);
+    }
+
+    .blog-posts-section.layout-panel-flex--row .blog-posts-block {
+      width: calc(100% - var(--header-width) - var(--gap) / 2);
+    }
+  }
+
+  @media (min-width: 750px) and (max-width: 1024px) {
+    .tablet-column.blog-posts-section.layout-panel-flex--row .section-resource-list__header,
+    .tablet-column.blog-posts-section.layout-panel-flex--row .blog-posts-block {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 749px) {
+    .blog-posts-section.mobile-direction--row:not(.tablet-column) .section-resource-list__header {
+      width: calc(var(--header-width) - var(--gap) / 2);
+    }
+
+    .blog-posts-section.mobile-direction--row:not(.tablet-column) .blog-posts-block {
+      width: calc(100% - var(--header-width) - var(--gap) / 2);
+    }
+  }
 {% endstylesheet %}
 
 {% capture header %}
@@ -143,7 +143,15 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
                 %}
               "
             >
-              <div class="swiper">
+              <div class="swiper"
+                style="
+                  {% if section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                  --dots-top-offset: {{ section.settings.dots_top_offset }}px;
+                  {% elsif section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                  --progress-top-offset: {{ section.settings.progress_top_offset }}px;
+                  {% endif %}
+                "
+              >
           {%- endif -%}
           <ul
             id="Grid-{{ section.id }}"
@@ -187,7 +195,13 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
             %}
           "
         >
-          <div class="swiper size-full" style="--swiper-navigation-top-offset: 50%;">
+          <div class="swiper size-full" style="--swiper-navigation-top-offset: 50%;
+                {% if section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                --dots-top-offset: {{ section.settings.dots_top_offset }}px;
+                {% elsif section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' %}
+                --progress-top-offset: {{ section.settings.progress_top_offset }}px;
+                {% endif %}
+                ">
             <ul
               id="Slider-{{ section.id }}"
               data-id="{{ section.id }}"
@@ -520,7 +534,7 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
       "type": "select",
       "id": "pagination_type",
       "label": "t:settings.pagination_type",
-      "visible_if": "{{ section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}",
       "options": [
         {
           "value": "bullets",
@@ -540,6 +554,28 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
         }
       ],
       "default": "bullets"
+    },
+    {
+      "type": "range",
+      "id": "dots_top_offset",
+      "label": "t:settings.dots_top_offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.pagination_type == 'bullets' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "range",
+      "id": "progress_top_offset",
+      "label": "t:settings.progress_top_offset",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.pagination_type == 'progressbar' and section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "header",
@@ -1131,7 +1167,7 @@ body:has(> #header-group > .header-section > #header-component[transparent]):not
               "type": "_card-article-group-media",
               "static": true,
               "settings": {
-                "article": ""
+                "article": "{{ closest.article }}"
               },
               "blocks": {
                 "image": {

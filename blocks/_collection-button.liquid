@@ -8,13 +8,15 @@
 {% endif %}
 
 {% stylesheet %}
-  .collection-card__image .group-collection-information__content .button{
+  .collection-card__image .group-collection-information__content .button,
+  .collection-card__image .group-collection-information__content .button-secondary{
     display: flex;
     align-items: center;
     justify-content: center;
     column-gap: 15px;
   }
-  .collection-card__image .group-collection-information__content .button svg{
+  .collection-card__image .group-collection-information__content .button svg
+  .collection-card__image .group-collection-information__content .button-secondary svg{
     min-width: 17px;
   }
 {% endstylesheet %}
@@ -50,10 +52,6 @@
         {
           "value": "button-secondary",
           "label": "t:options.secondary"
-        },
-        {
-          "value": "link",
-          "label": "t:options.link"
         }
       ],
       "default": "button"
@@ -88,7 +86,7 @@
       "unit": "px",
       "label": "t:settings.border_width",
       "default": 1,
-      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+      "visible_if": "{{ block.settings.button_style == 'custom' }}"
     },
     {
       "type": "range",
@@ -99,13 +97,13 @@
       "unit": "px",
       "label": "t:settings.border_radius",
       "default": 100,
-      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+      "visible_if": "{{ block.settings.button_style == 'custom' }}"
     },
     {
       "type": "select",
       "id": "button_type_font",
       "label": "t:settings.font",
-      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "visible_if": "{{ block.settings.button_style == 'custom' }}",
       "options": [
         {
           "value": "var(--font-body--family)",
@@ -227,7 +225,7 @@
       "type": "select",
       "id": "button_font_weight",
       "label": "t:settings.button_text_weight",
-      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "visible_if": "{{ block.settings.button_style == 'custom' }}",
       "options": [
         {
           "value": "default",
@@ -268,7 +266,7 @@
       "type": "select",
       "id": "button_text_case",
       "label": "t:settings.button_text_case",
-      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}",
+      "visible_if": "{{ block.settings.button_style == 'custom' }}",
       "options": [
         {
           "value": "default",
@@ -290,7 +288,7 @@
       "unit": "px",
       "label": "t:settings.shadow_horizontal_offset",
       "default": 0,
-      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+      "visible_if": "{{ block.settings.button_style == 'custom' }}"
     },
     {
       "type": "range",
@@ -301,7 +299,7 @@
       "unit": "px",
       "label": "t:settings.shadow_vertical_offset",
       "default": 0,
-      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+      "visible_if": "{{ block.settings.button_style == 'custom' }}"
     },
     {
       "type": "range",
@@ -312,121 +310,7 @@
       "unit": "px",
       "label": "t:settings.shadow_blur",
       "default": 0,
-      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
-    },
-    {
-      "type": "header",
-      "content": "t:content.link",
-      "visible_if": "{{ block.settings.style_class == 'link' }}"
-    },
-    {
-      "type": "select",
-      "id": "button_type_size_link",
-      "label": "t:settings.size",
-      "visible_if": "{{ block.settings.style_class == 'link' }}",
-      "options": [
-        {
-          "value": "",
-          "label": "t:options.default"
-        },
-        {
-          "value": "1.0rem",
-          "label": "10px"
-        },
-        {
-          "value": "1.2rem",
-          "label": "12px"
-        },
-        {
-          "value": "1.4rem",
-          "label": "14px"
-        },
-        {
-          "value": "1.6rem",
-          "label": "16px"
-        },
-        {
-          "value": "1.8rem",
-          "label": "18px"
-        },
-        {
-          "value": "2.0rem",
-          "label": "20px"
-        },
-        {
-          "value": "2.2rem",
-          "label": "22px"
-        },
-        {
-          "value": "2.4rem",
-          "label": "24px"
-        },
-        {
-          "value": "2.6rem",
-          "label": "26px"
-        },
-        {
-          "value": "2.8rem",
-          "label": "28px"
-        }
-      ],
-      "default": "1.2rem"
-    },
-    {
-      "type": "select",
-      "id": "button_font_weight_link",
-      "label": "t:settings.button_text_weight",
-      "visible_if": "{{ block.settings.style_class == 'link' }}",
-      "options": [
-        {
-          "value": "default",
-          "label": "t:options.default"
-        },
-        {
-          "value": "100",
-          "label": "t:options.thin"
-        },
-        {
-          "value": "300",
-          "label": "t:options.light"
-        },
-        {
-          "value": "400",
-          "label": "t:options.regular"
-        },
-        {
-          "value": "500",
-          "label": "t:options.medium"
-        },
-        {
-          "value": "600",
-          "label": "t:options.semibold"
-        },
-        {
-          "value": "700",
-          "label": "t:options.bold"
-        },
-        {
-          "value": "900",
-          "label": "t:options.black"
-        }
-      ],
-      "default": "default"
-    },
-    {
-      "type": "checkbox",
-      "id": "link_underline",
-      "label": "t:options.underline",
-      "default": false,
-      "visible_if": "{{ block.settings.style_class == 'link' }}"
-    },
-    {
-      "type": "checkbox",
-      "id": "link_reveal",
-      "label": "t:settings.reveal_on_hover",
-      "default": false,
-      "info": "t:info.link_reveal_info",
-      "visible_if": "{{ block.settings.style_class == 'link' }}"
+      "visible_if": "{{ block.settings.button_style == 'custom' }}"
     },
     {
       "type": "header",
