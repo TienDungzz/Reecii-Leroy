@@ -150,6 +150,7 @@ if (!customElements.get('product-form-component')) {
       }
 
       toggleSubmitButton(disable = true, text) {
+        if (!this.submitButton) return;
         if (disable) {
           this.submitButton.setAttribute('disabled', 'disabled');
           if (text) this.submitButtonText.textContent = text;

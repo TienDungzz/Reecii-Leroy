@@ -1,5 +1,13 @@
 {% liquid
-  assign section_collections = collections
+  if section.settings.render_type == 'custom'
+    assign section_collections = section.settings.collection_list
+    for collection in section_collections
+      assign section_collections_length = forloop.length
+    endfor
+  else
+    assign section_collections = collections
+    assign section_collections_length = section_collections.size
+  endif
   assign max_items = section.settings.collections_to_show
   assign show_more = section.settings.show_more | default: 'Show more'
 
@@ -42,7 +50,7 @@
     class="collection-infinite-scroll block center"
     data-max-items="{{ max_items }}"
   >
-    <button type="button" class="button m-x-auto">
+    <button type="button" class="{{ section.settings.style_class }} m-x-auto">
       <span>{{ show_more }}</span>
     </button>
   </show-more-grid>
@@ -111,7 +119,7 @@
         {% render 'editorial-collection-grid', items: list_items_array %}
     {% endcase %}
   </div>
-  {% if max_items < section_collections.size and section.settings.layout_type == 'grid' %}
+  {% if max_items < section_collections_length and section.settings.layout_type == 'grid' %}
     {{ template_showmore }}
   {% endif %}
 </div>
@@ -124,6 +132,32 @@
     "groups": ["header", "footer"]
   },
   "settings": [
+    {
+      "type": "header",
+      "content": "Collection list"
+    },
+    {
+      "type": "select",
+      "id": "render_type",
+      "label": "Show",
+      "options": [
+        {
+          "value": "all",
+          "label": "All collections"
+        },
+        {
+          "value": "custom",
+          "label": "Custom collections"
+        }
+      ],
+      "default": "all"
+    },
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "Collections",
+      "info": "Apply to 'All collections' option"
+    },
     {
       "type": "header",
       "content": "t:content.cards_layout"
@@ -151,7 +185,7 @@
       "min": 2,
       "max": 20,
       "step": 1,
-      "default": 8
+      "default": 9
     },
     {
       "type": "range",
@@ -160,7 +194,7 @@
       "min": 1,
       "max": 8,
       "step": 1,
-      "default": 4,
+      "default": 3,
       "visible_if": "{{ section.settings.layout_type == 'grid'}}"
     },
     {
@@ -211,6 +245,22 @@
       "label": "t:options.text",
       "default": "Show more",
       "visible_if": "{{ section.settings.layout_type == 'grid'}}"
+    },
+    {
+      "type": "select",
+      "id": "style_class",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "button",
+          "label": "t:options.primary"
+        },
+        {
+          "value": "button-secondary",
+          "label": "t:options.secondary"
+        }
+      ],
+      "default": "button"
     },
     {
       "type": "header",
