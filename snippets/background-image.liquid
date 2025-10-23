@@ -38,8 +38,10 @@
   {%- if background_image != blank -%}
     {% liquid
       assign fetch_priority = 'auto'
+      assign loading = 'lazy'
       if section and section.index == 1
         assign fetch_priority = 'high'
+        assign loading = 'eager'
       endif
     %}
     {{
@@ -49,7 +51,7 @@
         height: height,
         sizes: sizes,
         widths: widths,
-        loading: 'eager',
+        loading: loading,
         fetchpriority: fetch_priority,
         class: class
     }}

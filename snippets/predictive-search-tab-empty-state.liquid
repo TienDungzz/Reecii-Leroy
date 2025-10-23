@@ -53,43 +53,49 @@
           {% endunless %}
           id="tabs-predictive-search-tabs-{{ forloop.index }}"
         >
-          {%- case tab -%}
-            {%- when 'products' -%}
-              {% assign products = settings.quick_collections.products %}
-              {% assign products_test_id = 'products-list-results' %}
-              {% assign title = 'content.products' | t %}
-              {% if products.size > 0 %}
-                {% render 'predictive-search-products-list',
-                  products_test_id: products_test_id,
-                  title: title,
-                  products: products,
-                  limit: 9
-                %}
-              {% else %}
-                <div class="predictive-search-results__no-results">
-                  <p>{{ 'content.no_products_found' | t }}</p>
-                </div>
-              {% endif %}
-            {%- when 'collections' -%}
-              {% assign collections = settings.quick_links.links %}
-              {% if collections.size > 0 %}
-                <ul class="predictive-search__results-list list-unstyled">
-                  {%- for collection in collections -%}
-                    <li class="predictive-search__list-item">
-                      <a href="{{ collection.url }}" class="predictive-search__item link link--text">
-                        <div class="predictive-search__item-content">
-                          <p class="predictive-search__item-heading link--hover-underline">{{ collection.title | escape }}</p>
-                        </div>
-                      </a>
-                    </li>
-                  {%- endfor -%}
-                </ul>
-              {% else %}
-                <div class="predictive-search-results__no-results">
-                  <p>{{ 'content.no_links_found' | t }}</p>
-                </div>
-              {% endif %}
-          {%- endcase -%}
+          {%- unless forloop.first -%}
+            <template class="tabs-component-template">
+          {%- endunless -%}
+            {%- case tab -%}
+              {%- when 'products' -%}
+                {% assign products = settings.quick_collections.products %}
+                {% assign products_test_id = 'products-list-results' %}
+                {% assign title = 'content.products' | t %}
+                {% if products.size > 0 %}
+                  {% render 'predictive-search-products-list',
+                    products_test_id: products_test_id,
+                    title: title,
+                    products: products,
+                    limit: 9
+                  %}
+                {% else %}
+                  <div class="predictive-search-results__no-results">
+                    <p>{{ 'content.no_products_found' | t }}</p>
+                  </div>
+                {% endif %}
+              {%- when 'collections' -%}
+                {% assign collections = settings.quick_links.links %}
+                {% if collections.size > 0 %}
+                  <ul class="predictive-search__results-list list-unstyled">
+                    {%- for collection in collections -%}
+                      <li class="predictive-search__list-item">
+                        <a href="{{ collection.url }}" class="predictive-search__item link link--text">
+                          <div class="predictive-search__item-content">
+                            <p class="predictive-search__item-heading link--hover-underline">{{ collection.title | escape }}</p>
+                          </div>
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {% else %}
+                  <div class="predictive-search-results__no-results">
+                    <p>{{ 'content.no_links_found' | t }}</p>
+                  </div>
+                {% endif %}
+            {%- endcase -%}
+          {%- unless forloop.first -%}
+            </template>
+          {%- endunless -%}
         </div>
       {%- endfor -%}
     </div>

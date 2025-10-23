@@ -55,6 +55,7 @@
   assign filter_label_all = bl_stts.filter_label_all
   assign show_filter_by_tags_sidebar = bl_stts.show_filter_by_tags_sidebar
   assign number_filters = bl_stts.number_filters
+  assign enable_count = bl_stts.enable_count
 -%}
 
 {{ 'component-facets.css' | asset_url | stylesheet_tag: preload: true }}
@@ -105,7 +106,7 @@
     data-id="{{ section.id }}"
   >
     {%- capture sidebar_categories -%}
-      {%- content_for 'block', type: '_blog-post-sidebar-category', id: 'static-collection-categories' -%}
+      {%- content_for 'block', type: '_blog-post-sidebar-category', id: 'static-collection-categories', in_facets: true, heading_label_case: heading_label_case, text_label_case: text_label_case -%}
     {%- endcapture -%}
     {%- if filter_type == 'vertical' -%}
       {{ sidebar_categories }}
@@ -139,7 +140,8 @@
       sidebar_categories: sidebar_categories,
       filter_label_all: filter_label_all,
       show_filter_by_tags_sidebar: show_filter_by_tags_sidebar,
-      number_filters: number_filters
+      number_filters: number_filters,
+      enable_count: enable_count
     %}
   </div>
 </div>
@@ -239,7 +241,7 @@
     }
 
     @media screen and (max-width: 749px) {
-      grid-column: 7 / 13;
+      grid-column: 7 / 14;
     }
 
     @media screen and (min-width: 1025px) {
@@ -533,6 +535,11 @@
     }
   }
 
+  .facets--panel-style-underline .blog-posts__sidebar-item summary,
+  .facets--panel-style-underline .facets__summary {
+    border-bottom: .1rem solid rgb(var(--color-foreground-rgb) / var(--opacity-10));
+  }
+
   .facets__summary span:first-of-type {
     transition: text-decoration var(--duration-short) ease;
   }
@@ -796,6 +803,11 @@
     grid-row: 4;
     row-gap: var(--margin-xs);
 
+    .results-count {
+      font-size: var(--body-xs-font-size);
+      color: rgba(var(--color-foreground-rgb) / var(--opacity-50));
+    }
+
     @media screen and (max-width: 1024px) {
       margin: 0 -1.2rem 1.2rem;
     }
@@ -933,6 +945,11 @@
       padding-inline: var(--padding-sm);
       margin-block: calc(var(--padding-sm) * -1);
       margin-inline: calc(var(--padding-sm) * -1);
+    }
+
+    &.facets--panel-style-underline .facets__summary,
+    &.facets--panel-style-underline .blog-posts__sidebar-item summary {
+      padding-inline: 0;
     }
 
     @media screen and (max-width: 1024px) {
@@ -1252,7 +1269,7 @@
     {
       "type": "checkbox",
       "id": "enable_hover_reveal",
-      "label": "t:settings.hover_reveal",  
+      "label": "t:settings.hover_reveal",
       "default": false
     },
     {
@@ -1264,7 +1281,7 @@
     },
     {
       "type": "header",
-      "content": "t:content.divider"
+      "content": "t:content.appearance"
     },
     {
       "type": "range",
@@ -1516,6 +1533,12 @@
       "type": "checkbox",
       "id": "enable_sorting",
       "label": "t:settings.enable",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_count",
+      "label": "Enable product count",
       "default": true
     },
     {

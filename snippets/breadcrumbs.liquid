@@ -161,7 +161,7 @@
 {% endcapture %}
 
 {%- capture attr_item -%}
-  class="breadcrumbs__item inline-flex items-center gap-style"
+  class="breadcrumbs__item inline-flex items-center gap-style shrink-0"
   style="{% render 'gap-style', value: settings.gap %}"
 {%- endcapture -%}
 
@@ -171,7 +171,7 @@
 
 <nav class="breadcrumbs element-margin-bottom custom-font-size" role="navigation" aria-label="{{ 'content.breadcrumb.title' | t }}" style="--font-size: {{ settings.font_size }};">
   <ol
-    class="breadcrumbs__list list-unstyled flex justify-{{ settings.horizontal_alignment }} items-center gap-style"
+    class="breadcrumbs__list list-unstyled flex justify-{{ settings.horizontal_alignment }} items-center gap-style overflow-x-a hide-scrollbar"
     style="{% render 'gap-style', value: settings.gap %}"
   >
     <li {{ attr_item }}>
@@ -189,6 +189,11 @@
     </li>
     {% assign position = 2 %}
 
+    {% if template.name contains 'collections' %}
+      <li {{ attr_item }}>
+        <span>{{ 'content.breadcrumb.collections' | t }}</span>
+      </li>
+    {% endif %}
     {% if template.name contains 'collection' and collection %}
       <li {{ attr_item }}>
         <a

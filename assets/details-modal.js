@@ -39,10 +39,10 @@ class DetailsModal extends HTMLElement {
     document.body.classList.add('overflow-hidden');
 
     if (this.detailsContainer) {
-      // trapFocus(
-      //   this.detailsContainer.querySelector('[tabindex="-1"]'),
-      //   this.detailsContainer.querySelector('input:not([type="hidden"])')
-      // );
+      trapFocus(
+        this.detailsContainer.querySelector('[tabindex="-1"]'),
+        this.detailsContainer.querySelector('input:not([type="hidden"])')
+      );
     }
     window.scroll({ top: 0, behavior: 'smooth' });
   }

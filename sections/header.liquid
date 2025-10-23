@@ -1,11 +1,9 @@
 <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
 
-{% comment %} {{ 'section-header.css' | asset_url | stylesheet_tag }} {% endcomment %}
-<link rel="preload" href="{{ 'section-header.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-
 <link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <noscript>
+  {{ 'component-search.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-list-menu.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-mega-menu.css' | asset_url | stylesheet_tag: preload: true }}
 </noscript>
