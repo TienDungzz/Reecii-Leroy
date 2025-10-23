@@ -528,11 +528,9 @@ if (!customElements.get('dropdown-details')) {
 class MegaMenuDetails extends DropdownDetails {
   constructor() {
     super();
-    console.log("asd");
   }
 
   connectedCallback() {
-    console.log("asd");
     theme.initWhenVisible(() => {
       this.renderContent();
     });
