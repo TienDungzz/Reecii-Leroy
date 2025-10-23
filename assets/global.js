@@ -1609,33 +1609,33 @@ class SwiperComponent extends HTMLElement {
           // Enable touch/swipe functionality
           allowTouchMove: true,
           // Enable navigation buttons
-          // navigation: {
-          //   nextEl: arrowOnHeaderNextButton,
-          //   prevEl: arrowOnHeaderPrevButton,
-          //   disabledClass: "swiper-button-disabled",
-          //   hiddenClass: "swiper-button-hidden",
-          // },
+          navigation: {
+            nextEl: arrowOnHeaderNextButton,
+            prevEl: arrowOnHeaderPrevButton,
+            disabledClass: "swiper-button-disabled",
+            hiddenClass: "swiper-button-hidden",
+          },
           // // Enable pagination
-          // pagination: {
-          //   el: this.swiperEl.querySelector(".swiper-pagination"),
-          //   clickable: true,
-          //   type: this.options.pagination?.type || "bullets",
-          //   dynamicBullets: this.options.pagination?.dynamicBullets || false,
-          // },
+          pagination: {
+            el: this.swiperEl.querySelector(".swiper-pagination"),
+            clickable: true,
+            type: this.options.pagination?.type || "bullets",
+            dynamicBullets: this.options.pagination?.dynamicBullets || false,
+          },
           // Enable keyboard navigation
           keyboard: {
             enabled: true,
             onlyInViewport: true,
           },
           // Enable mousewheel
-          // mousewheel: {
-          //   forceToAxis: true,
-          // },
+          mousewheel: {
+            forceToAxis: true,
+          },
           // Enable grab cursor
           grabCursor: true,
           // Enable resistance
-          // resistance: true,
-          // resistanceRatio: 0.85,
+          resistance: true,
+          resistanceRatio: 0.85,
           // Connect thumbnail swiper if exists
           thumbs: thumbsSwiper ? {
             swiper: thumbsSwiper,
