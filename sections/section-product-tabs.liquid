@@ -60,6 +60,7 @@ style="
 
 {%- capture accordion_attr -%}
 style="
+  --gap-x: {{ gap }}px;
   --accordion-gap: {{ accordion_gap }}px;
   --accordion-bg: {{ accordion_bg }};
   --accordion-pl: {{ accordion_pl }}px;
@@ -83,12 +84,14 @@ style="
 {{ 'product-tabs.css' | asset_url | stylesheet_tag: preload: true }}
 
 <div class="section section-product-tabs section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
-style="
-{% if section.settings.section_width == 'custom' %}
-  --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
-  --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
-{% endif %}
-"
+  style="
+    {% if section.settings.section_width == 'custom' %}
+      --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    {% endif %}
+    --alignment: {{ alignment }};
+    --alignment-mb: {{ alignment_mb }};
+  "
 >
   {%- if section.blocks.size > 0 -%}
     {%- if tabs_design == 'tab' -%}
@@ -461,7 +464,8 @@ style="
       },
       {
         "type": "header",
-        "content": "t:content.tabs_settings"
+        "content": "t:content.tabs_settings",
+        "visible_if": "{{ section.settings.tabs_design == 'tab' }}"
       },
       {
         "type": "color",
@@ -631,13 +635,6 @@ style="
         ],
         "visible_if": "{{ section.settings.tabs_design == 'accordion' }}",
         "default": "sidebar"
-      },
-      {
-        "type": "checkbox",
-        "label": "t:settings.open_first_tab_by_default",
-        "id": "open_first_tab_by_default",
-        "default": false,
-        "visible_if": "{{ section.settings.tabs_design == 'accordion' }}"
       },
       {
         "type": "header",
@@ -936,7 +933,6 @@ style="
           "accordion_border_style": "bottom",
           "accordion_border_color": "#d3d3d3",
           "view_content": "sidebar",
-          "open_first_tab_by_default": false,
           "alignment": "start",
           "alignment_mb": "start",
           "gap": 30,
