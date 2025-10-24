@@ -14,7 +14,7 @@
   {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-swatch-input.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-swatch.css' | asset_url | stylesheet_tag: preload: true }}
-  
+
   <variant-selects
     id="variant-selects-{{ block.id }}"
     class="variant-selects spacing-style variant-selects--{{ bl_stts.alignment }}"
@@ -46,7 +46,7 @@
                 -%}
                 <li class="item-custom{% if referenced_product.id == product.id %} current-item{% endif %} swatch-item">
                     <div class="item-custom--image">
-                        <{% if referenced_product.id == product.id %}span{% else %}a href ="{{shop.url | append: "/products/" | append: referenced_product.handle }}"{% endif %}  
+                        <{% if referenced_product.id == product.id %}span{% else %}a href ="{{shop.url | append: "/products/" | append: referenced_product.handle }}"{% endif %}
                             class="item-custom--inner"
                             style="
                                 {%- if image_custom != blank -%}
@@ -100,7 +100,8 @@
             swatch_type: swatch_type,
             swatch_size: swatch_size,
             is_color: is_color,
-            index: forloop.index0
+            index: forloop.index0,
+            product: product_resource
           %}
         </fieldset>
       {%- elsif variant_style == 'dropdowns' -%}
@@ -118,7 +119,7 @@
               {{- product_option.selected_value -}}
             </span>
           </label>
-          <div 
+          <div
             class="select variant-option__select-wrapper"
             style="
               {%- if property_being_updated  -%}
@@ -133,7 +134,8 @@
               swatch_type: swatch_type,
               swatch_size: swatch_size,
               is_color: is_color,
-              index: forloop.index0
+              index: forloop.index0,
+              product: product_resource
             %}
           </div>
         </div>
