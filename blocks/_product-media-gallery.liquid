@@ -23,18 +23,8 @@
 
   assign render_slideshow_controls = false
 
-  if bl_stts.media_presentation == 'carousel' or bl_stts.pagination_type == bl_stts.pagination_mobile_type
+  if bl_stts.media_presentation == 'carousel' or bl_stts.pagination_type
     assign render_slideshow_controls = true
-  endif
-
-  assign render_mobile_slideshow_controls = false
-
-  if bl_stts.pagination_type != bl_stts.pagination_mobile_type
-    assign slideshow_controls_class = 'max-md:hidden'
-
-    if bl_stts.pagination_mobile_type != 'hint'
-      assign render_mobile_slideshow_controls = true
-    endif
   endif
 
   assign pagination_type = bl_stts.pagination_type
@@ -252,9 +242,6 @@
       {% if bl_stts.media_columns == "two" and bl_stts.large_first_image%}media-gallery--large-first-image{% endif %}
     {% endif %}
     media-gallery--{{ bl_stts.media_presentation }}
-    {% if bl_stts.pagination_mobile_type == 'hint' %}
-      media-gallery--hint
-    {% endif %}
     {% if bl_stts.extend_media == true %}
       media-gallery--extend {{ section.settings.page_width }}
     {% endif %}
@@ -343,23 +330,13 @@
     {% capture controls %}
       {% if render_slideshow_controls %}
         {%- render 'slideshow-controls',
-          class: slideshow_controls_class,
+          class: '',
           style: pagination_type,
           thumbnails: sorted_media,
           controls_on_media: controls_on_media,
           pagination_position: bl_stts.pagination_position,
           thumbnail_position: thumbnail_position,
           aspect_ratio: bl_stts.aspect_ratio
-          video_type: bl_stts.video_type
-        -%}
-      {% endif %}
-
-      {% if render_mobile_slideshow_controls %}
-        {%- render 'slideshow-controls',
-          class: 'md:hidden media-gallery__mobile-controls',
-          style: bl_stts.pagination_mobile_type,
-          controls_on_media: true,
-          pagination_position: 'center',
           video_type: bl_stts.video_type
         -%}
       {% endif %}
@@ -883,27 +860,11 @@
       transform: scale(var(--drag-zoom-scale))
         translate(var(--drag-zoom-translate-x, 0), var(--drag-zoom-translate-y, 0));
     }
-
-    .media-gallery--hint {
-      --slideshow-gap: var(--gap-2xs);
-
-      :not(.dialog-zoomed-gallery) > .product-media-container:not(:only-child) {
-        width: 90%;
-
-        .product-media img {
-          object-fit: cover;
-        }
-      }
-    }
   }
 
   .dialog-zoomed-gallery__close-button {
     color: var(--color-black);
     z-index: var(--layer-raised);
-  }
-
-  .media-gallery__mobile-controls {
-    display: none;
   }
 
   .dialog-zoomed-gallery .product-media-container--zoomable.product-media-container--image {
@@ -1092,33 +1053,6 @@
         }
       ],
       "default": "thumbnails"
-    },
-    {
-      "type": "select",
-      "id": "pagination_mobile_type",
-      "label": "t:settings.mobile_pagination",
-      "options": [
-        {
-          "value": "bullets",
-          "label": "t:options.dots"
-        },
-        {
-          "value": "dynamic",
-          "label": "t:options.dynamic"
-        },
-        {
-          "value": "progressbar",
-          "label": "t:options.progress"
-        },
-        {
-          "value": "fraction",
-          "label": "t:options.counter"
-        },
-        {
-          "value": "thumbnails",
-          "label": "t:options.thumbnails"
-        }
-      ]
     },
     {
       "type": "header",

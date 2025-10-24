@@ -5,11 +5,14 @@
   {% if settings.transition_to_main_product %}
     data-view-transition-type="product-details"
   {% endif %}
-  {% if block.settings.inherit_color_scheme == false %}
-    style="{% render 'color-scheme-style', settings: block.settings %}"
-  {% else %}
-    style="--bg-color: var(--color-background);"
-  {% endif %}
+  style="
+    --font-size-heading: {{ block.settings.font_size_heading }};
+    {% if block.settings.inherit_color_scheme == false %}
+      {% render 'color-scheme-style', settings: block.settings %}
+    {% else %}
+      --bg-color: var(--color-background);
+    {% endif %}
+  "
 >
   <div class="view-product-title">
     <a
@@ -46,6 +49,10 @@
     top: 0;
     align-self: start;
     justify-content: center;
+  }
+
+  .product-details .form__label {
+    font-size: var(--font-size-heading);
   }
 
   @media screen and (min-width: 750px) {
@@ -237,6 +244,82 @@
       "unit": "%",
       "default": 100,
       "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.typography"
+    },
+    {
+      "type": "select",
+      "id": "font_size_heading",
+      "label": "t:settings.heading_preset",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        },
+        {
+          "value": "3.0rem",
+          "label": "30px"
+        },
+        {
+          "value": "3.2rem",
+          "label": "32px"
+        },
+        {
+          "value": "3.4rem",
+          "label": "34px"
+        },
+        {
+          "value": "3.6rem",
+          "label": "36px"
+        },
+        {
+          "value": "4.0rem",
+          "label": "40px"
+        }
+      ],
+      "default": "1.2rem"
     },
     {
       "type": "header",

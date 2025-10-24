@@ -21,12 +21,14 @@
     data-section="{{ section.id }}"
     data-product-id="{{ product.id }}"
     data-url="{{ product.url }}"
-    {%- unless is_modal %}
-      style="
+    style="
+      {%- unless is_modal %}
         --p-spacing-t: {{ section.settings.padding_top }}px;
         --p-spacing-b: {{ section.settings.padding_bottom }}px;
-      "
-    {% endunless -%}
+      {%- endunless -%}
+      --font-size-heading: {{ font_size_heading | default: '1.4rem' }};
+      --font-size-info: {{ font_size_info | default: '1.2rem' }};
+    "
   >
     <form
       action="{{ routes.cart_update_url }}"
@@ -302,5 +304,14 @@
   .quick-order-list-container .quantity-popover-container {
     justify-content: center;
     margin: 0;
+  }
+
+  .quick-order-list-container .quick-order-list__table th {
+    font-size: var(--font-size-heading);
+  }
+
+  .quick-order-list-container .quick-order-list__table td,
+  .quick-order-list-container .variant-item__name {
+    font-size: var(--font-size-info);
   }
 {%- endstylesheet -%}
