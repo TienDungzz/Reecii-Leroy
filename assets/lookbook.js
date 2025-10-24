@@ -318,7 +318,7 @@ function handleLookBookAllItemsLayout() {
           
           setTimeout(() => {
             handleSliderChange();
-          }, 100);
+          }, 200);
         }
       });
       observer.observe(item);
