@@ -420,7 +420,7 @@ if (!customElements.get('drawer-localization-component')) {
         super();
 
         // Check for section-fetcher and wait for completion
-        this.waitForSectionFetcher();
+        this.initializeForm();
       }
 
       waitForSectionFetcher() {
