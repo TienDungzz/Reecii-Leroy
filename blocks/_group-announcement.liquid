@@ -14,7 +14,7 @@
   "
   {{ block.shopify_attributes }}
 >
-  {% if block.blocks.size > 0 %}
+  {% if block.blocks.size > 1 %}
     <swiper-component
       class="announcement-bar"
       role="region"
@@ -37,6 +37,10 @@
         %}
       "
     >
+  {% else %}
+    <div class="announcement-bar">
+  {% endif %}
+  
       <div class="announcement-bar-slider swiper">
         <div
           class="swiper-wrapper grid grid-layout grid-layout--1 list-unstyled"
@@ -46,13 +50,19 @@
         >
           {% content_for 'blocks' %}
         </div>
+
+    {% if block.blocks.size > 1 %}
         {%- render 'swiper-button' -%}
       </div>
     </swiper-component>
-    {%- if request.design_mode -%}
+    {% else %}
+      </div>
+    </div>
+    {% endif %}
+
+    {%- if request.design_mode and block.blocks.size > 0 -%}
       <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
-  {%- endif -%}
 </div>
 
 {%- style -%}
