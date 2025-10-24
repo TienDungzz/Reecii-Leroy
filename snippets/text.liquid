@@ -183,7 +183,7 @@
     {%- if text_width_mobile == "100%" or text_width_mobile == "custom" -%}{{ text_align_mobile }}{%- endif -%}
     {%- if bl_stts.background -%}
       --text-background-color: {{ bl_stts.background_color | default: 'rgb(255 255 255 / var(--opacity-100))' }};
-      --text-corner-radius: {{ bl_stts.corner_radius }}px;
+      --text-corner-radius: {{ bl_stts.border_radius }}px;
       --text-padding: max(var(--padding-2xs), calc((var(--text-corner-radius) + var(--padding-xs)) * (1 - cos(45deg))));
     {%- endif -%}
     {%- if has_heading_border or enable_border_bottom or has_border -%}
@@ -511,7 +511,7 @@
 
   .text-block--background {
     background-color: var(--text-background-color);
-    border-radius: var(--text-corner-radius);
+    /* border-radius: var(--text-corner-radius); */
 
     /* To avoid text being cropped when using a border radius we add a minimum padding. */
     padding-block-start: max(var(--text-padding), var(--padding-block-start, 0));

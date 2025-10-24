@@ -19,6 +19,52 @@ if (!customElements.get('localization-form')) {
           liveRegion: this.querySelector('#sr-country-search-results'),
         };
 
+        // Check for section-fetcher and wait for completion
+        this.waitForSectionFetcher();
+      }
+
+      waitForSectionFetcher() {
+        // Check if there are any section-fetcher elements in the document
+        const sectionFetchers = this.querySelectorAll('section-fetcher');
+
+        if (sectionFetchers.length === 0) {
+          // No section-fetcher found, initialize immediately
+          this.initializeForm();
+          return;
+        }
+
+        // Wait for all section-fetcher elements to complete
+        let completedFetchers = 0;
+        const totalFetchers = sectionFetchers.length;
+
+        const onSectionCached = (event) => {
+          completedFetchers++;
+          if (completedFetchers >= totalFetchers) {
+            // All section-fetchers completed, initialize the form
+            document.removeEventListener('section:cached', onSectionCached);
+            this.initializeForm();
+          }
+        };
+
+        // Listen for section:cached events
+        document.addEventListener('section:cached', onSectionCached);
+
+        // Also check if any section-fetchers are already completed
+        sectionFetchers.forEach(fetcher => {
+          const targetElement = document.getElementById(fetcher.dataset.targetId);
+          if (targetElement && targetElement.hasAttribute('data-loaded')) {
+            completedFetchers++;
+          }
+        });
+
+        // If all are already completed, initialize immediately
+        if (completedFetchers >= totalFetchers) {
+          document.removeEventListener('section:cached', onSectionCached);
+          this.initializeForm();
+        }
+      }
+
+      initializeForm() {
         if (!theme.config.isTouch || Shopify.designMode) {
           Motion.inView(this, this.init.bind(this));
         } else {
@@ -236,6 +282,54 @@ if (!customElements.get('dropdown-localization-component')) {
       }
 
       connectedCallback() {
+        // Check for section-fetcher and wait for completion
+        this.waitForSectionFetcher();
+      }
+
+      waitForSectionFetcher() {
+        // Check if there are any section-fetcher elements in the document
+        const sectionFetchers = this.querySelectorAll('section-fetcher');
+
+        console.log(sectionFetchers);
+
+        if (sectionFetchers.length === 0) {
+          // No section-fetcher found, initialize immediately
+          this.initializeForm();
+          return;
+        }
+
+        // Wait for all section-fetcher elements to complete
+        let completedFetchers = 0;
+        const totalFetchers = sectionFetchers.length;
+
+        const onSectionCached = (event) => {
+          completedFetchers++;
+          if (completedFetchers >= totalFetchers) {
+            // All section-fetchers completed, initialize the form
+            document.removeEventListener('section:cached', onSectionCached);
+            this.initializeForm();
+          }
+        };
+
+        // Listen for section:cached events
+        document.addEventListener('section:cached', onSectionCached);
+
+        // Also check if any section-fetchers are already completed
+        sectionFetchers.forEach(fetcher => {
+          const targetElement = document.getElementById(fetcher.dataset.targetId);
+          if (targetElement && targetElement.hasAttribute('data-loaded')) {
+            completedFetchers++;
+          }
+        });
+
+        // If all are already completed, initialize immediately
+        if (completedFetchers >= totalFetchers) {
+          document.removeEventListener('section:cached', onSectionCached);
+          this.initializeForm();
+        }
+      }
+
+      initializeForm() {
         if (!theme.config.isTouch || Shopify.designMode) {
           Motion.inView(this, this.init.bind(this));
         } else {
@@ -244,8 +338,6 @@ if (!customElements.get('dropdown-localization-component')) {
       }
 
       init() {
-        this.loadTemplate();
-
         this.mql = window.matchMedia('(min-width: 750px)');
         this.mqlDesktop = window.matchMedia('(min-width: 1025px)');
         this.header = document.querySelector('.header-wrapper');
@@ -258,15 +350,10 @@ if (!customElements.get('dropdown-localization-component')) {
         this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
         if (this.mql.matches) this.addEventListener('focusout', this.closeSelector.bind(this));
         this.elements.button?.addEventListener('click', this.openSelector.bind(this));
-        // this.elements.drawer?.addEventListener('click', this.closeSelector.bind(this));
-      }
 
-      loadTemplate() {
-        const template = this.querySelector('template');
-        if (template) {
-          const templateContent = template.content.cloneNode(true);
-          this.appendChild(templateContent);
-        }
+        console.log(this.elements.button);
+
+        // this.elements.drawer?.addEventListener('click', this.closeSelector.bind(this));
       }
 
       onContainerKeyUp(event) {
@@ -332,6 +419,52 @@ if (!customElements.get('drawer-localization-component')) {
       constructor() {
         super();
 
+        // Check for section-fetcher and wait for completion
+        this.waitForSectionFetcher();
+      }
+
+      waitForSectionFetcher() {
+        // Check if there are any section-fetcher elements in the document
+        const sectionFetchers = document.querySelectorAll('section-fetcher');
+
+        if (sectionFetchers.length === 0) {
+          // No section-fetcher found, initialize immediately
+          this.initializeForm();
+          return;
+        }
+
+        // Wait for all section-fetcher elements to complete
+        let completedFetchers = 0;
+        const totalFetchers = sectionFetchers.length;
+
+        const onSectionCached = (event) => {
+          completedFetchers++;
+          if (completedFetchers >= totalFetchers) {
+            // All section-fetchers completed, initialize the form
+            document.removeEventListener('section:cached', onSectionCached);
+            this.initializeForm();
+          }
+        };
+
+        // Listen for section:cached events
+        document.addEventListener('section:cached', onSectionCached);
+
+        // Also check if any section-fetchers are already completed
+        sectionFetchers.forEach(fetcher => {
+          const targetElement = document.getElementById(fetcher.dataset.targetId);
+          if (targetElement && targetElement.hasAttribute('data-loaded')) {
+            completedFetchers++;
+          }
+        });
+
+        // If all are already completed, initialize immediately
+        if (completedFetchers >= totalFetchers) {
+          document.removeEventListener('section:cached', onSectionCached);
+          this.initializeForm();
+        }
+      }
+
+      initializeForm() {
         if (!theme.config.isTouch || Shopify.designMode) {
           Motion.inView(this, this.init.bind(this));
         } else {

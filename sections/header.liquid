@@ -154,7 +154,7 @@
       assign show_flag = true
     endif
     capture localization_markup
-      render 'dropdown-localization', show_country: show_country, show_language: show_language, country_style: show_flag, localization_position: sec_stts.localization_position, localization_type: sec_stts.localization_type, hide_mobile: true
+      render 'dropdown-localization', show_country: show_country, show_language: show_language, country_style: show_flag, localization_position: sec_stts.localization_position, localization_type: sec_stts.localization_type, hide_mobile: true, section_id: section.id
     endcapture
   endif
 
@@ -510,8 +510,8 @@
     position: relative;
     background-color: var(--header-bg-color, var(--color-background));
     transition: var(--animation-speed-fast);
-    view-transition-name: header-row;
 
+    &:has(.header__search--inline),
     &:has(.header__search--inline .search__input.field__input:focus) {
       z-index: 3;
     }
@@ -670,6 +670,13 @@
       .header__search .search-modal__form:has(.search__input.field__input:focus) .details__list,
       .header__search .search-modal__form[open] .details__list {
         transform: translate3d(-50%, 1rem, 0);
+      }
+    }
+
+    &:has(.header__column--right .header__search .search--inline),
+    &:has(.header__column--left .header__search .search--inline) {
+      .header__search .details__list {
+        min-width: max(35rem, 100%);
       }
     }
 

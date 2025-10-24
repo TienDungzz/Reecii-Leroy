@@ -5,7 +5,7 @@
 {%- liquid
     assign f_media = card_product.featured_media
     assign media = card_product.media
-    
+
     assign media_alt = media.alt | default: card_product.title
     assign f_media_alt = f_media.alt | default: card_product.title | append: ' Hover Image'
 
@@ -19,7 +19,7 @@
     endunless
 -%}
 
-<div class="card__media block{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }}{% endif %}">
+<card-media class="card__media block{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }}{% endif %}">
     <div class="media media--transparent media--hover-effect">
         {{ f_media | image_url: width: 650 | image_tag: sizes: sizes , widths: f_widths, loading: 'lazy', alt: f_media_alt, class: 'motion-reduce', loading: loading }}
         {%- if media[1] != null and show_secondary_image -%}
@@ -44,4 +44,4 @@
     <a href="{{ card_product.url }}" class="full-unstyled-link link-wrap z-2" aria-labelledby="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}" id="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}">
         <span class="visually-hidden">{{ card_product.title | escape }}</span>
     </a>
-</div>
+</card-media>

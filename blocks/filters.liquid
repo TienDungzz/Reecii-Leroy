@@ -100,6 +100,7 @@
       facets-wrapper
       facets--{{ bl_stts.filter_style }}
       facets--panel-style-{{ style }}
+      {% if bl_stts.enable_sticky_filters and filter_type == 'vertical' %} facets--vertical-sticky{% endif %}
       {% unless section.settings.enable_filtering %} facets-wrapper--no-filters{% endunless %}
     "
     id="main-collection-filters"
@@ -929,6 +930,7 @@
     .blog-posts__sidebar-item .details-content {
       padding: 0 0 var(--padding-xs);
       margin: var(--margin-2xs) 0 0;
+      font-size: var(--font-size--sm);
     }
 
     .blog-posts__sidebar-item summary {
@@ -984,7 +986,9 @@
     }
 
     @media screen and (min-width: 1025px) {
-      position: sticky;
+      &.facets--vertical-sticky {
+        position: sticky;
+      }
     }
   }
 
@@ -1265,6 +1269,12 @@
         }
       ],
       "default": "default"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_filters",
+      "label": "t:settings.make_details_sticky_desktop",
+      "default": true
     },
     {
       "type": "checkbox",

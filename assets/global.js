@@ -3690,7 +3690,7 @@ class SlideshowAnimated extends HTMLElement {
     let yUp = Math.round(n * this.speed)
     let yDown = Math.round(n * this.speed) * -1
     let sectionIdex = this.closest('.section')?.dataset.index;
-    let offset = ["start start", "end start"];
+    let offset = ["center start", "end start"];
 
     Motion.scroll(
       Motion.animate(

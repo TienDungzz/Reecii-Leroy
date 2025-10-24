@@ -160,7 +160,7 @@
   </div>
 {%- endif -%}
 
-{% stylesheet %}
+{% style %}
   .pagination__list {
     justify-content: var(--pagination-alignment);
   }
@@ -176,8 +176,8 @@
   .pagination__item {
     display: inline-flex;
     height: 4rem;
-    color: var(--pagination-active-color);
-    background-color: var(--pagination-color);
+    color: var(--pagination-color);
+    background-color: var(--pagination-active-color);
     border: var(--border-width) solid var(--pagination-color);
     font-size: var(--body-s-font-size);
     box-shadow: rgba(var(--pagination-active-color-rgb) / 0.25) 0rem 0rem 0rem 0rem;
@@ -190,8 +190,10 @@
   }
 
   .pagination__item--current {
-    background: transparent;
-    border-color: rgba(var(--pagination-active-color-rgb) / 0.25);
+    background: var(--pagination-color);
+    border-color: rgba(var(--pagination-active-color-rgb) / .25);
+    color: var(--pagination-active-color);
+    box-shadow: rgba(var(--pagination-active-color-rgb) / .25) 0 4px 4px;
   }
 
   .pagination__item:hover {
@@ -377,4 +379,4 @@
       font-size: 1.3rem;
     }
   }
-{% endstylesheet %}
+{% endstyle %}
