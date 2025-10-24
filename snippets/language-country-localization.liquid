@@ -161,7 +161,6 @@
         </span>
       {%- endif -%}
     </button>
-    <template>
       <div class="selector__dropdown color-{{ settings.popover_color_scheme }}" style="{{ form_style }}" element-s-up>
         <div id="Selector-Overlay" class="slide__overlay--mb"></div>
         <div
@@ -184,7 +183,14 @@
             </div>
           {% endif %}
           {%- if show_country -%}
-            <localization-form class="{{ hide_mobile }}" data-prevent-hide>
+            {%- liquid
+              if localPosition == 'DrawerHeaderLanguage'
+                assign target_id = 'MobileCountryLocalizationList'
+              else
+                assign target_id = 'CountryLocalizationList'
+              endif
+            -%}
+            <localization-form class="{{ hide_mobile }} {{ localPosition }}" data-prevent-hide>
               <div class="country-selector">
                 <div class="country-selector-form__wrapper">
                   {%- form 'localization', id: 'HeaderCountryForm', class: 'localization-form' -%}
@@ -224,7 +230,10 @@
                     </div>
                     <div id="sr-country-search-results" class="visually-hidden" aria-live="polite"></div>
                     <div
-                      class="disclosure__list country-selector__list{% if show_currencies %} country-selector__list--with-multiple-currencies{% endif %} cus-scrollbar"
+                      class="disclosure__list country-selector__list cus-scrollbar
+                      {% if show_currencies %} country-selector__list--with-multiple-currencies{% endif %}
+                      {% if country_style == true %} has-icon-flag{% endif %}
+                      "
                       id="{{ localPosition }}-country-results"
                       style="{{ localization_font }} {{ localization_font_size }}"
                     >
@@ -259,30 +268,8 @@
                           {%- endfor -%}
                         </ul>
                       {% endif %}
-                      <ul role="list" class="list-unstyled countries">
-                        {%- for country in localization.available_countries -%}
-                          <li class="disclosure__item" tabindex="-1">
-                            <a
-                              class="disclosure__link caption-large focus-inset"
-                              href="#"
-                              {% if country.iso_code == localization.country.iso_code %}
-                                aria-current="true"
-                              {% endif %}
-                              data-value="{{ country.iso_code }}"
-                              id="{{ country.name }}"
-                              arial-label="{{ country.name }}"
-                            >
-                              {% if country_style == true %}
-                                <span class="icon-flag icon-flag--{{ country.iso_code }}"></span>
-                              {% endif %}
-                              <span class="country">{{- country.name }} </span>
-                              <span class="country-code"
-                                >({{ country.currency.symbol -}}
-                                {{ country.currency.iso_code }})</span
-                              >
-                            </a>
-                          </li>
-                        {%- endfor -%}
+                      <section-fetcher data-section-id="country-localization" data-target-id="{{ target_id }}" data-activate="interaction"></section-fetcher>
+                      <ul role="list" class="list-unstyled countries" id="{{ target_id }}">
                       </ul>
                     </div>
                     <input type="hidden" name="country_code" value="{{ localization.country.iso_code }}">
@@ -349,7 +336,6 @@
           {%- endif -%}
         </div>
       </div>
-    </template>
   </{{ element_tag }}>
 {%- endif -%}
 
@@ -396,5 +382,13 @@
     .icon-caret {
       margin-left: auto;
     }
+  }
+
+  .icon-flag {
+    display: none;
+  }
+
+  .has-icon-flag .icon-flag {
+    display: inline;
   }
 {%- endstylesheet -%}
