@@ -533,8 +533,8 @@ class MegaMenuDetails extends DropdownDetails {
   connectedCallback() {
     theme.initWhenVisible(() => {
       this.renderContent();
+      this.init();
     });
-    this.init();
   }
 
   renderContent() {
