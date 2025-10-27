@@ -1,7 +1,13 @@
 {%- if section.settings.slideshow_type == 'default' -%}
-  {{ 'component-slideshow.css' | asset_url | stylesheet_tag }}
+  <link rel="stylesheet" href="{{ 'component-slideshow.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="{{ 'component-slideshow.css' | asset_url }}">
+  </noscript>
 {%- else -%}
-  {{ 'slideshow-masonry.css' | asset_url | stylesheet_tag }}
+  <link rel="stylesheet" href="{{ 'slideshow-masonry.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="{{ 'slideshow-masonry.css' | asset_url }}">
+  </noscript>
 {%- endif -%}
 
 {%- liquid
