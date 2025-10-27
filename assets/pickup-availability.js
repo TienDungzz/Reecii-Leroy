@@ -107,6 +107,7 @@ if (!customElements.get('pickup-availability-drawer')) {
       this.removeAttribute('open');
       this.classList.remove('active');
       document.body.classList.remove('overflow-hidden');
+      document.documentElement.removeAttribute('scroll-lock');
       removeTrapFocus(this.focusElement);
     }
 
@@ -115,7 +116,7 @@ if (!customElements.get('pickup-availability-drawer')) {
       this.setAttribute('open', '');
       this.classList.add('active');
       document.body.classList.add('overflow-hidden');
-
+      document.documentElement.setAttribute('scroll-lock', '');
       this.addEventListener('transitionend', () => {
         const containerToTrapFocusOn = document.getElementById('PickupAvailabilityDrawer');
         const focusElement = this.querySelector('.drawer__inner') || this.querySelector('.drawer__close');

@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js{% if request.design_mode %} shopify-design-mode{% endif %}" lang="{{ request.locale.iso_code }}">
+<html class="no-js{% if request.design_mode %} shopify-design-mode{% endif %}" lang="{{ request.locale.iso_code }}"{% if settings.enable_preloading_screen %} scroll-lock{% endif %}>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -63,7 +63,7 @@
       template-{{ request.page_type | replace: 'customers/', '' }}
       {% if settings.animations_hover_elements != 'none' %} card-hover--{{ settings.animations_hover_elements }}{% endif %}
       {% if settings.animation_hover_buttons != 'none' %} button-hover--effect{% endif %}
-      {% if settings.enable_preloading_screen %} has--preload-screen preloading-o-h{% endif %}
+      {% if settings.enable_preloading_screen %} has--preload-screen{% endif %}
     "
   >
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}

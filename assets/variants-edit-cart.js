@@ -544,13 +544,6 @@ class QuantityEditCartInput extends HTMLElement {
       if (itemStatus == "deny") {
         newVal = maxValue;
         this.input.value = newVal;
-        if (
-          typeof getInputMessage === "function" &&
-          typeof showWarning === "function"
-        ) {
-          const message = getInputMessage(maxValue);
-          showWarning(message, 3000);
-        }
       }
     }
 

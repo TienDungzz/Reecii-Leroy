@@ -24,7 +24,6 @@
 {%- unless skip_styles -%}
   {{ 'component-rating.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'component-volume-pricing.css' | asset_url | stylesheet_tag: preload: true }}
-
   {{ 'quick-order-list.css' | asset_url | stylesheet_tag: preload: true }}
   {{ 'quantity-popover.css' | asset_url | stylesheet_tag: preload: true }}
 {%- endunless -%}
@@ -41,33 +40,32 @@
     endif
 
     if settings.show_new_badge
-        assign new_badge = false
-        assign new_badge_type = settings.new_badge_type
-        if new_badge_type == 'auto'
-            assign date_start = card_product.created_at | date: '%s'
-            assign date_now = 'now' | date:'%s'
-            assign date_minus = date_now | minus: date_start
-            assign date_difference = date_minus | divided_by: 86400
-            assign new_badge_time = settings.new_badge_time
-            if date_difference < new_badge_time
-              assign new_badge = true
-            endif
-        else
-            for tag in card_product.tags
-            assign tag_handle = tag | handle
-                if tag_handle == 'new'
-                    assign new_badge = true
-                endif
-            endfor
+      assign new_badge = false
+      assign new_badge_type = settings.new_badge_type
+      if new_badge_type == 'auto'
+        assign date_start = card_product.created_at | date: '%s'
+        assign date_now = 'now' | date: '%s'
+        assign date_minus = date_now | minus: date_start
+        assign date_difference = date_minus | divided_by: 86400
+        assign new_badge_time = settings.new_badge_time
+        if date_difference < new_badge_time
+          assign new_badge = true
         endif
+      else
+        for tag in card_product.tags
+          assign tag_handle = tag | handle
+          if tag_handle == 'new'
+            assign new_badge = true
+          endif
+        endfor
+      endif
     endif
 
     if settings.show_custom_badge
       assign custom_badge = false
       assign custom_badge_text = card_product.metafields.custom.custom_badge
-
       if custom_badge_text
-          assign custom_badge = true
+        assign custom_badge = true
       endif
     endif
 
@@ -77,31 +75,31 @@
     for option in card_product.options_with_values
       assign option_name = option.name | downcase
       if product_swatch_option contains option_name
-          assign isColor = true
-          assign index = forloop.index0
-          assign position = forloop.index | minus: 1
-          assign variant_selected = option.selected_value
-          if settings.show_quick_shop
-              for variant in card_product.variants limit: 1
-                  if variant.image != null
-                      assign variant_img = variant.image
-                  endif
-              endfor
-          endif
+        assign isColor = true
+        assign index = forloop.index0
+        assign position = forloop.index | minus: 1
+        assign variant_selected = option.selected_value
+        if settings.show_quick_shop
+          for variant in card_product.variants limit: 1
+            if variant.image != null
+              assign variant_img = variant.image
+            endif
+          endfor
+        endif
         break
       else
-          assign variant_selected = nil
+        assign variant_selected = nil
       endif
     endfor
 
     if settings.badge_position == 'top left'
-        assign check_pos_badge = 'top-left'
+      assign check_pos_badge = 'top-left'
     elsif settings.badge_position == 'top right'
-        assign check_pos_badge = 'top-right'
+      assign check_pos_badge = 'top-right'
     elsif settings.badge_position == 'bottom left'
-        assign check_pos_badge = 'bottom-left'
+      assign check_pos_badge = 'bottom-left'
     elsif settings.badge_position == 'bottom right'
-        assign check_pos_badge = 'bottom-right'
+      assign check_pos_badge = 'bottom-right'
     endif
 
     assign enable_quick_view = settings.enable_quick_view
@@ -116,8 +114,7 @@
         {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
         {% if extend_height %} card--extend-height{% endif %}
         {% if card_product.featured_media == nil and settings.card_style == 'card' %} ratio{% endif %}
-        {% if horizontal_class %} card--horizontal{% endif %}
-      "
+        {% if horizontal_class %} card--horizontal{% endif %}"
       style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
     >
       <div
@@ -128,30 +125,30 @@
 
         <div class="card-product__group-wrapper">
           <div class="card-product__group flex flex-column absolute top-0 right-0 z-2" style="--gap-y: 1rem; --p: .5rem; --pb: 1rem; --md-p: 1rem; --md-pb: 1rem; --lg-p: 1.6rem; --lg-pb: 1rem;">
-              {%- assign class_button = 'card-product__group-btn rounded-full bor-none center cursor-pointer flex items-center justify-center relative' -%}
-              {% comment %} ------ Wishlist ------ {% endcomment %}
-              {%- if enable_wishlist -%}
-                  <div class="card-product__group-item card-wishlist">
-                      <wish-list>
-                          <button type="button" title="{{ 'content.add' | t }}" class="{{ class_button }} wishlist-button " data-wishlist data-wishlist-handle="{{ card_product.handle }}" data-product-id="{{ card_product.id }}">
-                              <span class="text pointer-events-none absolute-c-y z--1">
-                                  <span class="text-inner">{{ 'content.add' | t }}</span>
-                              </span>
-                              {% render 'icon', icon: 'heart' %}
-                          </button>
-                      </wish-list>
-                  </div>
-              {%- endif -%}
+            {%- assign class_button = 'card-product__group-btn rounded-full bor-none center cursor-pointer flex items-center justify-center relative' -%}
+            {% comment %} ------ Wishlist ------ {% endcomment %}
+            {%- if enable_wishlist -%}
+              <div class="card-product__group-item card-wishlist">
+                <wish-list>
+                  <button type="button" title="{{ 'content.add' | t }}" class="{{ class_button }} wishlist-button " data-wishlist data-wishlist-handle="{{ card_product.handle }}" data-product-id="{{ card_product.id }}">
+                    <span class="text pointer-events-none absolute-c-y z--1">
+                      <span class="text-inner">{{ 'content.add' | t }}</span>
+                    </span>
+                    {% render 'icon', icon: 'heart' %}
+                  </button>
+                </wish-list>
+              </div>
+            {%- endif -%}
 
-              {% comment %} ------ Quick view ------ {% endcomment %}
-               {%- if enable_quick_view -%}
-                {% render 'quick-view-button', card_product: card_product, class_button: class_button %}
-               {%- endif -%}
+            {% comment %} ------ Quick view ------ {% endcomment %}
+            {%- if enable_quick_view -%}
+              {% render 'quick-view-button', card_product: card_product, class_button: class_button %}
+            {%- endif -%}
 
-              {% comment %} ------ Compare ------ {% endcomment %}
-               {%- if enable_compare -%}
-                 {% render 'product-compare-button', card_product: card_product, class_button: class_button, sectionId: section_id %}
-             {%- endif -%}
+            {% comment %} ------ Compare ------ {% endcomment %}
+            {%- if enable_compare -%}
+              {% render 'product-compare-button', card_product: card_product, class_button: class_button, sectionId: section_id %}
+            {%- endif -%}
           </div>
         </div>
         <div class="card__content">
@@ -164,7 +161,6 @@
               {%- render 'card-product-heading', card_product: card_product -%}
             </div>
           {%- endif -%}
-
           <div class="card__badge relative {{ settings.badge_position }}">
             {%- render 'product-badge'
               card_product: card_product,
@@ -176,19 +172,19 @@
         </div>
         {%- if settings.show_countdown -%}
           {%- liquid
-              assign countdown_type = settings.countdown_type
-              assign countdown_time = settings.countdown_time
-              assign countdown_collection = settings.countdown_collection | downcase | handle
+            assign countdown_type = settings.countdown_type
+            assign countdown_time = settings.countdown_time
+            assign countdown_collection = settings.countdown_collection | downcase | handle
           -%}
-              <div class="card__countdown absolute-c-x z-2" style="--bottom: 4rem;">
-                  {% render 'product-countdown',
-                    type: 'card',
-                    product: card_product,
-                    countdown_type: countdown_type,
-                    countdown_time: countdown_time,
-                    countdown_collection: countdown_collection
-                  %}
-              </div>
+          <div class="card__countdown absolute-c-x z-2" style="--bottom: 4rem;">
+            {% render 'product-countdown',
+              type: 'card',
+              product: card_product,
+              countdown_type: countdown_type,
+              countdown_time: countdown_time,
+              countdown_collection: countdown_collection
+            %}
+          </div>
         {%- endif -%}
 
         {%- if settings.show_product_marquee -%}
@@ -381,11 +377,8 @@
             <div class="caption-with-letter-spacing light">{{ card_product.vendor }}</div>
           {%- endif -%}
           {%- render 'card-product-heading', card_product: card_product -%}
-
           <div class="card-information">
-
             <span class="caption-large light">{{ block.settings.description | escape }}</span>
-
             {%- if show_rating and card_product.metafields.reviews.rating.value != blank -%}
               {% liquid
                 assign rating_decimal = 0
@@ -421,7 +414,6 @@
                 </span>
               </p>
             {%- endif -%}
-
             {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
             {%- if card_product.quantity_price_breaks_configured? -%}
               {% if card_product.variants.size == 1 and quick_add == 'bulk' %}
@@ -491,8 +483,8 @@
                           <li>
                             <span>
                               {{- price_break.minimum_quantity -}}
-                              <span aria-hidden="true">+</span></span
-                            >
+                              <span aria-hidden="true">+</span>
+                            </span>
                             {%- assign price = price_break.price | money_with_currency -%}
                             <span> {{ 'content.each' | t: money: price }}</span>
                           </li>
@@ -519,7 +511,7 @@
       </div>
       {% if isColor %}
         <div class="card__bottom">
-            {%- render 'product-swatch', product: card_product, variant_selected: variant_selected, index: index -%}
+          {%- render 'product-swatch', product: card_product, variant_selected: variant_selected, index: index -%}
         </div>
       {% endif %}
     </div>
@@ -533,12 +525,7 @@
   -%}
   <div class="card-wrapper product-card-wrapper">
     <div
-      class="
-        card card--{{ settings.card_style }}
-        {% if extend_height %} card--extend-height{% endif %}
-        {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
-        {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }}{% endif %}
-      "
+      class="card card--{{ settings.card_style }}{% if extend_height %} card--extend-height{% endif %}{% if image_shape and image_shape != 'default' %} card--shape{% endif %}{% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }}{% endif %}"
       style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
     >
       <div
@@ -547,9 +534,7 @@
         <div
           class="card__media {% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }}{% endif %}"
         >
-          <div
-            class="media media--transparent"
-          >
+          <div class="media media--transparent">
             {%- if placeholder_image -%}
               {{ placeholder_image | placeholder_svg_tag: 'placeholder-svg' }}
             {%- else -%}

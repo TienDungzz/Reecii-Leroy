@@ -42,9 +42,11 @@
     header-block header-logo grid__item block {{ class }}
   "
 >
-  {%- if request.page_type == 'index' -%}
-    <h1 class="header__heading">
-  {%- endif -%}
+  {% unless preload_screen %}
+    {%- if request.page_type == 'index'-%}
+      <h1 class="header__heading">
+    {%- endif -%}
+  {% endunless %}
   <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset" data-logo-page aria-label="{{ shop.name }}">
     <div class="header__heading-logo-wrapper w-full inline-block relative">
       {%- capture text_fallback -%}
@@ -98,9 +100,11 @@
       {% endif %}
     </div>
   </a>
-  {%- if request.page_type == 'index' -%}
-    </h1>
-  {%- endif -%}
+  {% unless preload_screen %}
+    {%- if request.page_type == 'index'-%}
+      </h1>
+    {%- endif -%}
+  {%- endunless -%}
 </div>
 
 {%- stylesheet -%}

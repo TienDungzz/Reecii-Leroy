@@ -90,13 +90,14 @@ class CartDrawer extends HTMLElement {
     }, { once: true });
 
     document.body.classList.add('overflow-hidden');
+    document.documentElement.setAttribute('scroll-lock', '');
   }
 
   async close() {
     this.classList.remove('active');
     removeTrapFocus(this.activeElement);
     document.body.classList.remove('overflow-hidden');
-
+    document.documentElement.removeAttribute('scroll-lock');
     const dir = this.getAttribute("data-drawer-direction");
     const contentElement = this.querySelector("[data-drawer-content]");
 

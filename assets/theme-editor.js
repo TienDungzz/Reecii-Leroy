@@ -52,6 +52,7 @@ document.addEventListener('shopify:section:unload', (event) => {
   document.querySelectorAll(`[data-section="${event.detail.sectionId}"]`).forEach((element) => {
     element.remove();
     document.body.classList.remove('overflow-hidden');
+    document.documentElement.removeAttribute('scroll-lock');
   });
 });
 

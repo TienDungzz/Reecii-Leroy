@@ -270,7 +270,7 @@ function pageReveal(preloadScreen) {
     setTimeout(() => {
       preloadScreen.classList.add("loaded");
       body.classList.add("loaded");
-      body.classList.remove("preloading-o-h");
+      document.documentElement.removeAttribute('scroll-lock');
       // getScrollbarWidth();
     }, 1200);
   }
@@ -290,7 +290,7 @@ function linkClick() {
     });
 
     window.addEventListener('beforeunload', () => {
-      document.body.classList.add('preloading-o-h');
+      document.documentElement.setAttribute('scroll-lock', '');
       document.querySelector('.preload-screen').classList.remove('off', 'loaded');
     });
   })();
@@ -2257,6 +2257,8 @@ class Wishlist extends HTMLElement {
     event.preventDefault();
     event.stopPropagation();
 
+    this.setLocalStorageProductForWishlist();
+
     const target = event.currentTarget;
     const isInGrid = target.classList.contains("is-in-grid");
 
@@ -2287,7 +2289,7 @@ class Wishlist extends HTMLElement {
       if (textElement) textElement.textContent = window.wishlist.added;
 
       if (wishlistContainer) {
-        const addEvent = new CustomEvent("addwishlistitem", {
+        const addEvent = new CustomEvent("add:wishlist-item", {
           detail: { handle },
           bubbles: true,
         });
@@ -2298,7 +2300,7 @@ class Wishlist extends HTMLElement {
         wishlistList.push(handle);
         localStorage.setItem("wishlistItem", JSON.stringify(wishlistList));
 
-        const updateWishlistMailEvent = new CustomEvent("updatewishlistmail", {
+        const updateWishlistMailEvent = new CustomEvent("update:wishlist-mail", {
           bubbles: true,
         });
         document.dispatchEvent(updateWishlistMailEvent);
@@ -2326,7 +2328,7 @@ class Wishlist extends HTMLElement {
         localStorage.setItem("wishlistItem", JSON.stringify(wishlistList));
       }
 
-      const updatePaginationEvent = new CustomEvent("updatepagination", {
+      const updatePaginationEvent = new CustomEvent("update:pagination", {
         bubbles: true,
       });
       document.dispatchEvent(updatePaginationEvent);
@@ -2335,17 +2337,17 @@ class Wishlist extends HTMLElement {
         wishlistList = JSON.parse(localStorage.getItem("wishlistItem")) || [];
 
         if (wishlistList.length > 0) {
-          const updateWishlistMailEvent = new Event("updatewishlistmail", {
+          const updateWishlistMailEvent = new Event("update:wishlist-mail", {
             bubbles: true,
           });
           document.dispatchEvent(updateWishlistMailEvent);
         } else {
           wishlistContainer.classList.add("is-empty");
           wishlistContainer.innerHTML = `
-            <div class="wishlist-content-empty center">
+            <div class="wishlist-content-empty center"> 
               <span class="wishlist-content-text">${window.wishlist.empty}</span>
               <div class="wishlist-content-actions">
-                <a class="button button-2 button-continue" href="${window.routes.collection_all}">
+                <a class="button" href="${window.routes.collection_all}">
                   ${window.wishlist.continue_shopping}
                 </a>
               </div>
@@ -2363,9 +2365,52 @@ class Wishlist extends HTMLElement {
     const wishlistCount = document.querySelector("[data-wishlist-count]");
     if (wishlistCount) wishlistCount.textContent = wishlistList.length;
 
-    // if (typeof halo !== "undefined" && typeof halo.setProductForWishlist === "function") {
-    //   halo.setProductForWishlist(handle);
-    // }
+    this.setProductForWishlist(handle);
+  }
+
+  setProductForWishlist(handle) {
+    const wishlistList = JSON.parse(localStorage.getItem('wishlistItem')) || [];
+    const items = document.querySelectorAll(`[data-wishlist-handle="${handle}"]`);
+
+    if (!items || items.length === 0) return;
+
+    items.forEach(item => {
+      if (wishlistList.includes(handle)) {
+        item.classList.add('wishlist-added');
+        const textElem = item.querySelector('.text');
+        if (textElem) textElem.textContent = window.wishlist.added;
+      } else {
+        item.classList.remove('wishlist-added');
+        const textElem = item.querySelector('.text');
+        if (textElem) textElem.textContent = window.wishlist.add;
+      }
+    });
+  }
+
+  setLocalStorageProductForWishlist() {
+    let wishlistList = [];
+    try {
+      const stored = localStorage.getItem('wishlistItem');
+      if (stored) {
+        wishlistList = JSON.parse(stored);
+        if (!Array.isArray(wishlistList)) wishlistList = [];
+      }
+    } catch (e) {
+      wishlistList = [];
+    }
+
+    localStorage.setItem('wishlistItem', JSON.stringify(wishlistList));
+
+    const countElements = document.querySelectorAll('[data-wishlist-count]');
+    countElements.forEach(elem => {
+      elem.textContent = wishlistList.length;
+    });
+
+    if (wishlistList.length > 0) {
+      wishlistList.forEach((handle) => {
+        this.setProductForWishlist(handle);
+      });
+    }
   }
 }
 if (!customElements.get("wish-list"))
@@ -3422,10 +3467,7 @@ function getCartUpdate(line, quantity, callback) {
   .then((state) => {
       const parsedState = JSON.parse(state);
 
-      if (parsedState.errors) {
-        showWarning('Error : ' + parsedState.errors, warningTime);
-        return;
-      }
+      if (parsedState.errors) return;
 
       if ((typeof callback) === 'function') {
         callback(parsedState);

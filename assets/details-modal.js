@@ -37,6 +37,7 @@ class DetailsModal extends HTMLElement {
     event.target.closest('details').setAttribute('open', true);
     document.body.addEventListener('click', this.onBodyClickEvent);
     document.body.classList.add('overflow-hidden');
+    document.documentElement.setAttribute('scroll-lock', '');
 
     if (this.detailsContainer) {
       trapFocus(
@@ -54,6 +55,7 @@ class DetailsModal extends HTMLElement {
     }
     document.body.removeEventListener('click', this.onBodyClickEvent);
     document.body.classList.remove('overflow-hidden');
+    document.documentElement.removeAttribute('scroll-lock');
   }
 }
 if (!customElements.get('details-modal')) customElements.define('details-modal', DetailsModal);

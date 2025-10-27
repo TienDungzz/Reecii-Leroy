@@ -30,7 +30,11 @@
     assign show_mobile_slider = true
   endif
 
-  assign columns_desktop = sec_stts.columns_desktop
+  if section.settings.layout_type == 'widget'
+    assign columns_desktop = sec_stts.columns_desktop_widget
+  else
+    assign columns_desktop = sec_stts.columns_desktop
+  endif
   assign columns_tablet = 2
   if columns_desktop == 1
     assign columns_tablet = 1
@@ -637,8 +641,8 @@
             {%- capture breakpoints -%}
               {
                 "768": { "slidesPerView": {% if is_widget %}1{% else %}{{ columns_tablet }}{% endif %} },
-                "1024": { "slidesPerView": {% if is_widget %}{{ sec_stts.columns_desktop_widget }}{% else %}{{ columns_tablet }}{% endif %} },
-                "1400": { "slidesPerView": {% if is_widget %}{{ sec_stts.columns_desktop_widget }}{% else %}{{ columns_desktop }}{% endif %} }
+                "1024": { "slidesPerView": {% if is_widget %}{{ columns_desktop }}{% else %}{{ columns_tablet }}{% endif %} },
+                "1400": { "slidesPerView": {{ columns_desktop }} }
               }
             {%- endcapture -%}
             <swiper-component

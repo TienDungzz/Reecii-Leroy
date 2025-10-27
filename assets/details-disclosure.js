@@ -66,6 +66,7 @@ class SideDrawer extends HTMLElement {
     this.handleTransition(true, 'drawer--opening', 'drawer--open');
     this.trapFocus();
     document.body.classList.add('overflow-hidden');
+    document.documentElement.setAttribute('scroll-lock', '');
 
     const dir = this.getAttribute("data-drawer-direction");
     const contentElement = this.querySelector("[data-drawer-content]");
@@ -101,6 +102,7 @@ class SideDrawer extends HTMLElement {
     this.classList.remove('active');
     if (this.activeElement) removeTrapFocus(this.activeElement);
     document.body.classList.remove('overflow-hidden');
+    document.documentElement.removeAttribute('scroll-lock');
     this.handleTransition(false, 'drawer--closing');
 
     const dir = this.getAttribute("data-drawer-direction");
@@ -203,6 +205,7 @@ class ModalDialog extends HTMLElement {
     this.openedBy = opener;
     const popup = this.querySelector('.template-popup');
     document.body.classList.add('overflow-hidden');
+    document.documentElement.setAttribute('scroll-lock', '');
     this.setAttribute('open', '');
     if (popup) popup.loadContent();
     this.trapFocus();
@@ -211,6 +214,7 @@ class ModalDialog extends HTMLElement {
 
   hide() {
     document.body.classList.remove('overflow-hidden');
+    document.documentElement.removeAttribute('scroll-lock');
     document.body.dispatchEvent(new CustomEvent('modalClosed'));
     this.removeAttribute('open');
     removeTrapFocus(this.openedBy);
