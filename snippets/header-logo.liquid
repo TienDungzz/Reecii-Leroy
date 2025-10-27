@@ -45,24 +45,11 @@
   {%- if request.page_type == 'index' -%}
     <h1 class="header__heading">
   {%- endif -%}
-  <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset" data-logo-page aria-label="{{ shop.name }}">
+  <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset" data-logo-page aria-label="{{ shop.name }}" rel="preload" as="image">
     <div class="header__heading-logo-wrapper w-full inline-block relative">
       {%- capture text_fallback -%}
         <span class="h2">{{ shop.name }}</span>
       {%- endcapture -%}
-
-      {% comment %} <span
-        class="header-logo__image-container header-logo__image-container--original relative{% if use_inverse_logo %} header-logo__image-container--inverse{% endif %}"
-        data-testid="header-logo"
-        style="
-            --url-image: url({{ settings.logo | image_url: width: section.settings.logo_width }});
-          {% if use_inverse_logo %}
-            --url-image-inverse: url({{ inverse_logo | image_url: width: section.settings.logo_width }});
-          {% endif %}
-        "
-      >
-      </span> {% endcomment %}
-
       <span
         class="header-logo__image-container header-logo__image-container--original"
         data-testid="header-logo"
@@ -73,7 +60,8 @@
           class: 'header-logo__image',
           height: block_settings.custom_height,
           text_fallback: shop.name,
-          style: logo_style
+          style: logo_style,
+          loading: 'eager'
         %}
       </span>
 
@@ -88,7 +76,8 @@
             class: 'header-logo__image',
             height: block_settings.custom_height,
             text_fallback: shop.name,
-            style: inverse_logo_style
+            style: inverse_logo_style,
+            loading: 'eager'
           %}
         </span>
       {% endif %}
@@ -110,6 +99,11 @@
     height: var(--header-logo-image-height);
     display: block;
     transition: transform var(--animation-speed-slowest);
+
+    @media (min-width: 750px) and (max-width: 1024px) {
+      width: calc(var(--header-logo-image-width) * 0.6);
+      height: calc(var(--header-logo-image-height) * 0.6);
+    }
 
     img {
       width: 100%;
