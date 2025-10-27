@@ -23,7 +23,7 @@
 %}
 
 {% capture class %}
-  image-block image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}{% if block.settings.animation_type == 'zoom' %} image-zoomin{% endif %}
+  image-block relative image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}{% if block.settings.animation_type == 'zoom' %} image-zoomin{% endif %}
 {% endcapture %}
 
 {% capture style %}
@@ -87,6 +87,13 @@
   style="{{ style }}"
   {{ attributes }}
 >
+  {%- if block.settings.link != blank -%}
+    <a
+      href="{{ block.settings.link }}"
+      class="image-block__link"
+      aria-label="Image Block Link"
+    ></a>
+  {%- endif -%}
   {%- if image != blank -%}
     {% liquid
       assign fetch_priority = 'auto'
@@ -146,6 +153,20 @@
     clip-path: inset(0 0 0 0);
     transform: scale(1);
   } */
+
+  .image-block__link,
+  .image-block__link:empty {
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+
+  .image-block__link ~ :is(.image-block__image) {
+    pointer-events: none;
+    :is(a) {
+      pointer-events: auto;
+    }
+  }
 {%- endstylesheet -%}
 
 {% schema %}

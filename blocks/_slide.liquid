@@ -265,7 +265,7 @@
   {% endstyle %}
 
   {%- if block.settings.slide_background %}
-    <div class="slide__image-container flex size-full overflow-hidden absolute" >
+    <div class="slide__image-container flex size-full overflow-hidden absolute">
       <div
         class="slide__img-wrapper grid w-full"
         {%- if block_stts.image_1 != blank -%}
@@ -279,6 +279,16 @@
   {% endif -%}
 
   <div class="{{ block_stts.container }} h-{{ block_stts.height }}">
+    {%- if block.settings.link != blank -%}
+      <a
+        href="{{ block.settings.link }}"
+        class="slide__link"
+        aria-label="Slide Link"
+        {% if block.settings.open_in_new_tab %}
+          target="_blank" rel="noopener"
+        {% endif %}
+      ></a>
+    {%- endif -%}
     <div
       class="
         relative size-full
@@ -344,6 +354,20 @@
   .slide__img-wrapper > .slide__video-poster {
     position: absolute;
   }
+
+  .slide__link,
+  .slide__link:empty {
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+
+  .slide__link ~ :is(.slide__content) {
+    pointer-events: none;
+    :is(a) {
+      pointer-events: auto;
+    }
+  }
 {%- endstylesheet -%}
 
 {% schema %}
@@ -359,6 +383,17 @@
   "class": "swiper-slide",
   "settings": [
     {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": false
+    },
+    {
       "type": "header",
       "content": "t:content.layout"
     },
@@ -372,7 +407,7 @@
       "type": "select",
       "id": "container",
       "label": "t:content.width",
-      "default": "page-width",
+      "default": "page-width page-width--full",
       "options": [
         {
           "value": "page-width",
