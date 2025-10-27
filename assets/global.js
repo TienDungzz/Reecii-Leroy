@@ -110,12 +110,15 @@ theme.utils = {
     return /** @type {T & { cancel(): void }} */ (debounced);
   },
 
-  setScrollbarWidth: () => {
-    const scrollbarWidth = window.innerWidth - document.body.clientWidth;
-    if (scrollbarWidth > 0) {
-      document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
-    }
-  }
+  // setScrollbarWidth: () => {
+  //   const scrollbarWidth = window.innerWidth - document.body.clientWidth;
+  //   // if (scrollbarWidth > 0) {
+  //   //   document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
+  //   // }
+
+  //   if (scrollbarWidth > 18) return;
+  //   document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
+  // }
 }
 
 theme.initWhenVisible = (callback, delay = 5000) => {
@@ -247,8 +250,17 @@ function onDocumentLoaded(callback) {
   }
 }
 
-onDocumentLoaded(theme.utils.setScrollbarWidth);
-window.addEventListener('resize', theme.utils.rafThrottle(theme.utils.setScrollbarWidth));
+// onDocumentLoaded(theme.utils.setScrollbarWidth);
+// window.addEventListener('resize', theme.utils.rafThrottle(theme.utils.setScrollbarWidth));
+
+function getScrollbarWidth() {
+  const width = window.innerWidth - document.documentElement.clientWidth;
+
+  if (width > 18) return;
+  document.documentElement.style.setProperty('--scrollbar-width', `${width}px`);
+}
+
+// getScrollbarWidth();
 
 // Preloading Screen Annimate
 function logoReveal(preloadScreen) {
@@ -835,6 +847,18 @@ class PreloadScreen extends HTMLElement {
         this.setAttribute("loaded", true);
       }, 350);
     });
+
+    if (document.readyState === 'complete') {
+      callback();
+    } else {
+      const preloadScreen = document.querySelector(".preload-screen");
+      if (preloadScreen) {
+        logoReveal(preloadScreen);
+        pageReveal(preloadScreen);
+        linkClick();
+      }
+      window.addEventListener('load', callback);
+    }
   }
 }
 if (!customElements.get("preload-screen"))
