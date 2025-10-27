@@ -45,17 +45,6 @@
       this.idleTimer = null;
       this.boundReset = this.resetTimer.bind(this);
       this.boundCheck = this.checkIdle.bind(this);
-    }
-
-    connectedCallback() {
-      if (!this.popup) return;
-
-      if (!Shopify.designMode) {
-        ['mousemove', 'keydown', 'scroll'].forEach(evt =>
-          document.addEventListener(evt, this.boundReset)
-        );
-        this.startIdleTimer();
-      }
 
       this.querySelector('.popup__close')?.addEventListener('click', () => this.setClosePopup());
       this.querySelector('[id^="Modal-Overlay-"]')?.addEventListener('click', () => this.setClosePopup());
@@ -67,6 +56,17 @@
         document.addEventListener('shopify:section:deselect', e => {
           if (e.target.matches('.section-before-you-leave')) this.setClosePopup();
         });
+      }
+    }
+
+    connectedCallback() {
+      if (!this.popup) return;
+
+      if (!Shopify.designMode) {
+        ['mousemove', 'keydown', 'scroll'].forEach(evt =>
+          document.addEventListener(evt, this.boundReset)
+        );
+        this.startIdleTimer();
       }
     }
 

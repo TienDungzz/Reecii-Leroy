@@ -55,12 +55,15 @@
 {% endcomment %}
 <div 
   class="
-    jumbo-text__container
+    jumbo-text__container size-style
     {% if bl_stts.inherit_color_scheme == false %}color-scheme-custom{% endif %}
   "
-  {% if bl_stts.inherit_color_scheme == false %}
-    style="{% render 'color-scheme-style', settings: bl_stts %}"
-  {% endif %}
+  style="
+    {% render 'size-style', settings: bl_stts %}
+    {% if bl_stts.inherit_color_scheme == false %}
+      {% render 'color-scheme-style', settings: bl_stts %}
+    {% endif %}
+  "
 >
   {% if text != blank %}
     <jumbo-text {{ attributes }}>{{ text }}</jumbo-text>
@@ -113,10 +116,9 @@
   ></script>
 </div>
 
-
 {% stylesheet %}
   .jumbo-text__container {
-    width: 100%;
+    overflow: hidden;
   }
 
   jumbo-text {
