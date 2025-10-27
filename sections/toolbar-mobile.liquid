@@ -144,8 +144,8 @@
                 </span>
                 {%- if cart.item_count < 100 -%}
                   <div class="{{ class_count_bubble }} cart-count-bubble cart-icon-bubble">
-                    <span aria-hidden="true">{{ cart.item_count }}</span>
-                    <span class="visually-hidden">{{ 'content.cart_count' | t: count: cart.item_count }}</span>
+                    <span aria-hidden="true" data-cart-count>{{ cart.item_count }}</span>
+                    <span class="visually-hidden" data-cart-text>{{ 'content.cart_count' | t: count: cart.item_count }}</span>
                   </div>
                 {%- endif -%}
               </div>
@@ -169,8 +169,8 @@
               </span>
               {%- if cart.item_count < 100 -%}
                 <div class="{{ class_count_bubble }} cart-count-bubble cart-icon-bubble">
-                  <span aria-hidden="true">{{ cart.item_count }}</span>
-                  <span class="visually-hidden">{{ 'content.cart_count' | t: count: cart.item_count }}</span>
+                  <span aria-hidden="true" data-cart-count>{{ cart.item_count }}</span>
+                  <span class="visually-hidden" data-cart-text>{{ 'content.cart_count' | t: count: cart.item_count }}</span>
                 </div>
               {%- endif -%}
             </div>
@@ -199,10 +199,7 @@
                 {%- endif -%}
               </span>
               <div class="{{ class_count_bubble }} wishlist-count-bubble">
-                <span class="number" aria-hidden="true">0</span>
-                <span class="visually-hidden" data-text="{{ 'content.items' | t }}"
-                  >0 {{ 'content.items' | t -}}
-                </span>
+                <span class="text loading" aria-hidden="true" data-wishlist-count>0</span><span class="visually-hidden">{{ 'content.wishlist' | t }}</span>
               </div>
             </div>
             {%- if block.settings.title != blank -%}

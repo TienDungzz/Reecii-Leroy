@@ -14,11 +14,11 @@
   class="section section-{{ section_width }} color-{{ color_scheme }} spacing-style"
   style="{% render 'spacing-style', settings: section.settings %}"
 >
-  <div class="page-margin wishlist-container">
+  <div class="wishlist-container">
     <div class="section-global__header">
       {%- content_for 'blocks'-%}
     </div>
-    <div class="wishlist-content">
+    <div class="page-margin wishlist-content">
       <div class="wishlist-table-wrapper">
         <div class="product-listing" data-wishlist-container>
           {% render 'switcher-grid',
@@ -61,7 +61,7 @@
               {%- render 'icon', icon: 'mail' -%}
             </svg>
           </div>
-          <span class="text">Share my wish list via email</span>
+          <span class="text">{{ 'content.share_wishlist_via_email' | t }}</span>
         </a>
         <ul class="pagination__list list-unstyled" role="list" id="wishlist-paginate"></ul>
       </div>
@@ -264,7 +264,7 @@
           if (this.wishlistContainer) {
             this.wishlistContainer.classList.add('is-empty');
             this.wishlistContainer.innerHTML = `
-              <div class="wishlist-content-empty center">
+              <div class="page-margin wishlist-content-empty center">
                 <span class="wishlist-content-text">${window.wishlist.empty}</span>
                 <div class="wishlist-content-actions">
                   <a class="button" href="${window.routes.collection_all}">

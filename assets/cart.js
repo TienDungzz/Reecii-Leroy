@@ -299,7 +299,6 @@ class CartItemsComponent extends HTMLElement {
     try {
       const response = await fetch(`${routes.cart_change_url}`, fetchOptions);
       const json = await response.json();
-
       if (json.errors) {
         resetSpinner(this);
         resetShimmer(this);
@@ -319,6 +318,36 @@ class CartItemsComponent extends HTMLElement {
         this.updateSections(json.sections);
         document.dispatchEvent(new CustomEvent('cart:updated', { detail: json }));
       }
+
+      // --- START ADDED CODE: update cart count and bubbles like in global.js ---
+      // This ensures the cart count, text, and bubbles get updated after quantity change (like @file_context_0)
+      if (json.item_count !== undefined) {
+        console.log(json.item_count);
+        const cartCountEls = document.querySelectorAll('[data-cart-count]');
+        cartCountEls.forEach(function(el) {
+          el.textContent = json.item_count;
+        });
+
+        // If cart count >= 100, show special bubble string
+        if (json.item_count >= 100) {
+          const bubbleCountEls = document.querySelectorAll('.cart-count-bubble [data-cart-count]');
+          bubbleCountEls.forEach(function(el) {
+            el.textContent = window.cartStrings.item_99;
+          });
+        }
+
+        // Update cart text
+        const cartTextEls = document.querySelectorAll('[data-cart-text]');
+        cartTextEls.forEach(function(el) {
+          if (json.item_count == 1) {
+            el.textContent = window.cartStrings.item.replace('[count]', json.item_count);
+          } else {
+            el.textContent = window.cartStrings.items.replace('[count]', json.item_count);
+          }
+        });
+      }
+      // --- END ADDED CODE ---
+
     } catch (err) {
       console.error(err);
     } finally {

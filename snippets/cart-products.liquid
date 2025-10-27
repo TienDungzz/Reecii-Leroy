@@ -350,7 +350,7 @@
                           name="{% if item.index %}updates[]{% else %}quantity{% endif %}"
                           value="{{ item.quantity | default: 1 }}"
                           min="0"
-                          onblur="this.closest('quantity-selector-component').dispatchEvent(new CustomEvent('setQuantity', { bubbles: true }))"
+                          onblur="this.closest('quantity-selector-component').dispatchEvent(new CustomEvent('quantity-selector:update', { bubbles: true }))"
                           onfocus="this.closest('quantity-selector-component').selectInputValue()"
                           data-index="{{ item.index | plus: 1 }}"
                           aria-label="{{ 'products.product.quantity.input_label' | t: product: item.product.title | escape }}"
@@ -399,7 +399,7 @@
                         {%- render 'loading-spinner' -%}
                         <div class="cart-item__price-wrapper">
                           {% assign compare_line_price = item.variant.compare_at_price | times: item.quantity %}
-                          {% assign regular_line_price = item.original_line_price %}
+                          {% assign regular_line_price = item.original_price | times: item.quantity %}
                           {% assign final_line_price = item.final_line_price %}
 
                           {% if compare_line_price > final_line_price or regular_line_price > final_line_price %}
@@ -409,7 +409,11 @@
                               </dt>
                               <dd class="center">
                                 <s class="cart-item__old-price price price--end">
-                                  {{ compare_line_price | default: regular_line_price | money }}
+                                  {% if compare_line_price == 0 or compare_line_price == nil %}
+                                    {{ regular_line_price | money }}
+                                  {% else %}
+                                    {{ compare_line_price | money }}
+                                  {% endif %}
                                 </s>
                               </dd>
                               <dt class="visually-hidden">

@@ -36,7 +36,7 @@
   <a
     href="{% if settings.link_wishlist != blank %}{{ settings.link_wishlist }}{% else %}{{ pages['wish-list'].url }}{% endif %}"
     class="
-      header__icon header-wishlist header__icon--wishlist button focus-inset max-md:hidden
+      header__icon header-wishlist header__icon--wishlist button relative focus-inset max-md:hidden
       {{ class_icon_type }}
     "
     aria-label="{{ 'content.wishlist' | t }}"
@@ -55,9 +55,8 @@
       </span>
     {%- endif -%}
 
-    <div class="wishlist-count-bubble">
-      <span class="text" aria-hidden="true" data-wishlist-count></span
-      ><span class="visually-hidden">{{ 'content.wishlist' | t }}</span>
+    <div class="wishlist-count-bubble" style="display: none;">
+      <span class="text" aria-hidden="true" data-wishlist-count>0</span><span class="visually-hidden">{{ 'content.wishlist' | t }}</span>
     </div>
   </a>
 {%- endif -%}
@@ -102,7 +101,7 @@
       data-side-drawer="#Cart-Drawer"
     >
       <button
-        class="header__icon header__icon--cart button focus-inset cart-icon--drawer
+        class="header__icon header__icon--cart button relative focus-inset cart-icon--drawer
         {{ class_icon_type }}"
         type="button"
         aria-haspopup="dialog"
@@ -127,14 +126,14 @@
 
         {%- if cart != empty -%}
           <div class="cart-count-bubble">
-            <span aria-hidden="true">
+            <span aria-hidden="true" data-cart-count>
               {%- if cart.item_count < 100 -%}
                 {{ cart.item_count }}
               {%- else -%}
                 {{ 'content.cart_count_max.more' | t }}
               {%- endif -%}
             </span>
-            <span class="visually-hidden">{{ 'content.cart_count' | t: count: cart.item_count }}</span>
+            <span class="visually-hidden" data-cart-text>{{ 'content.cart_count' | t: count: cart.item_count }}</span>
           </div>
         {%- endif -%}
       </button>
@@ -143,7 +142,7 @@
       <a
         href="{{ routes.cart_url }}"
         class="
-          header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions
+          header__icon header__icon--cart button relative focus-inset cart-icon--drawer header-actions
           {{ class_icon_type }}
         "
         aria-label="{{ 'content.cart_count' | t: count: cart.item_count }}"
@@ -167,14 +166,14 @@
         {%- endif -%}
         {%- if cart != empty -%}
           <div class="cart-count-bubble">
-            <span aria-hidden="true">
+            <span aria-hidden="true" data-cart-count>
               {%- if cart.item_count < 100 -%}
                 {{ cart.item_count }}
               {%- else -%}
                 {{ 'content.cart_count_max.more' | t }}
               {%- endif -%}
             </span>
-            <span class="visually-hidden">{{ 'content.cart_count' | t: count: cart.item_count }}</span>
+            <span class="visually-hidden" data-cart-text>{{ 'content.cart_count' | t: count: cart.item_count }}</span>
           </div>
         {%- endif -%}
       </a>
@@ -183,7 +182,7 @@
     <a
       href="{{ routes.cart_url }}"
       class="
-        header__icon header__icon--cart button focus-inset cart-icon--drawer header-actions
+        header__icon header__icon--cart button relative focus-inset cart-icon--drawer header-actions
         {{ class_icon_type }}
       "
       id="cart-icon-bubble"
@@ -206,14 +205,14 @@
       {%- endif -%}
       {%- if cart != empty -%}
         <div class="cart-count-bubble">
-          <span aria-hidden="true">
+          <span aria-hidden="true" data-cart-count>
             {%- if cart.item_count < 100 -%}
               {{ cart.item_count }}
             {%- else -%}
               {{ 'content.cart_count_max.more' | t }}
             {%- endif -%}
           </span>
-          <span class="visually-hidden">{{ 'content.cart_count' | t: count: cart.item_count }}</span>
+          <span class="visually-hidden" data-cart-text>{{ 'content.cart_count' | t: count: cart.item_count }}</span>
         </div>
       {%- endif -%}
     </a>

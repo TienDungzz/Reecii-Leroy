@@ -1,10 +1,6 @@
 {{ 'vendor.css' | asset_url | stylesheet_tag: preload: true }}
 {{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'base-3.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'base-1.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'base-2.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'base-5.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'base-4.css' | asset_url | stylesheet_tag: preload: true }}
+
 <link rel="stylesheet" href="{{ 'component-slider.css' | asset_url }}" media="print" onload="this.media='all'">
 
 {%- if settings.show_countdown -%}
@@ -35,6 +31,8 @@
 
 {% comment %} Fallback for browsers that don't support preload {% endcomment %}
 <noscript>
+    <link rel="stylesheet" href="{{ 'component-slider.css' | asset_url }}">
+
     {%- if settings.show_countdown -%}
         <link rel="stylesheet" href="{{ 'component-card-countdown.css' | asset_url }}">
     {%- endif -%}

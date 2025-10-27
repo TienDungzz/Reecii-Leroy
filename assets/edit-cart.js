@@ -283,8 +283,8 @@ class AddAllEditCart extends HTMLElement {
                   const textEl = document.querySelector('[data-cart-text]');
                   if (textEl) {
                     textEl.textContent = cart.item_count === 1
-                      ? window.cartStrings.item
-                      : window.cartStrings.items;
+                      ? window.cartStrings.item.replace('[count]', cart.item_count)
+                      : window.cartStrings.items.replace('[count]', cart.item_count);
                   }
 
                   addAllBtn.classList.remove('is-loading');

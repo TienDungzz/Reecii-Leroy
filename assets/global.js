@@ -2202,8 +2202,6 @@ class RecentlyViewedProducts extends HTMLElement {
       localStorage.getItem("_halo_recently_viewed") || "[]"
     );
 
-    console.log(`%c🔍 Log listItems:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", listItems);
-
     if (
       this.dataset.productId &&
       listItems.includes(parseInt(this.dataset.productId))
@@ -2264,6 +2262,7 @@ class Wishlist extends HTMLElement {
 
   connectedCallback() {
     this.init();
+    this.setLocalStorageProductForWishlist();
   }
 
   init() {
@@ -2279,8 +2278,6 @@ class Wishlist extends HTMLElement {
   onWishlistButtonClick(event) {
     event.preventDefault();
     event.stopPropagation();
-
-    this.setLocalStorageProductForWishlist();
 
     const target = event.currentTarget;
     const isInGrid = target.classList.contains("is-in-grid");
@@ -2367,7 +2364,7 @@ class Wishlist extends HTMLElement {
         } else {
           wishlistContainer.classList.add("is-empty");
           wishlistContainer.innerHTML = `
-            <div class="wishlist-content-empty center"> 
+            <div class="page-margin wishlist-content-empty center"> 
               <span class="wishlist-content-text">${window.wishlist.empty}</span>
               <div class="wishlist-content-actions">
                 <a class="button" href="${window.routes.collection_all}">
@@ -2385,9 +2382,7 @@ class Wishlist extends HTMLElement {
       }
     }
 
-    const wishlistCount = document.querySelector("[data-wishlist-count]");
-    if (wishlistCount) wishlistCount.textContent = wishlistList.length;
-
+    this.checkWishlistCount(wishlistList);
     this.setProductForWishlist(handle);
   }
 
@@ -2424,15 +2419,26 @@ class Wishlist extends HTMLElement {
 
     localStorage.setItem('wishlistItem', JSON.stringify(wishlistList));
 
-    const countElements = document.querySelectorAll('[data-wishlist-count]');
-    countElements.forEach(elem => {
-      elem.textContent = wishlistList.length;
-    });
+    this.checkWishlistCount(wishlistList);
 
     if (wishlistList.length > 0) {
       wishlistList.forEach((handle) => {
         this.setProductForWishlist(handle);
       });
+    }
+  }
+
+  checkWishlistCount(wishlistList) {
+    const wishlistCountBubble = document.querySelectorAll(".wishlist-count-bubble");
+    const wishlistCount = document.querySelectorAll("[data-wishlist-count]");
+    const count = wishlistList.length;
+    wishlistCount.forEach(elem => {
+      elem.textContent = count > 0 ? count : 0;
+    });
+    if (count === 0) {
+      wishlistCountBubble.forEach(bubble => bubble.style.display = "none");
+    } else {
+      wishlistCountBubble.forEach(bubble => bubble.style.display = "");
     }
   }
 }
@@ -3556,9 +3562,9 @@ function updateSidebarCart(cart) {
         var cartTextEls = body.querySelectorAll('[data-cart-text]');
         cartTextEls.forEach(function(el) {
           if (cart.item_count == 1) {
-            el.textContent = window.cartStrings.item;
+            el.textContent = window.cartStrings.item.replace('[count]', cart.item_count);
           } else {
-            el.textContent = window.cartStrings.items;
+            el.textContent = window.cartStrings.items.replace('[count]', cart.item_count);
           }
         });
 
