@@ -83,6 +83,24 @@ style="
 
 {{ 'product-tabs.css' | asset_url | stylesheet_tag }}
 
+{%- capture tabTitle -%}
+  {% liquid
+    assign element = 'side-drawer-opener'
+    if view_content == 'default'
+      assign element = 'div'
+    endif
+  %}
+
+<{{ element }} {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
+  <button class="toggle-link cursor-pointer">
+    <span class="text">Tab Title</span>
+    <span class="svg-wrapper icon-caret-wrapper">
+      {{- icon -}}
+    </span>
+  </button>
+</{{ element }}>
+{%- endcapture -%}
+
 <div class="section section-product-tabs section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
   style="
     {% if section.settings.section_width == 'custom' %}
@@ -139,15 +157,7 @@ style="
                       {%- when 'description' -%}
                       {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
                         <div class="tab-content{% if forloop.first %} is-active{% endif %} {% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                        <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
-                          <button class="toggle-link cursor-pointer">
-                            <span class="text">{{ title }}</span>
-                            <span class="svg-wrapper icon-caret-wrapper">
-                              {{- icon -}}
-                            </span>
-                          </button>
-                        </side-drawer-opener>
-
+                          {{ tabTitle | replace: 'Tab Title', title }}
                           <div class="toggle-content">
                             {{ product.description }}
                           </div>
@@ -155,31 +165,30 @@ style="
                       {%- when 'review' -%}
                       {%- if title == blank or product.reviews.rating_average == blank -%}{%- continue -%}{%- endif -%}
                         <div class="tab-content{% if forloop.first %} is-active{% endif %} {% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                          <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
-                            <button class="toggle-link cursor-pointer">
-                              <span class="text">{{ title }}</span>
-                              <span class="svg-wrapper icon-caret-wrapper">
-                                {{- icon -}}
-                              </span>
-                            </button>
-                          </side-drawer-opener>
+                          {{ tabTitle | replace: 'Tab Title', title }}
                           <div class="toggle-content">
                             {{ product.reviews.rating_average }}
                           </div>
                         </div>
                       {% when 'html' %}
                         {%- assign page_title = title | default: block.settings.page.title -%}
-                        {%- if page_title == blank or block.settings.content == blank and block.settings.page.content == blank -%}{%- continue -%}{%- endif -%}
+                        
+                        {% liquid
+                          assign custom_content_type = block.settings.custom_content_type
+                          assign tabContent = false
+                          if custom_content_type == all
+                            if block.settings.content != blank or block.settings.page.content != blank
+                              assign meta_ref = block.settings.content | prepend: '<div class="rte">' | append: '</div>' | append: block.settings.page.content
+                              assign tabContent = true
+                            endif
+                          else 
+                              assign meta_ref = product.metafields.custom[block.settings.product_tab_key_metafield] | default : product.metafields.c_f[block.settings.product_tab_key_metafield]
+                              assign tabContent = true
+                          endif
+                        %}
 
                         <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                          <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
-                            <button class="toggle-link cursor-pointer">
-                              <span class="text">{{ title }}</span>
-                              <span class="svg-wrapper icon-caret-wrapper">
-                                {{- icon -}}
-                              </span>
-                            </button>
-                          </side-drawer-opener>
+                          {{ tabTitle | replace: 'Tab Title', title }}
                           <div class="toggle-content">
                             <div class="rte">{{ block.settings.content }}</div>
                             {{ block.settings.page.content }}
@@ -189,14 +198,7 @@ style="
                         {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
 
                         <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                          <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
-                            <button class="toggle-link cursor-pointer">
-                              <span class="text">{{ title }}</span>
-                              <span class="svg-wrapper icon-caret-wrapper">
-                                {{- icon -}}
-                              </span>
-                            </button>
-                          </side-drawer-opener>
+                          {{ tabTitle | replace: 'Tab Title', title }}
                           <div class="toggle-content">
                             {{ block.settings.custom_liquid }}
                           </div>
@@ -218,14 +220,7 @@ style="
             {%- when 'description' -%}
             {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
               <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
-                  <button class="toggle-link cursor-pointer">
-                    <span class="text">{{ title }}</span>
-                    <span class="svg-wrapper icon-caret-wrapper">
-                      {{- icon -}}
-                    </span>
-                  </button>
-                </side-drawer-opener>
+                {{ tabTitle | replace: 'Tab Title', title }}
                 <div class="toggle-content">
                   {{ product.description }}
                 </div>
@@ -233,47 +228,37 @@ style="
             {%- when 'review' -%}
             {%- if title == blank or product.reviews.rating_average == blank -%}{%- continue -%}{%- endif -%}
               <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
-                  <button class="toggle-link cursor-pointer">
-                    <span class="text">{{ title }}</span>
-                    <span class="svg-wrapper icon-caret-wrapper">
-                      {{- icon -}}
-                    </span>
-                  </button>
-                </side-drawer-opener>
+                {{ tabTitle | replace: 'Tab Title', title }}
                 <div class="toggle-content">
                   {{ product.reviews.rating_average }}
                 </div>
               </div>
             {% when 'html' %}
-              {%- assign page_title = title | default: block.settings.page.title -%}
-              {%- if page_title == blank or block.settings.content == blank and block.settings.page.content == blank -%}{%- continue -%}{%- endif -%}
+              {% liquid
+                assign custom_content_type = block.settings.custom_content_type
+                assign tabContent = false
+                if custom_content_type == all
+                  if block.settings.content != blank or block.settings.page.content != blank
+                    assign meta_ref = block.settings.content | prepend: '<div class="rte">' | append: '</div>' | append: block.settings.page.content
+                    assign tabContent = true
+                  endif
+                else 
+                    assign meta_ref = product.metafields.custom[block.settings.product_tab_key_metafield] | default : product.metafields.c_f[block.settings.product_tab_key_metafield]
+                    assign tabContent = true
+                endif
+              %}
+
               <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
-                  <button class="toggle-link cursor-pointer">
-                    <span class="text">{{ title }}</span>
-                    <span class="svg-wrapper icon-caret-wrapper">
-                      {{- icon -}}
-                    </span>
-                  </button>
-                </side-drawer-opener>
+                {{ tabTitle | replace: 'Tab Title', title }}
                 <div class="toggle-content">
-                  <div class="rte">{{ block.settings.content }}</div>
-                  {{ block.settings.page.content }}
+                  {{ meta_ref }}
                 </div>
               </div>
             {% when 'liquid' %}
               {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
 
               <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                <side-drawer-opener {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
-                  <button class="toggle-link cursor-pointer">
-                    <span class="text">{{ title }}</span>
-                    <span class="svg-wrapper icon-caret-wrapper">
-                      {{- icon -}}
-                    </span>
-                  </button>
-                </side-drawer-opener>
+                {{ tabTitle | replace: 'Tab Title', title }}
                 <div class="toggle-content">
                   {{ block.settings.custom_liquid }}
                 </div>
@@ -288,7 +273,7 @@ style="
           id="PopupModal-{{ section.id }}"
       >
         <div id="Drawer-Overlay-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-        <div class="popup__inner color-{{ settings.popover_color_scheme }} w-auto h-full absolute-c-c flex flex-column global-settings-popup">
+        <div class="popup__inner color-{{ settings.popover_color_scheme }} w-auto h-full absolute-c-c flex flex-column global-settings-popup" style="--min-w-md: 50vw; --max-w: 90vw;">
           <div class="popup__inner--content relative w-full h-full overflow-auto cus-scrollbar">
 
           <div class="popup-content-wrapper"></div>
@@ -347,6 +332,9 @@ style="
           const viewContentType = toggleLink.closest('.toggle-title').dataset.viewContent;
           const content = toggleLink.closest('.toggle-title').nextElementSibling;
           const cloneContent = content.cloneNode(true);
+
+          console.log("viewContentType", viewContentType);
+          
           if (viewContentType === 'sidebar') {
             const drawerContent = document.querySelector('#Global-Drawer .drawer__wrapper');
             drawerContent.innerHTML = '';
@@ -880,6 +868,36 @@ style="
             "default": "Tab custom HTML"
           },
           {
+            "type": "select",
+            "id": "custom_content_type",
+            "label": "Custom Content Type",
+            "options": [
+              {
+                "value": "all",
+                "label": "The same for all products"
+              },
+              {
+                "value": "different",
+                "label": "Different for each product with metafield"
+              }
+            ],
+            "default": "all"
+          },
+          {
+            "type": "header",
+            "content": "Different for each product setting"
+          },
+          {
+            "type": "text",
+            "id": "product_tab_key_metafield",
+            "label": "Product Tab Metafield 'Key'",
+            "info": "Copy and paste the KEY in the Metafield settings of your store. This metafield-based content will only be applied for 'Different for each product with metafield'"
+          },
+          {
+            "type": "header",
+            "content": "The same for all products setting"
+          },
+          {
             "type": "textarea",
             "id": "content",
             "label": "t:settings.tab_content"
@@ -888,6 +906,23 @@ style="
             "type": "page",
             "id": "page",
             "label": "t:settings.tab_content_from_page"
+          }
+        ]
+      },
+      {
+        "type": "liquid",
+        "name": "Liquid",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "t:settings.title",
+            "default": "Tab custom Liquid"
+          },
+          {
+            "type": "liquid",
+            "id": "custom_liquid",
+            "label": "t:settings.tab_content"
           }
         ]
       }
