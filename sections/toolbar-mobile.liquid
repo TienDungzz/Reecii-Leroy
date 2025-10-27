@@ -1,5 +1,8 @@
-{% comment %} {{ 'toolbar-mobile.css' | asset_url | stylesheet_tag: preload: true }} {% endcomment %}
-<link rel="preload" href="{{ 'toolbar-mobile.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="stylesheet" href="{{ 'toolbar-mobile.css' | asset_url }}" media="print" onload="this.media='all'">
+<noscript>
+  <link rel="stylesheet" href="{{ 'toolbar-mobile.css' | asset_url }}">
+</noscript>
+
 <toolbar-mobile
   class="toolbar-mobile toolbar-mobile-col--{{ section.blocks.size }} element-spacing-all fixed left-0 right-0 bottom-0 w-full flex z-2 color-{{ section.settings.color_scheme }} gradient lg:none no-js-hidden"
   style="
