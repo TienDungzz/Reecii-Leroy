@@ -34,6 +34,10 @@
           overflow-hidden
           collage__item--image
         "
+        style="
+          --border-radius: {{ bl_stts.image_corner_radius | divided_by: 10.0 }}rem;
+          --border-width: {{ bl_stts.image_border_thickness | divided_by: 10.0 }}rem;
+        "
       >
         <a
           class="block relative h-full"
@@ -172,89 +176,101 @@
         <div
           class="mega-menu__collage{% if banner_row == 'bottom' and has_mega_menu_images == true %} collage collage-2-columns collage--{{ mega_menu_images_size }}-items{% endif %}"
           style="
-            --border-radius: {{ bl_stts.image_corner_radius | divided_by: 10.0 }}rem;
-            --border-width: {{ bl_stts.image_border_thickness | divided_by: 10.0 }}rem;
-            --gap-x: 1rem;
-            --gap-y: 1rem;
+            --gap-x: var(--gap-2xl);
+            --gap-y: var(--gap-2xl);
           "
         >
-            {%- liquid
-              assign collection = bl_stts.product_collection
-              assign max_items = bl_stts.product_limit
+          {%- liquid
+            assign collection = bl_stts.product_collection
+            assign max_items = bl_stts.product_limit
+            assign columns_desktop = bl_stts.product_columns
+            if max_items > columns_desktop
+              assign is_swiper = true
+              assign product_wrapper = 'swiper-component'
+            else
               assign columns_desktop = max_items
-              assign columns_tablet = 2
-              if columns_desktop == 1
-                assign columns_tablet = 1
-              elsif columns_desktop == 4
-                assign columns_tablet = 3
-              endif
-              assign columns_mobile = 1
-              assign columns_gap = 30
-              assign product_direction = bl_stts.product_direction
-              if product_direction == 'column'
-                assign vertical_alignment = bl_stts.vertical_alignment_flex_direction_column
-              else
-                assign horizontal_alignment = bl_stts.horizontal_alignment
-              endif
-            -%}
-            {%- capture breakpoints -%}
+              assign product_wrapper = 'div'
+              assign is_swiper = false
+            endif
+            assign columns_tablet = 2
+            if columns_desktop == 1
+              assign columns_tablet = 1
+            elsif columns_desktop == 4
+              assign columns_tablet = 3
+            endif
+            assign columns_mobile = 1
+            assign columns_gap = 30
+            assign product_direction = bl_stts.product_direction
+            if product_direction == 'column'
+              assign vertical_alignment = bl_stts.vertical_alignment_flex_direction_column
+            else
+              assign horizontal_alignment = bl_stts.horizontal_alignment
+            endif
+          -%}
+          {%- capture breakpoints -%}
               {
                 "768": { "slidesPerView": {{ columns_tablet }} },
                 "1024": { "slidesPerView": {{ columns_tablet }} },
                 "1400": { "slidesPerView": {{ columns_desktop }} }
               }
             {%- endcapture -%}
-            <swiper-component
-              class="mega-menu__collection{% if banner_row == 'bottom' %} collage__item collage__item--1{% endif %}"
-              {%- render 'swiper-data',
-                settings: bl_stts,
-                slides_per_view: columns_mobile,
-                space_between: columns_gap,
-                watch_slides_progress: true,
-                breakpoints: breakpoints
-              -%}
-              style="
-                {% render 'swiper-style',
-                  columns_mobile: columns_mobile,
-                  columns_tablet: columns_tablet,
-                  columns_desktop: columns_desktop,
-                  columns_gap: columns_gap,
-                %}
-              "
-            >
-              <div class="swiper h-full">
-                <ul
-                  class="swiper-wrapper grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ columns_mobile }}-col-mobile"
-                  id="Slider-{{ block.id }}"
-                  data-id="{{ block.id }}"
-                >
-                  {% for product in collection.products limit: max_items %}
-                    <li
-                      id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}"
-                      class="mega-menu__collection--item grid__item swiper-slide"
-                    >
-                      {% render 'resource-card',
-                        resource_type: 'product',
-                        resource_direction: product_direction,
-                        horizontal_alignment: horizontal_alignment,
-                        vertical_alignment: vertical_alignment,
-                        resource: product,
-                        image_width: 500,
-                        image_hover: true,
-                        image_aspect_ratio: '4 / 5',
-                        show_variant_swatches: true,
-                        index: forloop.index
-                      %}
-                    </li>
-                  {% endfor %}
-                </ul>
-              </div>
-            </swiper-component>
-            {%- if banner_row == 'bottom' and has_mega_menu_images == true -%}
-              {{ banner }}
-            {%- endif -%}
+          <{{ product_wrapper }}
+            class="mega-menu__collection{% if banner_row == 'bottom' %} collage__item collage__item--1{% endif %}"
+            {%- render 'swiper-data',
+              settings: bl_stts,
+              slides_per_view: columns_mobile,
+              space_between: columns_gap,
+              watch_slides_progress: true,
+              breakpoints: breakpoints
+            -%}
+            style="
+              {% render 'swiper-style',
+                columns_mobile: columns_mobile,
+                columns_tablet: columns_tablet,
+                columns_desktop: columns_desktop,
+                columns_gap: columns_gap,
+              %}
+            "
+          >
+            <div class="{% if is_swiper %}swiper{% endif %} h-full">
+              <ul
+                class="{% if is_swiper %}swiper-wrapper{% endif %} grid-layout grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} grid--{{ columns_mobile }}-col-mobile"
+                id="Slider-{{ block.id }}"
+                data-id="{{ block.id }}"
+              >
+                {% for product in collection.products limit: max_items %}
+                  <li
+                    id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}"
+                    class="mega-menu__collection--item grid__item{% if is_swiper %} swiper-slide{% endif %}"
+                  >
+                    {% render 'resource-card',
+                      resource_type: 'product',
+                      resource_direction: product_direction,
+                      horizontal_alignment: horizontal_alignment,
+                      vertical_alignment: vertical_alignment,
+                      resource: product,
+                      image_width: 500,
+                      image_hover: true,
+                      image_aspect_ratio: '4 / 5',
+                      show_variant_swatches: true,
+                      index: forloop.index
+                    %}
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </{{ product_wrapper }}>
+          {%- if banner_row == 'bottom' and has_mega_menu_images == true -%}
+            {{ banner }}
+          {%- endif -%}
         </div>
       </div>
     </div>
   {% endif %}
 </div>
+
+{%- stylesheet -%}
+  .mega-menu--3 .resource-card {
+    gap: var(--gap-2xl);
+  }
+{%- endstylesheet -%}

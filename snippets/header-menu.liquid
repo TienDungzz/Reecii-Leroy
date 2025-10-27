@@ -19,8 +19,8 @@
 <link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <noscript>
-  {{ 'component-list-menu.css' | asset_url | stylesheet_tag: preload: true }}
-  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag: preload: true }}
+  {{ 'component-list-menu.css' | asset_url | stylesheet_tag }}
+  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag }}
 </noscript>
 
 <div class="header-block header-menu grid__item flex items-center">
@@ -90,7 +90,7 @@
                 </summary>
                 <template>
                   <div
-                    class="details__list mega-menu__content z-1 motion-reduce global-settings-popup color-{{ section.settings.color_scheme_top }}"
+                    class="details__list mega-menu__content z-1 motion-reduce global-settings-popup color-{{ section.settings.menu_mobile_color_scheme }}"
                     tabindex="-1"
                   >
                     {%- render 'header-nav-mega',
@@ -710,5 +710,13 @@
     }
   }
 
+  @media screen and (min-width: 750px) {
+    .mega-menu__collage-wrapper .collage .collage__item--1,
+    .mega-menu__collage-wrapper .collage .collage__item--4,
+    .mega-menu__container .collage .collage__item--1,
+    .mega-menu__container .collage .collage__item--4 {
+      grid-row: span 1;
+    }
+  }
 
 {%- endstylesheet -%}

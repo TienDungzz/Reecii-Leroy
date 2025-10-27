@@ -44,7 +44,6 @@ function publish(eventName, data) {
   }
 }
 
-
 const mql = window.matchMedia(theme.config.mqlMobile);
 theme.config.mqlSmall = mql.matches;
 
@@ -4443,3 +4442,42 @@ class HeaderMobileTabs extends HTMLElement {
 }
 if (!customElements.get("header-mobile-tabs"))
   customElements.define("header-mobile-tabs", HeaderMobileTabs);
+
+class HoverButton extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.addEventListener('mouseenter', this.onMouseEnter);
+    this.addEventListener('mouseleave', this.onMouseLeave);
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('mouseenter', this.onMouseEnter);
+    this.removeEventListener('mouseleave', this.onMouseLeave);
+  }
+
+  onMouseEnter() {
+    const hoverButton = event.currentTarget;
+    const btnFill = hoverButton.querySelector('[data-fill-bg]');
+    const dir = this.classList.contains('swiper-button-prev') ? 'left' : 'right';
+
+    if (btnFill) {
+      Motion.animate(btnFill, {x: dir === 'left' ? ['100%', '0%'] : ['-100%', '0%']}, { duration: 0.35 });
+    }
+  }
+
+  onMouseLeave() {
+    const hoverButton = event.currentTarget;
+    const btnFill = hoverButton.querySelector('[data-fill-bg]');
+    const dir = this.classList.contains('swiper-button-prev') ? 'left' : 'right';
+
+    if (btnFill) {
+      Motion.animate(btnFill, {x: dir === 'left' ? ['-100%'] : ['100%']}, { duration: 0.35 });
+
+    }
+  }
+}
+
+if (!customElements.get('hover-button')) customElements.define('hover-button', HoverButton);

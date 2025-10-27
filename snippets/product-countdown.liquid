@@ -1,6 +1,10 @@
 {%- if type == 'card' -%}
   {%- capture styles -%}
     --bg-color: {{ settings.countdown_background_color }}; --fg-color: {{ settings.countdown_text_color }}; --p: .8rem 1.2rem;
+    --border-width: {{ settings.countdown_border_width }}px;
+    --border-style: {{ settings.countdown_border }};
+    --border-color: rgb(var(--color-border-rgb) / {{ settings.countdown_border_opacity | default: 100 | divided_by: 100.0 }});
+    --border-radius: {{ settings.countdown_border_radius }}px;
   {%- endcapture -%}
 
   {%- capture number_html -%}
@@ -17,9 +21,9 @@
       <span>0<span>S</span></span>
     </span>
   {%- endcapture -%}
-  <div class="card-countdown-wrapper body-s-font-size" style="{{ styles }}">
+  <div class="card-countdown-wrapper body-s-font-size w-fit m-x-auto border-style" style="{{ styles }}">
     {%- if countdown_type == 'all_product' -%}
-      <div class="card-countdown countdown_{{ product.id }} style-{{ countdown_style }} w-max m-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}">
+      <div class="card-countdown countdown_{{ product.id }} style-{{ countdown_style }}" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}">
         {{ number_html }}
       </div>
     {%- elsif countdown_type == 'collection_product' -%}
@@ -79,7 +83,7 @@
     </div>
   {%- endcapture -%}
 
-  <div 
+  <div
     class="product-countdown-wrapper"
     style="{{ styles }}"
   >

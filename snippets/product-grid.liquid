@@ -13,12 +13,31 @@
 {% endcapture %}
 {% assign product_card_size = product_card_size | strip %}
 
+{%- capture product_card_size_number -%}
+  {% case section.settings.product_card_size %}
+    {% when 'small' %}
+      {% assign product_card_number = 5 %}
+    {% when 'medium' %}
+      {% assign product_card_number = 4 %}
+    {% when 'large' %}
+      {% assign product_card_number = 3 %}
+    {% when 'extra-large' %}
+      {% assign product_card_number = 2 %}
+    {% when 'extra-extra-large' %}
+      {% assign product_card_number = 1 %}
+  {% endcase %}
+{%- endcapture -%}
+
 {% style %}
   @media (min-width: 750px) {
     {% case section.settings.layout_type %}
       {% when 'grid' %}
-        .product-grid--{{ section.id }}:is(.product-grid--grid) {
+        .template-collection:not(:has(.switcher-grid)) .product-grid--{{ section.id }}:is(.product-grid--grid) {
           --product-grid-columns-desktop: repeat(auto-fill, minmax({{ product_card_size }}, 1fr));
+        }
+
+        .template-collection:has(.switcher-grid) .product-grid--{{ section.id }}:is(.product-grid--grid:not([data-view])) {
+          --product-grid-columns-desktop: repeat({{ product_card_number }}, 1fr);
         }
       {% when 'organic' %}
         {% assign large_span = 2 %}
@@ -110,7 +129,6 @@
         data-infinite-scroll="true"
         id="product-grid"
         data-id="{{ section.id }}"
-        data-view="{{ data-view }}"
       >
         {{ children }}
       </ul>

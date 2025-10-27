@@ -70,13 +70,13 @@
   {{ shopify_attributes }}
 >
   {%- if style_class == 'button' -%}
-    <span class="button-overflow relative overflow-hidden">
+    <span class="button-overflow relative overflow-hidden" data-button-text="{{ label }}">
       <span class="button-text-main inline-block relative z-1">
         {{ label }}
       </span>
-      <span class="button-text-hover absolute top-0 left-0 w-full h-full inline-block">
+      {% comment %} <span class="button-text-hover absolute top-0 left-0 w-full h-full inline-block">
         {{ label }}
-      </span>
+      </span> {% endcomment %}
     </span>
   {%- else -%}
     <span class="text">{{ label }}</span>
@@ -126,9 +126,18 @@
       transition: var(--tss);
     }
 
-    .button-text-hover {
-      transform: translateY(100%);
-      transition: var(--tss);
+    .button-overflow {
+      &:after {
+        content: attr(data-button-text);
+        transform: translateY(100%);
+        transition: var(--tss);
+        display: inline-block;
+        position: absolute;
+        inset-block-start: 0;
+        inset-inline-start: 0;
+        height: 100%;
+        width: 100%;
+      }
     }
 
     &:after {
@@ -148,7 +157,7 @@
     }
 
     &:hover {
-      .button-text-hover {
+      .button-overflow:after {
         transform: translateY(0);
       }
       .button-text-main {
@@ -162,20 +171,30 @@
   }
 
   .link {
+    cursor: pointer;
     height: auto;
     font-size: var(--button-font-size-link, var(--font-size--sm));
     font-weight: var(--button-font-weight-link, var(--font-body--weight));
+    font-family: inherit;
     text-decoration: none;
-    text-decoration-color: currentcolor;
     text-wrap: var(--text-wrap);
     text-transform: var(--text-transform);
+    border: none;
+    box-shadow: none;
 
     &[style*='--button-font-size-link'] {
       font-size: var(--button-font-size-link);
     }
 
     &:hover {
-      text-decoration-color: transparent;
+      color: var(--color-primary-hover);
+    }
+  }
+
+  .link--text {
+    color: var(--color-foreground);
+    &:hover{
+      color: rgb(var(--color-foreground-rgb) / var(--opacity-75));
     }
   }
 
@@ -184,6 +203,7 @@
     transition: background-size var(--animation-values-slow), opacity var(--animation-speed)  var(--animation-delay, 0s) var(--animation-easing), color var(--animation-speed) var(--animation-delay, 0s) var(--animation-easing);
   }
 
+  .link--underline:not(:has(.text)),
   .link--underline .text,
   .link--hover-underline .text,
   .link--hover-underline:not(:has(.text)) {
@@ -191,6 +211,7 @@
     text-decoration: none;
   }
 
+  .link--underline:not(:has(.text)),
   .link--underline .text {
     background: linear-gradient(to right, var(--link-underline-color, currentColor), var(--link-underline-color, currentColor)) 0 var(--line-link-gap) / 0 1px no-repeat;
     background-position-y: bottom;
@@ -248,7 +269,8 @@
       background-size: 100% 1px;
     }
 
-    .link--underline:hover .text {
+    .link--underline:hover .text,
+    .link--underline:not(:has(.text)):hover {
       background-position-x: right;
       background-size: 0% 1px;
     }

@@ -12,6 +12,7 @@
 
 {% liquid
   assign bl_stts = block.settings
+  assign type_preset = type_preset | default: bl_stts.type_preset
   assign plain_text = fallback_text | default: bl_stts.text | strip_newlines | strip_html | strip
   assign inherit_text_alignment = bl_stts.inherit_text_alignment
   assign inherit_text_alignment_tablet = bl_stts.inherit_text_alignment_tablet
@@ -59,7 +60,7 @@
   else
     assign type = 'body'
   endif
-  if bl_stts.type_preset == 'rte' or bl_stts.type_preset == 'paragraph'
+  if type_preset == 'rte' or type_preset == 'paragraph'
     assign is_rte = true
   endif
 
@@ -137,7 +138,7 @@
     if text_width == 'custom' or text_width_tablet == 'custom' or text_width_mobile == 'custom'
       echo ' text-block--custom-width'
     endif
-    if bl_stts.type_preset == 'custom'
+    if type_preset == 'custom'
       echo ' custom-typography '
       if bl_stts.font_size != ''
         echo ' custom-font-size '
@@ -167,7 +168,7 @@
     size-style spacing-style text-block max-w-full flex
     text-block--{{ block.id }}
     {% if class == 'card--block-details' %}flex-row{% else %}flex-column{% endif %}
-    {{ bl_stts.type_preset }} {{ class }} {{ text_block_classes }}
+    {{ type_preset }} {{ class }} {{ text_block_classes }}
     {% if has_heading_border %} {{ heading_border_classes }}{% endif %}
     {% if enable_border_bottom %} border-style text-border-style-bottom{% endif %}
     {% if has_border %} border-style{% endif %}

@@ -9,7 +9,18 @@
 {%- liquid
   assign bl_stts = block.settings
 
-  assign columns_desktop = section.settings.columns_desktop
+  case section.settings.product_card_size
+    when 'small'
+      assign columns_desktop = 5
+    when 'medium'
+      assign columns_desktop = 4
+    when 'large'
+      assign columns_desktop = 3
+    when 'extra-large'
+      assign columns_desktop = 2
+    when 'extra-extra-large'
+      assign columns_desktop = 1
+  endcase
 
   # Calculate facets margin style
   capture facets_margin_style
@@ -58,7 +69,7 @@
   assign enable_count = bl_stts.enable_count
 -%}
 
-{{ 'component-facets.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'component-facets.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
 
 <div
@@ -901,6 +912,10 @@
   /* Status */
   .facets__status {
     margin-left: var(--margin-xs);
+  }
+
+  .facets__header-vertical .facets__status {
+    margin-left: 0;
   }
 
   .facets__status:not(:empty) {
