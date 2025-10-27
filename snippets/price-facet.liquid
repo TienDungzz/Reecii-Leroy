@@ -99,9 +99,7 @@
     </span>
   </div>
   <div class="field">
-    {%- if filter_type != 'vertical' -%}
-      <span class="field-currency absolute-c-y z-1" style="--left: 0.5rem;">{{ cart.currency.symbol }}</span>
-    {%- endif -%}
+    <span class="field-currency absolute-c-y z-1" style="--left: 0.5rem;">{{ cart.currency.symbol }}</span>
     <input
       class="field__input filter__price_number"
       name="{{ filter.max_value.param_name }}"
@@ -128,12 +126,26 @@
 
 <div class="facets-price__apply" >
   <button class="button button--primary button--full-width button--outline">
-    {{- 'products.facets.apply' | t -}}
+    <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'products.facets.apply' | t }}">
+      <span class="button-text-main inline-block relative z-1">
+        {{- 'products.facets.apply' | t -}}
+      </span>
+    </span>
   </button>
 </div>
 
 {%- style -%}
   .facets-price__apply {
     margin-top: var(--margin-xl);
+  }
+
+  .field-to-price,
+  .field-currency {
+    font-size: var(--body-xs-font-size);
+  }
+
+  .field__input.filter__price_number {
+    padding: 1rem 0.5rem 1rem 1rem;
+    text-align: right;
   }
 {%- endstyle -%}

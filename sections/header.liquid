@@ -3,9 +3,9 @@
 <link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 <noscript>
-  {{ 'component-search.css' | asset_url | stylesheet_tag: preload: true }}
-  {{ 'component-list-menu.css' | asset_url | stylesheet_tag: preload: true }}
-  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag: preload: true }}
+  {{ 'component-search.css' | asset_url | stylesheet_tag }}
+  {{ 'component-list-menu.css' | asset_url | stylesheet_tag }}
+  {{ 'component-mega-menu.css' | asset_url | stylesheet_tag }}
 </noscript>
 
 {%- liquid
@@ -459,6 +459,7 @@
     position: relative;
     z-index: var(--layer-raised);
     transition: height var(--animation-speed-slowest);
+    width: calc(100vw - var(--scrollbar-width, 15px));
 
     &:has(.header[data-sticky-type]) {
       position: sticky;
@@ -509,7 +510,7 @@
 
     position: relative;
     background-color: var(--header-bg-color, var(--color-background));
-    transition: var(--animation-speed-fast);
+    /* transition: var(--animation-speed-fast); */
 
     &:has(.header__search--inline),
     &:has(.header__search--inline .search__input.field__input:focus) {
@@ -837,6 +838,14 @@
     }
   }
 
+  /* If header column has only header menu and header logo left and right has only header block */
+  .header__columns:has(.header__column--left .header-menu):has(.header__column--right .header-block:only-child):not(:has(.header__column--center)) {
+    @media screen and (min-width: 750px) {
+      --header-left: 1fr;
+      --header-right: max-content;
+    }
+  }
+
 {%- endstylesheet -%}
 
 <script type="application/ld+json">
@@ -1137,6 +1146,15 @@
           },
           {
             "type": "header",
+            "content": "t:content.submenu"
+          },
+          {
+            "type": "link_list",
+            "id": "megamenu_submenu",
+            "label": "t:settings.custom_submenu"
+          },
+          {
+            "type": "header",
             "content": "t:content.promotion_banner"
           },
           {
@@ -1313,6 +1331,15 @@
             "type": "range",
             "id": "product_limit",
             "label": "t:settings.limit",
+            "min": 1,
+            "max": 4,
+            "step": 1,
+            "default": 4
+          },
+          {
+            "type": "range",
+            "id": "product_columns",
+            "label": "t:settings.column",
             "min": 1,
             "max": 4,
             "step": 1,
@@ -2584,7 +2611,7 @@
       {
         "type": "color_scheme",
         "id": "menu_mobile_color_scheme",
-        "label": "t:settings.mobile_menu",
+        "label": "t:settings.menu",
         "default": "primary"
       },
       {
@@ -2687,7 +2714,7 @@
         "label": "t:settings.background",
         "default": "#ff1a00"
       },
-      
+
       {
         "type": "paragraph",
         "content": "Hot"

@@ -1,11 +1,11 @@
-{{ 'template-collection.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'component-search.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+{{ 'component-search.css' | asset_url | stylesheet_tag }}
 
 {%- if section.settings.enable_filtering
   or section.settings.enable_sorting
   or section.settings.enable_products_per_page
 -%}
-  {{ 'component-facets.css' | asset_url | stylesheet_tag: preload: true }}
+  {{ 'component-facets.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
@@ -178,112 +178,112 @@
             {%- endif -%}
           {%- endif -%}
         </div>
-      </div>
-      {%- if search.performed -%}
-        <div class="collection-wrapper grid-base gap-style">
-          {%- if search.filters != empty -%}
-            {% content_for 'block',
-              type: 'filters',
-              id: 'filters',
-              results: search,
-              results_size: search.results_count,
-              limit: limit
-            %}
-          {%- endif -%}
-          <div
-            class="main-collection-grid"
-            style="
-              --grid--margin--mobile: 0{% if section.settings.product_grid_width == 'centered' and section.settings.full_width_on_mobile == false %} var(--margin-lg){% else %} 0{% endif %};
-              --grid-column--desktop: var(--{% if section.settings.product_grid_width == 'centered' %}centered{% else %}full-width{% endif %});
-              --grid-column--mobile: var(--{% if section.settings.full_width_on_mobile %}full-width{% else %}{% if section.settings.product_grid_width == 'centered' %}centered{% else %}full-width{% endif %}{% endif %});
-              --padding-inline-start: {{ section.settings.padding-inline-start }}px;
-              --padding-inline-end: {{ section.settings.padding-inline-end }}px;
-            "
-          >
-            <div class="product-grid-container" id="ProductGridContainer">
-              {%- if search.results.size == 0 and search.filters != empty -%}
-                <div
-                  class="relative collection collection--empty{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
-                  id="product-grid"
-                  data-id="{{ section.id }}"
-                >
-                  <div class="loading-overlay"></div>
-                  <div class="title-wrapper center">
-                    <h2 class="title title--primary">
-                      {{ 'content.no_products_found' | t -}}
-                      <br>
-                      {{
-                        'content.use_fewer_filters_html'
-                        | t: link: search_url, class: 'underlined-link link'
-                      }}
-                    </h2>
+        {%- if search.performed -%}
+          <div class="collection-wrapper grid-base gap-style">
+            {%- if search.filters != empty -%}
+              {% content_for 'block',
+                type: 'filters',
+                id: 'filters',
+                results: search,
+                results_size: search.results_count,
+                limit: limit
+              %}
+            {%- endif -%}
+            <div
+              class="main-collection-grid"
+              style="
+                --grid--margin--mobile: 0{% if section.settings.product_grid_width == 'centered' and section.settings.full_width_on_mobile == false %} var(--margin-lg){% else %} 0{% endif %};
+                --grid-column--desktop: var(--{% if section.settings.product_grid_width == 'centered' %}centered{% else %}full-width{% endif %});
+                --grid-column--mobile: var(--{% if section.settings.full_width_on_mobile %}full-width{% else %}{% if section.settings.product_grid_width == 'centered' %}centered{% else %}full-width{% endif %}{% endif %});
+                --padding-inline-start: {{ section.settings.padding-inline-start }}px;
+                --padding-inline-end: {{ section.settings.padding-inline-end }}px;
+              "
+            >
+              <div class="product-grid-container" id="ProductGridContainer">
+                {%- if search.results.size == 0 and search.filters != empty -%}
+                  <div
+                    class="relative collection collection--empty{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
+                    id="product-grid"
+                    data-id="{{ section.id }}"
+                  >
+                    <div class="loading-overlay"></div>
+                    <div class="title-wrapper center">
+                      <h2 class="title title--primary">
+                        {{ 'content.no_products_found' | t -}}
+                        <br>
+                        {{
+                          'content.use_fewer_filters_html'
+                          | t: link: search_url, class: 'underlined-link link'
+                        }}
+                      </h2>
+                    </div>
                   </div>
-                </div>
-              {%- else -%}
-                <div
-                  class="relative collection"
-                >
-                  <div class="loading-overlay"></div>
-                  {% capture children %}
-                    {% for item in search.results %}
-                      <li
-                        id="{{ section.id }}-{{ item.id }}"
-                        class="product-grid__item product-grid__item--{{ forloop.index0 }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-                        data-page="{{ paginate.current_page }}"
-                        data-product-id="{{ item.id }}"
-                        {% if settings.animations_reveal_on_scroll %}
-                          data-cascade
-                          style="--animation-order: {{ forloop.index }};"
-                        {% endif %}
-                      >
-                        {%- case item.object_type -%}
-                        {%- when 'product' -%}
-                          {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: item %}
-                        {%- when 'article' -%}
-                          {% content_for 'block', id: 'static-blog-post-block', type: '_blog-post-block', article: item %}
-                        {%- when 'page' -%}
-                          <div class="article-card-wrapper card-wrapper">
-                            <div
-                              class="card card--card card--text ratio"
-                              style="--ratio-percent: 100%;"
-                            >
-                              <div class="card__content">
-                                <div class="card__information">
-                                  <h3 class="card__heading">
-                                    <a href="{{ item.url }}" class="full-unstyled-link">
-                                      {{ item.title | truncate: 50 | escape }}
-                                    </a>
-                                  </h3>
-                                </div>
-                                <div class="card__badge relative {{ settings.badge_position }}">
-                                  <span class="badge color-{{ settings.color_schemes | first }}">
-                                    {{- 'content.page' | t -}}
-                                  </span>
+                {%- else -%}
+                  <div
+                    class="relative collection"
+                  >
+                    <div class="loading-overlay"></div>
+                    {% capture children %}
+                      {% for item in search.results %}
+                        <li
+                          id="{{ section.id }}-{{ item.id }}"
+                          class="product-grid__item product-grid__item--{{ forloop.index0 }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                          data-page="{{ paginate.current_page }}"
+                          data-product-id="{{ item.id }}"
+                          {% if settings.animations_reveal_on_scroll %}
+                            data-cascade
+                            style="--animation-order: {{ forloop.index }};"
+                          {% endif %}
+                        >
+                          {%- case item.object_type -%}
+                          {%- when 'product' -%}
+                            {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: item %}
+                          {%- when 'article' -%}
+                            {% content_for 'block', id: 'static-blog-post-block', type: '_blog-post-block', article: item %}
+                          {%- when 'page' -%}
+                            <div class="article-card-wrapper card-wrapper">
+                              <div
+                                class="card card--card card--text ratio"
+                                style="--ratio-percent: 100%;"
+                              >
+                                <div class="card__content">
+                                  <div class="card__information">
+                                    <h3 class="card__heading">
+                                      <a href="{{ item.url }}" class="full-unstyled-link">
+                                        {{ item.title | truncate: 50 | escape }}
+                                      </a>
+                                    </h3>
+                                  </div>
+                                  <div class="card__badge relative {{ settings.badge_position }}">
+                                    <span class="badge color-{{ settings.color_schemes | first }}">
+                                      {{- 'content.page' | t -}}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                      {%- endcase -%}
-                      </li>
-                    {% endfor %}
-                  {% endcapture %}
-                  {% render 'product-grid',
-                    section: section,
-                    children: children,
-                    products: search.results,
-                    paginate: paginate,
-                    data-view: section.settings.columns_desktop
-                  %}
+                        {%- endcase -%}
+                        </li>
+                      {% endfor %}
+                    {% endcapture %}
+                    {% render 'product-grid',
+                      section: section,
+                      children: children,
+                      products: search.results,
+                      paginate: paginate,
+                      data-view: section.settings.columns_desktop
+                    %}
 
-                  {%- if paginate.pages > 1 -%}
-                    {% render 'pagination', paginate: paginate %}
-                  {%- endif -%}
-                </div>
-              {%- endif -%}
+                    {%- if paginate.pages > 1 -%}
+                      {% render 'pagination', paginate: paginate %}
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
             </div>
           </div>
-        </div>
-      {%- endif -%}
+        {%- endif -%}
+      </div>
     </div>
   {% endpaginate %}
 </div>

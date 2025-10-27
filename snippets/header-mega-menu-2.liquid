@@ -21,6 +21,33 @@
       class="mega-menu__list header__mega-submenu{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
       role="list"
     >
+      {% if bl_stts.megamenu_submenu != blank %}
+        <li class="mega-menu__submenu" role="list">
+          <ul class="list-unstyled" role="list">
+            {% for link in bl_stts.megamenu_submenu.links %}
+              <li>
+                <a
+                  href="{{ link.url }}"
+                  title="{{ link.title | escape }}"
+                  class="
+                    header__menu-item mega-menu__link mega-menu__link--level-2 link link--hover-underline
+                    {% render 'highlight-class', order: '2', keys: keys, compare: link.title, settings: sec_settings %}
+                  "
+                  style="{%  render 'highlight-style', order: '2', keys: keys, compare: link.title, color: highlight_color, settings: sec_settings %}"
+                >
+                  {{ link.title | escape }}
+                  {% render 'highlight-label-menu',
+                    order: '2',
+                    keys: keys,
+                    compare: link.title,
+                    settings: sec_settings
+                  %}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endif %}
       {%- for childlink in link.links -%}
         <li>
           <a
@@ -182,7 +209,7 @@
                     <li>
                       <a
                         href="{{ bl_stts.brand_url | default: '' }}#{{ letter | downcase }}"
-                        class="link link--underline{% if brand_letters contains letter %} is-active{% endif %}"
+                        class="link link--hover-underline{% if brand_letters contains letter %} is-active{% endif %}"
                       >
                         {{ letter }}
                       </a>

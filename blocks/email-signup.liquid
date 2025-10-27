@@ -1,10 +1,11 @@
 {% capture agree_condition %}
   {%- if block.settings.agree_condition and block.settings.agree_condition_text != blank -%}
+    {% assign alignment = block.settings.input_alignment | prepend: 'justify-' %}
     <div class="spacing-style newsletter-form__checkbox"
       style="--padding-block-start: {{ block.settings.condition-padding-block-start }}px; --padding-block-end:{{- block.settings.condition-padding-block-end -}}px;--padding-inline-start: 0px;--padding-inline-end: 0px;"
     >
       {% assign checkbox_id = block.id | prepend: 'agree_condition-' %}
-      {% render 'checkbox', label: block.settings.agree_condition_text, id: checkbox_id, name: checkbox_id, required: true %}
+      {% render 'checkbox', label: block.settings.agree_condition_text, id: checkbox_id, name: checkbox_id, required: true, alignment: alignment %}
     </div>
   {%- endif -%}
 {% endcapture %}
@@ -87,7 +88,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
           --padding-horizontal: 1.2rem;
         {% endif %}
         {% render 'border-override', settings: block.settings %}
-        
+
         {%- if block.settings.submit_width == 'custom' -%}
           --size-style-width: {{- block.settings.submit_custom_width }}%;
         {%- else -%}
@@ -1196,7 +1197,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
     {
       "type": "checkbox",
       "id": "hide_submit_border",
-      "label": "t:settings.hide_submit_border",  
+      "label": "t:settings.hide_submit_border",
       "default": false,
       "visible_if": "{{ block.settings.style_class == 'button-custom' }}"
     },
@@ -1231,7 +1232,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
         },
         {
           "value": "fly",
-          "label": "t:options.fly"  
+          "label": "t:options.fly"
         }
       ],
       "default": "chevron",

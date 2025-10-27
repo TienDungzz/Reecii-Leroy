@@ -21,7 +21,7 @@
   width: calc(100% + 0.2rem);
   position: absolute;
   top: 100%;
-  left: -0.2rem;
+  left: -0.1rem;
   display: none;
   padding: var(--padding-xl);
 }
@@ -145,6 +145,10 @@ predictive-search[loading]
   text-decoration: none;
   width: 100%;
 
+  &.link {
+    text-transform: initial;
+  }
+
   &:not(.predictive-search__item--term).link {
     padding-inline: 0;
     display: inline-flex;
@@ -206,7 +210,6 @@ predictive-search[loading]
 .predictive-search__item--term {
   justify-content: space-between;
   align-items: center;
-  padding-inline: 0;
   word-break: break-all;
 }
 
@@ -367,7 +370,7 @@ details[open] > .search-modal.search-modal--full,
 }
 
 .predictive-search-results__wrapper.predictive-search-results__wrapper-queries {
-  margin-bottom: var(--margin-lg);
+  margin-block: var(--margin-lg);
   gap: var(--gap-lg);
 }
 
@@ -379,18 +382,15 @@ details[open] > .search-modal.search-modal--full,
       var(--animation-timing-hover),
     box-shadow var(--animation-speed-medium) var(--animation-timing-bounce),
     transform var(--animation-speed-medium) var(--animation-timing-bounce);
-  background-color: transparent;
+  background: rgba(var(--color-foreground-rgb) / .1);
   padding: 6px 8px;
+  &.link {
+    text-transform: initial;
+  }
 
   @media (hover: hover) {
     &:hover {
       background-color: var(--pills-pill-background-color);
     }
-  }
-
-  mark {
-    background-color: var(--color-foreground);
-    color: var(--color-background);
-    font-weight: bold;
   }
 }

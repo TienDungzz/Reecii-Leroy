@@ -11,12 +11,27 @@
   assign max_items = section.settings.collections_to_show
   assign show_more = section.settings.show_more | default: 'Show more'
 
+  assign columns_tablet = 2
+  if section.settings.columns == 1
+    assign columns_tablet = 1
+  elsif section.settings.columns >= 4
+    assign columns_tablet = 3
+  endif
+
+  assign columns_gap = section.settings.columns_gap
+  assign rows_gap = section.settings.rows_gap
+  assign mobile_columns_gap = columns_gap | times: 0.5
+  assign mobile_rows_gap = rows_gap | times: 0.5
+
   if section.settings.layout_type == 'grid'
     assign classes = 'resource-list--grid'
     capture styles
-      echo '--resource-list-column-gap: ' | append: section.settings.columns_gap | append: 'px;'
-      echo '--resource-list-row-gap: ' | append: section.settings.rows_gap | append: 'px;'
+      echo '--resource-list-column-gap: ' | append: columns_gap | append: 'px' | append: ';'
+      echo '--resource-list-row-gap: ' | append: rows_gap | append: 'px' | append: ';'
+      echo '--resource-list-mobile-column-gap: ' | append: mobile_columns_gap | append: 'px' | append: ';'
+      echo '--resource-list-mobile-row-gap: ' | append: mobile_rows_gap | append: 'px' | append: ';'
       echo '--resource-list-columns: repeat(' | append: section.settings.columns | append: ', 1fr);'
+      echo '--resource-list-columns-tablet: repeat(' | append: columns_tablet | append: ', 1fr);'
       echo '--resource-list-columns-mobile: repeat(' | append: section.settings.mobile_columns | append: ', 1fr);'
       echo '--column-count-mobile: ' | append: section.settings.mobile_columns | append: ';'
     endcapture

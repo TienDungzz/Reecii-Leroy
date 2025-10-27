@@ -1,0 +1,123 @@
+{% assign pagespeed_template_suffix_liquid = template.suffix | append: ".liquid" %}
+{% assign pagespeed_page_type = template.name | replace: template_suffix_liquid, "" %}
+
+{% unless request.page_type == 'customers/register' or request.page_type == 'captcha' or request.path contains 'contact' %}
+{%- if blank -%}
+    <script type="text/javascript">
+        var perfEntries=performance.getEntriesByType("navigation"),hasLoadEventEnd=function(){return perfEntries&&perfEntries[0].loadEventEnd>0},processEvents=function(e,t){["mouseover","keydown","touchmove","touchstart","wheel"].forEach((function(o){e(o,eventCallback,t)}))};
+
+        function eventCallback(){
+            observer.disconnect(),
+            ev(),
+            processEvents(window.removeEventListener),
+            n()
+        }
+
+        function seq(e,t,o){
+            (void 0===o||void 0===e[o])&&(o=0),
+            e[o]((function(){++o===e.length?t():seq(e,t,o)}))
+        }
+
+        function initAndDispatchEvents(){
+            if(hasLoadEventEnd()){
+                console.log("u=1"),
+                ["DOMContentLoaded","readystatechange","load","show"].forEach((function(e){
+                    var t=document.createEvent("Event");
+                    t.initEvent(e,!0,!0),
+                    window.dispatchEvent(t),
+                    document.dispatchEvent(t)
+                }));
+                var e=window.document.createEvent("UIEvents");
+                e.initUIEvent("resize",!0,!0,window,0),
+                window.dispatchEvent(e),
+                document.dispatchEvent(e)
+            }
+        }
+
+        function createScript(e,t){
+            var o=document.createElement("script");
+            o.type="text/javascript",
+            e.src?(o.onload=t,o.onerror=t,o.src=e.src):o.textContent=e.innerText,
+            o.id=e.id,
+            o.async=!1,
+            Object.assign(o.dataset,e.dataset),
+            e.parentNode.removeChild(e),
+            document.body.appendChild(o),
+            e.src||t()
+        }
+
+        function n(){
+            var e=document.querySelectorAll("script"),t=[];
+            e.forEach((function(e){
+                "text/flspdscript"===e.getAttribute("type")&&t.push((function(t){
+                    createScript(e,t)
+                }))
+            })),
+            t.length>0&&seq(t,initAndDispatchEvents)
+        }
+
+        function ev(){
+            var e=document.removeEventListeners;
+            hasLoadEventEnd()&&void 0!==e&&(console.log("ev=1"),["DOMContentLoaded","load"].forEach(e))
+        }
+
+        processEvents(window.addEventListener,{passive:!0});
+
+    </script>
+
+    <script type="text/javascript" data-flspd="1">
+        var flspdxHA=["hotjar","xklaviyo","recaptcha","gorgias","facebook.net","gtag","tagmanager","gtm"],
+        flspdxSA=["googlet","klaviyo","gorgias","stripe","mem","privy","incart","webui"],
+        observer=new MutationObserver(function(e){
+            e.forEach(function(e){
+                e.addedNodes.forEach(function(e){
+                    // if("SCRIPT"===e.tagName&&1===e.nodeType)
+                    //     if(e.innerHTML.includes("asyncLoad")||"analytics"===e.className)
+                    //         e.type="text/flspdscript";
+                    //     else{
+                    //         for(var t=0;t<flspdxSA.length;t++)
+                    //             if(e.src.includes(flspdxSA[t])) return void(e.type="text/flspdscript");
+                    //         for(var r=0;r<flspdxHA.length;r++)
+                    //             if(e.innerHTML.includes(flspdxHA[r])) return void(e.type="text/flspdscript")
+                    //     }
+                })
+            })
+        }),
+        ua=navigator.userAgent.toLowerCase();
+
+        ua.match(new RegExp("chrome|firefox"))&&-1===window.location.href.indexOf("no-optimization")&&observer.observe(document.documentElement,{childList:!0,subtree:!0});
+    </script>
+{%- endif -%}
+{% endunless %}
+
+<script>
+    (()=>{try{
+        var e=navigator,t=e.userAgent,r=0,a=(e,t,r)=>e.setAttribute(t,r),o=(e,t)=>e.removeAttribute(t),d="tagName",n="forEach",l="indexOf";
+        (e.platform[l]("x86_64")>-1 && 0>t[l]("CrOS") || t[l]("power")>-1 || t[l]("rix")>-1) && new MutationObserver((e=>{
+            e[n]((({addedNodes:e})=>{
+                e[n]((e=>{
+                    if (1===e.nodeType) {
+                        if ("IFRAME"===e[d]) {
+                            a(e,"loading","lazy");
+                            a(e,"data-src",e.src);
+                            o(e,"src");
+                        } else if ("IMG"===e[d] && r++ > 20) {
+                            a(e,"loading","lazy");
+                        } else if ("SCRIPT"===e[d]) {
+                            a(e,"data-src",e.src);
+                            o(e,"src");
+                            e.type="text/lazyload";
+                        }
+                    }
+                }))
+            }))
+        })).observe(document.documentElement, {childList:!0, subtree:!0});
+
+        var c=e=>document.querySelector(e), s=()=>Date.now(), i=s();
+        var u=()=>{if (!(s()-i > 500)){
+            // Removed the code that moves META tags for better SEO and functionality
+            if (!c("body>meta")) return setTimeout(u, 5);
+        }};
+        u();
+    } catch (m){}})();
+</script>

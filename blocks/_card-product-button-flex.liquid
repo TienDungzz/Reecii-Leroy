@@ -21,7 +21,7 @@
 
 {%- if card_product and card_product != empty and block.settings.quick_add != 'none' -%}
   <div
-    class="card--block-button {{ block.settings.quick_add }} relative z-2 w-full size-style"
+    class="card--block-button relative z-2 w-full size-style"
     style="
       {% if quick_add_type_icon %}
       --pl: 0; --pr: 0;--md-pl: 1rem; --md-pr: 1rem;--lg-pl: 1.6rem; --lg-pr: 1.6rem;
@@ -37,6 +37,7 @@
         {% endif %}
       {% endif %}
       {% render 'size-style', settings: block.settings %}
+      {% render 'typography-style', settings: block.settings, preset: 'custom' %}
     "
   >
     {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id | append: block_id %}
@@ -266,8 +267,11 @@
   }
 
   .quick-add__submit {
+    --button-font-size-link: var(--font-size);
     box-sizing: border-box;
     line-height: 1;
+    font-size: var(--font-size);
+    text-transform: var(--text-transform);
 
     &.button {
       min-width: 100%;
@@ -445,6 +449,90 @@
       "label": "t:options.underline",
       "default": false,
       "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.typography"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "label": "t:settings.size",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        },
+        {
+          "value": "3.0rem",
+          "label": "30px"
+        },
+        {
+          "value": "3.2rem",
+          "label": "32px"
+        }
+      ],
+      "default": "1.6rem"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "t:settings.case",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "t:options.capitalize"
+        }
+      ],
+      "default": "none"
     },
     {
       "type": "header",

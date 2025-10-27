@@ -1,6 +1,6 @@
 
 <link rel="stylesheet" href="{{ 'component-recent-sale-popup.css' | asset_url }}" media="print" onload="this.media='all'">
-<noscript>{{ 'component-recent-sale-popup.css' | asset_url | stylesheet_tag: preload: true }}</noscript>
+<noscript>{{ 'component-recent-sale-popup.css' | asset_url | stylesheet_tag }}</noscript>
 
 {% liquid
   assign product_list = section.settings.product_list
@@ -59,9 +59,9 @@ style="
       <div class="recent-sale-popup-content flex" style="--gap-x: 12px;">
         <div class="recent-sale-product-list hidden">
           {% for product in product_list %}
-            <div class="recent-sale-product-item" 
-              data-product-image="{{ product.featured_image | image_url: width: 75 }}" 
-              data-product-title="{{ product.title | escape }}" 
+            <div class="recent-sale-product-item"
+              data-product-image="{{ product.featured_image | image_url: width: 75 }}"
+              data-product-title="{{ product.title | escape }}"
               data-product-url="{{ product.url }}"
               data-product-alt="{{ product.title | escape }}">
             </div>
@@ -69,16 +69,16 @@ style="
         </div>
 
         <div class="recent-sale-popup-content-media" style="--w: 75px; --h: 100px;">
-          <img class="random-product-image" 
-            src="{{ product_list.first.featured_image | image_url: width: 75 }}" 
-            alt="{{ product_list.first.title | escape | default: 'Product' }}" 
-            width="75" 
+          <img class="random-product-image"
+            src="{{ product_list.first.featured_image | image_url: width: 75 }}"
+            alt="{{ product_list.first.title | escape | default: 'Product' }}"
+            width="75"
             height="100">
         </div>
         <div class="recent-sale-popup-content-info flex flex-column justify-between w-full">
           <span class="flex flex-column" style="--gap-y: 4px; --mb: 20px;">
             <span><span class="font-bold random-customer">Customer Name</span> <span class="font-light other-text">recently bought</span> </span>
-            <span class="font-bold random-product-name">Product Name</span> 
+            <span class="font-bold random-product-name">Product Name</span>
             <span class="random-location">Location</span>
           </span>
 

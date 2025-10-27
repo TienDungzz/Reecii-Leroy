@@ -31,11 +31,11 @@
   assign page_width = section.settings.page_width
 %}
 
-{{ 'section-main-product.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'component-accordion.css' | asset_url | stylesheet_tag: preload: true }}
-{{ 'component-rating.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'section-main-product.css' | asset_url | stylesheet_tag }}
+{{ 'component-accordion.css' | asset_url | stylesheet_tag }}
+{{ 'component-rating.css' | asset_url | stylesheet_tag }}
 {%- if closest.product.quantity_price_breaks_configured? -%}
-  {{ 'component-volume-pricing.css' | asset_url | stylesheet_tag: preload: true }}
+  {{ 'component-volume-pricing.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
 
 <script type="application/ld+json">
@@ -59,7 +59,7 @@
 
 {%- assign first_3d_model = closest.product.media | where: 'media_type', 'model' | first -%}
 {%- if first_3d_model -%}
-  {{ 'component-product-model.css' | asset_url | stylesheet_tag: preload: true }}
+  {{ 'component-product-model.css' | asset_url | stylesheet_tag }}
   <link
     id="ModelViewerStyle"
     rel="stylesheet"
@@ -370,7 +370,7 @@
         },
         {
           "value": "custom",
-          "label": "t:options.custom" 
+          "label": "t:options.custom"
         }
       ],
       "default": "page-width"

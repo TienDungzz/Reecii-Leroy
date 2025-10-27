@@ -2554,26 +2554,6 @@
         "default": 0
       },
       {
-        "type": "select",
-        "id": "card_text_alignment",
-        "options": [
-          {
-            "value": "left",
-            "label": "t:options.left"
-          },
-          {
-            "value": "center",
-            "label": "t:options.center"
-          },
-          {
-            "value": "right",
-            "label": "t:options.right"
-          }
-        ],
-        "default": "left",
-        "label": "t:settings.text_alignment"
-      },
-      {
         "type": "checkbox",
         "id": "enable_price_percent",
         "label": "t:settings.enable_price_percent",
@@ -2684,6 +2664,55 @@
         "id": "countdown_background_gradient",
         "label": "t:settings.background_gradient",
         "visible_if": "{{ settings.show_countdown == true }}"
+      },
+      {
+        "type": "select",
+        "id": "countdown_border",
+        "label": "t:settings.borders",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:options.none"
+          },
+          {
+            "value": "solid",
+            "label": "t:options.solid"
+          }
+        ],
+        "default": "none"
+      },
+      {
+        "type": "range",
+        "id": "countdown_border_width",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "unit": "px",
+        "label": "t:settings.border_width",
+        "default": 1,
+        "visible_if": "{{ settings.countdown_border != 'none' }}"
+      },
+      {
+        "type": "range",
+        "id": "countdown_border_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "label": "t:settings.border_opacity",
+        "default": 0,
+        "visible_if": "{{ settings.countdown_border != 'none' }}"
+      },
+      {
+        "type": "range",
+        "id": "countdown_border_radius",
+        "label": "t:settings.border_radius",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 0,
+        "visible_if": "{{ settings.countdown_border != 'none' }}"
       },
       {
         "type": "header",
