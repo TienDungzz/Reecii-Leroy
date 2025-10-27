@@ -260,7 +260,7 @@ function getScrollbarWidth() {
   document.documentElement.style.setProperty('--scrollbar-width', `${width}px`);
 }
 
-// getScrollbarWidth();
+getScrollbarWidth();
 
 // Preloading Screen Annimate
 function logoReveal(preloadScreen) {

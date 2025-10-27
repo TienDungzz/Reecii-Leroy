@@ -85,6 +85,7 @@ h6:empty:not([class]) {
 }
 
 html {
+  overflow-y: scroll;
   touch-action: manipulation;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -111,7 +112,7 @@ html[scroll-lock] {
 
 html,
 body {
-  overflow: clip auto;
+  overflow-x: clip;
 
   &.overflow-hidden-mobile {
     overflow: clip;
@@ -4703,73 +4704,29 @@ tabs-component:not(.predictive-search-tabs) .tabs-component-content {
 
 /* modal-component */
 .modal-component {
-  & .modal__overlay:empty {
+  .modal__overlay:empty {
     background-color: rgb(var(--color-shadow-rgb) / var(--opacity-40));
   }
 
-  & .modal__inner {
+  .modal__inner {
     padding: 2.5rem 1.2rem;
   }
 
-  & .modal-header {
+  .modal-header {
     padding-bottom: 2rem;
   }
 
-  & .modal-header__title {
+  .modal-header__title {
     font-size: var(--size-16);
   }
 
-  & .modal__close {
+  .modal__close {
     padding: 0.35rem;
     width: 2.2rem;
     height: 2.2rem;
   }
 
-  & .modal-footer {
+  .modal-footer {
     padding-top: 1.5rem;
   }
 }
-
-
-
-/* Test */
-[role=main] .shopify-section {
-  --section-is-first: 0;
-  position: relative
-}
-
-[role=main] .shopify-section:not(.contents) {
-  display: flow-root
-}
-
-[role=main] .shopify-section:empty {
-  display: none
-}
-
-[role=main] .shopify-section:first-child {
-  --section-is-first: 1
-}
-
-.js [role=main] .shopify-section:last-child {
-  border-end-end-radius: var(--border-radius);
-  border-end-start-radius: var(--border-radius);
-  position: relative;
-}
-
-.js [role=main] .shopify-section:last-child .section:before {
-  height: 100%;
-}
-
-.section:before {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* Test */
