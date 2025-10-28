@@ -65,6 +65,8 @@
               activate-event="hover"
               data-index="0"
             >
+              <section-fetcher data-section-id="{{ section.id }}" data-target-id="MegaMenu-Content-{{ section.id }}-{{ forloop.index }}" data-activate="interaction"></section-fetcher>
+
               <summary
                 id="HeaderMenu-Vertical-{{ link.handle }}"
                 class="
@@ -217,20 +219,23 @@
   .header__vertical-menu .mega-menu__content {
     left: calc(100% + var(--style-border-width-popover));
     top: 0;
-    width: min(
-      calc(var(--page-content-width) - var(--width-vertical-menu) + var(--last-item-minus-margin)),
-      calc(
-        100vw - var(--width-vertical-menu) - (var(--page-margin) * 2) - (var(--style-border-width-popover) * 2) +
-          var(--last-item-minus-margin)
-      )
-    );
     overflow: visible;
     margin-top: 0;
     border: none;
     border-radius: var(--style-border-radius-popover);
   }
 
-  .header__vertical-menu .mega-menu {
+  .header__vertical-menu .mega-menu__content:not(:has(>.header__submenu-wrapper)) {
+    width: min(
+        calc(var(--page-content-width) - var(--width-vertical-menu) + var(--last-item-minus-margin)),
+        calc(
+          100vw - var(--width-vertical-menu) - (var(--page-margin) * 2) - (var(--style-border-width-popover) * 2) +
+            var(--last-item-minus-margin)
+        )
+      );
+  }
+
+  .header__vertical-menu .mega-menu:has(.mega-menu__content >.header__submenu-wrapper) {
     position: relative;
   }
 {%- endstyle -%}

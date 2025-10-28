@@ -42,23 +42,26 @@
 
   {% comment %} assign form_styles = label_styles | append: input_styles | append: field_margin_styles | append: '--margin-block-start: ' | append: section.settings.margin-block-start | append: 'px;' {% endcomment %}
 <div
-  class="section customer login spacing"
+  class="section customer login spacing color-{{ section.settings.color_scheme }}"
   style="
     --p-spacing-t: {{ section.settings.padding_top }}px;
     --p-spacing-b: {{ section.settings.padding_bottom }}px;
   "
 >
-  <h2 id="recover" tabindex="-1">
+  <h2 id="recover" tabindex="-1" class="center">
     {{ 'customer.recover_password.title' | t }}
   </h2>
   <div>
-    <p>
+    <p class="center">
       {{ 'customer.recover_password.subtext' | t }}
     </p>
 
-    {%- form 'recover_customer_password' -%}
+    {%- form 'recover_customer_password', class: 'form-reset-password' -%}
       {% assign recover_success = form.posted_successfully? %}
       <div class="field spacing-style" style="{{ form_styles }}">
+        <label for="RecoverEmail">
+          {{ 'customer.login_page.email' | t }}
+        </label>
         <input
           type="email"
           value=""
@@ -72,10 +75,8 @@
             aria-describedby="RecoverEmail-email-error"
             autofocus
           {% endif %}
+          placeholder="{{ 'customer.login_page.email' | t }}"
         >
-        <label for="RecoverEmail">
-          {{ 'customer.login_page.email' | t }}
-        </label>
       </div>
       {%- if form.errors -%}
         <small id="RecoverEmail-email-error" class="form__message">
@@ -86,13 +87,19 @@
         </small>
       {%- endif -%}
 
-      <button>
-        {{ 'customer.login_page.submit' | t }}
-      </button>
+      <div class="field items-center gap-xl">
+        <button class="button button--primary button--reset-password">
+          <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'customer.login_page.submit' | t }}">
+            <span class="button-text-main inline-block relative z-1">
+              {{ 'customer.login_page.submit' | t }}
+            </span>
+          </span>
+        </button>
 
-      <a href="#login">
-        {{ 'customer.login_page.cancel' | t }}
-      </a>
+        <a href="#login" class="link link--text link--underline">
+          {{ 'customer.login_page.cancel' | t }}
+        </a>
+      </div>
     {%- endform -%}
   </div>
 
@@ -127,7 +134,11 @@
               </span>
               {{ 'content.form.error_heading' | t }}
             </h2>
-            {{ form.errors | default_errors }}
+            <div class="alertBox alertBox--error">
+              <div class="alertBox-message">
+                {{ form.errors | default_errors }}
+              </div>
+            </div>
           {%- endif -%}
 
           {%- if shop.features.login_with_shop_classic_customer_accounts? -%}
@@ -153,6 +164,7 @@
               autocomplete="email"
               autocorrect="off"
               autocapitalize="off"
+              placeholder="{{ 'customer.login_page.email' | t }}"
               {% if form.errors contains 'form' %}
                 aria-invalid="true"
               {% endif %}
@@ -170,6 +182,7 @@
                 name="customer[password]"
                 id="CustomerPassword"
                 autocomplete="current-password"
+                placeholder="{{ 'customer.login_page.password' | t }}"
                 {% if form.errors contains 'form' %}
                   aria-invalid="true"
                 {% endif %}
@@ -211,26 +224,31 @@
             </div>
             {%- form 'create_customer', class: 'create-customer-form spacing-style', style: form_styles -%}
               {%- if form.errors -%}
-                <div class="form-message" role="alert">
-                  <div class="alertBox alertBox--error">
-                    <div class="alertBox-message">
-                      <ul>
-                        {%- for field in form.errors -%}
-                          <li>
-                            {%- if field == 'form' -%}
-                              {{ form.errors.messages[field] }}
-                            {%- else -%}
-                              <a href="#RegisterForm-{{ field }}" class="link link-underline">
-                                <span class="text">
-                                  {{ form.errors.translated_fields[field] | capitalize }}
-                                  {{ form.errors.messages[field] }}
-                                </span>
-                              </a>
-                            {%- endif -%}
-                          </li>
-                        {%- endfor -%}
-                      </ul>
-                    </div>
+                <h2 class="form__message" tabindex="-1" autofocus>
+                  <span class="visually-hidden">{{ 'accessibility.error' | t }} </span>
+                  <span class="svg-wrapper">
+                    {{- 'icon-error.svg' | inline_asset_content -}}
+                  </span>
+                  {{ 'content.form.error_heading' | t }}
+                </h2>
+                <div class="alertBox alertBox--error">
+                  <div class="alertBox-message">
+                    <ul>
+                      {%- for field in form.errors -%}
+                        <li>
+                          {%- if field == 'form' -%}
+                            {{ form.errors.messages[field] }}
+                          {%- else -%}
+                            <a href="#RegisterForm-{{ field }}" class="link link-underline">
+                              <span class="text">
+                                {{ form.errors.translated_fields[field] | capitalize }}
+                                {{ form.errors.messages[field] }}
+                              </span>
+                            </a>
+                          {%- endif -%}
+                        </li>
+                      {%- endfor -%}
+                    </ul>
                   </div>
                 </div>
               {% endif %}
@@ -247,7 +265,7 @@
                     value="{{ form.first_name }}"
                   {% endif %}
                   autocomplete="given-name"
-                  placeholder=""
+                  placeholder="{{ 'customer.register.first_name' | t }}"
                 >
               </div>
               <div class="field{% if form.errors contains "last_name" %} field--error{% endif %}">
@@ -263,6 +281,7 @@
                     value="{{ form.last_name }}"
                   {% endif %}
                   autocomplete="family-name"
+                  placeholder="{{ 'customer.register.last_name' | t }}"
                 >
               </div>
               <div class="field{% if form.errors contains "email" %} field--error{% endif %}">
@@ -287,6 +306,7 @@
                     aria-describedby="RegisterForm-email-error"
                   {% endif %}
                   required
+                  placeholder="{{ 'customer.register.email' | t }}"
                 >
               </div>
               <div class="field{% if form.errors contains "password" %} field--error{% endif %}">
@@ -304,7 +324,7 @@
                     aria-invalid="true"
                     aria-describedby="RegisterForm-password-error"
                   {% endif %}
-                  placeholder=""
+                  placeholder="{{ 'customer.register.password' | t }}"
                   required
                 >
               </div>
@@ -337,6 +357,17 @@
     </div>
   {%- endif -%}
 </div>
+
+<style>
+  .form-reset-password {
+    max-width: 45rem;
+    margin: 0 auto;
+  }
+
+  .button--reset-password {
+    width: 100%;
+  }
+</style>
 
 {% schema %}
 {
@@ -555,7 +586,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "label": "t:settings.top",
+      "label": "t:settings.spacing_top",
       "default": 30
     },
     {
@@ -679,6 +710,17 @@
         }
       ],
       "default": "2.0rem"
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "info": "t:info.has_cards_info",
+      "default": "scheme-1"
     },
     {
       "type": "header",

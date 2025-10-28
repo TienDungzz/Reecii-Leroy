@@ -11,6 +11,8 @@
     assign use_inverse_logo = true
   endif
 
+  assign logo_block_style = '--header-logo-spacing-left: ' | append: sec_stts.logo_spacing_left | append: 'px; --header-logo-spacing-right: ' | append: sec_stts.logo_spacing_right | append: 'px;'
+
   if use_inverse_logo
     if settings.logo_inverse != blank
       assign inverse_logo = settings.logo_inverse
@@ -41,13 +43,15 @@
   class="
     header-block header-logo grid__item block {{ class }}
   "
+
+  style="{{ logo_block_style }}"
 >
   {% unless preload_screen %}
     {%- if request.page_type == 'index'-%}
       <h1 class="header__heading">
     {%- endif -%}
   {% endunless %}
-  <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset" data-logo-page aria-label="{{ shop.name }}" rel="preload" as="image">
+  <a href="{{ routes.root_url }}" class="inline-block link link--text focus-inset" data-logo-page aria-label="{{ shop.name }}" rel="preload" as="image">
     <div class="header__heading-logo-wrapper w-full inline-block relative" style="{{ logo_style }}">
       {%- capture text_fallback -%}
         <span class="h2">{{ shop.name }}</span>
@@ -96,6 +100,11 @@
 </div>
 
 {%- stylesheet -%}
+
+  .header-logo {
+    padding-inline-start: var(--header-logo-spacing-left, 0px);
+    padding-inline-end: var(--header-logo-spacing-right, 0px);
+  }
 
   .header-logo__image-container {
     min-width: 5rem;
