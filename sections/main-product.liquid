@@ -31,51 +31,6 @@
   assign page_width = section.settings.page_width
 %}
 
-{{ 'section-main-product.css' | asset_url | stylesheet_tag }}
-{{ 'component-accordion.css' | asset_url | stylesheet_tag }}
-{{ 'component-rating.css' | asset_url | stylesheet_tag }}
-{%- if closest.product.quantity_price_breaks_configured? -%}
-  {{ 'component-volume-pricing.css' | asset_url | stylesheet_tag }}
-{%- endif -%}
-
-<script type="application/ld+json">
-  {{ closest.product | structured_data }}
-</script>
-
-<script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
-<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
-<script
-  src="{{ 'product-recommendations.js' | asset_url }}"
-  defer="defer"
-  fetchpriority="low"
-></script>
-{%- if closest.product.quantity_price_breaks_configured? -%}
-  <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
-  <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
-{%- endif -%}
-{%- if request.design_mode -%}
-  <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
-{%- endif -%}
-
-{%- assign first_3d_model = closest.product.media | where: 'media_type', 'model' | first -%}
-{%- if first_3d_model -%}
-  {{ 'component-product-model.css' | asset_url | stylesheet_tag }}
-  <link
-    id="ModelViewerStyle"
-    rel="stylesheet"
-    href="https://cdn.shopify.com/shopifycloud/model-viewer-ui/assets/v1.0/model-viewer-ui.css"
-    media="print"
-    onload="this.media='all'"
-  >
-  <link
-    id="ModelViewerOverride"
-    rel="stylesheet"
-    href="{{ 'component-model-viewer-ui.css' | asset_url }}"
-    media="print"
-    onload="this.media='all'"
-  >
-{%- endif -%}
-
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
   class="main-product-information section section--{{ page_width }} color-{{ section.settings.color_scheme }}"
@@ -95,6 +50,51 @@
     data-url="{{ closest.product.url }}"
     style="{% render 'spacing-style', settings: section.settings %} --gap: {{ section.settings.gap }}px;"
   >
+    {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
+    {{ 'component-accordion.css' | asset_url | stylesheet_tag }}
+    {{ 'component-rating.css' | asset_url | stylesheet_tag }}
+    {%- if closest.product.quantity_price_breaks_configured? -%}
+      {{ 'component-volume-pricing.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
+
+    <script type="application/ld+json">
+      {{ closest.product | structured_data }}
+    </script>
+
+    <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+    <script
+      src="{{ 'product-recommendations.js' | asset_url }}"
+      defer="defer"
+      fetchpriority="low"
+    ></script>
+    {%- if closest.product.quantity_price_breaks_configured? -%}
+      <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'price-per-item.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+    {%- if request.design_mode -%}
+      <script src="{{ 'theme-editor.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+
+    {%- assign first_3d_model = closest.product.media | where: 'media_type', 'model' | first -%}
+    {%- if first_3d_model -%}
+      {{ 'component-product-model.css' | asset_url | stylesheet_tag }}
+      <link
+        id="ModelViewerStyle"
+        rel="stylesheet"
+        href="https://cdn.shopify.com/shopifycloud/model-viewer-ui/assets/v1.0/model-viewer-ui.css"
+        media="print"
+        onload="this.media='all'"
+      >
+      <link
+        id="ModelViewerOverride"
+        rel="stylesheet"
+        href="{{ 'component-model-viewer-ui.css' | asset_url }}"
+        media="print"
+        onload="this.media='all'"
+      >
+    {%- endif -%}
+    
     {% if section.settings.desktop_media_position == 'left' and product_has_media %}
       {% assign product_href = '#ProductInformation-' | append: section.id %}
       {% render 'skip-to-content-link', href: product_href, text: 'accessibility.skip_to_product_info' %}

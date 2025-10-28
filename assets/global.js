@@ -281,8 +281,6 @@ function pageReveal(preloadScreen) {
     setTimeout(() => {
       preloadScreen.classList.add("loaded");
       body.classList.add("loaded");
-      document.documentElement.removeAttribute('scroll-lock');
-      // getScrollbarWidth();
     }, 1200);
   }
 }
@@ -301,7 +299,6 @@ function linkClick() {
     });
 
     window.addEventListener('beforeunload', () => {
-      document.documentElement.setAttribute('scroll-lock', '');
       document.querySelector('.preload-screen').classList.remove('off', 'loaded');
     });
   })();
@@ -847,16 +844,19 @@ class PreloadScreen extends HTMLElement {
       }, 350);
     });
 
-    if (document.readyState === 'complete') {
-      callback();
-    } else {
+    const onLoadCallback = () => {
       const preloadScreen = document.querySelector(".preload-screen");
       if (preloadScreen) {
         logoReveal(preloadScreen);
         pageReveal(preloadScreen);
         linkClick();
       }
-      window.addEventListener('load', callback);
+    };
+
+    if (document.readyState === 'complete') {
+      onLoadCallback();
+    } else {
+      window.addEventListener('load', onLoadCallback);
     }
   }
 }
@@ -1525,6 +1525,8 @@ class SwiperComponent extends HTMLElement {
 
       // Options
       this.options = {
+        simulateTouch: true,
+        allowTouchMove: true,
         observer: false,
         observeParents: false,
         resistance: false,
@@ -3423,8 +3425,10 @@ document.addEventListener(
         const { open } = event.target;
 
         if (open) {
+          document.body.classList.add('overflow-hidden');
           document.documentElement.setAttribute('scroll-lock', '');
         } else {
+          document.body.classList.remove('overflow-hidden');
           document.documentElement.removeAttribute('scroll-lock');
         }
       }
