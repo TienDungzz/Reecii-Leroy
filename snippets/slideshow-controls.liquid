@@ -39,10 +39,23 @@
     thumbnails
   {% endif %}
   data-thumbnail-position="{{ thumbnail_position }}"
+  style="
+    {% render 'swiper-style',
+      columns_mobile: 4,
+      columns_tablet: 4,
+      columns_desktop: 4,
+      columns_gap: 16,
+    %}
+  "
 >
   <div class="swiper">
     <div
-      class="swiper-wrapper swiper-controls__thumbnails w-full{% if class %} {{ class }}{% endif %}"
+      class="swiper-wrapper swiper-controls__thumbnails grid-layout-no-js list-unstyled lg:grid-layout--4 md:grid-layout--4 grid--4-col-mobile w-full{% if class %} {{ class }}{% endif %}"
+      style="
+        --card-grid-per-row-desktop: 4;
+        --card-grid-per-row-tablet: 4;
+        --card-grid-per-row-mobile: 4;
+      "
       pagination-position="{{ pagination_position }}"
     >
       {% if autoplay %}

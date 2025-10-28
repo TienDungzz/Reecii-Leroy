@@ -18,15 +18,56 @@
   {{ block.shopify_attributes }}
   style="--add-to-cart-font-case: {{ settings.button_text_case_primary }};"
 >
-  {% render 'add-to-cart-button',
-    id: id,
-    class: class,
-    can_add_to_cart: can_add_to_cart,
-    product: closest.product,
-    add_to_cart_text: add_to_cart_text,
-    settings: block.settings
-  %}
+  <div class="add-to-cart-button-inner flex items-stretch">
+    {%- if block.settings.enable_wishlist -%}
+      {% liquid
+        assign class_button = 'h-full center cursor-pointer flex items-center justify-center relative leading-none'
+        assign class_text = 'visually-hidden'
+        assign class_text_inner = 'text-inner text-sm inline-block'
+      %}
+      {% render 'product-wishlist-button',
+        card_product: closest.product,
+        class_button: class_button,
+        class_text: class_text,
+        class_text_inner: class_text_inner
+      %}
+    {%- endif -%}
+    {%- if block.settings.show_social -%}
+      {% render 'social-share-button'
+        product: closest.product
+      %}
+    {%- endif -%}
+    {% render 'add-to-cart-button',
+      id: id,
+      class: class,
+      can_add_to_cart: can_add_to_cart,
+      product: closest.product,
+      add_to_cart_text: add_to_cart_text,
+      settings: block.settings
+    %}
+  </div>
 </span>
+
+{% stylesheet %}
+  .add-to-cart-button-inner {
+    gap: calc(var(--gap-sm) / 2);
+
+    button {
+      padding: 1.5rem;
+    }
+
+    button svg {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .add-to-cart-button-inner {
+      gap: var(--gap-sm);
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -226,6 +267,22 @@
       "unit": "px",
       "default": 10,
       "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_wishlist",
+      "label": "t:settings.enable_wishlist",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social",
+      "label": "Enable social share",
+      "default": true
     }
   ]
 }

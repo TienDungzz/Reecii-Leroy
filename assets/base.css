@@ -4302,9 +4302,70 @@ media-gallery.media-gallery--grid .media-gallery__grid .product-media-container 
   .product-media-container.constrain-height {
     max-height: none;
   }
+
+  .swiper-controls__thumbnails-container {
+    display: none !important;
+  }
 }
 
 @media screen and (min-width: 750px) {
+  swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
+    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']),
+    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
+      display: flex;
+      align-items: stretch;
+      gap: var(--padding-2xs);
+
+      .swiper-controls__thumbnails-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        height: 100%;
+
+        .swiper {
+          height: 100%;
+        }
+      }
+    }
+
+    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
+      .swiper-main {
+        width: 100%;
+        margin-left: calc(68px + var(--padding-2xs));
+      }
+    }
+
+    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']) {
+      .swiper-controls__thumbnails-container {
+        left: auto;
+        right: 0;
+      }
+
+      .swiper-main {
+        width: 100%;
+        margin-right: calc(68px + var(--padding-2xs));
+      }
+    }
+
+    .swiper-controls__thumbnails-container[data-thumbnail-position='left'] {
+      order: -1;
+    }
+
+    [data-thumbnail-position='right'],
+    [data-thumbnail-position='left'] {
+      width: 68px;
+    }
+
+    [data-thumbnail-position='right'] {
+      justify-content: flex-end;
+    }
+
+    [data-thumbnail-position='left'] {
+      justify-content: flex-start;
+    }
+  }
+
   .product-media-container.constrain-height {
     --viewport-offset: var(--header-height, 100px);
     --constrained-min-height: 500px;
@@ -4320,7 +4381,7 @@ media-gallery.media-gallery--grid .media-gallery__grid .product-media-container 
   }
 
   media-gallery:is(.media-gallery--grid) swiper-component {
-    display: none;
+    display: none !important;
   }
 
   media-gallery:where(.media-gallery--grid) .media-gallery__grid {
@@ -4508,7 +4569,6 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
 }
 
 zoom-dialog dialog {
-  display: block;
   width: 100vw;
   height: 100vh;
   border: none;
@@ -6265,6 +6325,11 @@ details[open]>.share-button__fallback {
   z-index: 5;
 }
 
+.icon-close {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
 .drawer__close .icon-close {
   transition: transform var(--duration-default) ease;
   will-change: transform;
@@ -6737,8 +6802,8 @@ tabs-component:not(.predictive-search-tabs) .tabs-component-content {
 
   .modal__close {
     padding: 0.35rem;
-    width: 2.2rem;
-    height: 2.2rem;
+    width: 1.8rem;
+    height: 1.8rem;
   }
 
   .modal-footer {
@@ -7047,65 +7112,6 @@ text-loader-component {
     &::after {
       opacity: 1;
       animation: text-shimmer var(--shimmer-speed) infinite linear;
-    }
-  }
-}
-
-@media screen and (min-width: 750px) {
-  swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
-    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']),
-    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
-      display: flex;
-      align-items: stretch;
-      gap: var(--padding-2xs);
-
-      .swiper-controls__thumbnails-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
-        height: 100%;
-
-        .swiper {
-          height: 100%;
-        }
-      }
-    }
-
-    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
-      .swiper-main {
-        width: 100%;
-        margin-left: calc(68px + var(--padding-2xs));
-      }
-    }
-
-    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']) {
-      .swiper-controls__thumbnails-container {
-        left: auto;
-        right: 0;
-      }
-
-      .swiper-main {
-        width: 100%;
-        margin-right: calc(68px + var(--padding-2xs));
-      }
-    }
-
-    .swiper-controls__thumbnails-container[data-thumbnail-position='left'] {
-      order: -1;
-    }
-
-    [data-thumbnail-position='right'],
-    [data-thumbnail-position='left'] {
-      width: 68px;
-    }
-
-    [data-thumbnail-position='right'] {
-      justify-content: flex-end;
-    }
-
-    [data-thumbnail-position='left'] {
-      justify-content: flex-start;
     }
   }
 }
