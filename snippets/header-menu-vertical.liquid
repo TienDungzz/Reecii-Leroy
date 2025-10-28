@@ -13,6 +13,8 @@
   assign button_border_radius = bl_stts.button_border_radius
 -%}
 
+{%- assign block_id = 'VerticalMenu' -%}
+
 <details
   class="details--dropdown header__vertical-menu relative none lg:block w-fit"
   style="
@@ -65,7 +67,7 @@
               activate-event="hover"
               data-index="0"
             >
-              <section-fetcher data-section-id="{{ section.id }}" data-target-id="MegaMenu-Content-{{ section.id }}-{{ forloop.index }}" data-activate="interaction"></section-fetcher>
+              <section-fetcher data-section-id="{{ section.id }}" data-target-id="MegaMenu-Content-{{ section.id }}-{{ forloop.index }}-{{ block_id }}" data-activate="interaction"></section-fetcher>
 
               <summary
                 id="HeaderMenu-Vertical-{{ link.handle }}"
@@ -137,7 +139,8 @@
                   icon_type: icon_type,
                   keys: keys,
                   sec_settings: section.settings,
-                  class_item_hover_reveal: class_item_hover_reveal
+                  class_item_hover_reveal: class_item_hover_reveal,
+                  block_id: block_id
                 -%}
               </div>
             </details>
@@ -145,7 +148,7 @@
             <a
               id="HeaderMenu-Vertical-{{ link.handle }}"
               href="{{ link.url }}"
-              class="verical-menu__item header__menu-item link link--text focus-inset"
+              class="vertical-menu__item header__menu-item link link--text focus-inset"
               {% if link.current %}
                 aria-current="page"
               {% endif %}
@@ -166,6 +169,11 @@
 </details>
 
 {%- style -%}
+  .vertical-menu__item {
+    display: flex;
+    align-items: center;
+  }
+  
   .header__vertical-menu {
     --width-vertical-menu: 26rem;
 

@@ -30,6 +30,8 @@
     endif
 
     assign keys = 'highlighted_item_,new_label_,sale_label_,hot_label_'
+
+    assign block_id = 'MainMenu'
   -%}
   <div class="header__menu-wrapper" data-main-menu>
     <nav class="header__inline-menu">
@@ -45,7 +47,7 @@
                   activate-event="hover"
                   data-index="0"
                 >
-                  <section-fetcher data-section-id="{{ section.id }}" data-target-id="MegaMenu-Content-{{ section.id }}-{{ forloop.index }}" data-activate="interaction"></section-fetcher>
+                  <section-fetcher data-section-id="{{ section.id }}" data-target-id="MegaMenu-Content-{{ section.id }}-{{ forloop.index }}-{{ block_id }}" data-activate="interaction"></section-fetcher>
                   <summary
                     id="HeaderMenu-{{ link.handle }}"
                     class="
@@ -101,7 +103,8 @@
                         icon_type: icon_type,
                         keys: keys,
                         sec_settings: section.settings,
-                        class_item_hover_reveal: class_item_hover_reveal
+                        class_item_hover_reveal: class_item_hover_reveal,
+                        block_id: block_id
                       -%}
                   </div>
                 </details>
