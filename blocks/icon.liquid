@@ -2,6 +2,8 @@
 {% assign icon_block_class = 'icon-block__media icon-block_' | append: block_settings.icon | append: ' icon-block-' | append: block.id %}
 
 {% capture icon %}
+
+  {% if block.settings.icon_custom == 'image' and block.settings.animation_type == 'zoom' %}<div class="image-zoomin">{% endif %}
   {% render 'icon-or-image',
     icon: block_settings.icon,
     icon_custom: block_settings.icon_custom,
@@ -11,7 +13,9 @@
     class_name: icon_block_class,
     attributes: block.shopify_attributes
   %}
+  {% if block.settings.icon_custom == 'image' and block.settings.animation_type == 'zoom' %}</div>{% endif %}
 {% endcapture %}
+
 {%- if block_settings.link != blank -%}
   <a
     href="{{ block_settings.link }}"
@@ -41,6 +45,17 @@
     height: auto;
     object-fit: cover;
     aspect-ratio: var(--ratio);
+  }
+
+  .image-zoomin {
+    overflow: hidden;
+    .icon-block__media {
+      transition: transform var(--hover-transition-duration) var(--hover-transition-timing);
+    }
+
+    &:hover .icon-block__media {
+      transform: scale(var(--hover-subtle-zoom-amount));
+    }
   }
 {% endstylesheet %}
 
@@ -349,6 +364,28 @@
       "unit": "px",
       "default": 40,
       "visible_if": "{{ block.settings.icon_custom != 'svg' and block.settings.icon != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.animations",
+      "visible_if": "{{ block.settings.icon_custom == 'image' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "t:settings.animation_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "zoom",
+          "label": "t:options.subtle_zoom"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.icon_custom == 'image' }}"
     }
   ],
   "presets": [

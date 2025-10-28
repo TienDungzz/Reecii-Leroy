@@ -241,7 +241,7 @@
     {% for row in rows %}
       {% liquid
         assign scheme = 'color_scheme_' | append: row
-        assign class = 'header__row header__row--[row] color-[row_scheme] section section--full-width-margin section--[section-width]' | replace: '[row]', row | replace: '[row_scheme]', sec_stts[scheme] | replace: '[section-width]', sec_stts.section_width
+        assign class = 'header__row header__row--[row] color-[row_scheme] section section--full-width-margin section--[section-width]' | replace: '[row]', row | replace: '[row_scheme]', sec_stts[scheme] | replace: '[section-width]', sec_stts.section_width | append: ' color-tablet-' | append: sec_stts.color_scheme_bottom | append: ' color-mobile-' | append: sec_stts.color_scheme_bottom
         case row
           when 'top'
             assign first = mobile_menu
