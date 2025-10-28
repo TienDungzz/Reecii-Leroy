@@ -107,17 +107,7 @@ theme.utils = {
     };
 
     return /** @type {T & { cancel(): void }} */ (debounced);
-  },
-
-  // setScrollbarWidth: () => {
-  //   const scrollbarWidth = window.innerWidth - document.body.clientWidth;
-  //   // if (scrollbarWidth > 0) {
-  //   //   document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
-  //   // }
-
-  //   if (scrollbarWidth > 18) return;
-  //   document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
-  // }
+  }
 }
 
 theme.initWhenVisible = (callback, delay = 5000) => {
@@ -248,9 +238,6 @@ function onDocumentLoaded(callback) {
     window.addEventListener('load', callback);
   }
 }
-
-// onDocumentLoaded(theme.utils.setScrollbarWidth);
-// window.addEventListener('resize', theme.utils.rafThrottle(theme.utils.setScrollbarWidth));
 
 function getScrollbarWidth() {
   const width = window.innerWidth - document.documentElement.clientWidth;
@@ -837,13 +824,11 @@ Shopify.CountryProvinceSelector.prototype = {
 class PreloadScreen extends HTMLElement {
   constructor() {
     super();
-
     document.addEventListener("page:loaded", () => {
       setTimeout(() => {
         this.setAttribute("loaded", true);
       }, 350);
     });
-
     const onLoadCallback = () => {
       const preloadScreen = document.querySelector(".preload-screen");
       if (preloadScreen) {
@@ -852,7 +837,6 @@ class PreloadScreen extends HTMLElement {
         linkClick();
       }
     };
-
     if (document.readyState === 'complete') {
       onLoadCallback();
     } else {

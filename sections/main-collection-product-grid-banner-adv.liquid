@@ -242,7 +242,7 @@
             </div>
 
             {%- if paginate.pages > 1 -%}
-              {% render 'pagination', paginate: paginate, anchor: '' %}
+              {% render 'pagination', paginate: paginate, anchor: '', settings: section.settings, suffix: 'pagination' %}
             {%- endif -%}
           </div>
         {%- endif -%}
@@ -685,6 +685,28 @@
         }
       ],
       "default": "pagination"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start-pagination",
+      "label": "t:settings.padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 50,
+      "visible_if": "{{ section.settings.pagination_type == 'pagination' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end-pagination",
+      "label": "t:settings.padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.pagination_type == 'pagination' }}"
     },
     {
       "type": "header",
