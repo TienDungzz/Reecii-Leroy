@@ -7176,6 +7176,8 @@ text-loader-component {
     display: flex;
     flex-wrap: wrap;
     gap: 30px;
+    container-type: inline-size;
+    container-name: flexBlock;
 
     &.row-reverse {
       flex-direction: row-reverse;
@@ -7189,6 +7191,12 @@ text-loader-component {
       width: calc(50% - 15px);
 
       @media (max-width: 750px) {
+        width: 100%;
+      }
+    }
+
+    @container flexBlock (max-width: 500px) {
+      > .flex-item {
         width: 100%;
       }
     }
@@ -7381,6 +7389,11 @@ text-loader-component {
 
 .cart-drawer .caption-large {
   font-size: calc(var(--font-body--size) - 2px);
+}
+
+#Global-Drawer .drawer__wrapper {
+  max-height: calc(100vh - 50px);
+  overflow-y: auto;
 }
 
 .tabs-header {
