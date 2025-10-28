@@ -13,30 +13,36 @@
   assign id = 'ProductSubmitButton-' | append: section.id
 %}
 
+{% capture group_buttons %}
+  {%- if block.settings.enable_wishlist -%}
+    {% liquid
+      assign class_button = 'button h-full center cursor-pointer flex items-center justify-center relative leading-none'
+      assign class_text = 'visually-hidden'
+      assign class_text_inner = 'text-inner text-sm inline-block'
+    %}
+    {% render 'product-wishlist-button',
+      card_product: closest.product,
+      class_button: class_button,
+      class_text: class_text,
+      class_text_inner: class_text_inner
+    %}
+  {%- endif -%}
+  {%- if block.settings.show_social -%}
+    {% render 'social-share-button'
+      product: closest.product
+    %}
+  {%- endif -%}
+{% endcapture %}
+
 <span
   class="add-to-cart-button-container"
   {{ block.shopify_attributes }}
   style="--add-to-cart-font-case: {{ settings.button_text_case_primary }};"
 >
   <div class="add-to-cart-button-inner flex items-stretch">
-    {%- if block.settings.enable_wishlist -%}
-      {% liquid
-        assign class_button = 'h-full center cursor-pointer flex items-center justify-center relative leading-none'
-        assign class_text = 'visually-hidden'
-        assign class_text_inner = 'text-inner text-sm inline-block'
-      %}
-      {% render 'product-wishlist-button',
-        card_product: closest.product,
-        class_button: class_button,
-        class_text: class_text,
-        class_text_inner: class_text_inner
-      %}
-    {%- endif -%}
-    {%- if block.settings.show_social -%}
-      {% render 'social-share-button'
-        product: closest.product
-      %}
-    {%- endif -%}
+    {% if block.settings.group_buttons_position == 'left' %}
+      {{ group_buttons }}
+    {% endif %}
     {% render 'add-to-cart-button',
       id: id,
       class: class,
@@ -45,26 +51,48 @@
       add_to_cart_text: add_to_cart_text,
       settings: block.settings
     %}
+    {% if block.settings.group_buttons_position == 'right' %}
+      {{ group_buttons }}
+    {% endif %}
   </div>
 </span>
 
 {% stylesheet %}
   .add-to-cart-button-inner {
-    gap: calc(var(--gap-sm) / 2);
+    width: 100%;
+    gap: 1rem;
 
     button {
-      padding: 1.5rem;
+      padding: 0.5rem;
     }
 
     button svg {
       width: 2.4rem;
       height: 2.4rem;
     }
+
+    &:has(.wishlist-button) .add-to-cart-button-container,
+    &:has(.share-button) .add-to-cart-button-container {
+      width: calc(100% - 4.4rem - 1rem);
+    }
+
+    &:has(.wishlist-button):has(.share-button) .add-to-cart-button-container {
+      width: calc(100% - (4.4rem * 2) - 2rem);
+    }
   }
 
   @media screen and (min-width: 750px) {
     .add-to-cart-button-inner {
       gap: var(--gap-sm);
+
+      &:has(.wishlist-button) .add-to-cart-button-container,
+      &:has(.share-button) .add-to-cart-button-container {
+        width: calc(100% - 4.4rem - var(--gap-sm));
+      }
+
+      &:has(.wishlist-button):has(.share-button) .add-to-cart-button-container {
+        width: calc(100% - (4.4rem * 2) - (var(--gap-sm) * 2));
+      }
     }
   }
 {% endstylesheet %}
@@ -273,16 +301,38 @@
       "content": "t:content.appearance"
     },
     {
+      "type": "select",
+      "id": "group_buttons_position",
+      "label": "Group buttons position",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "right"
+    },
+    {
       "type": "checkbox",
       "id": "enable_wishlist",
       "label": "t:settings.enable_wishlist",
-      "default": true
+      "default": true,
+      "visible_if": "{{ block.settings.group_buttons_position != 'none' }}"
     },
     {
       "type": "checkbox",
       "id": "show_social",
       "label": "Enable social share",
-      "default": true
+      "default": true,
+      "visible_if": "{{ block.settings.group_buttons_position != 'none' }}"
     }
   ]
 }

@@ -2293,6 +2293,7 @@ class Wishlist extends HTMLElement {
       target.classList.add("wishlist-added");
       const textElement = target.querySelector(".text");
       if (textElement) textElement.textContent = window.wishlist.added;
+      if (target.tagName === 'BUTTON') target.setAttribute('title', window.wishlist.added);
 
       if (wishlistContainer) {
         const addEvent = new CustomEvent("add:wishlist-item", {
@@ -2315,6 +2316,7 @@ class Wishlist extends HTMLElement {
       target.classList.remove("wishlist-added");
       const textElement = target.querySelector(".text");
       if (textElement) textElement.textContent = window.wishlist.add;
+      if (target.tagName === 'BUTTON') target.setAttribute('title', window.wishlist.add);
 
       if (wishlistContainer) {
         const addedElement = document.querySelector(
@@ -2383,10 +2385,12 @@ class Wishlist extends HTMLElement {
         item.classList.add('wishlist-added');
         const textElem = item.querySelector('.text');
         if (textElem) textElem.textContent = window.wishlist.added;
+        if (item.tagName === 'BUTTON') item.setAttribute('title', window.wishlist.added);
       } else {
         item.classList.remove('wishlist-added');
         const textElem = item.querySelector('.text');
         if (textElem) textElem.textContent = window.wishlist.add;
+        if (item.tagName === 'BUTTON') item.setAttribute('title', window.wishlist.add);
       }
     });
   }

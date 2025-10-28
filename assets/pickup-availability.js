@@ -75,7 +75,7 @@ if (!customElements.get('pickup-availability')) {
       const button = this.querySelector('button');
       if (button)
         button.addEventListener('click', (evt) => {
-          document.querySelector('pickup-availability-drawer').show(evt.target);
+          document.querySelector('pickup-availability-drawer').open(evt.target);
         });
     }
   }
@@ -87,8 +87,9 @@ if (!customElements.get('pickup-availability-drawer')) {
   class PickupAvailabilityDrawer extends HTMLElement {
     constructor() {
       super();
-      this.addEventListener('keyup', (event) => event.code === 'Escape' && this.hide());
-      this.querySelector('#PickupAvailabilityDrawer-Overlay').addEventListener('click', this.hide.bind(this));
+      this.addEventListener('keyup', (event) => event.code === 'Escape' && this.close());
+      this.overlay = this.querySelector('#PickupAvailabilityDrawer-Overlay');
+      this.overlay?.addEventListener('click', this.close.bind(this));
       this.setHeaderAccessibility();
     }
 
@@ -98,29 +99,76 @@ if (!customElements.get('pickup-availability-drawer')) {
       button.addEventListener('keydown', (event) => {
         if (event.code === 'Space') {
           event.preventDefault();
-          this.show(button);
+          this.open(button);
         }
       });
     }
 
-    hide() {
-      this.removeAttribute('open');
+    async close() {
       this.classList.remove('active');
+      this.removeAttribute('open');
+      removeTrapFocus(this.focusElement);
       document.body.classList.remove('overflow-hidden');
       document.documentElement.removeAttribute('scroll-lock');
-      removeTrapFocus(this.focusElement);
+      
+      const dir = this.getAttribute("data-drawer-direction") || "right";
+      const contentElement = this.querySelector(".drawer__inner");
+
+      await Motion.timeline([
+        [
+          contentElement,
+          {
+            opacity: [1, 0],
+            transform: dir === "left" ? ["translateX(0)", "translateX(-100%)"] : ["translateX(0)", "translateX(100%)"]
+          },
+          { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] }
+        ],
+        [
+          this.overlay,
+          {
+            transform: dir === "left" ? ["translateX(0)", "translateX(-100%)"] : ["translateX(0)", "translateX(100%)"]
+          },
+          { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" }
+        ]
+      ]).finished;
     }
 
-    show(focusElement) {
+    open(focusElement) {
       this.focusElement = focusElement;
+      const dir = this.getAttribute("data-drawer-direction") || "right";
+      const contentElement = this.querySelector(".drawer__inner");
+
       this.setAttribute('open', '');
       this.classList.add('active');
       document.body.classList.add('overflow-hidden');
       document.documentElement.setAttribute('scroll-lock', '');
+
+      setTimeout(() => {
+        this.classList.add('animate');
+      });
+
+      Motion.timeline([
+        [
+          this.overlay,
+          {
+            transform: dir === "left" ? ["translateX(-100%)", "translateX(0)"] : ["translateX(100%)", "translateX(0)"]
+          },
+          { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] }
+        ],
+        [
+          contentElement,
+          {
+            opacity: [0, 1],
+            transform: dir === "left" ? ["translateX(-100%)", "translateX(0)"] : ["translateX(100%)", "translateX(0)"]
+          },
+          { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.05" }
+        ]
+      ]);
+
       this.addEventListener('transitionend', () => {
         const containerToTrapFocusOn = document.getElementById('PickupAvailabilityDrawer');
-        const focusElement = this.querySelector('.drawer__inner') || this.querySelector('.drawer__close');
-        trapFocus(containerToTrapFocusOn, focusElement);
+        const focusEl = this.querySelector('.drawer__inner') || this.querySelector('.drawer__close');
+        trapFocus(containerToTrapFocusOn, focusEl);
       }, { once: true });
     }
   }

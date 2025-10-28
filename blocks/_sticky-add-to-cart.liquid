@@ -113,10 +113,7 @@ style="
           assign variant_length = product.variants | size
         -%}
         <div id="StickyCart-Quantity-Form-{{ section.id }}" class="sticky-cart__quantity product-form__quantity small-hide{% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %} disabled{% endif %}">
-          {%- comment -%} TODO: enable theme-check once `item_count_for_variant` is accepted as valid filter {%- endcomment -%}
-          {%- # theme-check-disable -%}
           {%- assign cart_qty = cart | item_count_for_variant: product.selected_or_first_available_variant.id -%}
-          {%- # theme-check-enable -%}
           <quantity-input class="quantity" data-url="{{ product.url }}" data-section="{{ section.id }}">
             <button class="quantity__button no-js-hidden pos-relative" name="minus" type="button">
               <span class="visually-hidden">{{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}</span>
@@ -217,6 +214,12 @@ style="
               <svg aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"><circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle></svg>
             </span>
           </button>
+          <div class="product-form__error-message-wrapper" role="alert" hidden>
+            <span class="svg-wrapper">
+              {{- 'icon-error.svg' | inline_asset_content -}}
+            </span>
+            <span class="product-form__error-message"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -233,6 +236,7 @@ style="
     this.mainVariantSelects = null;
     this.stickyVariantSelects = null;
     this.isSyncing = false;
+    this.cartErrorUnsubscriber = null;
     
     this.init();
   }
@@ -250,6 +254,61 @@ style="
     setTimeout(() => {
       this.initializeVariantSync();
     }, 100);
+    
+    this.setupErrorSync();
+  }
+  
+  setupErrorSync() {
+    this.cartErrorUnsubscriber = subscribe(PUB_SUB_EVENTS.cartError, (event) => {
+      const mainErrorWrapper = this.mainProductInfo?.querySelector('.product-form__error-message-wrapper');
+      const stickyErrorWrapper = this.querySelector('.product-form__error-message-wrapper');
+      
+      if (!mainErrorWrapper || !stickyErrorWrapper) return;
+      
+      const errorMessage = mainErrorWrapper.querySelector('.product-form__error-message')?.textContent;
+      
+      const stickyErrorMessage = stickyErrorWrapper.querySelector('.product-form__error-message');
+      if (stickyErrorMessage && errorMessage) {
+        stickyErrorWrapper.toggleAttribute('hidden', false);
+        stickyErrorMessage.textContent = errorMessage;
+      } else {
+        stickyErrorWrapper.toggleAttribute('hidden', true);
+      }
+    });
+    
+    if (this.mainProductInfo) {
+      const errorWrapper = this.mainProductInfo.querySelector('.product-form__error-message-wrapper');
+      if (errorWrapper) {
+        const observer = new MutationObserver(() => {
+          const stickyErrorWrapper = this.querySelector('.product-form__error-message-wrapper');
+          if (!stickyErrorWrapper) return;
+          
+          const isVisible = !errorWrapper.hasAttribute('hidden');
+          const errorMessage = errorWrapper.querySelector('.product-form__error-message')?.textContent;
+          
+          stickyErrorWrapper.toggleAttribute('hidden', !isVisible);
+          if (isVisible && errorMessage) {
+            const stickyErrorMessage = stickyErrorWrapper.querySelector('.product-form__error-message');
+            if (stickyErrorMessage) {
+              stickyErrorMessage.textContent = errorMessage;
+            }
+          }
+        });
+        
+        observer.observe(errorWrapper, {
+          attributes: true,
+          attributeFilter: ['hidden'],
+          childList: true,
+          subtree: true
+        });
+      }
+    }
+  }
+  
+  disconnectedCallback() {
+    if (this.cartErrorUnsubscriber) {
+      this.cartErrorUnsubscriber();
+    }
   }
   
   findMainForm() {
@@ -365,9 +424,6 @@ style="
     };
 
     buttonToggleVariants.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
       const isOpen = this.classList.contains('is-active');
 
       if (isOpen) {
@@ -380,7 +436,6 @@ style="
     });
   }
 
-  
   syncInitialState() {
     this.ensureMainVariantInitialization();
     
@@ -733,6 +788,10 @@ style="
     transform: translateY(100%);
     transition: opacity .3s ease, box-shadow .3s ease, transform .3s ease, visibility 0s linear .3s;
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
+
+    .section {
+      padding: 1rem;
+    }
   }
 
   .sticky-cart-visible .sticky-atc {

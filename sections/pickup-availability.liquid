@@ -11,7 +11,7 @@
 
     <div class="pickup-availability-info">
       {%- if closest_location.available -%}
-        <p class="caption-large">
+        <p>
           {{
             'products.product.pickup_availability.pick_up_available_at_html'
             | t: location_name: closest_location.location.name
@@ -31,7 +31,7 @@
           {%- endif -%}
         </button>
       {%- else -%}
-        <p class="caption-large">
+        <p>
           {{
             'products.product.pickup_availability.pick_up_unavailable_at_html'
             | t: location_name: closest_location.location.name
@@ -51,27 +51,37 @@
     </div>
   </pickup-availability-preview>
 
-  <pickup-availability-drawer class="drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-end no-js-hidden">
+  <pickup-availability-drawer
+    id="Pickup-Availability-Drawer"
+    class="drawer drawer__container fixed top-0 left-0 w-screen h-full z-9 flex no-js-hidden"
+    data-moved="false"
+    data-drawer-direction="right"
+    data-section-id="{{ section.id }}"
+  >
     <div id="PickupAvailabilityDrawer-Overlay" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-    <div id="PickupAvailabilityDrawer" class="pickup-availability-drawer">
+    <div
+      id="PickupAvailabilityDrawer"
+      class="pickup-availability-drawer"
+      data-drawer-content
+      style="--drawer-max-width: var(--normal-content-width);"
+    >
       <div
-        class="drawer__inner cus-scrollbar"
+        class="drawer__inner color-{{ section.settings.color_scheme }} cus-scrollbar"
         role="dialog"
         aria-modal="true"
         aria-labelledby="PickupAvailabilityHeading"
         aria-label="Pickup Availability Heading"
         tabindex="-1"
       >
-        <div class="pickup-availability-header relative flex">
-          <h2 class="h3 pickup-availability-drawer-title" id="PickupAvailabilityHeading">
+        <div class="drawer__header pickup-availability-header flex justify-between items-center relative" style="--p: 1.5rem 0;">
+          <h2 class="drawer__heading break m-0 h4 pickup-availability-drawer-title" id="PickupAvailabilityHeading">
             {{ product_variant.product.title | escape }}
           </h2>
-          <button 
-            class="drawer__close absolute right-0 block t-button bor-none rounded-full cursor-pointer" 
-            type="button" 
-            onclick="this.closest('pickup-availability-drawer').hide()" 
-            aria-label="{{ 'accessibility.close' | t }}"
-            style="--top: 0.3rem; --right: 0.3rem;"
+          <button
+            class="drawer__close block t-button bor-none rounded-full cursor-pointer"
+            type="button"
+            onclick="this.closest('pickup-availability-drawer').close()"
+            aria-label="{{ 'accessibility.close_dialog' | t }}"
           >
             {{- 'icon-close.svg' | inline_asset_content -}}
           </button>

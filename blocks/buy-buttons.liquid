@@ -146,111 +146,44 @@
   {%- endif -%}
 </span>
 
-{% if block_settings.show_pickup_availability %}
-  {% comment %} <script
-    src="{{ 'local-pickup.js' | asset_url }}"
-    defer="defer"
-  ></script> {% endcomment %}
+{%- if block_settings.show_pickup_availability -%}
+  {{ 'component-pickup-availability.css' | asset_url | stylesheet_tag }}
 
   {%- assign pick_up_availabilities = product.selected_or_first_available_variant.store_availabilities
     | where: 'pick_up_enabled', true
   -%}
 
-  <local-pickup
-    class="spacing-style product__pickup-availabilities"
-    {% if pick_up_availabilities.size == 0 %}
-      hidden
+  <pickup-availability
+    class="product__pickup-availabilities block quick-add-hidden no-js-hidden"
+    {% if product.selected_or_first_available_variant.available and pick_up_availabilities.size > 0 %}
+      available
     {% endif %}
-    data-section-id="{{ section.id }}"
-    data-product-url="{{ product.url }}"
+    data-root-url="{{ routes.root_url }}"
     data-variant-id="{{ product.selected_or_first_available_variant.id }}"
-    style="{% render 'spacing-style', settings: block_settings %}"
-    ref="localPickupButton"
+    data-has-only-default-variant="{{ product.has_only_default_variant }}"
+    data-product-page-color-scheme="color-{{ section.settings.color_scheme }}"
   >
-    {% if can_add_to_cart %}
-      <dialog-component>
-        <div class="pickup-availability__row">
-          <div class="pickup-availability__column">
-            <span class="svg-wrapper">
-              {% if pick_up_availabilities.first.available %}
-                {{- 'icon-available.svg' | inline_asset_content -}}
-              {% else %}
-                {{- 'icon-unavailable.svg' | inline_asset_content -}}
-              {% endif %}
-            </span>
-          </div>
-          <div class="pickup-availability__column">
-            {% if pick_up_availabilities.first.available %}
-              <p class="pickup-location__text-sm">
-                {{ 'content.pickup_available_at_html' | t: location: pick_up_availabilities.first.location.name }}
-              </p>
-              <p class="pickup-location__text-xs">
-                {{ 'content.pickup_ready_in' | t: pickup_time: pick_up_availabilities.first.pick_up_time }}
-              </p>
-            {% else %}
-              <p class="pickup-location__text-sm">
-                {{ 'content.pickup_not_available' | t }}
-              </p>
-            {% endif %}
-            <button
-              class="button-unstyled pickup-location__button"
-            >
-              {{ 'actions.view_store_information' | t }}
-            </button>
-          </div>
+    <template>
+      <pickup-availability-preview class="pickup-availability-preview">
+        <span class="svg-wrapper">
+          {{- 'icon-unavailable.svg' | inline_asset_content -}}
+        </span>
+        <div class="pickup-availability-info">
+          <p class="caption-large">{{ 'products.product.pickup_availability.unavailable' | t }}</p>
+          <button class="pickup-availability-button link link--text underlined-link">
+            {{ 'products.product.pickup_availability.refresh' | t }}
+          </button>
         </div>
-        <dialog
-          ref="dialog"
-          class="dialog-modal dialog-drawer pickup-location__dialog color-{{ settings.drawer_color_scheme }}"
-          scroll-lock
-        >
-          <div class="pickup-availability__dialog-row pickup-availability__header-container">
-            <div class="pickup-availability__column">
-              <h4 class="pickup-location__h4">{{ product.title }}</h4>
-              <p class="pickup-location__text-sm">
-                {{ product.selected_or_first_available_variant.title }}
-              </p>
-            </div>
-            <button
-              ref="closeButton"
-              class="button button-unstyled close-button pickup-location__close-button"
-              aria-label="{{ 'accessibility.close_dialog' | t }}"
-            >
-              <span class="svg-wrapper">
-                {{- 'icon-close.svg' | inline_asset_content -}}
-              </span>
-            </button>
-          </div>
-          {% for pick_up_availability in pick_up_availabilities %}
-            <div class="pickup-location__wrapper">
-              <p class="pickup-location__text-bold">{{ pick_up_availability.location.name }}</p>
-              <div class="pickup-location__address-wrapper">
-                <span class="pickup-location__availability-wrapper">
-                  {% if pick_up_availability.available %}
-                    {{- 'icon-available.svg' | inline_asset_content -}}
-                    {% assign pickup_time = pick_up_availability.pick_up_time | downcase %}
-                    {{ 'content.pickup_available_in' | t: pickup_time: pickup_time }}
-                  {% else %}
-                    {{- 'icon-unavailable.svg' | inline_asset_content -}}
-                    {{ 'content.pickup_not_available' | t }}
-                  {% endif %}
-                </span>
-                <address class="pickup-location__address">
-                  {{ pick_up_availability.location.address | format_address }}
-                  {{ pick_up_availability.location.address.phone }}
-                </address>
-              </div>
-            </div>
-          {% endfor %}
-        </dialog>
-      </dialog-component>
-    {% endif %}
-  </local-pickup>
-{% endif %}
+      </pickup-availability-preview>
+    </template>
+  </pickup-availability>
+
+  <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
 
 {% stylesheet %}
   .buy-buttons-block {
-    width: 1000000%;
+    width: 100%;
   }
 
   .product-form__buttons {

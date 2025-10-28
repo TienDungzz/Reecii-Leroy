@@ -12,7 +12,7 @@ if (!customElements.get('gift-card-recipient-form')) {
         this.emailInput = this.querySelector(`#Recipient-email-${this.dataset.sectionId}`);
         this.nameInput = this.querySelector(`#Recipient-name-${this.dataset.sectionId}`);
         this.messageInput = this.querySelector(`#Recipient-message-${this.dataset.sectionId}`);
-        this.sendonInput = this.querySelector(`#Recipient-send-on-${this.dataset.sectionId}`);
+        this.sendOnInput = this.querySelector(`#Recipient-send-on-${this.dataset.sectionId}`);
         this.offsetProperty = this.querySelector(`#Recipient-timezone-offset-${this.dataset.sectionId}`);
         if (this.offsetProperty) this.offsetProperty.value = new Date().getTimezoneOffset().toString();
 
@@ -21,6 +21,21 @@ if (!customElements.get('gift-card-recipient-form')) {
         this.errorMessage = this.errorMessageWrapper?.querySelector('.error-message');
         this.defaultErrorHeader = this.errorMessage?.innerText;
         this.currentProductVariantId = this.dataset.productVariantId;
+
+        this.refs = {
+          recipientMessage: this.querySelector('textarea[name="properties[Message]"]'),
+          characterCount: this.querySelector('[data-character-count]'),
+        };
+        if (this.refs.recipientMessage) {
+          this.refs.recipientMessage.addEventListener('input', this.updateCharacterCount.bind(this));
+          if (!this.refs.recipientMessage.maxLength) {
+            const dataMax = Number(this.refs.characterCount?.getAttribute('data-max'));
+            if (!Number.isNaN(dataMax) && dataMax > 0) {
+              this.refs.recipientMessage.maxLength = dataMax;
+            }
+          }
+        }
+
         this.addEventListener('change', this.onChange.bind(this));
         this.onChange();
       }
@@ -67,16 +82,18 @@ if (!customElements.get('gift-card-recipient-form')) {
         if (this.checkboxInput.checked) {
           this.enableInputFields();
           this.recipientFieldsLiveRegion.innerText = window.accessibilityStrings.recipientFormExpanded;
+          this.updateCharacterCount();
         } else {
           this.clearInputFields();
           this.disableInputFields();
           this.clearErrorMessage();
           this.recipientFieldsLiveRegion.innerText = window.accessibilityStrings.recipientFormCollapsed;
+          this.updateCharacterCount();
         }
       }
 
       inputFields() {
-        return [this.emailInput, this.nameInput, this.messageInput, this.sendonInput];
+        return [this.emailInput, this.nameInput, this.messageInput, this.sendOnInput];
       }
 
       disableableFields() {
@@ -84,15 +101,21 @@ if (!customElements.get('gift-card-recipient-form')) {
       }
 
       clearInputFields() {
-        this.inputFields().forEach((field) => (field.value = ''));
+        this.inputFields().forEach((field) => {
+          if (field) field.value = '';
+        });
       }
 
       enableInputFields() {
-        this.disableableFields().forEach((field) => (field.disabled = false));
+        this.disableableFields().forEach((field) => {
+          if (field) field.disabled = false;
+        });
       }
 
       disableInputFields() {
-        this.disableableFields().forEach((field) => (field.disabled = true));
+        this.disableableFields().forEach((field) => {
+          if (field) field.disabled = true;
+        });
       }
 
       displayErrorMessage(title, body) {
@@ -147,10 +170,21 @@ if (!customElements.get('gift-card-recipient-form')) {
           if (textField) textField.innerText = '';
         });
 
-        [this.emailInput, this.messageInput, this.nameInput, this.sendonInput].forEach((inputElement) => {
+        [this.emailInput, this.messageInput, this.nameInput, this.sendOnInput].forEach((inputElement) => {
+          if (!inputElement) return;
           inputElement.setAttribute('aria-invalid', false);
           inputElement.removeAttribute('aria-describedby');
         });
+      }
+
+      updateCharacterCount() {
+        if (!this.refs || !this.refs.characterCount || !this.refs.recipientMessage) return;
+        const currentLength = this.refs.recipientMessage.value.length;
+        const maxLength = this.refs.recipientMessage.maxLength > 0 ? this.refs.recipientMessage.maxLength : Number(this.refs.characterCount.getAttribute('data-max')) || 0;
+        const template = this.refs.characterCount.getAttribute('data-template');
+        if (!template) return;
+        const updatedText = template.replace('[current]', currentLength.toString()).replace('[max]', maxLength.toString());
+        this.refs.characterCount.textContent = updatedText;
       }
 
       resetRecipientForm() {
