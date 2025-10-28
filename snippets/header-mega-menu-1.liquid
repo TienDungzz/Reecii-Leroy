@@ -96,18 +96,6 @@
           endif
         -%}
       {%- endfor -%}
-      {%- liquid
-        assign is_one_column = false
-        if bl_stts.image_3 != blank
-          if bl_stts.image_1 == blank and bl_stts.image_2 == blank
-            assign is_one_column = true
-          endif
-        else
-          if bl_stts.image_1 != blank or bl_stts.image_2 != blank
-            assign is_one_column = true
-          endif
-        endif
-      -%}
       <div
         class="
           mega-menu__collage collage collage-2-columns grid contains-card contains-card--card
@@ -119,7 +107,6 @@
           --border-width: {{ bl_stts.image_border_thickness | divided_by: 10.0 }}rem;
           --gap-x: 1rem;
           --gap-y: 1rem;
-          {% if is_one_column %}flex: 0 0 25rem;{% endif %}
         "
       >
         {%- for i in (1..3) -%}
