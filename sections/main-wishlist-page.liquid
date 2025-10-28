@@ -146,10 +146,9 @@
 
     connectedCallback() {
       this.gridViewContainer = this.querySelector('[data-wishlist-items-grid-display]');
-      this.listPaginationButtons = document.getElementById('wishlist-paginate');
+      this.wishlistPaginateContainer = document.getElementById('wishlist-paginate');
       this.viewCols = [...this.querySelectorAll('[data-col]')];
 
-      this.wishlistPaginateContainer = document.getElementById('wishlist-paginate');
       this.wishlistContainer = this.closest('[data-wishlist-container]');
       this.wishlistFooter = document.querySelector('[data-wishlist-footer]');
 
@@ -213,16 +212,16 @@
 
     setPaginationAndHeadingView(isList) {
       if (isList) {
-        this.listPaginationButtons.style.display = 'flex';
+        this.wishlistPaginateContainer.style.display = 'flex';
         return;
       }
 
-      this.listPaginationButtons.style.display = 'none';
+      this.wishlistPaginateContainer.style.display = 'none';
     }
 
     paginationForList(isList) {
       const items = this.gridViewContainer.querySelectorAll('.product');
-      const currentPage = Number(this.listPaginationButtons.dataset.currentPage);
+      const currentPage = Number(this.wishlistPaginateContainer.dataset.currentPage);
 
       if (isList && currentPage) {
         items.forEach((item, index) => {

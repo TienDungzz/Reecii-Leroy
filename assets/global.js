@@ -107,17 +107,7 @@ theme.utils = {
     };
 
     return /** @type {T & { cancel(): void }} */ (debounced);
-  },
-
-  // setScrollbarWidth: () => {
-  //   const scrollbarWidth = window.innerWidth - document.body.clientWidth;
-  //   // if (scrollbarWidth > 0) {
-  //   //   document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
-  //   // }
-
-  //   if (scrollbarWidth > 18) return;
-  //   document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
-  // }
+  }
 }
 
 theme.initWhenVisible = (callback, delay = 5000) => {
@@ -249,9 +239,6 @@ function onDocumentLoaded(callback) {
   }
 }
 
-// onDocumentLoaded(theme.utils.setScrollbarWidth);
-// window.addEventListener('resize', theme.utils.rafThrottle(theme.utils.setScrollbarWidth));
-
 function getScrollbarWidth() {
   const width = window.innerWidth - document.documentElement.clientWidth;
 
@@ -281,8 +268,6 @@ function pageReveal(preloadScreen) {
     setTimeout(() => {
       preloadScreen.classList.add("loaded");
       body.classList.add("loaded");
-      document.documentElement.removeAttribute('scroll-lock');
-      // getScrollbarWidth();
     }, 1200);
   }
 }
@@ -301,7 +286,6 @@ function linkClick() {
     });
 
     window.addEventListener('beforeunload', () => {
-      document.documentElement.setAttribute('scroll-lock', '');
       document.querySelector('.preload-screen').classList.remove('off', 'loaded');
     });
   })();
@@ -840,23 +824,23 @@ Shopify.CountryProvinceSelector.prototype = {
 class PreloadScreen extends HTMLElement {
   constructor() {
     super();
-
     document.addEventListener("page:loaded", () => {
       setTimeout(() => {
         this.setAttribute("loaded", true);
       }, 350);
     });
-
-    if (document.readyState === 'complete') {
-      callback();
-    } else {
+    const onLoadCallback = () => {
       const preloadScreen = document.querySelector(".preload-screen");
       if (preloadScreen) {
         logoReveal(preloadScreen);
         pageReveal(preloadScreen);
         linkClick();
       }
-      window.addEventListener('load', callback);
+    };
+    if (document.readyState === 'complete') {
+      onLoadCallback();
+    } else {
+      window.addEventListener('load', onLoadCallback);
     }
   }
 }

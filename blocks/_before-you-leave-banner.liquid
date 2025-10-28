@@ -40,20 +40,13 @@
   {{ block.shopify_attributes }}
 >
   {%- if block.settings.image != blank -%}
-    {% liquid
-      assign fetch_priority = 'auto'
-      if section and section.index == 1
-        assign fetch_priority = 'high'
-      endif
-    %}
     {%- render 'image',
       image: block.settings.image,
       class: 'image-block__image',
       width: block.settings.image.width,
       height: block.settings.image.height,
       widths: widths,
-      sizes: sizes,
-      fetch_priority: fetch_priority
+      sizes: sizes
     -%}
   {%- else -%}
     {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
