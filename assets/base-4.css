@@ -43,6 +43,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: 30px;
+    container-type: inline-size;
+    container-name: flexBlock;
 
     &.row-reverse {
       flex-direction: row-reverse;
@@ -60,6 +62,11 @@
       }
     }
 
+    @container flexBlock (max-width: 500px) {
+      > .flex-item {
+        width: 100%;
+      }
+    }
     .banner-content {
       border: 1px solid var(--color-border, #323232);
       display: flex;
@@ -253,4 +260,9 @@
 
 .cart-drawer .caption-large {
   font-size: calc(var(--font-body--size) - 2px);
+}
+
+#Global-Drawer .drawer__wrapper {
+  max-height: calc(100vh - 50px);
+  overflow-y: auto;
 }
