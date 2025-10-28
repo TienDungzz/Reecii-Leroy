@@ -91,6 +91,10 @@
     render 'header-message', settings: sec_stts, blocks: section.blocks
   endcapture
 
+  if shop.customer_accounts_enabled
+    render 'account-drawer'
+  endif
+
   # Handle localization positioning
   if sec_stts.localization_position == 'left'
     if sec_stts.search_position == 'left'
@@ -2183,6 +2187,12 @@
         "type": "checkbox",
         "id": "show_account",
         "label": "t:settings.account",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_account_drawer",
+        "label": "Enable Account Drawer",
         "default": true
       },
       {
