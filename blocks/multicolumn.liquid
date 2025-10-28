@@ -70,7 +70,14 @@
               %}
             "
           >
-            <div class="swiper">
+            <div class="swiper"
+                style="
+                  {% if block.settings.pagination_type == 'bullets' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' %}
+                    --dots-top-offset: {{ block.settings.dots_top_offset }}px;
+                  {% elsif block.settings.pagination_type == 'progressbar' and block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination' %}
+                    --progress-top-offset: {{ block.settings.progress_top_offset }}px;
+                  {% endif %}"
+            >
         {%- endif -%}
         <ul
           id="Grid-{{ block.id }}"
@@ -83,6 +90,14 @@
           {{- list_items -}}
         </ul>
         {%- if show_mobile_slider -%}
+          {%- if enable_navigation -%}
+            <div class="swiper-btns-wrap small-hide">
+              {%- render 'swiper-button' -%}
+            </div>
+          {%- endif -%}
+          {%- if enable_pagination -%}
+            <div class="swiper-pagination"></div>
+          {%- endif -%}
           </div>
           </swiper-component>
         {%- endif -%}
@@ -320,20 +335,20 @@
     {
       "type": "header",
       "content": "t:content.carousel",
-      "visible_if": "{{ block.settings.layout_type == 'carousel' }}"
+      "visible_if": "{{ block.settings.layout_type == 'carousel' or block.settings.carousel_on_mobile }}"
     },
     {
       "type": "checkbox",
       "id": "loop",
       "label": "t:settings.loop",
       "default": false,
-      "visible_if": "{{ block.settings.layout_type == 'carousel'}}"
+      "visible_if": "{{ block.settings.layout_type == 'carousel' or block.settings.carousel_on_mobile }}"
     },
     {
       "type": "select",
       "id": "navigation",
       "label": "t:settings.navigation",
-      "visible_if": "{{ block.settings.layout_type == 'carousel' }}",
+      "visible_if": "{{ block.settings.layout_type == 'carousel' or block.settings.carousel_on_mobile }}",
       "options": [
         {
           "value": "none",
