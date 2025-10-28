@@ -38,15 +38,18 @@
   >
     <button
       id="PopupModalButton-{{ block.id }}"
-      class="button button-unstyled popup__button text-left spacing-style {{ bl_stts.type_preset }} {{ text_block_classes }}"
+      class="button button-unstyled popup__button spacing-style"
       type="button"
       style="
         {% render 'spacing-style', settings: bl_stts %}
-        {% render 'typography-style', settings: bl_stts %}
       "
     >
       {{- 'icon-size-chart.svg' | inline_asset_content -}}
-      {{- bl_stts.heading }}
+      <span
+        class="{{ bl_stts.type_preset }} {{ text_block_classes }}" style="{% render 'typography-style', settings: bl_stts %}"
+      >
+        {{- bl_stts.heading }}
+      </span>
     </button>
   </side-drawer-opener>
 
@@ -110,6 +113,8 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
+    text-transform: none;
+    text-align: left;
   }
 
   .popup.size-chart > .button svg {

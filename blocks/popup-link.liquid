@@ -21,14 +21,17 @@
 >
   <button
     id="PopupModalButton-{{ block.id }}"
-    class="button button-unstyled popup__button left spacing-style {{ bl_stts.type_preset }} {{ text_block_classes }}"
+    class="button button-unstyled popup__button left spacing-style"
     type="button"
     style="
       {% render 'spacing-style', settings: bl_stts %}
-      {% render 'typography-style', settings: bl_stts %}
     "
   >
-    {{- bl_stts.heading }}
+    <span
+      class="{{ bl_stts.type_preset }} {{ text_block_classes }}" style="{% render 'typography-style', settings: bl_stts %}"
+    >
+      {{ bl_stts.heading }}
+    </span>
     {{- 'icon-external.svg' | inline_asset_content -}}
   </button>
 </side-drawer-opener>
@@ -40,7 +43,7 @@
 >
   <div id="Drawer-Overlay-{{ block.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
   <div 
-    class="popup__inner color-{{ settings.popover_color_scheme }} w-auto h-full absolute-c-c flex flex-column global-settings-popup"
+    class="popup__inner w-auto h-full absolute-c-c flex flex-column color-{{ settings.popover_color_scheme }} global-settings-popup"
     role="dialog"
     aria-modal="true"
     aria-label="Popup link"

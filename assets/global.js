@@ -107,17 +107,7 @@ theme.utils = {
     };
 
     return /** @type {T & { cancel(): void }} */ (debounced);
-  },
-
-  // setScrollbarWidth: () => {
-  //   const scrollbarWidth = window.innerWidth - document.body.clientWidth;
-  //   // if (scrollbarWidth > 0) {
-  //   //   document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
-  //   // }
-
-  //   if (scrollbarWidth > 18) return;
-  //   document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
-  // }
+  }
 }
 
 theme.initWhenVisible = (callback, delay = 5000) => {
@@ -165,6 +155,7 @@ class SectionFetcher extends HTMLElement {
     this._initialized = true;
 
     const targetElement = document.getElementById(this.targetElementId);
+
     if (!targetElement || targetElement.hasAttribute('data-loaded')) return;
 
     const url = `${window.routes.root_url}?section_id=${this.sectionId}`;
@@ -249,9 +240,6 @@ function onDocumentLoaded(callback) {
   }
 }
 
-// onDocumentLoaded(theme.utils.setScrollbarWidth);
-// window.addEventListener('resize', theme.utils.rafThrottle(theme.utils.setScrollbarWidth));
-
 function getScrollbarWidth() {
   const width = window.innerWidth - document.documentElement.clientWidth;
 
@@ -281,8 +269,6 @@ function pageReveal(preloadScreen) {
     setTimeout(() => {
       preloadScreen.classList.add("loaded");
       body.classList.add("loaded");
-      document.documentElement.removeAttribute('scroll-lock');
-      // getScrollbarWidth();
     }, 1200);
   }
 }
@@ -301,7 +287,6 @@ function linkClick() {
     });
 
     window.addEventListener('beforeunload', () => {
-      document.documentElement.setAttribute('scroll-lock', '');
       document.querySelector('.preload-screen').classList.remove('off', 'loaded');
     });
   })();
@@ -840,23 +825,23 @@ Shopify.CountryProvinceSelector.prototype = {
 class PreloadScreen extends HTMLElement {
   constructor() {
     super();
-
     document.addEventListener("page:loaded", () => {
       setTimeout(() => {
         this.setAttribute("loaded", true);
       }, 350);
     });
-
-    if (document.readyState === 'complete') {
-      callback();
-    } else {
+    const onLoadCallback = () => {
       const preloadScreen = document.querySelector(".preload-screen");
       if (preloadScreen) {
         logoReveal(preloadScreen);
         pageReveal(preloadScreen);
         linkClick();
       }
-      window.addEventListener('load', callback);
+    };
+    if (document.readyState === 'complete') {
+      onLoadCallback();
+    } else {
+      window.addEventListener('load', onLoadCallback);
     }
   }
 }
@@ -937,7 +922,6 @@ function menuTab() {
 }
 
 menuTab();
-
 
 function appendTabMenuToMainMenu() {
   const handle = getCookie('page-url') || window.page_active;
@@ -1525,6 +1509,8 @@ class SwiperComponent extends HTMLElement {
 
       // Options
       this.options = {
+        simulateTouch: true,
+        allowTouchMove: true,
         observer: false,
         observeParents: false,
         resistance: false,
@@ -2364,7 +2350,7 @@ class Wishlist extends HTMLElement {
         } else {
           wishlistContainer.classList.add("is-empty");
           wishlistContainer.innerHTML = `
-            <div class="page-margin wishlist-content-empty center"> 
+            <div class="page-margin wishlist-content-empty center">
               <span class="wishlist-content-text">${window.wishlist.empty}</span>
               <div class="wishlist-content-actions">
                 <a class="button" href="${window.routes.collection_all}">
@@ -3423,8 +3409,10 @@ document.addEventListener(
         const { open } = event.target;
 
         if (open) {
+          document.body.classList.add('overflow-hidden');
           document.documentElement.setAttribute('scroll-lock', '');
         } else {
+          document.body.classList.remove('overflow-hidden');
           document.documentElement.removeAttribute('scroll-lock');
         }
       }
@@ -3792,7 +3780,7 @@ class MarqueeComponent extends HTMLElement {
 
     if (this.isDesktop) {
       window.addEventListener("resize", this.#handleResize);
-      this.addEventListener("pointerenter", this.#slowDown);
+      // this.addEventListener("pointerenter", this.#slowDown);
       this.addEventListener("pointerleave", this.#speedUp);
     }
   }
@@ -3800,7 +3788,7 @@ class MarqueeComponent extends HTMLElement {
   disconnectedCallback() {
     if (this.isDesktop) {
       window.removeEventListener("resize", this.#handleResize);
-      this.removeEventListener("pointerenter", this.#slowDown);
+      // this.removeEventListener("pointerenter", this.#slowDown);
       this.removeEventListener("pointerleave", this.#speedUp);
     }
   }
@@ -4003,7 +3991,7 @@ class MarqueeScroll extends HTMLElement {
 
   #toggleHoverEvents(enable) {
     const action = enable ? 'addEventListener' : 'removeEventListener';
-    this[action]("pointerenter", this.#slowDown);
+    // this[action]("pointerenter", this.#slowDown);
     this[action]("pointerleave", this.#speedUp);
   }
 

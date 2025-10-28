@@ -50,28 +50,18 @@ image-block__image{% if block.settings.animation_type == 'parallax' %} parallax-
   {{ block.shopify_attributes }}
 >
   {%- if image != blank -%}
-    {% liquid
-      assign fetch_priority = 'auto'
-      if section and section.index == 1
-        assign fetch_priority = 'high'
-      endif
-    %}
     {%- render 'image',
       image: image,
       class: class_img,
       width: image.width,
       height: image.height,
       widths: widths,
-      sizes: sizes,
-      fetch_priority: fetch_priority
-
+      sizes: sizes
     -%}
   {%- else -%}
     {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
   {%- endif -%}
 </{{ element }}>
-
-{% comment %} Bị trùng xóa đi {% endcomment %}
 
 {% schema %}
 {

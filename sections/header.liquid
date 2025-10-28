@@ -90,6 +90,10 @@
     render 'header-message', settings: sec_stts, blocks: section.blocks
   endcapture
 
+  if shop.customer_accounts_enabled
+    render 'account-drawer'
+  endif
+
   # Handle localization positioning
   if sec_stts.localization_position == 'left'
     if sec_stts.search_position == 'left'
@@ -293,7 +297,7 @@
             style="{{ style | strip }}"
           {%- endif -%}
         >
-          <div class="header__columns spacing-style">
+          <div class="header__columns items-{{ sec_stts.align_items }} spacing-style">
             {{ content }}
           </div>
         </div>
@@ -1609,6 +1613,26 @@
         "default": 12
       },
       {
+        "type": "select",
+        "id": "align_items",
+        "options": [
+          {
+            "value": "start",
+            "label": "t:options.top"
+          },
+          {
+            "value": "center",
+            "label": "t:options.center"
+          },
+          {
+            "value": "end",
+            "label": "t:settings.bottom"
+          }
+        ],
+        "default": "center",
+        "label": "t:settings.align_items"
+      },
+      {
         "type": "header",
         "content": "t:content.logo"
       },
@@ -1632,6 +1656,28 @@
         "default": 100,
         "unit": "px",
         "label": "t:settings.width_mobile",
+        "visible_if": "{{ settings.logo != blank }}"
+      },
+      {
+        "type": "range",
+        "id": "logo_spacing_left",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 0,
+        "unit": "px",
+        "label": "Spacing left",
+        "visible_if": "{{ settings.logo != blank }}"
+      },
+      {
+        "type": "range",
+        "id": "logo_spacing_right",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "default": 0,
+        "unit": "px",
+        "label": "Spacing right",
         "visible_if": "{{ settings.logo != blank }}"
       },
       {
@@ -2161,6 +2207,12 @@
         "type": "checkbox",
         "id": "show_account",
         "label": "t:settings.account",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_account_drawer",
+        "label": "Enable Account Drawer",
         "default": true
       },
       {
