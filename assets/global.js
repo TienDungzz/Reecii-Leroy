@@ -155,6 +155,7 @@ class SectionFetcher extends HTMLElement {
     this._initialized = true;
 
     const targetElement = document.getElementById(this.targetElementId);
+
     if (!targetElement || targetElement.hasAttribute('data-loaded')) return;
 
     const url = `${window.routes.root_url}?section_id=${this.sectionId}`;
@@ -921,7 +922,6 @@ function menuTab() {
 }
 
 menuTab();
-
 
 function appendTabMenuToMainMenu() {
   const handle = getCookie('page-url') || window.page_active;
@@ -2350,7 +2350,7 @@ class Wishlist extends HTMLElement {
         } else {
           wishlistContainer.classList.add("is-empty");
           wishlistContainer.innerHTML = `
-            <div class="page-margin wishlist-content-empty center"> 
+            <div class="page-margin wishlist-content-empty center">
               <span class="wishlist-content-text">${window.wishlist.empty}</span>
               <div class="wishlist-content-actions">
                 <a class="button" href="${window.routes.collection_all}">
@@ -3780,7 +3780,7 @@ class MarqueeComponent extends HTMLElement {
 
     if (this.isDesktop) {
       window.addEventListener("resize", this.#handleResize);
-      this.addEventListener("pointerenter", this.#slowDown);
+      // this.addEventListener("pointerenter", this.#slowDown);
       this.addEventListener("pointerleave", this.#speedUp);
     }
   }
@@ -3788,7 +3788,7 @@ class MarqueeComponent extends HTMLElement {
   disconnectedCallback() {
     if (this.isDesktop) {
       window.removeEventListener("resize", this.#handleResize);
-      this.removeEventListener("pointerenter", this.#slowDown);
+      // this.removeEventListener("pointerenter", this.#slowDown);
       this.removeEventListener("pointerleave", this.#speedUp);
     }
   }
@@ -3991,7 +3991,7 @@ class MarqueeScroll extends HTMLElement {
 
   #toggleHoverEvents(enable) {
     const action = enable ? 'addEventListener' : 'removeEventListener';
-    this[action]("pointerenter", this.#slowDown);
+    // this[action]("pointerenter", this.#slowDown);
     this[action]("pointerleave", this.#speedUp);
   }
 

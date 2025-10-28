@@ -3,6 +3,11 @@
     if localization.available_countries.size > 1 and section.settings.show_country or section.settings.show_language and localization.available_languages.size > 1
       assign localization_forms = true
     endif
+
+    assign section_fetch = false
+    if section.index == null
+      assign section_fetch = true
+    endif
   -%}
 
   <side-drawer
@@ -29,17 +34,27 @@
         </button>
         <div class="drawer__wrapper menu-drawer relative h-full motion-reduce color-{{ section.settings.menu_color_scheme }}">
           <div class="header-mobile mobile--multi-tab">
-            <div class="section-resource-list">
-              <header-mobile-tabs>
-                <div class="section-resource-list__header">
-                  {%- content_for 'block', type: '_menu_tab_headings', id: 'static-menu-tab-heading' -%}
-                </div>
-                <div class="section-resource-list__content">
-                  {%- content_for 'block', type: '_menu_tab_contents', id: 'static-menu-tab-content' -%}
-                  {%- render 'menu-drawer-utility', settings: section.settings -%}
-                </div>
-              </header-mobile-tabs>
-            </div>
+            <section-fetcher
+              data-section-id="{{ section.id }}"
+              data-target-id="SiteNavMobile-Content-{{ section.id }}"
+              data-activate="interaction"
+            ></section-fetcher>
+            {%- unless section_fetch -%}
+              <div class="section-resource-list" id="SiteNavMobile-Content-{{ section.id }}">
+              </div>
+            {%- else -%}
+              <div class="section-resource-list" id="SiteNavMobile-Content-{{ section.id }}">
+                <header-mobile-tabs>
+                  <div class="section-resource-list__header">
+                    {%- content_for 'block', type: '_menu_tab_headings', id: 'static-menu-tab-heading' -%}
+                  </div>
+                  <div class="section-resource-list__content">
+                    {%- content_for 'block', type: '_menu_tab_contents', id: 'static-menu-tab-content' -%}
+                    {%- render 'menu-drawer-utility', settings: section.settings -%}
+                  </div>
+                </header-mobile-tabs>
+              </div>
+            {%- endunless -%}
           </div>
         </div>
       </div>
@@ -63,7 +78,6 @@
     width: 100%;
     text-align: left;
   }
-
 
   .menu-drawer__menu-item.menu-drawer__menu-item--multi-tab {
     padding-inline: var(--padding-xl);

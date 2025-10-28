@@ -38,6 +38,17 @@
     assign element_class = 'dropdown-localization relative'
     assign open_class = 'dropdown-localization__button t-button header__icon header__icon--icon button cursor-pointer'
   endif
+
+  assign section_fetch = false
+  if section.index == null
+    assign section_fetch = true
+  endif
+
+  if localPosition == 'DrawerHeaderLanguage'
+    assign target_id = 'MobileCountryLocalizationList'
+  else
+    assign target_id = 'CountryLocalizationList'
+  endif
 %}
 
 {%- capture icon_caret_forward -%}
@@ -161,7 +172,12 @@
         </span>
       {%- endif -%}
     </button>
-      <div class="selector__dropdown color-{{ settings.popover_color_scheme }}" style="{{ form_style }}" element-s-up>
+
+    <section-fetcher data-section-id="{{ section.id }}" data-target-id="Selector-Content-{{ section.id }}-{{ target_id }}" data-activate="interaction"></section-fetcher>
+    {%- unless section_fetch -%}
+      <div id="Selector-Content-{{ section.id }}-{{ target_id }}" class="selector__dropdown color-{{ settings.popover_color_scheme }}" style="{{ form_style }}" element-s-up></div>
+    {%- else -%}
+      <div id="Selector-Content-{{ section.id }}-{{ target_id }}" class="selector__dropdown color-{{ settings.popover_color_scheme }}" style="{{ form_style }}" element-s-up>
         <div id="Selector-Overlay" class="slide__overlay--mb"></div>
         <div
           class="slide__inner--mb disclosure__list-wrapper disclosure-selector"
@@ -183,13 +199,6 @@
             </div>
           {% endif %}
           {%- if show_country -%}
-            {%- liquid
-              if localPosition == 'DrawerHeaderLanguage'
-                assign target_id = 'MobileCountryLocalizationList'
-              else
-                assign target_id = 'CountryLocalizationList'
-              endif
-            -%}
             <localization-form class="{{ hide_mobile }} {{ localPosition }}" data-prevent-hide>
               <div class="country-selector">
                 <div class="country-selector-form__wrapper">
@@ -268,8 +277,24 @@
                           {%- endfor -%}
                         </ul>
                       {% endif %}
-                      <section-fetcher data-section-id="country-localization" data-target-id="{{ target_id }}" data-activate="interaction"></section-fetcher>
-                      <ul role="list" class="list-unstyled countries" id="{{ target_id }}">
+                      <ul role="list" class="list-unstyled countries" id="CountryLocalizationList">
+                        {%- for country in localization.available_countries -%}
+                          <li class="disclosure__item" tabindex="-1">
+                            <a
+                              class="disclosure__link caption-large focus-inset"
+                              href="#"
+                              {% if country.iso_code == localization.country.iso_code %}
+                                aria-current="true"
+                              {% endif %}
+                              data-value="{{ country.iso_code }}"
+                              id="{{ country.name }}"
+                            >
+                              <span class="icon-flag icon-flag--{{ country.iso_code }}"></span>
+                              <span class="country">{{- country.name }} </span>
+                              <span class="country-code">({{ country.currency.symbol -}}{{ country.currency.iso_code }})</span>
+                            </a>
+                          </li>
+                        {%- endfor -%}
                       </ul>
                     </div>
                     <input type="hidden" name="country_code" value="{{ localization.country.iso_code }}">
@@ -336,6 +361,7 @@
           {%- endif -%}
         </div>
       </div>
+    {%- endunless -%}
   </{{ element_tag }}>
 {%- endif -%}
 

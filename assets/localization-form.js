@@ -25,9 +25,9 @@ if (!customElements.get('localization-form')) {
 
       waitForSectionFetcher() {
         // Check if there are any section-fetcher elements in the document
-        const sectionFetchers = this.querySelectorAll('section-fetcher');
+        const sectionFetcher = this.querySelector('section-fetcher');
 
-        if (sectionFetchers.length === 0) {
+        if (!sectionFetcher) {
           // No section-fetcher found, initialize immediately
           this.initializeForm();
           return;
@@ -35,7 +35,7 @@ if (!customElements.get('localization-form')) {
 
         // Wait for all section-fetcher elements to complete
         let completedFetchers = 0;
-        const totalFetchers = sectionFetchers.length;
+        const totalFetchers = 1;
 
         const onSectionCached = (event) => {
           completedFetchers++;
@@ -50,12 +50,10 @@ if (!customElements.get('localization-form')) {
         document.addEventListener('section:cached', onSectionCached);
 
         // Also check if any section-fetchers are already completed
-        sectionFetchers.forEach(fetcher => {
-          const targetElement = document.getElementById(fetcher.dataset.targetId);
-          if (targetElement && targetElement.hasAttribute('data-loaded')) {
-            completedFetchers++;
-          }
-        });
+        const targetElement = document.getElementById(sectionFetcher.dataset.targetId);
+        if (targetElement && targetElement.hasAttribute('data-loaded')) {
+          completedFetchers++;
+        }
 
         // If all are already completed, initialize immediately
         if (completedFetchers >= totalFetchers) {
@@ -288,11 +286,9 @@ if (!customElements.get('dropdown-localization-component')) {
 
       waitForSectionFetcher() {
         // Check if there are any section-fetcher elements in the document
-        const sectionFetchers = this.querySelectorAll('section-fetcher');
+        const sectionFetcher = this.querySelector('section-fetcher');
 
-        console.log(sectionFetchers);
-
-        if (sectionFetchers.length === 0) {
+        if (!sectionFetcher) {
           // No section-fetcher found, initialize immediately
           this.initializeForm();
           return;
@@ -300,7 +296,7 @@ if (!customElements.get('dropdown-localization-component')) {
 
         // Wait for all section-fetcher elements to complete
         let completedFetchers = 0;
-        const totalFetchers = sectionFetchers.length;
+        const totalFetchers = 1;
 
         const onSectionCached = (event) => {
           completedFetchers++;
@@ -315,12 +311,10 @@ if (!customElements.get('dropdown-localization-component')) {
         document.addEventListener('section:cached', onSectionCached);
 
         // Also check if any section-fetchers are already completed
-        sectionFetchers.forEach(fetcher => {
-          const targetElement = document.getElementById(fetcher.dataset.targetId);
-          if (targetElement && targetElement.hasAttribute('data-loaded')) {
-            completedFetchers++;
-          }
-        });
+        const targetElement = document.getElementById(sectionFetcher.dataset.targetId);
+        if (targetElement && targetElement.hasAttribute('data-loaded')) {
+          completedFetchers++;
+        }
 
         // If all are already completed, initialize immediately
         if (completedFetchers >= totalFetchers) {
@@ -350,8 +344,6 @@ if (!customElements.get('dropdown-localization-component')) {
         this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
         if (this.mql.matches) this.addEventListener('focusout', this.closeSelector.bind(this));
         this.elements.button?.addEventListener('click', this.openSelector.bind(this));
-
-        console.log(this.elements.button);
 
         // this.elements.drawer?.addEventListener('click', this.closeSelector.bind(this));
       }
@@ -420,14 +412,14 @@ if (!customElements.get('drawer-localization-component')) {
         super();
 
         // Check for section-fetcher and wait for completion
-        this.initializeForm();
+        this.waitForSectionFetcher();
       }
 
       waitForSectionFetcher() {
         // Check if there are any section-fetcher elements in the document
-        const sectionFetchers = document.querySelectorAll('section-fetcher');
+        const sectionFetcher = this.querySelector('section-fetcher');
 
-        if (sectionFetchers.length === 0) {
+        if (!sectionFetcher) {
           // No section-fetcher found, initialize immediately
           this.initializeForm();
           return;
@@ -435,7 +427,7 @@ if (!customElements.get('drawer-localization-component')) {
 
         // Wait for all section-fetcher elements to complete
         let completedFetchers = 0;
-        const totalFetchers = sectionFetchers.length;
+        const totalFetchers = 1;
 
         const onSectionCached = (event) => {
           completedFetchers++;
@@ -450,12 +442,10 @@ if (!customElements.get('drawer-localization-component')) {
         document.addEventListener('section:cached', onSectionCached);
 
         // Also check if any section-fetchers are already completed
-        sectionFetchers.forEach(fetcher => {
-          const targetElement = document.getElementById(fetcher.dataset.targetId);
-          if (targetElement && targetElement.hasAttribute('data-loaded')) {
-            completedFetchers++;
-          }
-        });
+        const targetElement = document.getElementById(sectionFetcher.dataset.targetId);
+        if (targetElement && targetElement.hasAttribute('data-loaded')) {
+          completedFetchers++;
+        }
 
         // If all are already completed, initialize immediately
         if (completedFetchers >= totalFetchers) {
