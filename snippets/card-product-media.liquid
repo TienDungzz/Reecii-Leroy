@@ -1,60 +1,60 @@
 {%- capture sizes -%}
-   '(min-width: 750px) 50vw, 100vw'
+  '(min-width: 750px) 50vw, 100vw'
 {%- endcapture -%}
 
 {%- liquid
-    assign f_media = card_product.featured_media
-    assign media = card_product.media
+  assign f_media = card_product.featured_media
+  assign media = card_product.media
 
-    assign media_alt = media.alt | default: card_product.title | append: ' Main Image'
-    assign f_media_alt = f_media.alt | default: card_product.title | append: ' Hover Image'
+  assign media_alt = media.alt | default: card_product.title | append: ' Main Image'
+  assign f_media_alt = f_media.alt | default: card_product.title | append: ' Hover Image'
 
-    assign sizes = sizes
+  assign sizes = sizes
 
-    assign f_widths = widths | default: '240, 352, 650, 832, 1200'
-    assign m_widths = widths | default: '240, 352, 650, 832, 1200'
+  assign f_widths = widths | default: '240, 352, 650, 832, 1200'
+  assign m_widths = widths | default: '240, 352, 650, 832, 1200'
 
-    unless lazy_load == false
-        assign loading = "lazy"
-    endunless
+  unless lazy_load == false
+    assign loading = "lazy"
+  endunless
 
-    assign section_fetch = false
-    if section.index == nil
-      assign section_fetch = true
-    endif
+  assign section_fetch = false
+  if section.index == nil
+    assign section_fetch = true
+  endif
 
-    assign secondary_media_id = 'CardProductMedia-Content-Secondary-' | append: section.id | append: '-' | append: card_product.id
+  assign secondary_media_id = 'CardProductMedia-Content-Secondary-' | append: section.id | append: '-' | append: card_product.id
 -%}
 
 <card-media class="card__media block{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }}{% endif %}">
-    <section-fetcher class="absolute inset-0" data-section-id="{{ section.id }}" data-target-id="{{ secondary_media_id }}" data-activate="inview"></section-fetcher>
-    <div class="media media--transparent media--hover-effect" id="CardProductMedia-Content-{{ section.id }}-{{ card_product.id }}">
-        {{ f_media | image_url: width: 650 | image_tag: sizes: sizes , widths: f_widths, loading: 'lazy', alt: f_media_alt, class: 'motion-reduce', loading: loading }}
-        {%- unless section_fetch -%}
-            <span class="placeholder" id="{{ secondary_media_id }}"></span>
-        {%- else -%}
-            {%- if media[1] != null and show_secondary_image -%}
-                {%- case media[1].media_type -%}
-                    {%- when 'image' -%}
-                        {{ media[1] | image_url: width: 650 | image_tag: sizes: sizes, widths: m_widths, loading: 'lazy', alt: media_alt, class: 'motion-reduce', loading: 'lazy', id: secondary_media_id }}
-                    {%- when 'video', 'external_video' -%}
-                        {%- render 'video',
-                            video: media[1],
-                            widths: widths,
-                            sizes: sizes,
-                            loading: loading,
-                            disable_controls: true,
-                            video_autoplay: true,
-                            video_loop: true,
-                            video_id: media[1].id,
-                            section_id: section.id
-                            id: secondary_media_id
-                        -%}
-                {%- endcase -%}
-            {%- endif -%}
-        {%- endunless -%}
-    </div>
-    <a href="{{ card_product.url }}" class="full-unstyled-link link-wrap z-2" aria-labelledby="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}" id="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}">
-        <span class="visually-hidden">{{ card_product.title | escape }}</span>
-    </a>
+  <section-fetcher class="absolute inset-0" data-section-id="{{ section.id }}" data-target-id="{{ secondary_media_id }}" data-activate="inview"></section-fetcher>
+  <div class="media media--transparent media--hover-effect" id="CardProductMedia-Content-{{ section.id }}-{{ card_product.id }}">
+    {{ f_media | image_url: width: 650 | image_tag: sizes: sizes, widths: f_widths, loading: 'lazy', alt: f_media_alt, class: 'motion-reduce', loading: loading }}
+    {%- unless section_fetch -%}
+      <span class="placeholder" id="{{ secondary_media_id }}"></span>
+    {%- else -%}
+      {%- if media[1] != null and show_secondary_image -%}
+        {%- case media[1].media_type -%}
+          {%- when 'image' -%}
+            {{ media[1] | image_url: width: 650 | image_tag: sizes: sizes, widths: m_widths, loading: 'lazy', alt: media_alt, class: 'motion-reduce', loading: 'lazy', id: secondary_media_id }}
+          {%- when 'video', 'external_video' -%}
+            {%- render 'video',
+              video: media[1],
+              widths: widths,
+              sizes: sizes,
+              loading: loading,
+              disable_controls: true,
+              video_autoplay: true,
+              video_loop: true,
+              video_id: media[1].id,
+              section_id: section.id,
+              id: secondary_media_id
+            -%}
+        {%- endcase -%}
+      {%- endif -%}
+    {%- endunless -%}
+  </div>
+  <a href="{{ card_product.url }}" class="full-unstyled-link link-wrap z-2" aria-labelledby="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}" id="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}">
+    <span class="visually-hidden">{{ card_product.title | escape }}</span>
+  </a>
 </card-media>

@@ -294,15 +294,18 @@
 
     async setProductForWishlistPage(handle, index, wishlistListLength) {
       try {
-        const res = await fetch(`${window.routes.root}/products/${handle}?view=block_wishlist_card`);
-        const data = await res.text();
 
-        const productHTML = new DOMParser().parseFromString(data, 'text/html').getElementsByClassName('card--block')[0];
+        const res = await fetch(`${window.routes.shop_origin}/products/${handle}?view=block_wishlist_card`);
+        const data = await res.text();
+        const parser = new DOMParser();
+        
+        const parsedDoc = parser.parseFromString(data, 'text/html');
+        const productHTML = parsedDoc.querySelectorAll('#MainContent .card--block')[0];
 
         this.gridViewContainer.appendChild(productHTML);
         productHTML.dataset.productHandle = handle;
 
-        const item = this.wishlistContainer.querySelector(`[data-wishlist][data-wishlist-handle="${handle}"]`);
+        const item = this.wishlistContainer.querySelector(`.card--block[data-product-handle="${handle}"]`);
 
         if (item != null) {
           item.classList.add('wishlist-added');
