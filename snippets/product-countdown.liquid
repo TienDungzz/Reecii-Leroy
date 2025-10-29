@@ -1,11 +1,15 @@
 {%- if type == 'card' -%}
   {%- capture styles -%}
+    {% if settings.countdown_background_gradient != blank %}
+      --bg-color: {{ settings.countdown_background_gradient }};
+    {% else %}
     --bg-color: {{ settings.countdown_background_color }};
+    {% endif %}
     --fg-color: {{ settings.countdown_text_color }};
     --p: .8rem 1.2rem;
     --border-width: {{ settings.countdown_border_width }}px;
     --border-style: {{ settings.countdown_border }};
-    --border-color: rgb(var(--color-border-rgb) / {{ settings.countdown_border_opacity | default: 100 | divided_by: 100.0 }});
+    --border-color: {{ settings.countdown_border_color }};
     --border-radius: {{ settings.countdown_border_radius }}px;
   {%- endcapture -%}
 
@@ -57,11 +61,15 @@
 {%- elsif type == 'product' -%}
   {%- capture styles -%}
     {% if settings.countdown_background_gradient != blank %}
-      --countdown_background_color: {{ settings.countdown_background_gradient }};
+      --countdown-background-color: {{ settings.countdown_background_gradient }};
     {% else %}
-      --countdown_background_color: {{ settings.countdown_background_color }};
+    --countdown-background-color: {{ settings.countdown_background_color }};
     {% endif %}
-    --countdown_text_color: {{ settings.countdown_text_color }};
+    --countdown-text-color: {{ settings.countdown_text_color }};
+    --countdown-border-width: {{ settings.countdown_border_width }}px;
+    --countdown-border-style: {{ settings.countdown_border }};
+    --countdown-border-color: {{ settings.countdown_border_color }};
+    --countdown-border-radius: {{ settings.countdown_border_radius }}px;
   {%- endcapture -%}
 
   {%- capture number_html -%}

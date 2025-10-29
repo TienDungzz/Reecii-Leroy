@@ -17,42 +17,31 @@
   unless lazy_load == false
     assign loading = "lazy"
   endunless
-
-  assign section_fetch = false
-  if section.index == nil
-    assign section_fetch = true
-  endif
-
-  assign secondary_media_id = 'CardProductMedia-Content-Secondary-' | append: section.id | append: '-' | append: card_product.id
 -%}
 
 <card-media class="card__media block{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }}{% endif %}">
-  <section-fetcher class="absolute inset-0" data-section-id="{{ section.id }}" data-target-id="{{ secondary_media_id }}" data-activate="inview"></section-fetcher>
+  {% comment %} <section-fetcher class="absolute inset-0" data-section-id="{{ section.id }}" data-target-id="{{ secondary_media_id }}" data-activate="inview"></section-fetcher> {% endcomment %}
   <div class="media media--transparent media--hover-effect" id="CardProductMedia-Content-{{ section.id }}-{{ card_product.id }}">
     {{ f_media | image_url: width: 650 | image_tag: sizes: sizes, widths: f_widths, loading: 'lazy', alt: f_media_alt, class: 'motion-reduce', loading: loading }}
-    {%- unless section_fetch -%}
-      <span class="placeholder" id="{{ secondary_media_id }}"></span>
-    {%- else -%}
-      {%- if media[1] != null and show_secondary_image -%}
-        {%- case media[1].media_type -%}
-          {%- when 'image' -%}
-            {{ media[1] | image_url: width: 650 | image_tag: sizes: sizes, widths: m_widths, loading: 'lazy', alt: media_alt, class: 'motion-reduce', loading: 'lazy', id: secondary_media_id }}
-          {%- when 'video', 'external_video' -%}
-            {%- render 'video',
-              video: media[1],
-              widths: widths,
-              sizes: sizes,
-              loading: loading,
-              disable_controls: true,
-              video_autoplay: true,
-              video_loop: true,
-              video_id: media[1].id,
-              section_id: section.id,
-              id: secondary_media_id
-            -%}
-        {%- endcase -%}
-      {%- endif -%}
-    {%- endunless -%}
+    {%- if media[1] != null and show_secondary_image -%}
+      {%- case media[1].media_type -%}
+        {%- when 'image' -%}
+          {{ media[1] | image_url: width: 650 | image_tag: sizes: sizes, widths: m_widths, loading: 'lazy', alt: media_alt, class: 'motion-reduce', loading: 'lazy', id: secondary_media_id }}
+        {%- when 'video', 'external_video' -%}
+          {%- render 'video',
+            video: media[1],
+            widths: widths,
+            sizes: sizes,
+            loading: loading,
+            disable_controls: true,
+            video_autoplay: true,
+            video_loop: true,
+            video_id: media[1].id,
+            section_id: section.id,
+            id: secondary_media_id
+          -%}
+      {%- endcase -%}
+    {%- endif -%}
   </div>
   <a href="{{ card_product.url }}" class="full-unstyled-link link-wrap z-2" aria-labelledby="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}" id="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}">
     <span class="visually-hidden">{{ card_product.title | escape }}</span>
