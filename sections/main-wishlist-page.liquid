@@ -70,6 +70,11 @@
 </div>
 
 {%- style -%}
+  @media screen and (min-width: 1025px) {
+    wishlist-view .card__media:hover .media.media--hover-effect > img:first-child:not(:only-child) {
+      opacity: var(--opacity-100);
+    }
+  }
   /* product grid */
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] {
     --product-grid-columns-desktop: repeat(1, 1fr);
@@ -305,6 +310,8 @@
         this.gridViewContainer.appendChild(productHTML);
         productHTML.dataset.productHandle = handle;
 
+        this.updateProductForWishlistPage();
+
         const item = this.wishlistContainer.querySelector(`.card--block[data-product-handle="${handle}"]`);
 
         if (item != null) {
@@ -312,17 +319,20 @@
           item.querySelector('.text').textContent = window.wishlist.added;
           item.classList.add('is-in-grid');
           productHTML.dataset.wishlistAdded = `wishlist-${item.dataset.productId}`;
-          item.addEventListener('click', e => {
-            e.target.closest('.card--block').remove();
-          });
-
-          if (index >= 3) {
-            item.closest('.card--block').display = 'none';
-          }
         }
 
       } catch (err) {
         console.error(err);
+      }
+    }
+
+    updateProductForWishlistPage() {
+      const sectionFetcher = document.querySelector('section-fetcher');
+      
+      if (sectionFetcher && typeof sectionFetcher.initialize === 'function') {
+        sectionFetcher.initialize();
+      } else {
+        console.error('WishlistView: No section fetcher component found or initialize method not available');
       }
     }
 
