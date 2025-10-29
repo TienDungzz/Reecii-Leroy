@@ -10,7 +10,7 @@
 		role="dialog"
 		aria-modal="true"
 		aria-label="{{ 'accessibility.promotion-popup' | t }}"
-		style="--popup-max-width: 935px; --popup-max-height: min(100%, 75vh); --p: 0;"
+		style="--modal-max-width: 93.5rem; --modal-max-height: min(100%, 75vh); --p: 0;"
 		data-expire="{{ section.settings.popup_expire }}"
 		data-delay="{{ section.settings.popup_delay | times: 1000 }}"
 	>
@@ -117,6 +117,7 @@
 			setTimeout(() => {
 				this.drawer.classList.add('active');
 				document.body.classList.add('overflow-hidden');
+				document.documentElement.setAttribute('scroll-lock', '');
 
 				this.drawer.addEventListener('transitionend', () => {
 					const containerToTrapFocusOn = this.drawer.querySelector('.popup__inner');
@@ -130,6 +131,7 @@
 			this.setStoreDays(this.dismissTodayCookie, 'closed', this.expiresDate);
 			this.drawer.classList.remove('active');
 			document.body.classList.remove('overflow-hidden');
+			document.documentElement.removeAttribute('scroll-lock');
 			removeTrapFocus(this.activeElement);
 		}
 
@@ -137,6 +139,7 @@
 		tempClose() {
 			this.drawer.classList.remove('active');
 			document.body.classList.remove('overflow-hidden');
+			document.documentElement.removeAttribute('scroll-lock');
 			removeTrapFocus(this.activeElement);
 		}
 

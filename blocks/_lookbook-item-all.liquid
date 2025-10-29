@@ -16,25 +16,37 @@
 %}
 
 {% capture list_items %}
-  {% for product in block.settings.product_list %}
-    <li
-      id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}"
-      class="grid__item swiper-slide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-      {% if settings.animations_reveal_on_scroll %}
-        style="--animation-order: {{ forloop.index }};"
-      {% endif %}
-    >
-      {% content_for 'block',
-        type: 'card-product-flex',
-        id: 'product-slide-item',
-        closest.product: product
-      %}
-    </li>
+  {% if block.settings.product_list != blank %}
+    {% for product in block.settings.product_list %}
+      <li
+        id="Slide-{{ block.id }}-{{ product.id }}-{{ forloop.index }}"
+        class="grid__item swiper-slide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %} {{block.settings.product_list}}"
+        {% if settings.animations_reveal_on_scroll %}
+          style="--animation-order: {{ forloop.index }};"
+        {% endif %}
+      >
+        {% content_for 'block',
+          type: 'card-product-flex',
+          id: 'product-slide-item',
+          closest.product: product
+        %}
+      </li>
 
-    {% unless forloop.last %}
-      <!--@list/split-->
-    {% endunless %}
-  {% endfor %}
+      {% unless forloop.last %}
+        <!--@list/split-->
+      {% endunless %}
+    {% endfor %}
+  {% else %}
+    <li class="grid__item swiper-slide">
+      {{ 'product-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    </li>
+    <li class="grid__item swiper-slide">
+      {{ 'product-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+    </li>
+    <li class="grid__item swiper-slide">
+      {{ 'product-apparel-3' | placeholder_svg_tag: 'placeholder-svg' }}
+    </li>
+  {% endif %}
 {% endcapture %}
 
 <div

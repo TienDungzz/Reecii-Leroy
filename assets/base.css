@@ -4116,16 +4116,22 @@ details[open]>.share-button__fallback {
 /* component-drawer */
 .drawer,
 .modal--popup {
+  transform: translateX(999rem);
   opacity: var(--opacity-0);
   visibility: hidden;
   pointer-events: none;
   transition-property: opacity, background-color, transform;
   transition-duration: var(--duration-extra-long);
   transition-timing-function: var(--cubic-smooth);
+
+  &[data-drawer-direction="left"] {
+    transform: translateX(-999rem);
+  }
 }
 
 .drawer.active,
 .modal--popup[open] {
+  transform: translateX(0);
   opacity: var(--opacity-100);
   visibility: visible;
   pointer-events: visible;
@@ -4227,6 +4233,8 @@ details[open]>.share-button__fallback {
 }
 
 .popup__inner {
+  display: none;
+  pointer-events: none;
   box-shadow: var(--style-shadow-popover);
   border: var(--style-border-popover);
   border-radius: var(--style-border-radius-popover);
@@ -4269,6 +4277,7 @@ details[open]>.share-button__fallback {
 
 .drawer.active .popup__inner,
 .modal--popup[open] .popup__inner {
+  display: block;
   opacity: var(--opacity-100);
   visibility: visible;
   transform: translate(-50%, -50%);
