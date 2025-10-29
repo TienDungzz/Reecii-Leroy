@@ -18,6 +18,10 @@ class PredictiveSearch extends SearchForm {
     this.addEventListener('focusout', this.onFocusOut.bind(this));
     this.addEventListener('keyup', this.onKeyup.bind(this));
     this.addEventListener('keydown', this.onKeydown.bind(this));
+
+    this.input.addEventListener('click', () => {
+      if (this.closest('.header__search')?.querySelector(".search-modal__form")) this.open();
+    });
   }
 
   getQuery() {
@@ -32,10 +36,6 @@ class PredictiveSearch extends SearchForm {
       // so they don't show up when the dropdown opens again
       this.querySelector('#predictive-search-results-groups-wrapper')?.remove();
     }
-
-    // Update the term asap, don't wait for the predictive search query to finish loading
-    console.log(`%c🔍 Log this.searchTerm:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.searchTerm);
-    console.log(`%c🔍 Log newSearchTerm:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", newSearchTerm);
 
     this.updateSearchForTerm(this.searchTerm, newSearchTerm);
 
