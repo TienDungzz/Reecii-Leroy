@@ -241,7 +241,7 @@
     {% for row in rows %}
       {% liquid
         assign scheme = 'color_scheme_' | append: row
-        assign class = 'header__row header__row--[row] color-[row_scheme] section section--full-width-margin section--[section-width]' | replace: '[row]', row | replace: '[row_scheme]', sec_stts[scheme] | replace: '[section-width]', sec_stts.section_width | append: ' color-tablet-' | append: sec_stts.color_scheme_bottom | append: ' color-mobile-' | append: sec_stts.color_scheme_bottom
+        assign class = 'header__row header__row--[row] color-[row_scheme] section section--full-width-margin section--[section-width]' | replace: '[row]', row | replace: '[row_scheme]', sec_stts[scheme] | replace: '[section-width]', sec_stts.section_width | append: ' color-tablet-' | append: sec_stts.color_scheme_top_mb | append: ' color-mobile-' | append: sec_stts.color_scheme_top_mb
         case row
           when 'top'
             assign first = mobile_menu
@@ -2587,7 +2587,13 @@
       {
         "type": "color_scheme",
         "id": "color_scheme_top",
-        "label": "t:settings.default",
+        "label": "Default desktop",
+        "default": "primary"
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme_top_mb",
+        "label": "Default mobile",
         "default": "primary"
       },
       {
