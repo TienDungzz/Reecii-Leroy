@@ -34,12 +34,17 @@
 
   assign layout_type = sec_stts.layout_type
   assign page_width = sec_stts.page_width
+
+  assign intent = ''
+  if section.settings.recommendation_type == 'complementary'
+    assign intent = '&intent=complementary'
+  endif
 %}
 
 <product-recommendations
   id="product-recommendations-{{ section.id }}"
   class="product-recommendations"
-  data-url="{{ routes.product_recommendations_url }}?limit={{ section.settings.products_to_show }}&intent=complementary"
+  data-url="{{ routes.product_recommendations_url }}?limit={{ section.settings.products_to_show }}{{ intent }}"
   data-section-id="{{ section.id }}"
   data-product-id="{{ section.settings.product.id | default: product.id }}"
   data-intent="{{ section.settings.recommendation_type }}"

@@ -42,12 +42,17 @@
   endif
 
   assign layout_type = block_settings.layout_type
+
+  assign intent = ''
+  if block_settings.recommendation_type == 'complementary'
+    assign intent = '&intent=complementary'
+  endif
 %}
 
 <product-recommendations
   id="product-recommendations-{{ block.id }}"
   class="product-recommendations"
-  data-url="{{ routes.product_recommendations_url }}?limit={{ block_settings.products_to_show }}&intent=complementary"
+  data-url="{{ routes.product_recommendations_url }}?limit={{ block_settings.products_to_show }}{{ intent }}"
   data-section-id="{{ section.id }}"
   data-product-id="{{ block.settings.product.id }}"
   data-intent="{{ block.settings.recommendation_type }}"
@@ -384,7 +389,6 @@
 {
   "name": "t:names.product_recommendations",
   "class": "product-recommendations-wrapper",
-  "tag": null,
   "blocks": [
     {
       "type": "@theme"
