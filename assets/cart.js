@@ -322,7 +322,6 @@ class CartItemsComponent extends HTMLElement {
       // --- START ADDED CODE: update cart count and bubbles like in global.js ---
       // This ensures the cart count, text, and bubbles get updated after quantity change (like @file_context_0)
       if (json.item_count !== undefined) {
-        console.log(json.item_count);
         const cartCountEls = document.querySelectorAll('[data-cart-count]');
         cartCountEls.forEach(function(el) {
           el.textContent = json.item_count;
