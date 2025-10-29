@@ -1729,7 +1729,6 @@ class SwiperComponent extends HTMLElement {
         console.error("❌ Error initializing Swiper:", error);
         // Try to reinitialize after a delay
         setTimeout(() => {
-          console.log("🔄 Attempting to reinitialize Swiper...");
           enableSwiper();
         }, 500);
       }
@@ -2170,7 +2169,19 @@ class RecentlyViewedProducts extends HTMLElement {
         const recentlyViewed = new DOMParser()
           .parseFromString(text, "text/html")
           .querySelector("recently-viewed-products");
-        if (recentlyViewed) this.innerHTML = recentlyViewed.innerHTML;
+        // if (recentlyViewed) this.innerHTML = recentlyViewed.innerHTML;
+
+        if (!recentlyViewed) return;
+
+        const recentlyViewedProducts = recentlyViewed.querySelector(".collection--grid-layout");
+
+        if (recentlyViewedProducts || recentlyViewedProducts.innerHTML.trim() == '') {
+          this.classList.add("hidden");
+          return;
+        } else {
+          this.classList.remove("hidden");
+          this.innerHTML = recentlyViewed.innerHTML;
+        }
 
         // Callback loadContent if it exists
         const cardMedias = this.querySelectorAll("card-media");
