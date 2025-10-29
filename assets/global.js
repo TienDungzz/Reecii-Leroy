@@ -249,6 +249,21 @@ function getScrollbarWidth() {
 
 getScrollbarWidth();
 
+function getHeaderCartDrawerHeight() {
+  const cartDrawer = document.querySelector('cart-drawer');
+  if (!cartDrawer) return;
+
+  const cartDrawerHeader = cartDrawer.querySelector('.drawer__header');
+  const cartDrawerMessage = cartDrawer.querySelector('.previewCartMessage');
+  const cartDrawerFooter = cartDrawer.querySelector('.drawer__footer');
+  if (!cartDrawerHeader || !cartDrawerMessage || !cartDrawerFooter) return;
+
+  const cartDrawerHeaderHeight = cartDrawerHeader.offsetHeight + cartDrawerMessage.offsetHeight + cartDrawerFooter.offsetHeight;
+  cartDrawer.style.setProperty('--cart-drawer-header-height', `${cartDrawerHeaderHeight}px`);
+}
+
+getHeaderCartDrawerHeight();
+
 // Preloading Screen Annimate
 function logoReveal(preloadScreen) {
   if (preloadScreen)
@@ -1509,8 +1524,6 @@ class SwiperComponent extends HTMLElement {
 
       // Options
       this.options = {
-        simulateTouch: true,
-        allowTouchMove: true,
         observer: false,
         observeParents: false,
         resistance: false,
