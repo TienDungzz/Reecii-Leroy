@@ -69,9 +69,21 @@
       autoplay_speed: bl_stts.autoplay_speed,
       loop: bl_stts.loop
     %}
+    style="
+      {% render 'swiper-style',
+        columns_mobile: 1,
+        columns_tablet: 1,
+        columns_desktop: 1,
+        columns_gap: 0,
+      %}
+    "
   >
     <div class="swiper">
-      <ul class="swiper-wrapper">
+      <ul class="grid grid-layout grid-layout--1 list-unstyled swiper-wrapper grid-layout-no-js"
+        role="list"
+        aria-label="{{ 'content.grid.name' | t }}"
+        style="--grid-desktop-horizontal-spacing: 0; --grid-desktop-vertical-spacing: 0;"
+      >
         {{ children }}
       </ul>
 
@@ -353,7 +365,18 @@
   "presets": [
     {
       "name": "t:names.image_carousel",
-      "category": "t:categories.layout"
+      "category": "t:categories.layout",
+      "blocks": {
+        "_image-carousel-item": {
+          "type": "_image-carousel-item",
+          "name": "t:names.image"
+        },
+        "_image-carousel-item_2": {
+          "type": "_image-carousel-item",
+          "name": "t:names.image"
+        }
+      },
+      "block_order": ["_image-carousel-item", "_image-carousel-item_2"]
     }
   ]
 }

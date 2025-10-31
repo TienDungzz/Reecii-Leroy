@@ -1,4 +1,4 @@
-{% comment %}
+{% doc %}
   Renders a product card
 
   Accepts:
@@ -19,7 +19,7 @@
 
   Usage:
   {% render 'card-product', show_vendor: section.settings.show_vendor %}
-{% endcomment %}
+{% enddoc %}
 
 {%- liquid
   assign card_product = block.settings.product
@@ -275,7 +275,7 @@
         },
         {
           "value": "end",
-          "label": "t:options.end"  
+          "label": "t:options.end"
         },
         {
           "value": "between",
@@ -388,17 +388,34 @@
     {
       "name": "t:names.product_card",
       "category": "t:categories.product",
-      "blocks": [
-        {
+      "blocks": {
+        "card-product-media": {
           "type": "_card-product-media-flex",
           "settings": {
             "product": "{{ closest.product }}"
           }
         },
-        {
-          "type": "_card-product-information"
+        "card-product-information": {
+          "type": "_card-product-information",
+          "name": "t:names.product_information",
+          "blocks": {
+            "card-product-title": {
+              "type": "_card-product-title-flex",
+              "settings": {
+                "product": "{{ closest.product }}"
+              }
+            },
+            "card-product-price": {
+              "type": "_card-product-price-flex",
+              "settings": {
+                "product": "{{ closest.product }}"
+              }
+            }
+          },
+          "block_order": ["card-product-title", "card-product-price"]
         }
-      ]
+      },
+      "block_order": ["card-product-media", "card-product-information"]
     }
   ]
 }

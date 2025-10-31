@@ -37,7 +37,8 @@
         }
 
         .template-collection:has(.switcher-grid) .product-grid--{{ section.id }}:is(.product-grid--grid:not([data-view])) {
-          --product-grid-columns-desktop: repeat({{ product_card_number }}, 1fr);
+          /* --product-grid-columns-desktop: repeat({{ product_card_number }}, 1fr); */
+          --product-grid-columns-desktop: repeat(auto-fill, minmax(calc(100% / {{ product_card_number | plus: 1 }}), 1fr));
         }
       {% when 'organic' %}
         {% assign large_span = 2 %}

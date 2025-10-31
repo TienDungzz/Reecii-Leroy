@@ -3,7 +3,7 @@
 {% endcapture %}
 
 {% capture button %}
-  {% content_for 'block', type: 'collapsible-button', id: 'collapsible-button' %}
+  {% content_for 'block', type: '_collapsible-button', id: 'collapsible-button' %}
 {% endcapture %}
 
 {% render 'collapsible-text', settings: block.settings, children: children, button: button %}
@@ -234,7 +234,18 @@
   "presets": [
     {
       "name": "t:names.collapsible_text",
-      "category": "t:categories.storytelling"
+      "category": "t:categories.storytelling",
+      "blocks": {
+        "text": {
+          "type": "text",
+          "name": "t:names.text"
+        },
+        "image": {
+          "type": "image",
+          "name": "t:names.image"
+        }
+      },
+      "block_order": ["text", "image"]
     }
   ]
 }
