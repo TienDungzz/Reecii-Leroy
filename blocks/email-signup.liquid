@@ -60,7 +60,9 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
           {%- endif -%}
         "
       >
-        {{ block.settings.subscription_button }}
+        <span class="button-overflow relative overflow-hidden" data-button-text="{{ block.settings.subscription_button }}">
+          <span class="button-text-main inline-block relative z-1">{{ block.settings.subscription_button }}</span>
+        </span>
       </button>
     </div>
   {%- endif -%}
@@ -163,7 +165,9 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
         "
       >
         {% if block.settings.display_type == 'text' %}
-          {{ block.settings.label }}
+          <span class="button-overflow relative overflow-hidden" data-button-text="{{ block.settings.label }}">
+            <span class="button-text-main inline-block relative z-1">{{ block.settings.label }}</span>
+          </span>
         {% else %}
           {%- if block.settings.icon_type == 'chevron' -%}
             {{- 'icon-caret.svg' | inline_asset_content -}}
@@ -968,7 +972,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 100,
+      "default": 0,
       "visible_if": "{{ block.settings.border_style != 'underline' }}"
     },
     {

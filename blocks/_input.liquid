@@ -12,7 +12,6 @@
   assign is_required = block.settings.is_required
   assign placeholder = block.settings.placeholder
   assign label_mb = block.settings.label_mb
-  assign text_area_height = block.settings.text_area_height
   assign input_border_width = block.settings.input_border_width
   assign input_border_radius = block.settings.input_border_radius
   assign input_type_preset = block.settings.input_type_preset
@@ -20,7 +19,7 @@
   assign input_width = block.settings.input_width
   assign input_type = 'text'
 
-  if label contains 'mail' or label contains 'mail'
+  if label contains 'mail' or label contains 'email'
     assign input_type = 'email'
   endif
 %}
@@ -37,26 +36,6 @@
   "
 {%- endcapture -%}
 
-{% stylesheet %}
-  .contact-form-input {
-    border-radius: var(--border-radius);
-  }
-
-  .border-style--all {
-    border: var(--border-width) solid var(--color-input-border);
-  }
-
-  .border-style--underline {
-    border: none;
-    border-radius: 0;
-    border-bottom: var(--border-width) solid var(--color-input-border);
-  }
-
-  .border-style--none {
-    border: none;
-  }
-{% endstylesheet %}
-
 {%- if show_label -%}
   {% if label != blank %}
     <div class="contact-form-row" style="--formRowWidth: {{ input_width }}%;">
@@ -67,7 +46,6 @@
     <input id="{{ block.id }}" type="{{ input_type }}" name="contact[{{ label_name }}]" placeholder="{{ placeholder }}"{% if is_required %} required{% endif %} {{ attr }}>
   {% endif %}
 {%- endif -%}
-
 
 {% schema %}
 {

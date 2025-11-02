@@ -6,7 +6,6 @@
 
     assign label = block.settings.label
     assign label_name = label | handleize
-    assign show_label = block.settings.show_label
     assign border_style = block.settings.border_style
     assign is_required = block.settings.is_required
     assign placeholder = block.settings.placeholder
@@ -32,43 +31,6 @@ style="
   --textarea-height: {{ text_area_height }}px;
 "
 {%- endcapture -%}
-
-{% stylesheet %}
-  .contact-form-textarea {
-    height: var(--textarea-height);
-  }
-
-  .contact-form-input,
-  .contact-form-textarea {
-    border-radius: var(--border-radius);
-  }
-
-  .border-style--all {
-    border: var(--border-width) solid var(--color-input-border);
-  }
-
-  .border-style--underline {
-    border: none;
-    border-radius: 0;
-    border-bottom: var(--border-width) solid var(--color-input-border);
-  }
-
-  .border-style--none {
-    border: none;
-  }
-
-  @media screen and (max-width: 1024px) {
-    .form-textarea {
-      height: calc(var(--textarea-height) * 0.75);
-    }
-  }
-
-  @media screen and (max-width: 749px) {
-    .form-textarea {
-      height: calc(var(--textarea-height) * 0.5);
-    }
-  }
-{% endstylesheet %}
 
 {% if label != blank %}
   <div class="contact-form-row" style="--formRowWidth: {{ form_row_width }}%;">

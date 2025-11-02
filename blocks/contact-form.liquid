@@ -30,19 +30,26 @@
   <contact-form class="block-contact-form" id="{{ form_id }}">
     {%- form 'contact', id: form_id -%}
       {% content_for 'blocks' %}
-      <button class="button{% if button_style == 'outline' %}-secondary{% endif %} whitespace-nowrap" type="submit">{{ button_label }}</button>
+      <button class="button{% if button_style == 'outline' %}-secondary{% endif %} whitespace-nowrap" type="submit">
+        <span class="button-overflow relative overflow-hidden" data-button-text="{{ button_label }}">
+          <span class="button-text-main inline-block relative z-1">
+            {{ button_label }}
+          </span>
+        </span>
+      </button>
     {%- endform -%}
   </contact-form>
 </div>
 
 {% stylesheet %}
   .block-contact-form .contact-form {
+    --padding-gap: calc(var(--gap) / 4);
     display: flex;
     flex-wrap: wrap;
-    gap: calc(var(--gap, 12px) * 0.5);
+    margin: 0 calc(var(--padding-gap) / -1);
 
     @media (min-width: 750px) {
-      gap: var(--gap, 20px);
+      --padding-gap: calc(var(--gap) / 2);
     }
 
     > .shopify-block {
@@ -51,14 +58,19 @@
 
     .contact-form-row {
       width: 100%;
+      padding: 0 var(--padding-gap);
+      margin-bottom: calc(var(--gap) * 0.5);
 
       @media screen and (min-width: 750px) {
-        width: calc(var(--formRowWidth, 50%) - (var(--gap-desktop, 20px) / 2));
+        width: calc(var(--formRowWidth, 50%));
+        padding: 0 var(--padding-gap);
+        margin-bottom: var(--gap);
       }
     }
 
     .button {
-      width: 100%;
+      width: calc(100% - (var(--padding-gap) * 2));
+      Margin-inline: auto;
     }
   }
 {% endstylesheet %}
@@ -294,6 +306,7 @@
             "show_label": true,
             "label_type_preset": "paragraph",
             "label_mb": 8,
+            "input_width": 100,
             "input_type_preset": "paragraph",
             "is_required": false,
             "placeholder": "Please fill in this field",
