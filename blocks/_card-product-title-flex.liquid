@@ -21,6 +21,12 @@
     {%- else -%}
       {%- render 'card-product-heading', card_product: card_product, block: block -%}
     {%- endif -%}
+    {%- if request.page_type == 'collection' -%}
+      {% assign description = card_product.description | strip_html | truncatewords: 44 %}
+      <div class="product-description__collection none">
+        {{ description }}
+      </div>
+    {%- endif -%}
   {%- else -%}
     {%- assign placeholder = 'content.product_title' | t -%}
     {% render 'text', fallback_text: placeholder, block: block %}

@@ -101,8 +101,6 @@ class CartDrawer extends HTMLElement {
     const dir = this.getAttribute("data-drawer-direction");
     const contentElement = this.querySelector("[data-drawer-content]");
 
-    this.classList.remove("open");
-
     await Motion.timeline([
       [
         contentElement,
@@ -126,6 +124,11 @@ class CartDrawer extends HTMLElement {
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" },
       ],
     ]).finished;
+
+    setTimeout(() => {
+      this.classList.remove("open");
+    }, 100);
+
   }
 
   setSummaryAccessibility(cartDrawerNote) {
