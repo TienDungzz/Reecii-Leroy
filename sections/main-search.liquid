@@ -295,25 +295,31 @@
     --card-grid-per-row: 1;
 
     .card {
-      flex-direction: row;
-    }
-
-    .card--block-media {
-      width: 40%;
+      --width-block-media: 40%;
+      display: grid;
+      grid-template-columns: var(--width-block-media) 1fr;
 
       @media screen and (max-width: 749px) {
-        min-width: 11rem;
+        --width-block-media: 11rem;
       }
 
       @media screen and (min-width: 750px) {
-        width: 30%;
+        --width-block-media: 30%;
       }
 
       @media screen and (min-width: 1600px) {
-        width: 20%;
+        --width-block-media: 20%;
       }
     }
 
+    .product-description__collection {
+      display: block;
+    }
+
+    .card--block-media {
+      grid-column: 1;
+      grid-row: 1 / span calc(var(--total-blocks) - 1);
+    }
   }
 
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='2'] {

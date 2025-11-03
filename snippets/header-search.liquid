@@ -54,9 +54,9 @@
               aria-modal="true"
               aria-label="{{ 'content.search' | t }}"
             >
-              <div class="modal-overlay"></div>
+              <div id="Details-Modal-Overlay" class="modal-overlay"></div>
               <div
-                class="search-modal__content{% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_vertical_offset < 0 %} search-modal__content-top{% else %} search-modal__content-bottom{% endif %}"
+                class="details-modal__content search-modal__content{% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_vertical_offset < 0 %} search-modal__content-top{% else %} search-modal__content-bottom{% endif %}"
                 tabindex="-1"
               >
                 {%- if settings.predictive_search_enabled -%}
@@ -78,6 +78,7 @@
                         type="search"
                         name="q"
                         value="{{ search.terms | escape }}"
+                        placeholder=" "
                         {%- if settings.predictive_search_enabled -%}
                           role="combobox"
                           aria-expanded="false"
@@ -95,14 +96,11 @@
                       <input type="hidden" name="options[prefix]" value="last">
                       <button
                         type="reset"
-                        class="reset__button field__button{% if search.terms == blank %} hidden{% endif %}"
+                        class="reset__button reset__button--text field__button{% if search.terms == blank %} hidden{% endif %}"
                         aria-label="{{ 'content.clear_search_term' | t }}"
                       >
-                        <span class="svg-wrapper">
-                          {{- 'icon-reset.svg' | inline_asset_content -}}
-                        </span>
+                        {{ 'actions.clear' | t }}
                       </button>
-
                       <button
                         type="button"
                         class="search-modal__close-button modal__close-button link link--text focus-inset"

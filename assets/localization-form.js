@@ -9,6 +9,7 @@ if (!customElements.get('localization-form')) {
         this.header = document.querySelector('.header-wrapper');
         this.elements = {
           input: this.querySelector('input[name="locale_code"], input[name="country_code"]'),
+          returnInput: this.querySelector('input[name="return_to"]'),
           button: this.querySelector('button.localization-form__select'),
           drawer: this.querySelector('.selector__dropdown[element-s-up]'),
           panel: this.querySelector('.disclosure__list-wrapper'),
@@ -20,47 +21,47 @@ if (!customElements.get('localization-form')) {
         };
 
         // Check for section-fetcher and wait for completion
-        this.waitForSectionFetcher();
+        this.initializeForm();
       }
 
-      waitForSectionFetcher() {
-        // Check if there are any section-fetcher elements in the document
-        const sectionFetcher = this.querySelector('section-fetcher');
+      // waitForSectionFetcher() {
+      //   // Check if there are any section-fetcher elements in the document
+      //   const sectionFetcher = this.querySelector('section-fetcher');
 
-        if (!sectionFetcher) {
-          // No section-fetcher found, initialize immediately
-          this.initializeForm();
-          return;
-        }
+      //   if (!sectionFetcher) {
+      //     // No section-fetcher found, initialize immediately
+      //     this.initializeForm();
+      //     return;
+      //   }
 
-        // Wait for all section-fetcher elements to complete
-        let completedFetchers = 0;
-        const totalFetchers = 1;
+      //   // Wait for all section-fetcher elements to complete
+      //   let completedFetchers = 0;
+      //   const totalFetchers = 1;
 
-        const onSectionCached = (event) => {
-          completedFetchers++;
-          if (completedFetchers >= totalFetchers) {
-            // All section-fetchers completed, initialize the form
-            document.removeEventListener('section:cached', onSectionCached);
-            this.initializeForm();
-          }
-        };
+      //   const onSectionCached = (event) => {
+      //     completedFetchers++;
+      //     if (completedFetchers >= totalFetchers) {
+      //       // All section-fetchers completed, initialize the form
+      //       document.removeEventListener('section:cached', onSectionCached);
+      //       this.initializeForm();
+      //     }
+      //   };
 
-        // Listen for section:cached events
-        document.addEventListener('section:cached', onSectionCached);
+      //   // Listen for section:cached events
+      //   document.addEventListener('section:cached', onSectionCached);
 
-        // Also check if any section-fetchers are already completed
-        const targetElement = document.getElementById(sectionFetcher.dataset.targetId);
-        if (targetElement && targetElement.hasAttribute('data-loaded')) {
-          completedFetchers++;
-        }
+      //   // Also check if any section-fetchers are already completed
+      //   const targetElement = document.getElementById(sectionFetcher.dataset.targetId);
+      //   if (targetElement && targetElement.hasAttribute('data-loaded')) {
+      //     completedFetchers++;
+      //   }
 
-        // If all are already completed, initialize immediately
-        if (completedFetchers >= totalFetchers) {
-          document.removeEventListener('section:cached', onSectionCached);
-          this.initializeForm();
-        }
-      }
+      //   // If all are already completed, initialize immediately
+      //   if (completedFetchers >= totalFetchers) {
+      //     document.removeEventListener('section:cached', onSectionCached);
+      //     this.initializeForm();
+      //   }
+      // }
 
       initializeForm() {
         if (!theme.config.isTouch || Shopify.designMode) {
@@ -168,6 +169,7 @@ if (!customElements.get('localization-form')) {
         event.preventDefault();
         const form = this.querySelector('form');
         this.elements.input.value = event.currentTarget.dataset.value;
+        this.elements.returnInput.value = window.location.href;
 
         if (form) form.submit();
       }

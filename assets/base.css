@@ -89,10 +89,15 @@ html[scroll-lock] {
 html,
 body {
   overflow-x: clip;
+}
 
-  &.overflow-hidden-mobile {
-    overflow: clip;
-  }
+body.overflow-hidden-mobile {
+  overflow: clip;
+  padding-inline-end: var(--scrollbar-width, 0);
+}
+
+html:not(.overflow-hidden-mobile):has(body.overflow-hidden-mobile)  {
+  overflow: clip;
 }
 
 @supports (text-wrap: balance) {
@@ -126,6 +131,7 @@ body {
 
 body.overflow-hidden {
   padding-inline-end: var(--scrollbar-width, 0);
+  overflow: clip;
 }
 
 .page-width {
@@ -1882,7 +1888,7 @@ details[open="true"]>summary .icon-caret {
 }
 
 details[open] > summary .icon-caret-wrapper {
-  transform: rotateX(180deg);
+  transform: rotate(180deg);
 }
 
 summary .icon-plus-wrapper :is(.horizontal, .vertical) {
@@ -2988,9 +2994,9 @@ details[open]>.share-button__fallback {
   pointer-events: none;
   position: absolute;
   color: rgb(var(--color-foreground-rgb) / var(--opacity-75));
-  transition: top var(--duration-medium) var(--cubic-smooth),
-    font-size var(--duration-medium) var(--cubic-smooth),
-    letter-spacing var(--duration-medium) var(--cubic-smooth);
+  transition: top var(--duration-medium) var(--ease-out-cubic),
+    font-size var(--duration-medium) var(--ease-out-cubic),
+    letter-spacing var(--duration-medium) var(--ease-out-cubic);
 }
 
 .field__input:hover~.field__label,
@@ -3004,7 +3010,7 @@ details[open]>.share-button__fallback {
   font-size: 1rem;
   top: calc(var(--inputs-border-width) + 0.2rem);
   transform: none;
-  left: 1rem;
+  left: 1.5rem;
   letter-spacing: 0.04rem;
 }
 
@@ -4366,7 +4372,7 @@ collapsible-tab:not([data-tabList-mobile]) .collapsible-tab__content {
 }
 
 collapsible-tab.is-open .collapsible-tab__header .icon-caret {
-  transform: rotateX(180deg);
+  transform: rotate(180deg);
 }
 
 @media screen and (max-width: 749px) {
