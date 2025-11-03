@@ -376,6 +376,23 @@ if (!customElements.get('product-info')) {
 
           this.updateMedia(html, variant?.featured_media?.id);
 
+          try {
+            if (typeof MainEvents !== 'undefined' && MainEvents.variantUpdate) {
+              const eventDetail = {
+                resource: variant || null,
+                sourceId: this.id || this.dataset.section,
+                data: {
+                  html,
+                  productId: this.dataset?.productId || this.sectionId,
+                  newProduct: undefined,
+                },
+              };
+              document.dispatchEvent(new CustomEvent(MainEvents.variantUpdate, { bubbles: true, detail: eventDetail }));
+            }
+          } catch (e) {
+            // silent
+          }
+
           if (document.querySelector('.step-by-step-variant-picker')) {
             this.getVariantData();
             this.updateVariantStatuses(target);

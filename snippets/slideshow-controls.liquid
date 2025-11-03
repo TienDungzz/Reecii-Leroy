@@ -12,7 +12,7 @@
   @param {string} [class] - Additional classes to apply to the controls
   @param {string} [thumbnail_position] - The position of the thumbnails, defaults to 'bottom'
   @param {string} [video_type] - The type of video, defaults to 'inline'
-
+  @param {boolean} [loop] - Whether the slideshow will loop, defaults to false
   @example
   {%- render 'swiper-controls', style: 'dots', video_type: 'inline' -%}
 {%- enddoc -%}
@@ -48,7 +48,7 @@
     %}
   "
 >
-  <div class="swiper">
+  <div class="swiper" data-loop="{% if loop %}true{% else %}false{% endif %}">
     <div
       class="swiper-wrapper swiper-controls__thumbnails grid-layout-no-js list-unstyled lg:grid-layout--4 md:grid-layout--4 grid--4-col-mobile w-full{% if class %} {{ class }}{% endif %}"
       style="

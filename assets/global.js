@@ -10,6 +10,18 @@ theme.config = {
   rtl: document.documentElement.getAttribute('dir') === 'rtl' ? true : false
 };
 
+
+if (typeof window.MainEvents === 'undefined') {
+  window.MainEvents = {
+    variantUpdate: 'variant:update',
+    mediaStartedPlaying: 'media:started-playing',
+  };
+} else if (typeof window.MainEvents.variantUpdate === 'undefined') {
+  window.MainEvents.variantUpdate = 'variant:update';
+} else if (typeof window.MainEvents.mediaStartedPlaying === 'undefined') {
+  window.MainEvents.mediaStartedPlaying = 'media:started-playing';
+}
+
 const ON_CHANGE_DEBOUNCE_TIMER = 300;
 
 const PUB_SUB_EVENTS = {
@@ -19,7 +31,6 @@ const PUB_SUB_EVENTS = {
   variantChange: 'variant-change',
   cartError: 'cart-error',
 };
-
 let subscribers = {};
 
 function subscribe(eventName, callback) {
@@ -1218,12 +1229,8 @@ class DeferredMedia extends HTMLElement {
 
     this.setupEventListeners();
 
-    // Check if ThemeEvents and DialogCloseEvent are defined before using them
-    if (typeof ThemeEvents !== 'undefined' && ThemeEvents.mediaStartedPlaying) {
-      document.addEventListener(ThemeEvents.mediaStartedPlaying, this.pauseMedia.bind(this), { signal });
-    }
-    if (typeof DialogCloseEvent !== 'undefined' && DialogCloseEvent.eventName) {
-      window.addEventListener(DialogCloseEvent.eventName, this.pauseMedia.bind(this), { signal });
+    if (typeof MainEvents !== 'undefined' && MainEvents.mediaStartedPlaying) {
+      document.addEventListener(MainEvents.mediaStartedPlaying, this.pauseMedia.bind(this), { signal });
     }
 
     // Handle autoplay videos
@@ -1589,6 +1596,8 @@ class SwiperComponent extends HTMLElement {
       try {
         // Check for thumbnail swiper - works on both mobile and desktop
         const thumbnailSwiper = this.querySelector('.swiper-controls__thumbnails-container .swiper');
+        if (!thumbnailSwiper) return;
+
         let thumbsSwiper = null;
 
         if (thumbnailSwiper && !thumbnailSwiper._swiperInitialized) {
@@ -1602,6 +1611,8 @@ class SwiperComponent extends HTMLElement {
           const thumbnailPosition = this.querySelector('.swiper-controls__thumbnails-container')?.getAttribute('data-thumbnail-position') || 'bottom';
           const slidesPerView = (thumbnailPosition === 'left' || thumbnailPosition === 'right') ? 'auto' : 4;
 
+          console.log(thumbnailSwiper.getAttribute('data-loop'));
+
           thumbsSwiper = new Swiper(thumbnailSwiper, {
             direction: isVerticalThumbnails ? 'vertical' : 'horizontal',
             spaceBetween: 16,
@@ -1611,7 +1622,7 @@ class SwiperComponent extends HTMLElement {
             allowTouchMove: true,
             grabCursor: true,
             slideToClickedSlide: true,
-            loop: false,
+            loop: thumbnailSwiper.getAttribute('data-loop') || false,
             breakpoints: {
               768: { slidesPerView: slidesPerView },
               1024: { slidesPerView: slidesPerView },
@@ -2172,7 +2183,7 @@ class RecentlyViewedProducts extends HTMLElement {
 
         if (!recentlyViewed) return;
 
-        const recentlyViewedProducts = recentlyViewed.querySelector(".collection--grid-layout");
+        const recentlyViewedProducts = this.querySelector(".collection--grid-layout");
 
         if (!recentlyViewedProducts) return;
 
