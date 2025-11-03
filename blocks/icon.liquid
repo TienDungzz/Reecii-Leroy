@@ -1,13 +1,27 @@
-{% assign block_settings = block.settings %}
-{% assign icon_block_class = 'icon-block__media icon-block_' | append: block_settings.icon | append: ' icon-block-' | append: block.id %}
+{%- liquid 
+  assign block_settings = block.settings
+  assign icon_block_class = 'icon-block__media icon-block_' | append: block_settings.icon | append: ' icon-block-' | append: block.id
+  if block_settings.icon_custom == 'svg'
+    assign svg_attr = '<svg '
+    if block_settings.svg_width == 'custom'
+      assign svg_attr = svg_attr | append: 'width="' | append: block_settings.custom_width | append: '"'
+    endif
+    if block_settings.svg_height == 'custom'
+      assign svg_attr = svg_attr | append: 'height="' | append: block_settings.custom_height | append: '"'
+    endif
+  endif
+  assign svg_upload = block_settings.svg_upload
+  if svg_attr != '<svg '
+    assign svg_upload = svg_upload | replace: '<svg', svg_attr
+  endif
+-%}
 
 {% capture icon %}
-
   {% if block.settings.icon_custom == 'image' and block.settings.animation_type == 'zoom' %}<div class="image-zoomin">{% endif %}
   {% render 'icon-or-image',
     icon: block_settings.icon,
     icon_custom: block_settings.icon_custom,
-    svg_upload: block_settings.svg_upload,
+    svg_upload: svg_upload,
     image_upload: block_settings.image_upload,
     width: block_settings.width,
     class_name: icon_block_class,
@@ -331,6 +345,62 @@
       "label": "t:settings.svg_icon",
       "info": "t:info.svg_icon_info",
       "visible_if": "{{ block.settings.icon_custom == 'svg' }}"
+    },
+    {
+      "type": "select",
+      "id": "svg_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fit-content",
+      "visible_if": "{{ block.settings.icon_custom == 'svg' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "t:settings.custom_width",
+      "min": 20,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "visible_if": "{{ block.settings.icon_custom == 'svg' and block.settings.svg_width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "svg_height",
+      "label": "t:settings.height",
+      "options": [
+        {
+          "value": "fit-content",
+          "label": "t:options.fit"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "fit-content",
+      "visible_if": "{{ block.settings.icon_custom == 'svg' }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_height",
+      "label": "t:settings.custom_height",
+      "min": 20,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "visible_if": "{{ block.settings.icon_custom == 'svg' and block.settings.svg_height == 'custom' }}"
     },
     {
       "type": "image_picker",
