@@ -1596,7 +1596,6 @@ class SwiperComponent extends HTMLElement {
       try {
         // Check for thumbnail swiper - works on both mobile and desktop
         const thumbnailSwiper = this.querySelector('.swiper-controls__thumbnails-container .swiper');
-        if (!thumbnailSwiper) return;
 
         let thumbsSwiper = null;
 
