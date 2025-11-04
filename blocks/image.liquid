@@ -23,7 +23,11 @@
 %}
 
 {% capture class %}
-  image-block relative image-block--{{ block.id }} image-block--height-{{ block.settings.height }} spacing-style size-style border-style{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}{% if block.settings.animation_type == 'zoom' %} image-zoomin{% endif %}
+  image-block relative spacing-style size-style border-style
+  image-block--{{ block.id }}
+  image-block--height-{{ block.settings.height }}
+  {% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}
+  {% if block.settings.animation_type == 'zoom' %} image-zoomin{% endif %}
 {% endcapture %}
 
 {% capture style %}
@@ -46,13 +50,14 @@
     assign element = 'parallax-image'
   elsif block.settings.animation_type == 'zoom'
     assign element = 'div'
-  elsif block.settings.animation_type == 'reveal_on_scroll'
-    assign element = 'image-reveal'
+  else
+    assign is_animated_image = true
+    assign element = 'animate-image'
   endif
 %}
 
 {% capture class_img %}
-  image-block__image{% if block.settings.animation_type == 'parallax' %} image-parallax--target{% endif %}{% if block.settings.animation_type == 'reveal_on_scroll' %} image-reveal__image{% endif %}
+  image-block__image{% if block.settings.animation_type == 'parallax' %} image-parallax--target{% endif %}
 {% endcapture %}
 
 {% capture attributes_fancybox %}
@@ -79,6 +84,10 @@
 
   {% if block.settings.animation_type == 'parallax' and block.settings.disable_parallax_mobile %}
     data-disable-parallax-mobile="true"
+  {% endif %}
+
+  {% if is_animated_image %}
+    data-animation-type="{{ block.settings.animation_type }}"
   {% endif %}
 {% endcapture %}
 
@@ -109,7 +118,6 @@
       widths: widths,
       sizes: sizes,
       fetch_priority: fetch_priority
-
     -%}
   {%- else -%}
     {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
@@ -142,18 +150,6 @@
     }
   }
 
-  image-reveal .image-reveal__image {
-    opacity: 0;
-    clip-path: inset(0 100% 0 0);
-    transform: scale(1.2);
-  }
-/*
-  image-reveal .image-reveal__image--visible {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
-    transform: scale(1);
-  } */
-
   .image-block__link,
   .image-block__link:empty {
     display: block;
@@ -167,6 +163,33 @@
       pointer-events: auto;
     }
   }
+
+  /* Animated Images */
+  animate-image {
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  animate-image[data-animation-type="reveal_on_scroll"] img {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    transform: scale(1.2);
+  }
+
+  animate-image[data-animation-type="zoom-out"] img {
+    transform: scale(1.2);
+  }
+
+  animate-image[data-animation-type="fade-in"] img {
+    opacity: 0;
+  }
+  /*
+  image-reveal .image-reveal__image--visible {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: scale(1);
+  } */
 {%- endstylesheet -%}
 
 {% schema %}
@@ -472,6 +495,14 @@
         {
           "value": "reveal_on_scroll",
           "label": "Reveal on scroll"
+        },
+        {
+          "value": "zoom-out",
+          "label": "Zoom out"
+        },
+        {
+          "value": "fade-in",
+          "label": "Fade in"
         }
       ],
       "default": "none"

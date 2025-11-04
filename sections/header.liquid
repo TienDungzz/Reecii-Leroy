@@ -79,7 +79,7 @@
   endif
 
   capture search
-    render 'header-search', style: search_style, input_id: 'Search-In-Modal', class: search_class
+    render 'header-search', style: search_style, input_id: 'Search-In-Modal', class: search_class, display_type: sec_stts.search_display_type
   endcapture
 
   capture multi_tab_menu
@@ -2264,6 +2264,27 @@
         "id": "show_search",
         "label": "t:settings.search_icon",
         "default": true
+      },
+      {
+        "type": "select",
+        "id": "search_display_type",
+        "label": "t:settings.type",
+        "options": [
+          {
+            "value": "text",
+            "label": "t:options.text"
+          },
+          {
+            "value": "icon",
+            "label": "t:options.icon"
+          },
+          {
+            "value": "both",
+            "label": "t:options.both"
+          }
+        ],
+        "default": "icon",
+        "visible_if": "{{ section.settings.show_search and settings.search_type != 'inline' }}"
       },
       {
         "type": "select",

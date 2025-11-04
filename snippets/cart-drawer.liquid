@@ -28,7 +28,7 @@
     >
       {%- if cart == empty -%}
         <div class="drawer__inner-empty h-full overflow-hidden flex flex-column" style="--p: 0 1.5rem;">
-          <div class="drawer__header flex justify-end items-center relative" style="--p: 1.5rem 0;">
+          <div class="drawer__header flex justify-end items-center relative" style="--p: var(--padding-lg) 0;">
             <button
               class="drawer__close block t-button bor-none rounded-full cursor-pointer"
               type="button"
@@ -399,7 +399,11 @@
                 id="CartDrawer-Viewcart"
                 class="cart__viewcart-button button button--full-width"
               >
-                {{- 'content.cart.view_empty_cart' | t -}}
+                <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.cart.view_empty_cart' | t }}">
+                  <span class="button-text-main inline-block relative z-1">
+                    {{- 'content.cart.view_empty_cart' | t -}}
+                  </span>
+                </span>
               </a>
               <button
                 type="submit"
@@ -411,7 +415,11 @@
                   disabled
                 {% endif %}
               >
-                {{ 'content.checkout' | t }}
+                <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.checkout' | t }}">
+                  <span class="button-text-main inline-block relative z-1">
+                    {{- 'content.checkout' | t -}}
+                  </span>
+                </span>
               </button>
             </div>
           </div>
@@ -479,7 +487,7 @@
         </swiper-component>
       {% endif %} {% endcomment %}
 
-      
+
     </div>
   </div>
 </cart-drawer>

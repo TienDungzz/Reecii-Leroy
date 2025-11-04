@@ -371,9 +371,7 @@ if (!customElements.get('dropdown-localization-component')) {
         this.elements.button.focus();
         this.elements.drawer.classList.toggle('active');
         this.elements.button.setAttribute('aria-expanded', (this.elements.button.getAttribute('aria-expanded') === 'false').toString());
-        if (!document.body.classList.contains('overflow-hidden-tablet')) {
-          document.body.classList.add('overflow-hidden-mobile');
-        }
+
         if (this.mql.matches) {
           if (this.elements.search) this.elements.search.focus();
         } else {
@@ -393,6 +391,7 @@ if (!customElements.get('dropdown-localization-component')) {
       }
 
       closeSelector(event) {
+        event.preventDefault();
         if (!this.contains(event.target) || !this.contains(event.relatedTarget)) {
           this.hidePanel();
         }

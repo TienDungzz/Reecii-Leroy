@@ -6,21 +6,27 @@
     id="before-you-leave-popup"
   >
     <div id="Modal-Overlay-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-    <div class="popup__inner w-auto absolute-c-c color-{{ section.settings.color_scheme }}">
+    <div class="popup__inner w-auto color-{{ section.settings.color_scheme }} cus-scrollbar">
       <button
         type="button"
         class="popup__close"
-        aria-label="{{ 'accessibility.close' | t }}"
+        aria-label="{{ 'accessibility.close_dialog' | t }}"
       >
-        {{- 'icon-close.svg' | inline_asset_content -}}
+        <span class="svg-wrapper">
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </span>
+        <span class="visually-hidden">{{ 'accessibility.close_dialog' | t }}</span>
       </button>
 
-      {% content_for 'blocks' %}
+      {% content_for 'block', type: '_before-you-leave-group', id: 'before-you-leave-group' %}
     </div>
   </div>
 </before-you-leave>
 
 {% style %}
+  before-you-leave .popup__inner {
+    transform: none;
+  }
   @media screen and (min-width: 750px) {
     before-you-leave .popup__inner {
       min-width: 90vw;
@@ -41,13 +47,15 @@
       this.popup = this.querySelector('.modal--popup');
       this.expiresMinutes = Number(this.dataset.expireMinutes) || 0;
       this.timeToShow = this.expiresMinutes * 60 * 1000;
+      this.overlay = this.querySelector('[id^="Modal-Overlay-"]');
+      this.content = this.querySelector('.popup__inner');
 
       this.idleTimer = null;
       this.boundReset = this.resetTimer.bind(this);
       this.boundCheck = this.checkIdle.bind(this);
 
       this.querySelector('.popup__close')?.addEventListener('click', () => this.setClosePopup());
-      this.querySelector('[id^="Modal-Overlay-"]')?.addEventListener('click', () => this.setClosePopup());
+      this.overlay?.addEventListener('click', () => this.setClosePopup());
 
       if (Shopify.designMode) {
         document.addEventListener('shopify:section:select', e => {
@@ -95,16 +103,34 @@
     setOpenPopup() {
       if (!this.popup) return;
       this.popup.setAttribute('open', 'true');
+      this.animateOpen();
       document.body.classList.add('overflow-hidden');
       document.documentElement.setAttribute('scroll-lock', '');
     }
 
     setClosePopup() {
       if (!this.popup) return;
-      this.popup.removeAttribute('open');
-      document.body.classList.remove('overflow-hidden');
-      document.documentElement.removeAttribute('scroll-lock');
+      this.animateClose();
       this.startIdleTimer();
+      setTimeout(() => {
+        this.popup.removeAttribute('open');
+        document.body.classList.remove('overflow-hidden');
+        document.documentElement.removeAttribute('scroll-lock');
+      }, 100);
+    }
+
+    animateOpen() {
+      Motion.timeline([
+        [this.overlay, { transform: ['translateY(-100%)', 'translateY(0)'] }, { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] }],
+        [this.content, { opacity: [0, 1], transform: ['translateY(2rem)', 'translateY(0)'] }, { duration: 0.3, at: '-0.15' }],
+      ]).finished;
+    }
+
+    animateClose() {
+      Motion.timeline([
+        [this.content, { opacity: [1, 0], transform: ['translateY(0)', 'translateY(2rem)'] }, { duration: 0.2 }],
+        [this.overlay, { transform: ['translateY(0)', 'translateY(100%)'] }, { duration: 0.2 }],
+      ]).finished;
     }
   }
 
@@ -120,11 +146,6 @@
   "enabled_on": {
     "groups": ["custom.popup"]
   },
-  "blocks": [
-    {
-      "type": "_before-you-leave-group"
-    }
-  ],
   "settings": [
 		{
 			"type": "range",
@@ -151,10 +172,11 @@
     {
       "name": "t:names.before_you_leave",
       "blocks": {
-        "group": {
+        "before-you-leave-group": {
           "type": "_before-you-leave-group",
+          "name": "t:names.group",
+          "static": true,
           "settings": {
-            "content_direction": "row",
             "gap": 0
           },
           "blocks": {
@@ -201,8 +223,7 @@
           },
           "block_order": ["banner", "content"]
         }
-      },
-      "block_order": ["group"]
+      }
     }
   ]
 }

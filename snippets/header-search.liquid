@@ -20,7 +20,8 @@
   endif
 
   assign search_color_scheme = section.settings.color_scheme_search_inline
--%}
+  assign display_type = display_type | default: 'icon'
+%}
 
 {% unless style == 'none' %}
   <div
@@ -40,13 +41,15 @@
             aria-haspopup="dialog"
             aria-label="{{ 'content.search' | t }}"
           >
-            <span class="header__icon header__icon--both">
-              <span class="svg-wrapper">
+            <span class="header__icon header__icon--{{ display_type }}">
+              <span class="svg-wrapper{% if display_type == 'text' %} lg:none{% endif %}">
                 {{- 'icon-search.svg' | inline_asset_content -}}
               </span>
-              <span class="text max-md:hidden">
-                {{ 'content.search' | t }}
-              </span>
+              {%- if display_type == 'text' or display_type == 'both' -%}
+                <span class="text max-md:hidden{% if display_type == 'icon' %} visually-hidden{% endif %}">
+                  {{ 'content.search' | t }}
+                </span>
+              {%- endif -%}
             </span>
           </{{ details_summary }}>
           {% if search_type == 'drawer' %}

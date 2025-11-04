@@ -7,7 +7,9 @@ theme.config = {
   mqlMobile: '(max-width: 749px)',
   mqlDesktop: '(min-width: 1025px)',
   isTouch: ('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0),
-  rtl: document.documentElement.getAttribute('dir') === 'rtl' ? true : false
+  rtl: document.documentElement.getAttribute('dir') === 'rtl' ? true : false,
+  motionReduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  easing: [0.61, 0.22, 0.23, 1]
 };
 
 
@@ -118,6 +120,22 @@ theme.utils = {
     };
 
     return /** @type {T & { cancel(): void }} */ (debounced);
+  },
+
+  imageLoaded: (imgOrArray) => {
+    if (!imgOrArray) {
+      return Promise.resolve();
+    }
+    imgOrArray = imgOrArray instanceof Element ? [imgOrArray] : Array.from(imgOrArray);
+    return Promise.all(imgOrArray.map((image) => {
+      return new Promise((resolve) => {
+        if (image.tagName === "IMG" && image.complete || !image.offsetParent) {
+          resolve();
+        } else {
+          image.onload = () => resolve();
+        }
+      });
+    }));
   }
 }
 
@@ -1457,10 +1475,12 @@ class SwiperComponent extends HTMLElement {
 
   connectedCallback() {
     // this.initializeSwiper();
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) this.initializeSwiper();
-    });
-    observer.observe(this);
+    // const observer = new IntersectionObserver(entries => {
+    //   if (entries[0].isIntersecting) this.initializeSwiper();
+    // });
+    // observer.observe(this);
+
+    Motion.inView(this, this.initializeSwiper.bind(this), { margin: '200px 0px 200px 0px' });
   }
 
   disconnectedCallback() {
@@ -1551,9 +1571,12 @@ class SwiperComponent extends HTMLElement {
         slidesPerView: getOption("slides-per-view", 1),
         centeredSlides: getOption("centered-slides", false),
         autoHeight: getOption("auto-height", false),
+        allowTouchMove: true,
         navigation: {
           nextEl: arrowOnHeaderNextButton,
           prevEl: arrowOnHeaderPrevButton,
+          disabledClass: "swiper-button-disabled",
+          hiddenClass: "swiper-button-hidden",
         },
         pagination: {
           el: pagination,
@@ -1567,23 +1590,16 @@ class SwiperComponent extends HTMLElement {
         },
       };
 
-      // this.initSwiper = new Swiper(this.swiperEl, this.options);
-
-      this.initSwiperMobile();
+      if(this.isMobileOnly) {
+        this.initSwiperMobile();
+      } else {
+        this.initSwiper = new Swiper(this.swiperEl, this.options);
+      }
     }
   }
 
   initSwiperMobile() {
-    const nextButton = this.swiperEl.querySelector(".swiper-button-next");
-    const prevButton = this.swiperEl.querySelector(".swiper-button-prev");
-    const arrowOnHeaderNextButton = this.arrowOnHeader
-      ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-next")
-      : nextButton;
-    const arrowOnHeaderPrevButton = this.arrowOnHeader
-      ? this.arrowOnHeader.querySelector(".swiper-btns-on-header .swiper-button-prev")
-      : prevButton;
-
-    this.breakpoint = window.matchMedia("(min-width:750px)");
+    this.breakpoint = window.matchMedia(theme.config.mql);
 
     const enableSwiper = () => {
       if (!this.swiperEl || !this.options) return;
@@ -1596,7 +1612,6 @@ class SwiperComponent extends HTMLElement {
       try {
         // Check for thumbnail swiper - works on both mobile and desktop
         const thumbnailSwiper = this.querySelector('.swiper-controls__thumbnails-container .swiper');
-        if (!thumbnailSwiper) return;
 
         let thumbsSwiper = null;
 
@@ -1636,40 +1651,8 @@ class SwiperComponent extends HTMLElement {
           });
         }
 
-        // Ensure proper swiper options for both desktop and mobile
         const swiperOptions = {
           ...this.options,
-          // Enable touch/swipe functionality
-          allowTouchMove: true,
-          // Enable navigation buttons
-          navigation: {
-            nextEl: arrowOnHeaderNextButton,
-            prevEl: arrowOnHeaderPrevButton,
-            disabledClass: "swiper-button-disabled",
-            hiddenClass: "swiper-button-hidden",
-          },
-          // // Enable pagination
-          pagination: {
-            el: this.swiperEl.querySelector(".swiper-pagination"),
-            clickable: true,
-            type: this.options.pagination?.type || "bullets",
-            dynamicBullets: this.options.pagination?.dynamicBullets || false,
-          },
-          // Enable keyboard navigation
-          keyboard: {
-            enabled: true,
-            onlyInViewport: true,
-          },
-          // Enable mousewheel
-          mousewheel: {
-            forceToAxis: true,
-          },
-          // Enable grab cursor
-          grabCursor: true,
-          // Enable resistance
-          resistance: true,
-          resistanceRatio: 0.85,
-          // Connect thumbnail swiper if exists
           thumbs: thumbsSwiper ? {
             swiper: thumbsSwiper,
           } : undefined,
@@ -1677,7 +1660,6 @@ class SwiperComponent extends HTMLElement {
 
         this.initSwiper = new Swiper(this.swiperEl, swiperOptions);
 
-        // Handle thumbnail clicks - works on both mobile and desktop
         if (thumbnailSwiper && thumbsSwiper) {
           const thumbnailButtons = thumbnailSwiper.querySelectorAll('.swiper-controls__thumbnail');
           thumbnailButtons.forEach((button, index) => {
@@ -1727,21 +1709,15 @@ class SwiperComponent extends HTMLElement {
           }
         }
 
-        // Force update to ensure proper rendering
-        setTimeout(() => {
-          if (this.initSwiper) {
-            this.initSwiper.update();
-            if (thumbsSwiper) {
-              thumbsSwiper.update();
-            }
+        if (this.initSwiper) {
+          this.initSwiper.update();
+          if (thumbsSwiper) {
+            thumbsSwiper.update();
           }
-        }, 200);
+        }
       } catch (error) {
         console.error("❌ Error initializing Swiper:", error);
-        // Try to reinitialize after a delay
-        setTimeout(() => {
-          enableSwiper();
-        }, 500);
+        enableSwiper();
       }
     };
 
@@ -3000,32 +2976,79 @@ class ParallaxBackground extends HTMLElement {
 if (!customElements.get("parallax-background"))
   customElements.define("parallax-background", ParallaxBackground);
 
+// class ImageReveal extends HTMLElement {
+//   constructor() {
+//     super();
+//     this.image = this.querySelector('.image-reveal__image');
 
-class ImageReveal extends HTMLElement {
+//     if (theme.config.motionReduced) return;
+
+//     Motion.inView(this, this.init.bind(this), { margin: '20px 0px 20px 0px' });
+//   }
+
+//   init() {
+//     Motion.animate(
+//       this.image,
+//       { opacity: [0, 1], scale: [1.2, 1], clipPath: ['inset(0 100% 0 0)', 'inset(0 0 0 0)'] },
+//       {
+//         ease: [0.25, 0.1, 0.25, 1],
+//         duration: 0.9,
+//         delay: 0.2,
+//       }
+//     );
+//   }
+// }
+// if (!customElements.get('image-reveal')) customElements.define('image-reveal', ImageReveal);
+
+class AnimateImage extends HTMLElement {
   constructor() {
     super();
-    this.image = this.querySelector('.image-reveal__image');
 
+    this.animationType = this.getAttribute('data-animation-type');
+    this.image = this.querySelector('img');
+    this.delay = this.getAttribute('data-delay') || 0;
+  }
+
+  connectedCallback() {
     if (theme.config.motionReduced) return;
-    Motion.inView(this, this.init.bind(this), { margin: '20px 0px 20px 0px' });
+
+    this.beforeLoad();
+
+    Motion.inView(this, async () => {
+      if (this.media) await theme.utils.imageLoaded(this.media);
+      this.afterLoad();
+    });
   }
 
-  init() {
-    // this.image.classList.add('image-reveal__image--visible');
-    // this.image.style
-    Motion.animate(
-      this.image,
-      { opacity: [0, 1], scale: [1.2, 1], clipPath: ['inset(0 100% 0 0)', 'inset(0 0 0 0)'] },
-      {
-        ease: [0.25, 0.1, 0.25, 1],
-        duration: 0.9,
-        delay: 0.2,
-      }
-    );
+  beforeLoad() {
+    switch (this.animationType) {
+      case 'reveal_on_scroll':
+        Motion.animate(this.image, { opacity: 0, scale: 1.2, clipPath: 'inset(0 100% 0 0)' }, { duration: 0 });
+        break;
+      case 'zoom-out':
+        Motion.animate(this.image, { transform: 'scale(1.2)' }, { duration: 0 });
+        break;
+      case 'fade-in':
+          Motion.animate(this.image, { opacity: 0 }, { duration: 0 });
+          break;
+    }
   }
 
+  async afterLoad() {
+    switch (this.animationType) {
+      case 'reveal_on_scroll':
+        await Motion.animate(this.image, { opacity: 1, scale: 1, clipPath: 'inset(0 0 0 0)' }, { duration: 1.2, delay: this.delay, easing: theme.config.easing }).finished;
+        break;
+      case 'zoom-out':
+        await Motion.animate(this.image, { transform: 'scale(1)' }, { duration: 1.2, delay: this.delay, easing: theme.config.easing }).finished;
+        break;
+      case 'fade-in':
+        await Motion.animate(this.image, { opacity: 1 }, { duration: 1.2, delay: this.delay, easing: theme.config.easing }).finished;
+        break;
+    }
+  }
 }
-if (!customElements.get('image-reveal')) customElements.define('image-reveal', ImageReveal);
+customElements.define('animate-image', AnimateImage);
 
 // Reveal highlight color underline on scroll
 class HighlightText extends HTMLElement {
@@ -3133,7 +3156,7 @@ class StrokeText extends HTMLElement {
     this._animation = Motion.animate(
       this,
       { backgroundSize: toFull ? "100% 100%" : "0% 100%" },
-      { duration: 0.4, easing: [0.61, 0.22, 0.23, 1] }
+      { duration: 0.4, easing: theme.config.easing }
     );
   }
 
@@ -3809,7 +3832,7 @@ class MarqueeComponent extends HTMLElement {
     super();
     this.wrapper = this.querySelector(".marquee__wrapper");
     this.content = this.querySelector(".marquee__content");
-    this.isDesktop = window.matchMedia('(min-width: 1025px)').matches;
+    this.isDesktop = window.matchMedia(theme.config.mqlDesktop).matches;
   }
 
   connectedCallback() {
@@ -3968,7 +3991,7 @@ class MarqueeScroll extends HTMLElement {
 
     this.speed = parseFloat(this.dataset.speed || 1.6), // 100px going to move for
     this.space = 100, // 100px
-    this.isDesktop = window.matchMedia('(min-width: 1025px)').matches;
+    this.isDesktop = window.matchMedia(theme.config.mqlDesktop).matches;
 
     if (this.isDesktop) {
       Motion.inView(this, this.init.bind(this), { margin: '200px 0px 200px 0px' });
@@ -4237,7 +4260,7 @@ class AccordionCustom extends HTMLElement {
 
     this.addEventListener('keydown', this.#handleKeyDown, { signal });
     this.summary.addEventListener('click', this.handleClick, { signal });
-    window.matchMedia('(min-width: 750px)').addEventListener('change', this.#handleMediaQueryChange, { signal });
+    window.matchMedia(theme.config.mql).addEventListener('change', this.#handleMediaQueryChange, { signal });
   }
 
   /**
@@ -4253,7 +4276,7 @@ class AccordionCustom extends HTMLElement {
    * @param {Event} event - The event.
    */
   handleClick = async (event) => {
-    const isMobile = window.matchMedia('(max-width: 749px)').matches;
+    const isMobile = window.matchMedia(theme.config.mqlMobile).matches;
     const isDesktop = !isMobile;
 
     // Stop default behaviour from the browser
@@ -4281,7 +4304,7 @@ class AccordionCustom extends HTMLElement {
    * Sets the default open state of the accordion based on the `open-by-default-on-mobile` and `open-by-default-on-desktop` attributes.
    */
   #setDefaultOpenState() {
-    const isMobile = window.matchMedia('(max-width: 749px)').matches;
+    const isMobile = window.matchMedia(theme.config.mqlMobile).matches;
 
     this.details.open =
       (isMobile && this.hasAttribute('open-by-default-on-mobile')) ||
@@ -4582,3 +4605,29 @@ class HoverButton extends HTMLElement {
 }
 
 if (!customElements.get('hover-button')) customElements.define('hover-button', HoverButton);
+
+class SplitWords extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    if (theme.config.motionReduced) return;
+
+    const splitting = Splitting({ target: this, by: 'words' });
+
+    splitting[0].words.forEach((item, index) => {
+      const wrapper = document.createElement('animate-element');
+      wrapper.className = 'block';
+      wrapper.setAttribute('data-animate', this.getAttribute('data-animate'));
+      wrapper.setAttribute('data-animate-delay', (this.hasAttribute('data-animate-delay') ? parseInt(this.getAttribute('data-animate-delay')) : 0) + (index * 30));
+
+      for (const itemContent of item.childNodes) {
+        wrapper.appendChild(itemContent);
+      }
+
+      item.appendChild(wrapper);
+    });
+  }
+}
+customElements.define('split-words', SplitWords);
