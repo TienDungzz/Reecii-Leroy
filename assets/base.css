@@ -983,6 +983,10 @@ img {
   object-fit: cover;
 }
 
+.object-contain {
+  object-fit: contain;
+}
+
 .duration-slide-in {
   transition: var(--animation-slide-in);
 }
@@ -7311,6 +7315,14 @@ img {
 
 [style*="--dots-top-offset"].swiper:has(.swiper-pagination.swiper-pagination-bullets:not(.swiper-pagination-lock)) {
   padding-bottom: calc(var(--dots-top-offset, 4rem) + (var(--font-body--size) * var(--font-body--line-height))) !important;
+
+  @media screen and (max-width: 1024px) {
+    padding-bottom: calc(var(--dots-top-offset, 4rem) * 0.75 + (var(--font-body--size) * var(--font-body--line-height))) !important;
+  }
+
+  @media screen and (max-width: 749px) {
+    padding-bottom: calc(var(--dots-top-offset, 4rem) * 0.5 + (var(--font-body--size) * var(--font-body--line-height))) !important;
+  }
 }
 
 .swiper .swiper-pagination.swiper-pagination-progressbar{
@@ -7716,4 +7728,15 @@ email-signup .checkbox .icon-checkmark{
 /* section-fetcher */
 section-fetcher {
   pointer-events: none;
+}
+
+/* Mint fix bugs 04112025 */
+.swiper:has(.swiper-pagination) .swiper-btns-wrap {
+  .swiper-button {
+    top: calc(var(--swiper-navigation-top-offset,50%) - var(--dots-top-offset,0) + 0.5rem);
+  }
+}
+
+.quick-add-modal .product-quick-add__media {
+  width: calc(100% - var(--minimum-touch-target, 4.5rem));
 }

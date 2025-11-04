@@ -20,6 +20,7 @@
   assign image_width = block.settings.image.width
   assign image_width_2x = image_width | times: 2
   assign image_aspect_ratio = block.settings.image.aspect_ratio
+  assign image_position = block.settings.image_position
 %}
 
 {% capture class %}
@@ -32,6 +33,10 @@
   {% render 'spacing-style', settings: block.settings %}
   {% render 'border-override', settings: block.settings %}
 {% endcapture %}
+
+{%- capture style_value -%}
+  --object-fit: {{ image_position }};
+{%- endcapture -%}
 
 {% liquid
   assign media_width_desktop = '100vw'
@@ -109,7 +114,7 @@
       widths: widths,
       sizes: sizes,
       fetch_priority: fetch_priority
-
+      style: style_value
     -%}
   {%- else -%}
     {{ 'hero-apparel-1' | placeholder_svg_tag: 'image-block__image placeholder-svg' }}
@@ -127,7 +132,7 @@
   }
 
   .image-block__image {
-    object-fit: cover;
+    object-fit: var(--object-fit);
     aspect-ratio: var(--ratio);
   }
 
@@ -395,6 +400,22 @@
       ],
       "default": "fit",
       "visible_if": "{{ block.settings.image_ratio == 'adapt' }}"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "t:settings.image_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "contain",
+          "label": "t:options.contain"
+        }
+      ],
+      "default": "cover"
     },
     {
       "type": "header",
