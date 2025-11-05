@@ -28,7 +28,7 @@
     >
       {%- if cart == empty -%}
         <div class="drawer__inner-empty h-full overflow-hidden flex flex-column" style="--p: 0 1.5rem;">
-          <div class="drawer__header flex justify-end items-center relative" style="--p: 1.5rem 0;">
+          <div class="drawer__header flex justify-end items-center relative" style="--p: var(--padding-lg) 0;">
             <button
               class="drawer__close block t-button bor-none rounded-full cursor-pointer"
               type="button"
@@ -191,12 +191,14 @@
                     <div class="modal-header flex justify-between items-center relative">
                       <span class="modal-header__title">{{ 'content.note' | t }}</span>
                       <button
-                        class="modal__close block t-button bor-none rounded-full cursor-pointer"
+                        class="modal__close block t-button bor-none rounded-full cursor-pointer button-close-circle"
                         type="button"
                         aria-label="{{ 'accessibility.close' | t }}"
                         data-drawer-toggle="#Drawer-CartNote"
                       >
-                        {{- 'icon-close.svg' | inline_asset_content -}}
+                        <span class="svg-wrapper">
+                          {{- 'icon-close.svg' | inline_asset_content -}}
+                        </span>
                       </button>
                     </div>
                     <div class="modal-content">
@@ -212,7 +214,11 @@
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="button button--full-width" data-drawer-toggle="#Drawer-CartNote">
-                        {{ 'actions.save' | t }}
+                        <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'actions.save' | t }}">
+                          <span class="button-text-main inline-block relative z-1">
+                            {{- 'actions.save' | t -}}
+                          </span>
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -275,12 +281,14 @@
                     <div class="modal-header flex justify-between items-center relative">
                       <span class="modal-header__title">{{ 'content.calculator_shipping.shipping' | t }}</span>
                       <button
-                        class="modal__close block t-button bor-none rounded-full cursor-pointer"
+                        class="modal__close block t-button bor-none rounded-full cursor-pointer button-close-circle"
                         type="button"
                         aria-label="{{ 'accessibility.close' | t }}"
                         data-drawer-toggle="#Drawer-CartShipping"
                       >
-                        {{- 'icon-close.svg' | inline_asset_content -}}
+                        <span class="svg-wrapper">
+                          {{- 'icon-close.svg' | inline_asset_content -}}
+                        </span>
                       </button>
                     </div>
                     <div class="modal-content">
@@ -309,12 +317,14 @@
                     <div class="modal-header flex justify-between items-center relative">
                       <span class="modal-header__title">{{ 'content.add_coupon' | t }}</span>
                       <button
-                        class="modal__close block t-button bor-none rounded-full cursor-pointer"
+                        class="modal__close block t-button bor-none rounded-full cursor-pointer button-close-circle"
                         type="button"
                         aria-label="{{ 'accessibility.close' | t }}"
                         data-drawer-toggle="#Drawer-CartCoupon"
                       >
-                        {{- 'icon-close.svg' | inline_asset_content -}}
+                        <span class="svg-wrapper">
+                          {{- 'icon-close.svg' | inline_asset_content -}}
+                        </span>
                       </button>
                     </div>
                     <div class="modal-content">
@@ -399,7 +409,11 @@
                 id="CartDrawer-Viewcart"
                 class="cart__viewcart-button button button--full-width"
               >
-                {{- 'content.cart.view_empty_cart' | t -}}
+                <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.cart.view_empty_cart' | t }}">
+                  <span class="button-text-main inline-block relative z-1">
+                    {{- 'content.cart.view_empty_cart' | t -}}
+                  </span>
+                </span>
               </a>
               <button
                 type="submit"
@@ -411,7 +425,11 @@
                   disabled
                 {% endif %}
               >
-                {{ 'content.checkout' | t }}
+                <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.checkout' | t }}">
+                  <span class="button-text-main inline-block relative z-1">
+                    {{- 'content.checkout' | t -}}
+                  </span>
+                </span>
               </button>
             </div>
           </div>
@@ -479,7 +497,7 @@
         </swiper-component>
       {% endif %} {% endcomment %}
 
-      
+
     </div>
   </div>
 </cart-drawer>

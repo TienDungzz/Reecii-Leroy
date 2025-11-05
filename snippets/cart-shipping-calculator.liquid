@@ -60,11 +60,18 @@
           {% else %}
             value="{{ form.zip }}"
           {% endif %}
+          class="field__input"
         />
-        <label for="ShippingCalculatorZip-{{ block.id }}">{{ 'customer.addresses.zip' | t }}</label>
+        <label for="ShippingCalculatorZip-{{ block.id }}" class="field__label">{{ 'customer.addresses.zip' | t }}</label>
       </div>
     </country-province-component>
-    <button class="button button--secondary w-full" type="submit">{{ 'content.calculator_shipping.button' | t }}</button>
+    <button class="button button--secondary w-full" type="submit">
+      <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.calculator_shipping.button' | t }}">
+        <span class="button-text-main inline-block relative z-1">
+          {{- 'content.calculator_shipping.button' | t -}}
+        </span>
+      </span>
+    </button>
   </div>
   <div class="results"></div>
 </form>

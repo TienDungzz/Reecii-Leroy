@@ -1,12 +1,12 @@
-<side-drawer
-	class="drawer promotionPopup fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
+<div
+	class="modal--popup promotionPopup fixed top-0 left-0 z-9 w-screen h-full flex-center no-js-hidden"
 	element-s-popup
 	id="Promotion-popup-{{ section.id }}"
 	data-moved="false"
 	tabindex="-1"
 >
 	<div id="Drawer-Overlay-Promotion-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-	<promotion-popup class="popup__inner promotion-popup w-full h-auto absolute-c-c global-settings-popup color-{{ section.settings.color_scheme }} overflow-y-a cus-scrollbar"
+	<promotion-popup class="popup__inner promotion-popup w-full h-auto global-settings-popup color-{{ section.settings.color_scheme }} overflow-y-a cus-scrollbar"
 		role="dialog"
 		aria-modal="true"
 		aria-label="{{ 'accessibility.promotion-popup' | t }}"
@@ -18,21 +18,18 @@
 
 		<button
 			type="button"
-			class="popup__close"
-			onclick="this.closest('side-drawer').close()"
-			aria-label="{{ 'accessibility.close' | t }}"
+			class="popup__close button-close-circle"
+			aria-label="{{ 'accessibility.close_dialog' | t }}"
 		>
-			{{- 'icon-close.svg' | inline_asset_content -}}
+			<span class="svg-wrapper">
+				{{- 'icon-close.svg' | inline_asset_content -}}
+			</span>
+			<span class="visually-hidden">{{ 'accessibility.close_dialog' | t }}</span>
 		</button>
 	</promotion-popup>
+</div>
 
-	<div class="button-checked hidden">
-		<input id="dismiss" type="checkbox" name="dismiss">
-		<label for="dismiss" class="form-label--checkbox" role="text">No, thanks</label>
-	</div>
-</side-drawer>
-
-{% stylesheet %}
+{% style %}
 	.promotion-popup__close.close-effect .line {
 		background: var(--color-foreground);
 	}
@@ -74,20 +71,22 @@
 			font-size: 2rem;
 		}
 	}
-{% endstylesheet %}
+{% endstyle %}
 
 <script defer="defer">
 	class PromotionPopup extends HTMLElement {
 		constructor() {
 			super();
-			this.drawer = this.closest('.drawer');
+			this.popup = this.closest('.modal--popup');
 			this.dismissTodayCookie = '_halo_promotion_popup_dismiss_today';
 			this.expiresDate = this.getAttribute('data-expire');
 			this.timeToShow = parseInt(this.getAttribute('data-delay')) || 0;
 			this._storage = this.getBestStorage();
+			this.overlay = this.popup.querySelector('[id^="Drawer-Overlay-"]');
+			this.content = this.popup.querySelector('.popup__inner');
 
 			this.querySelector('.popup__close')?.addEventListener('click', this.dismissUntilTomorrow.bind(this));
-			this.drawer.querySelector('[id^="Drawer-Overlay-"]')?.addEventListener('click', this.dismissUntilTomorrow.bind(this));
+			this.overlay?.addEventListener('click', this.dismissUntilTomorrow.bind(this));
 
 			if (Shopify.designMode) {
 				document.addEventListener('shopify:section:select', (e) => {
@@ -109,19 +108,20 @@
 			// If user dismissed for today, do not open
 			if (this.getStore(this.dismissTodayCookie)) return;
 
-			if (this.querySelector('.email-signup__message')) this.drawer.classList.add('active');
+			if (this.querySelector('.email-signup__message')) this.popup.classList.add('active');
 			if (!Shopify.designMode) this.setOpenPopup(this.timeToShow);
 		}
 
 		setOpenPopup(timeToShow) {
 			setTimeout(() => {
-				this.drawer.classList.add('active');
+				this.popup.setAttribute('open', 'true');
+				this.animateOpen();
 				document.body.classList.add('overflow-hidden');
 				document.documentElement.setAttribute('scroll-lock', '');
 
-				this.drawer.addEventListener('transitionend', () => {
-					const containerToTrapFocusOn = this.drawer.querySelector('.popup__inner');
-					const focusElement = this.drawer.querySelector('.field__input');
+				this.popup.addEventListener('transitionend', () => {
+					const containerToTrapFocusOn = this.content;
+					const focusElement = this.popup.querySelector('.field__input');
 					trapFocus(containerToTrapFocusOn, focusElement);
 				}, { once: true });
 			}, timeToShow);
@@ -129,18 +129,38 @@
 
 		setClosePopup() {
 			this.setStoreDays(this.dismissTodayCookie, 'closed', this.expiresDate);
-			this.drawer.classList.remove('active');
-			document.body.classList.remove('overflow-hidden');
-			document.documentElement.removeAttribute('scroll-lock');
-			removeTrapFocus(this.activeElement);
+			this.animateClose();
+			setTimeout(() => {
+        this.popup.removeAttribute('open');
+				document.body.classList.remove('overflow-hidden');
+				document.documentElement.removeAttribute('scroll-lock');
+				removeTrapFocus(this.activeElement);
+			}, 100);
+		}
+
+		animateOpen() {
+			Motion.timeline([
+				[this.overlay, { transform: ['translateY(-100%)', 'translateY(0)'] }, { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] }],
+				[this.content, { opacity: [0, 1], transform: ['translateY(2rem)', 'translateY(0)'] }, { duration: 0.3, at: '-0.15' }],
+			]).finished;
+		}
+
+		animateClose() {
+			Motion.timeline([
+				[this.content, { opacity: [1, 0], transform: ['translateY(0)', 'translateY(2rem)'] }, { duration: 0.2 }],
+				[this.overlay, { transform: ['translateY(0)', 'translateY(100%)'] }, { duration: 0.2 }],
+			]).finished;
 		}
 
 		// Close without setting long-expiry cookie
 		tempClose() {
-			this.drawer.classList.remove('active');
-			document.body.classList.remove('overflow-hidden');
-			document.documentElement.removeAttribute('scroll-lock');
-			removeTrapFocus(this.activeElement);
+			this.animateClose();
+			setTimeout(() => {
+				this.popup.removeAttribute('open');
+				document.body.classList.remove('overflow-hidden');
+				document.documentElement.removeAttribute('scroll-lock');
+				removeTrapFocus(this.activeElement);
+			}, 100);
 		}
 
 		// Set dismissal to expire at next local midnight

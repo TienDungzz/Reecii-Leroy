@@ -843,7 +843,32 @@
           "label": "t:options.reveal"
         }
       ],
-      "default": "none"
+      "default": "none",
+      "visible_if": "{{ block.settings.heading_only == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "heading_only",
+      "label": "Heading only",
+      "visible_if": "{{ false }}",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "heading_effect",
+      "label": "t:settings.effects",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "slide-up",
+          "label": "Slide up"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.heading_only == true }}"
     },
     {
       "type": "checkbox",
@@ -909,7 +934,8 @@
       "name": "t:names.heading",
       "category": "t:categories.basic",
       "settings": {
-        "text": "<h2>New arrivals</h2>"
+        "text": "<h2>New arrivals</h2>",
+        "heading_only": true
       }
     }
   ]

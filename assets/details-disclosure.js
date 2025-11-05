@@ -99,7 +99,6 @@ class SideDrawer extends HTMLElement {
   }
 
   async close() {
-    this.classList.remove('active');
     if (this.activeElement) removeTrapFocus(this.activeElement);
     document.body.classList.remove('overflow-hidden');
     document.documentElement.removeAttribute('scroll-lock');
@@ -109,7 +108,6 @@ class SideDrawer extends HTMLElement {
     const detailsElement = this.overlay.closest("details");
     const contentElement = this.querySelector("[data-drawer-content]");
 
-    this.classList.remove("open");
 
     if (document.querySelector('.header__icon--menu button.active')) {
       document.querySelector('.header__icon--menu button').classList.remove('active');
@@ -135,9 +133,11 @@ class SideDrawer extends HTMLElement {
               ? ["translateX(0)", "translateX(-100%)"]
               : ["translateX(0)", "translateX(100%)"],
         },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "+0.1" },
+        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.2" },
       ]
     ]).finished;
+
+    this.classList.remove('active', 'open');
 
     if (detailsElement) {
       detailsElement.removeAttribute("open");

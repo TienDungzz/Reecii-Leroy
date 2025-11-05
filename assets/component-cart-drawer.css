@@ -303,6 +303,41 @@ cart-drawer-items::-webkit-scrollbar-track-piece {
     align-items: center;
     justify-content: flex-end;
     min-height: 4.5rem;
+
+
+    @media (hover: hover) {
+      .button {
+        overflow: visible;
+        transition: transform var(--animation-speed) var(--animation-easing);
+        will-change: transform;
+        position: relative;
+
+        .svg-wrapper {
+          display: block;
+        }
+
+        &::after {
+          content: "";
+          position: absolute;
+          inset: -5px;
+          border: 0.1rem solid var(--color-foreground);
+          border-radius: 50%;
+          z-index: -1;
+          transform: scale(0.8);
+          transition: transform var(--animation-speed) var(--animation-easing), opacity var(--animation-speed) var(--animation-easing);
+          will-change: transform, opacity;
+          opacity: 0;
+        }
+
+        &:hover {
+          transform: rotate(90deg);
+          &::after {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+      }
+  }
   }
 }
 

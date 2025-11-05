@@ -79,7 +79,7 @@
   endif
 
   capture search
-    render 'header-search', style: search_style, input_id: 'Search-In-Modal', class: search_class
+    render 'header-search', style: search_style, input_id: 'Search-In-Modal', class: search_class, display_type: sec_stts.search_display_type
   endcapture
 
   capture multi_tab_menu
@@ -367,11 +367,7 @@
     /* Only show opaque background when hovering over menu items with children (mega menu)
        Multiple selectors for performance: each simple :has() check is faster than one complex selector with multiple conditions */
 
-    &:has(.header__icon--menu button.active),
-    &:has(.mega-menu__list:hover),
-    &:has(.list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])),
-    &:has(.details--dropdown:not(.details--dropdown-language):is(:hover)),
-    &:has(.menu-list__list-item[slot='overflow'] .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])) {
+    &:hover {
       /* --header-logo-opacity: 1;
       --header-logo-inverse-opacity: 0;
       --header-bg-color: unset;
@@ -418,14 +414,7 @@
 
   :is(.header[transparent]:not([data-sticky-state='active']),
   .header[transparent='always'][data-sticky-state='active'])
-    .header__row:not(
-      :has(
-          .mega-menu__list:hover,
-          .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating]),
-          .details--dropdown:not(.details--dropdown-language):is(:hover),
-          .menu-list__list-item[slot='overflow'] .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])
-        )
-    ) {
+    .header__row:not(:hover) {
     /* while transparent, header-row ignores its color-scheme settings, pull from the header-component */
     /* --color-foreground: inherit;
     --color-foreground-rgb: inherit;
@@ -2251,6 +2240,27 @@
         "id": "show_search",
         "label": "t:settings.search_icon",
         "default": true
+      },
+      {
+        "type": "select",
+        "id": "search_display_type",
+        "label": "t:settings.type",
+        "options": [
+          {
+            "value": "text",
+            "label": "t:options.text"
+          },
+          {
+            "value": "icon",
+            "label": "t:options.icon"
+          },
+          {
+            "value": "both",
+            "label": "t:options.both"
+          }
+        ],
+        "default": "icon",
+        "visible_if": "{{ section.settings.show_search and settings.search_type != 'inline' }}"
       },
       {
         "type": "select",
