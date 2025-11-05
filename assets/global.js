@@ -9,7 +9,8 @@ theme.config = {
   isTouch: ('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0),
   rtl: document.documentElement.getAttribute('dir') === 'rtl' ? true : false,
   motionReduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-  easing: [0.61, 0.22, 0.23, 1]
+  easing: [0.61, 0.22, 0.23, 1],
+  easingFast: [0.16, 1, 0.3, 1]
 };
 
 
@@ -2976,35 +2977,70 @@ class ParallaxBackground extends HTMLElement {
 if (!customElements.get("parallax-background"))
   customElements.define("parallax-background", ParallaxBackground);
 
-// class ImageReveal extends HTMLElement {
-//   constructor() {
-//     super();
-//     this.image = this.querySelector('.image-reveal__image');
+class SplitWords extends HTMLElement {
+  constructor() {
+    super();
+  }
 
-//     if (theme.config.motionReduced) return;
+  connectedCallback() {
+    if (theme.config.motionReduced) return;
 
-//     Motion.inView(this, this.init.bind(this), { margin: '20px 0px 20px 0px' });
-//   }
+    const splitting = Splitting({ target: this, by: 'words' });
 
-//   init() {
-//     Motion.animate(
-//       this.image,
-//       { opacity: [0, 1], scale: [1.2, 1], clipPath: ['inset(0 100% 0 0)', 'inset(0 0 0 0)'] },
-//       {
-//         ease: [0.25, 0.1, 0.25, 1],
-//         duration: 0.9,
-//         delay: 0.2,
-//       }
-//     );
-//   }
-// }
-// if (!customElements.get('image-reveal')) customElements.define('image-reveal', ImageReveal);
+    splitting[0].words.forEach((text, idx) => {
+      const wrapper = document.createElement('animated-element');
+      wrapper.className = 'inline-block';
+      wrapper.setAttribute('data-animate-type', this.getAttribute('data-animate-type'));
+      wrapper.setAttribute('data-animate-delay', (this.hasAttribute('data-animate-delay') ? parseInt(this.getAttribute('data-animate-delay')) : 0) + (idx * 20));
+
+      for (const content of text.childNodes) {
+        wrapper.appendChild(content);
+      }
+
+      text.appendChild(wrapper);
+    });
+  }
+}
+if (!customElements.get('split-words')) customElements.define('split-words', SplitWords);
+
+class AnimatedElement extends HTMLElement {
+  constructor() {
+    super();
+
+    this.animationType = this.getAttribute('data-animate-type');
+  }
+
+  connectedCallback() {
+    if (theme.config.motionReduced) return;
+
+    this.beforeLoad();
+
+    Motion.inView(this, this.afterLoad.bind(this), { margin: '20px 0px 20px 0px' });
+  }
+
+  beforeLoad() {
+    switch (this.animationType) {
+      case 'slide-up':
+        Motion.animate(this, { transform: 'translateY(95%)', opacity: 0 }, { duration: 0 });
+        break;
+    }
+  }
+
+  async afterLoad() {
+    switch (this.animationType) {
+      case 'slide-up':
+        await Motion.animate(this, { transform: 'translateY(0)', opacity: 1 }, { duration: 1, easing: theme.config.easingFast }).finished;
+        break;
+    }
+  }
+}
+if (!customElements.get('animated-element')) customElements.define('animated-element', AnimatedElement);
 
 class AnimateImage extends HTMLElement {
   constructor() {
     super();
 
-    this.animationType = this.getAttribute('data-animation-type');
+    this.animationType = this.getAttribute('data-animate-type');
     this.image = this.querySelector('img');
     this.delay = this.getAttribute('data-delay') || 0;
   }
@@ -3048,7 +3084,7 @@ class AnimateImage extends HTMLElement {
     }
   }
 }
-customElements.define('animate-image', AnimateImage);
+if (!customElements.get('animate-image')) customElements.define('animate-image', AnimateImage);
 
 // Reveal highlight color underline on scroll
 class HighlightText extends HTMLElement {
@@ -4605,29 +4641,3 @@ class HoverButton extends HTMLElement {
 }
 
 if (!customElements.get('hover-button')) customElements.define('hover-button', HoverButton);
-
-class SplitWords extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    if (theme.config.motionReduced) return;
-
-    const splitting = Splitting({ target: this, by: 'words' });
-
-    splitting[0].words.forEach((item, index) => {
-      const wrapper = document.createElement('animate-element');
-      wrapper.className = 'block';
-      wrapper.setAttribute('data-animate', this.getAttribute('data-animate'));
-      wrapper.setAttribute('data-animate-delay', (this.hasAttribute('data-animate-delay') ? parseInt(this.getAttribute('data-animate-delay')) : 0) + (index * 30));
-
-      for (const itemContent of item.childNodes) {
-        wrapper.appendChild(itemContent);
-      }
-
-      item.appendChild(wrapper);
-    });
-  }
-}
-customElements.define('split-words', SplitWords);

@@ -4694,7 +4694,7 @@ tabs-component:not(.predictive-search-tabs) .tabs-component-content {
     font-size: var(--size-16);
   }
 
-  .modal__close {
+  .modal__close .svg-wrapper{
     padding: 0.35rem;
     width: 2.2rem;
     height: 2.2rem;
@@ -5962,32 +5962,6 @@ summary {
   padding: 0.6rem;
   cursor: pointer;
   border-radius: 50%;
-
-
-  @media (hover: hover) {
-    transition: transform var(--animation-speed) var(--animation-easing);
-    will-change: transform;
-
-    &::after {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      border: 0.1rem solid var(--color-foreground);
-      border-radius: 50%;
-      z-index: -1;
-      transform: scale(0.8);
-      transition: transform var(--animation-speed) var(--animation-easing), opacity var(--animation-speed) var(--animation-easing);
-      will-change: transform, opacity;
-      opacity: 0;
-    }
-    &:hover {
-      transform: rotate(90deg);
-      &::after {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-  }
 }
 
 /* disabled */
@@ -7334,6 +7308,12 @@ img {
   transform: translateX(-50%);
 }
 
+.header__icon--text .wishlist-count-bubble {
+  top: -1.2rem;
+  left: 100%;
+  transform: none;
+}
+
 .card-hover--lift .product-grid-item:has(.card--block-media.border-style),
 .card-hover--lift .product-grid__item:has(.card--block-media.border-style){
   padding-top: 4px;
@@ -7716,4 +7696,31 @@ email-signup .checkbox .icon-checkmark{
 /* section-fetcher */
 section-fetcher {
   pointer-events: none;
+}
+
+.button-close-circle {
+  @media (hover: hover) {
+    transition: transform var(--animation-speed) var(--animation-easing);
+    will-change: transform;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border: 0.1rem solid var(--color-foreground);
+      border-radius: 50%;
+      z-index: -1;
+      transform: scale(0.8);
+      transition: transform var(--animation-speed) var(--animation-easing), opacity var(--animation-speed) var(--animation-easing);
+      will-change: transform, opacity;
+      opacity: 0;
+    }
+    &:hover {
+      transform: rotate(90deg);
+      &::after {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  }
 }
