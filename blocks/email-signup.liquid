@@ -26,12 +26,13 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
 {%- endcapture -%}
 
 <email-signup
-  class="email-signup-block size-style spacing-style{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}"
+  class="email-signup-block size-style spacing-style{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}{% if block.settings.custom_input_height %} custom-input-height{% endif %}"
   style="
     {% render 'size-style', settings: block.settings %}{% render 'spacing-style', settings: block.settings %}--gap: {{ block.settings.gap }}px;
     {% if block.settings.inherit_color_scheme == false %}
       {% render 'color-scheme-style', settings: block.settings %}
     {% endif %}
+    --input-height: {{ block.settings.input_height }}px;
   "
   {{ block.shopify_attributes }}
 >
@@ -232,9 +233,9 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
   }
 
   .email-signup__button {
-  white-space: nowrap;
-  padding: 0;
-}
+    white-space: nowrap;
+    padding: 0;
+  }
 
   .email-signup__form {
     display: flex;
@@ -258,13 +259,6 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
   .email-signup__input-groups:not(:has(.email-signup__button--integrated)) {
     gap: var(--gap);
   }
-
-  /* .email-signup__input-groups:not(:has(.email-signup__button--icon)) {
-    @media screen and (max-width: 749px) {
-      grid-template-columns: 1fr;
-    }
-  }
-  //ryu remove */
 
   .email-signup__input {
     --box-shadow-color: var(--color-input-border);
@@ -521,6 +515,20 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
       svg {
         color: var(--color-primary);
         transform:  scale(1.05);
+      }
+    }
+  }
+
+  .custom-input-height {
+    .email-signup__input {
+      height: var(--input-height);
+
+      @media screen and (max-width: 1024px) {
+        height: calc(var(--input-height) * 0.75);
+      }
+
+      @media screen and (max-width: 749px) {
+        height: calc(var(--input-height) * 0.5);
       }
     }
   }
@@ -973,6 +981,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
       "step": 1,
       "unit": "px",
       "default": 0,
+      "info": "t:content.mobile_column_optimization",
       "visible_if": "{{ block.settings.border_style != 'underline' }}"
     },
     {
@@ -994,6 +1003,23 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
         }
       ],
       "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_input_height",
+      "label": "t:settings.custom_height",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "input_height",
+      "label": "t:settings.height",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ block.settings.custom_input_height == true }}"
     },
     {
       "type": "select",
