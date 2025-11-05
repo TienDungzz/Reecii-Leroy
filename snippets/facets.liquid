@@ -398,9 +398,20 @@
                                                 class="swatch-input__label"
                                                 title="{{ value.label | escape }}"
                                               >
+                                                {% liquid
+                                                  assign background_image = value.value | strip | handleize | handle | append: '.' | append: png
+                                                  if images[background_image] != blank
+                                                    assign background_image = background_image | file_url
+                                                  else
+                                                    assign background_image = ''
+                                                  endif
+                                                %}
                                                 <span
                                                   class="swatch block color-swacth-color--{{ value.value | handle }}"
-                                                  style="--swatch--background-color: {{ value.value | split: ' ' | last | handle }};--swatch--background: url({{ value.value | strip | handleize | handle | append: '.' | append: png | file_url }});"
+                                                  style="
+                                                    --swatch--background-color: {{ value.value | split: ' ' | last | handle }};
+                                                    {% if background_image != blank %}--swatch--background: url({{ background_image }});{% endif %}
+                                                  "
                                                 ></span>
                                                 <span class="visually-hidden">{{ text_value }}</span>
                                               </label>
@@ -633,9 +644,20 @@
                                         class="swatch-input__label"
                                         title="{{ value.label | escape }}"
                                       >
+                                        {% liquid
+                                          assign background_image = value.value | strip | handleize | handle | append: '.' | append: png
+                                          if images[background_image] != blank
+                                            assign background_image = background_image | file_url
+                                          else
+                                            assign background_image = ''
+                                          endif
+                                        %}
                                         <span
                                           class="swatch block color-swacth-color--{{ value.value | handle }}"
-                                          style="--swatch--background-color: {{ value.value | split: ' ' | last | handle }};--swatch--background: url({{ value.value | strip | handleize | handle | append: '.' | append: png | file_url }});"
+                                          style="
+                                            --swatch--background-color: {{ value.value | split: ' ' | last | handle }};
+                                            {% if background_image != blank %}--swatch--background: url({{ background_image }});{% endif %}
+                                          "
                                         ></span>
                                         <span class="visually-hidden">{{ text_value }}</span>
                                       </label>
@@ -1144,9 +1166,20 @@
                                             class="swatch-input__label"
                                             title="{{ value.label | escape }}"
                                           >
+                                            {% liquid
+                                              assign background_image = value.value | strip | handleize | handle | append: '.' | append: png
+                                              if images[background_image] != blank
+                                                assign background_image = background_image | file_url
+                                              else
+                                                assign background_image = ''
+                                              endif
+                                            %}
                                             <span
                                               class="swatch block color-swacth-color--{{ value.value | handle }}"
-                                              style="--swatch--background-color: {{ value.value | split: ' ' | last | handle }};--swatch--background: url({{ value.value | strip | handleize | handle | append: '.' | append: png | file_url }});"
+                                              style="
+                                                --swatch--background-color: {{ value.value | split: ' ' | last | handle }};
+                                                {% if background_image != blank %}--swatch--background: url({{ background_image }});{% endif %}
+                                              "
                                             ></span>
                                             <span class="visually-hidden">{{ text_value }}</span>
                                           </label>

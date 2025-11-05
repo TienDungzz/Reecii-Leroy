@@ -3,6 +3,7 @@
 
 {%- if settings.show_calculator_free_shipping_message -%}
   <script src="{{ 'free-shipping-message.js' | asset_url }}" defer="defer"></script>
+  {{ "//cdn.shopify.com/s/javascripts/currencies.js" | script_tag }}
 {%- endif %}
 
 {%- if settings.show_cart_quick_edit_plus -%}
@@ -122,6 +123,7 @@
     {% else %}
       window.free_shipping_price = 0;
     {% endif %}
+    window.free_shipping_default_currency = '{{ shop.currency }}';
     window.free_shipping_text = {
       free_shipping_message: `{{ 'content.free_shipping_message' | t }}`,
       free_shipping_message_1: `{{ 'content.free_shipping_message_1' | t }}`,
