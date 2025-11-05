@@ -33,11 +33,11 @@
     assign logo_height_mobile = sec_stts.logo_width_mobile | divided_by: settings.logo.aspect_ratio | ceil
   endif
 
-  assign logo_style = '--header-logo-image-width: ' | append: logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: logo_height_mobile | append: 'px;'
+  assign logo_style = '--header-logo-image-width: ' | append: logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: logo_height_mobile | append: 'px; --aspect-ratio: ' | append: settings.logo.aspect_ratio | append: ';'
 
   assign inverse_logo_height = sec_stts.logo_width | divided_by: inverse_logo.aspect_ratio | ceil
   assign inverse_logo_height_mobile = sec_stts.logo_width_mobile | divided_by: inverse_logo.aspect_ratio | ceil
-   assign inverse_logo_style = '--header-logo-image-width: ' | append: sec_stts.logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: sec_stts.logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: inverse_logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: inverse_logo_height_mobile | append: 'px;'
+  assign inverse_logo_style = '--header-logo-image-width: ' | append: sec_stts.logo_width | append: 'px;' | append: '--header-logo-image-width-mobile: ' | append: sec_stts.logo_width_mobile | append: 'px; --header-logo-image-height: ' | append: inverse_logo_height | append: 'px; --header-logo-image-height-mobile: ' | append: inverse_logo_height_mobile | append: 'px; --aspect-ratio: ' | append: inverse_logo.aspect_ratio | append: ';'
 -%}
 <div
   class="
@@ -100,7 +100,6 @@
 </div>
 
 {%- stylesheet -%}
-
   .header-logo {
     padding-inline-start: var(--header-logo-spacing-left, 0px);
     padding-inline-end: var(--header-logo-spacing-right, 0px);
@@ -111,7 +110,9 @@
     width: var(--header-logo-image-width);
     height: var(--header-logo-image-height);
     display: block;
-    transition: transform var(--animation-speed-slowest);
+    transform-origin: left top;
+    transition: transform var(--animation-speed-slowest) var(--ease-out-cubic);
+    will-change: transform;
 
     @media (min-width: 750px) and (max-width: 1024px) {
       width: calc(var(--header-logo-image-width) * 0.6);
@@ -134,6 +135,14 @@
     }
   }
 
+  .header__column--center .header-logo__image-container {
+    transform-origin: center top;
+  }
+
+  .header__column--right .header-logo__image-container {
+    transform-origin: right top;
+  }
+
   .header-logo__image-container--inverse {
     position: absolute;
     top: 0;
@@ -148,27 +157,19 @@
     opacity: var(--header-logo-inverse-opacity, 0);
   }
 
-  /* .header-logo:has(.header-logo__image-container--inverse) .header-logo__image-container--original {
-    --header-logo-opacity: 1;
-  }
-
-  .header-logo__image-container--inverse {
-    --header-logo-inverse-opacity: 0;
-  }
-
-  .header-logo:not(:has(.header-logo__image-container--inverse)) .header-logo__image-container--original {
-    --header-logo-opacity: 0;
-    --header-logo-inverse-opacity: 1;
-  } */
-
   .header[transparent]:has(.details--dropdown:is(:hover)) .header-logo:has(.header-logo__image-container--inverse),
   .header[data-sticky-state="active"] .header-logo:has(.header-logo__image-container--inverse) {
     --header-logo-opacity: 1;
     --header-logo-inverse-opacity: 0;
   }
-  .header.header--reveal-logo-on-sticky[data-scroll-direction='down'] .header-logo__image-container ,
-  .header.header--reveal-logo-on-sticky[data-sticky-state='idle'] .header-logo__image-container ,
+  .header.header--reveal-logo-on-sticky[data-scroll-direction='down'] .header__heading-logo-wrapper,
+  .header.header--reveal-logo-on-sticky[data-sticky-state='idle'] .header__heading-logo-wrapper,
+  .header.header--reveal-logo-on-sticky[data-sticky-state='active'] .header__heading-logo-wrapper {
+    height: calc(10rem / var(--aspect-ratio));
+  }
+  .header.header--reveal-logo-on-sticky[data-scroll-direction='down'] .header-logo__image-container,
+  .header.header--reveal-logo-on-sticky[data-sticky-state='idle'] .header-logo__image-container,
   .header.header--reveal-logo-on-sticky[data-sticky-state='active'] .header-logo__image-container {
-    transform: scale(0.6);
+    transform: scale(calc(10rem / var(--header-logo-image-width)));
   }
 {%- endstylesheet -%}

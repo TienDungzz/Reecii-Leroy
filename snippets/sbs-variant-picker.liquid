@@ -90,10 +90,9 @@
 {% endunless %}
 
 <script>
+  {% assign selected_variant = product.selected_or_first_available_variant %}
   window.product_inventory_policy_array_{{ product.id }} = {
-    {% for variant in product.variants %}
-      '{{ variant.id }}': '{{ variant.inventory_policy }}',
-    {%endfor%}
+    '{{ selected_variant.id }}': '{{ selected_variant.inventory_policy }}',
   };
 </script>
 

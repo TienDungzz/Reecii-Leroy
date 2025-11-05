@@ -26,6 +26,53 @@ if (!customElements.get('product-form-component')) {
         this.hideErrors = this.dataset.hideErrors === 'true';
 
         this.initAgreeCondition();
+
+        // Sync error messages to sticky add-to-cart error area (same section)
+        this.setupErrorSync();
+      }
+
+      setupErrorSync() {
+        try {
+          const productInfo = this.closest('product-info');
+          const sectionId = productInfo?.dataset.section || productInfo?.dataset.originalSection;
+          if (!sectionId) return;
+
+          const stickyATC = document.querySelector(`sticky-atc[data-sticky-section-id="${sectionId}"]`);
+          if (!stickyATC) return;
+
+          const mainErrorWrapper = this.querySelector('.product-form__error-message-wrapper');
+          const stickyErrorWrapper = stickyATC.querySelector('.product-form__error-message-wrapper');
+          if (!mainErrorWrapper || !stickyErrorWrapper) return;
+
+          const syncFromMain = () => {
+            const isVisible = !mainErrorWrapper.hasAttribute('hidden');
+            const errorMessage = mainErrorWrapper.querySelector('.product-form__error-message')?.textContent;
+            stickyErrorWrapper.toggleAttribute('hidden', !isVisible || !errorMessage);
+            if (isVisible && errorMessage) {
+              const stickyErrorMessage = stickyErrorWrapper.querySelector('.product-form__error-message');
+              if (stickyErrorMessage) stickyErrorMessage.textContent = errorMessage;
+            }
+          };
+
+          // Initial sync
+          syncFromMain();
+
+          // Observe changes on main error wrapper
+          this._errorObserver = new MutationObserver(syncFromMain);
+          this._errorObserver.observe(mainErrorWrapper, {
+            attributes: true,
+            attributeFilter: ['hidden'],
+            childList: true,
+            subtree: true,
+          });
+
+          // Also listen to cartError pub/sub to copy message
+          this.cartErrorUnsubscriber = subscribe(PUB_SUB_EVENTS.cartError, () => {
+            syncFromMain();
+          });
+        } catch (e) {
+          // silent
+        }
       }
 
       initAgreeCondition() {
@@ -53,6 +100,18 @@ if (!customElements.get('product-form-component')) {
         this.submitButton.setAttribute('aria-disabled', true);
         this.submitButton.classList.add('loading');
         this.submitButton.querySelector('.loading__spinner').classList.remove('hidden');
+
+        // Also reflect loading state on the sticky add-to-cart button (if present)
+        const productInfo = this.closest('product-info');
+        const sectionId = productInfo?.dataset.section || productInfo?.dataset.originalSection;
+        const stickyAddButton = sectionId
+          ? document.getElementById(`StickyCart-ProductSubmitButton-${sectionId}`)
+          : undefined;
+        const stickyLoadingSpinner = stickyAddButton?.querySelector('.loading__spinner');
+        if (stickyAddButton && stickyLoadingSpinner) {
+          stickyAddButton.classList.add('loading');
+          stickyLoadingSpinner.classList.remove('hidden');
+        }
 
         const config = fetchConfig('javascript');
         config.headers['X-Requested-With'] = 'XMLHttpRequest';
@@ -134,7 +193,28 @@ if (!customElements.get('product-form-component')) {
             if (this.cart && this.cart.classList.contains('is-empty')) this.cart.classList.remove('is-empty');
             if (!this.error) this.submitButton.removeAttribute('aria-disabled');
             this.submitButton.querySelector('.loading__spinner').classList.add('hidden');
+
+            // Clear loading state on the sticky add-to-cart button (if present)
+            const productInfo = this.closest('product-info');
+            const sectionId = productInfo?.dataset.section || productInfo?.dataset.originalSection;
+            const stickyAddButton = sectionId
+              ? document.getElementById(`StickyCart-ProductSubmitButton-${sectionId}`)
+              : undefined;
+            const stickyLoadingSpinner = stickyAddButton?.querySelector('.loading__spinner');
+            if (stickyAddButton && stickyLoadingSpinner) {
+              stickyAddButton.classList.remove('loading');
+              stickyLoadingSpinner.classList.add('hidden');
+            }
           });
+      }
+
+      disconnectedCallback() {
+        try {
+          this.cartErrorUnsubscriber?.();
+          this._errorObserver?.disconnect();
+        } catch (e) {
+          // silent
+        }
       }
 
       handleErrorMessage(errorMessage = false) {
