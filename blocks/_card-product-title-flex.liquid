@@ -1,18 +1,19 @@
 {%- liquid
-  assign card_product = block.settings.product
+  assign bl_stts = block.settings
+  assign card_product = bl_stts.product
 
-  if block.settings.width == 'custom'
+  if bl_stts.width == 'custom'
     assign is_card_title_custom_width = true
   endif
 -%}
 <div
-  class="card--block-title size-style{% if block.settings.clamp == true %} text-clamp-style{% endif %}"
+  class="card--block-title size-style{% if bl_stts.clamp == true %} text-clamp-style{% endif %}"
   style="
-    --text-align: {{ block.settings.alignment }};
-    {% if block.settings.clamp == true %}
-      --text-clamp: {{ block.settings.clamp_row }};
-    {% endif %}
-    {% render 'size-style', settings: block.settings %}
+    --text-align: {{ bl_stts.alignment }};
+    {%- if bl_stts.clamp == true -%}
+      --text-clamp: {{ bl_stts.clamp_row }};
+    {%- endif -%}
+    {%- render 'size-style', settings: bl_stts -%}
   "
 >
   {%- if card_product and card_product != empty -%}

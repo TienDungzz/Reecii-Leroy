@@ -21,12 +21,12 @@
 {%- if card_product and card_product != empty -%}
   <div class="card--block card-information text-block {{ text_block_classes }} {{ bl_stts.alignment }} {{ bl_stts.type_preset | default: 'paragraph' }} spacing-style{% if bl_stts.product == blank and request.design_mode == false %} hidden{% endif %}" {{ block.shopify_attributes }}
     style="
-      {% render 'typography-style', settings: bl_stts %}
-      {% render 'spacing-style', settings: bl_stts %}
+      {%- render 'typography-style', settings: bl_stts -%}
+      {%- render 'spacing-style', settings: bl_stts -%}
       --width: {{ bl_stts.width }};
-      {% if bl_stts.width == "100%" %}
+      {%- if bl_stts.width == "100%" -%}
         --text-align: {{ bl_stts.alignment }};
-      {% endif %}
+      {%- endif -%}
     "
   >
     {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}

@@ -143,7 +143,9 @@
                   href="{{ routes.cart_url }} "
                   class="quick-order-list__button button button-secondary small-hide medium-hide"
                 >
-                  <span class="quick-order-list__button-text">{{- 'content.view_cart' | t -}}</span>
+                  <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.view_cart' | t }}">
+                    <span class="quick-order-list__button-text button-text-main inline-block relative z-1">{{- 'content.view_cart' | t -}}</span>
+                  </span>
                 </a>
                 <div class="variant-remove-total{% if items_in_cart == 0 %} variant-remove-total--empty{% endif %}">
                   {%- render 'loading-spinner' -%}
@@ -151,11 +153,11 @@
                     class="no-js-hidden flex"
                     data-action="confirm"
                   >
-                    <button class="button button--tertiary button-unstyled" type="button">
+                    <button class="button button--tertiary button-unstyled link--hover-underline" type="button">
                       <span class="svg-wrapper">
                         {{- 'icon-remove.svg' | inline_asset_content -}}
                       </span>
-                      <span class="text-body">{{ 'content.remove_all' | t }}</span>
+                      <span class="text-body text">{{ 'content.remove_all' | t }}</span>
                     </button>
                   </quick-order-list-remove-all-button>
                 </div>

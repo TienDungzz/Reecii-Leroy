@@ -1591,11 +1591,11 @@ class SwiperComponent extends HTMLElement {
         },
       };
 
-      if(this.isMobileOnly) {
-        this.initSwiperMobile();
-      } else {
-        this.initSwiper = new Swiper(this.swiperEl, this.options);
-      }
+      this.initSwiperMobile();
+      // if(this.isMobileOnly) {
+      // } else {
+      //   this.initSwiper = new Swiper(this.swiperEl, this.options);
+      // }
     }
   }
 
@@ -1639,6 +1639,7 @@ class SwiperComponent extends HTMLElement {
             grabCursor: true,
             slideToClickedSlide: true,
             loop: thumbnailSwiper.getAttribute('data-loop') || false,
+            autoScrollOffset: 1,
             breakpoints: {
               768: { slidesPerView: slidesPerView },
               1024: { slidesPerView: slidesPerView },

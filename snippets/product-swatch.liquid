@@ -80,7 +80,6 @@
             -%}
             {%- if count < number_limit -%}
               <li class="swatch-item cursor-pointer relative{% if forloop.first %} active{% endif %}">
-                <div class="swatch-wrapper">
                   <span
                     {% if enable_variant_image %}
                       class="{{ class_swatch }} color-swacth-color--{{ color | handle }}"
@@ -98,14 +97,12 @@
                     {% endif %}
                   ></span>
                   <span class="{{ class_tooltip }}">{{ color | escape }}</span>
-                </div>
               </li>
             {%- else -%}
               {%- if count == number_limit -%}
                 <li class="group-swatch " style="--gap-x: 0.5rem; display: none">
               {%- endif -%}
               <div class="swatch-item cursor-pointer relative">
-                <div class="swatch-wrapper">
                   <span
                     {% if enable_variant_image %}
                       class="{{ class_swatch }} color-swacth-color--{{ color | handle }}"
@@ -122,7 +119,6 @@
                     {% endif %}
                   ></span>
                   <span class="{{ class_tooltip }}">{{ color | escape }}</span>
-                </div>
               </div>
               {%- if forloop.last -%}
                 </li>
@@ -130,8 +126,8 @@
             {%- endif -%}
             {%- assign count = count | plus: 1 -%}
             {%- capture tempList -%}
-                            {{- color_list | append: color | append: '|' -}}
-                        {%- endcapture -%}
+                {{- color_list | append: color | append: '|' -}}
+            {%- endcapture -%}
             {%- assign color_list = tempList -%}
           {%- endunless -%}
         {%- endfor -%}

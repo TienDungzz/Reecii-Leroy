@@ -1,7 +1,7 @@
 {%- liquid
   assign order = order | split: ','
   assign keys = keys | split: ','
-  assign compare = compare | downcase
+  assign compare = compare | downcase | strip | handle
 -%}
 {%- capture variable_highlight_title -%}
   <div class="label-wrapper">
@@ -16,7 +16,8 @@
         -%}
         {%- if value != blank -%}
           {%- for item in value -%}
-            {%- if item == compare and name != 'highlighted' -%}
+            {%- assign item_handle = item | strip | handle -%}
+            {%- if item_handle == compare and name != 'highlighted' -%}
               <span class="label {{ name }}-label">{{ text | t }}</span>
             {%- endif -%}
           {%- endfor -%}

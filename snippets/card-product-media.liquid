@@ -2,12 +2,19 @@
   '(min-width: 750px) 50vw, 100vw'
 {%- endcapture -%}
 
+{%- capture f_media_alt -%}
+  {{ 'content.product_image_main' | t }}
+{%- endcapture -%}
+{%- capture media_alt -%}
+  {{ 'content.product_image_secondary' | t }}
+{%- endcapture -%}
+
 {%- liquid
   assign f_media = card_product.featured_media
   assign media = card_product.media
 
-  assign media_alt = media.alt | default: card_product.title | append: ' Main Image'
-  assign f_media_alt = f_media.alt | default: card_product.title | append: ' Hover Image'
+  assign f_media_alt = f_media.alt | default: card_product.title | append: ' ' | append: f_media_alt | strip
+  assign media_alt = media.alt | default: card_product.title | append: ' ' | append: media_alt | strip
 
   assign sizes = sizes
 

@@ -6,7 +6,7 @@
 {%- liquid
   assign order = order | split: ','
   assign keys = keys | split: ','
-  assign compare = compare | downcase
+  assign compare = compare | downcase | strip | handle
 -%}
 {%- capture variable_highlight_title -%}
   {%- for key in keys -%}
@@ -26,7 +26,8 @@
       {%- if value != blank -%}
         {%- capture list_style -%}
           {% for item in value %}
-            {%- if item == compare %}
+            {%- assign item_handle = item | strip | handle -%}
+            {%- if item_handle == compare %}
               {%- if color != blank -%}
               --{{ name }}-color:{{ color }};
               --{{ name }}-color-rgb:{{ color.rgb }};

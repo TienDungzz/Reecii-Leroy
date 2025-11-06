@@ -32,14 +32,14 @@
       method="post"
       id="cart"
     >
-      <div 
-        class="cart__items" id="main-cart-items" 
+      <div
+        class="cart__items" id="main-cart-items"
         data-id="{{ section.id }}"
         style="--cart-items-gap:{{ bl_stts.gap | append: "px" }};"
       >
         <div class="js-contents">
           {%- if cart != empty -%}
-            <table 
+            <table
               class="cart-items cart-items__table"
               role="table"
             >
@@ -116,9 +116,9 @@
 
               <tbody role="rowgroup">
                 {%- for item in cart.items -%}
-                  <tr 
-                    role="row" 
-                    class="cart-item cart-items__table-row{% if item.parent_relationship.parent != null %} cart-items__nested-line{% endif %}{% if bl_stts.border == true %} cart-items--border{% endif %}" 
+                  <tr
+                    role="row"
+                    class="cart-item cart-items__table-row{% if item.parent_relationship.parent != null %} cart-items__nested-line{% endif %}{% if bl_stts.border == true %} cart-items--border{% endif %}"
                     data-line="{{ item.index | plus: 1 }}"
                     id="CartItem-{{ item.index | plus: 1 }}"
                   >
@@ -130,7 +130,7 @@
                       {% if item.image %}
                         {% liquid
                           assign ratio = 1
-                          
+
                           if bl_stts.image_ratio == 'portrait'
                             assign ratio = 0.8
                           elsif bl_stts.image_ratio == 'adapt'
@@ -138,7 +138,7 @@
                           endif
                         %}
                         <a href="{{ item.url }}" class="cart-item__link" aria-hidden="true" tabindex="-1"></a>
-                        <div 
+                        <div
                           class="cart-item__image-container"
                           style="--aspect-ratio:{{ ratio }};"
                         >
@@ -162,7 +162,9 @@
                         <p class="caption-with-letter-spacing">{{ item.product.vendor }}</p>
                       {%- endif -%}
 
-                      <a href="{{ item.url }}" class="cart-item__name break">{{ item.product.title | escape }}</a>
+                      <a href="{{ item.url }}" class="cart-item__name break link--hover-underline">
+                        <span class="text">{{ item.product.title | escape }}</span>
+                      </a>
 
                       {%- if item.product.has_only_default_variant == false
                         or item.properties.size != 0
@@ -453,7 +455,7 @@
                       headers="productRemove"
                     >
                       <button
-                        class="button button-unstyled"
+                        class="button button-unstyled button-close-circle"
                         type="button"
                         aria-label="{{ 'accessibility.remove_item' | t: title: item.title | escape }}"
                         onclick="

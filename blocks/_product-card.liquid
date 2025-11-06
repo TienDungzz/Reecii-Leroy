@@ -1,4 +1,4 @@
-{% comment %}
+{% doc %}
   Renders a product card
 
   Accepts:
@@ -19,30 +19,36 @@
 
   Usage:
   {% render 'card-product', show_vendor: section.settings.show_vendor %}
-{% endcomment %}
+{% enddoc %}
 
 {%- liquid
+  assign bl_stts = block.settings
   assign product = closest.product
 -%}
 
-<div class="card--block card-wrapper product-card-wrapper{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %}" data-product-handle="{{ product.handle }}">
+{%- capture product_card_class -%}
+  card
+  card--quickadd-type-{{ settings.quick_add_type }}
+  {% if product.featured_media %} card--media{% else %} card--text{% endif %}
+  {% if horizontal_class %} card--horizontal{% endif %}
+  flex-{{ bl_stts.content_direction }}
+  flex-{{ bl_stts.wrap }}
+  items-{{ bl_stts.align_items}}
+  justify-{{ bl_stts.justify_content }}
+  gap-style
+  spacing-style
+  border-style
+{%- endcapture -%}
+
+<div class="card--block card-wrapper product-card-wrapper{% if bl_stts.inherit_color_scheme == false %} color-scheme-custom{% endif %}" data-product-handle="{{ product.handle }}">
   <div
-    class="
-      card card--{{ settings.card_style }} card--quickadd-type-{{ settings.quick_add_type }}
-      {% if product.featured_media %} card--media{% else %} card--text{% endif %}
-      {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }} gradient{% endif %}
-      {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
-      {% if extend_height %} card--extend-height{% endif %}
-      {% if product.featured_media == nil and settings.card_style == 'card' %} ratio{% endif %}
-      {% if horizontal_class %} card--horizontal{% endif %}
-      flex-{{ block.settings.content_direction }} flex-{{ block.settings.wrap }} items-{{ block.settings.align_items}} justify-{{ block.settings.justify_content }}
-    "
+    class="{{ product_card_class | strip | strip_newlines }}"
     style="
-      --gap: {{ block.settings.gap }}px;
+      {%- render 'gap-style', value: bl_stts.gap -%}
       --total-blocks: {{ block.blocks.size | plus: 2 }};
-      {% if block.settings.inherit_color_scheme == false %}
-        {% render 'color-scheme-style', settings: block.settings %}
-      {% endif %}
+      {%- if bl_stts.inherit_color_scheme == false -%}
+        {%- render 'color-scheme-style', settings: bl_stts -%}
+      {%- endif -%}
     "
   >
     <template>
@@ -56,7 +62,6 @@
       id: 'card-product-information',
       closest.product: product
     %}
-
     {% content_for 'blocks' %}
   </div>
 </div>
