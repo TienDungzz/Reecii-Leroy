@@ -26,9 +26,11 @@
 >
   <div class="{{ cart_product_inner_class }}">
     {% content_for 'block', id: 'cart-product', type: '_cart-product' %}
-    {% content_for 'block', id: 'cart-gift-card', type: '_cart-gift-card' %}
-    {% content_for 'block', id: 'cart-note', type: '_cart-note' %}
-    {% content_for 'blocks' %}
+    {%- unless cart.empty? -%}
+      {% content_for 'block', id: 'cart-gift-card', type: '_cart-gift-card' %}
+      {% content_for 'block', id: 'cart-note', type: '_cart-note' %}
+      {% content_for 'blocks' %}
+    {%- endunless -%}
   </div>
 </div>
 

@@ -1,4 +1,6 @@
-<span class="cart-shipping-calculator--title block font-bold" style="--mb: var(--size-18)">{{ 'content.calculator_shipping.title' | t }}</span>
+{% if hidden_label != true %}
+  <span class="cart-shipping-calculator--title block font-bold" style="--mb: var(--size-18)">{{ 'content.calculator_shipping.title' | t }}</span>
+{% endif %}
 <form class="shipping-calculator-form customer" action="{{ routes.cart_url }}" method="POST" novalidate is="shipping-calculator-component">
   <div class="grid gap-xl">
     <country-province-component
@@ -65,7 +67,7 @@
         <label for="ShippingCalculatorZip-{{ block.id }}" class="field__label">{{ 'customer.addresses.zip' | t }}</label>
       </div>
     </country-province-component>
-    <button class="button button--secondary w-full" type="submit">
+    <button class="button button-secondary w-full" type="submit">
       <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.calculator_shipping.button' | t }}">
         <span class="button-text-main inline-block relative z-1">
           {{- 'content.calculator_shipping.button' | t -}}

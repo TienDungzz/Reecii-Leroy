@@ -2329,7 +2329,7 @@ class Wishlist extends HTMLElement {
           wishlistContainer.classList.add("is-empty");
           wishlistContainer.innerHTML = `
             <div class="page-margin wishlist-content-empty center">
-              <span class="wishlist-content-text">${window.wishlist.empty}</span>
+              <span class="wishlist-content-text block">${window.wishlist.empty}</span>
               <div class="wishlist-content-actions">
                 <a class="button" href="${window.routes.collection_all}">
                   ${window.wishlist.continue_shopping}

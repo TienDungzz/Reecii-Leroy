@@ -54,7 +54,9 @@
           {{ 'products.product.info.availability' | t }}
         </span>
         <span class="product-info-value">
-          {% if current_variant.inventory_management %}
+          {% if current_variant.inventory_policy == 'continue' %}
+            {{ 'products.product.pre_order' | t }}
+          {% elsif current_variant.inventory_management %}
             {%- assign first_inventory = current_variant.inventory_quantity -%}
             {%- if first_inventory > 0 -%}
               {% if bl_stts.stock_level_display == 'show' %}{{ first_inventory }} {% endif %}

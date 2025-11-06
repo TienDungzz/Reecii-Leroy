@@ -189,7 +189,7 @@
                     style="--popup-max-height: 50dvh;"
                   >
                     <div class="modal-header flex justify-between items-center relative">
-                      <span class="modal-header__title">{{ 'content.note' | t }}</span>
+                      <span class="modal-header__title block font-bold">{{ 'content.note' | t }}</span>
                       <button
                         class="modal__close block t-button bor-none rounded-full cursor-pointer button-close-circle"
                         type="button"
@@ -211,15 +211,6 @@
                           placeholder="{{ 'content.note' | t }}"
                         >{{ cart.note }}</textarea>
                       </cart-note>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="button button--full-width" data-drawer-toggle="#Drawer-CartNote">
-                        <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'actions.save' | t }}">
-                          <span class="button-text-main inline-block relative z-1">
-                            {{- 'actions.save' | t -}}
-                          </span>
-                        </span>
-                      </button>
                     </div>
                   </div>
                 </modal-component>
@@ -245,12 +236,12 @@
                       <span class="svg-wrapper">
                         {{- 'icon-gift-card.svg' | inline_asset_content -}}
                       </span>
-                      <h4 class="modal-content__title" style="--mt: 1rem;">{{ 'content.cart.gift_wrapping_title' | t }}</h4>
+                      <span class="modal-header__title block font-bold" style="--mt: 1rem;">{{ 'content.cart.gift_wrapping_title' | t }}</span>
                     </div>
                     <div class="modal-footer flex flex-column gap-md">
                       {% render 'cart-gift-card', gift_card_type: 'cart-drawer' %}
                       <button
-                        class="button button--full-width cursor-pointer"
+                        class="button-secondary button--full-width cursor-pointer"
                         type="button"
                         aria-label="{{ 'content.cancel' | t }}"
                         data-drawer-toggle="#Drawer-CartGiftCard"
@@ -279,7 +270,7 @@
                     style="--popup-max-height: 50dvh;"
                   >
                     <div class="modal-header flex justify-between items-center relative">
-                      <span class="modal-header__title">{{ 'content.calculator_shipping.shipping' | t }}</span>
+                      <span class="modal-header__title block font-bold">{{ 'content.calculator_shipping.shipping' | t }}</span>
                       <button
                         class="modal__close block t-button bor-none rounded-full cursor-pointer button-close-circle"
                         type="button"
@@ -292,7 +283,7 @@
                       </button>
                     </div>
                     <div class="modal-content">
-                      {% render 'cart-shipping-calculator' %}
+                      {% render 'cart-shipping-calculator' hidden_label: true %}
                     </div>
                   </div>
                 </modal-component>
@@ -315,7 +306,7 @@
                     style="--popup-max-height: 50dvh;"
                   >
                     <div class="modal-header flex justify-between items-center relative">
-                      <span class="modal-header__title">{{ 'content.add_coupon' | t }}</span>
+                      <span class="modal-header__title block font-bold">{{ 'content.add_coupon' | t }}</span>
                       <button
                         class="modal__close block t-button bor-none rounded-full cursor-pointer button-close-circle"
                         type="button"
@@ -328,7 +319,7 @@
                       </button>
                     </div>
                     <div class="modal-content">
-                      {% render 'cart-discounts', section: section %}
+                      {% render 'cart-discounts', section: section, hidden_label: true %}
                     </div>
                   </div>
                 </modal-component>
@@ -404,21 +395,10 @@
             <!-- CTAs -->
 
             <div class="cart__ctas cart__ctas-drawer" {{ block.shopify_attributes }}>
-              <a
-                href="{{ routes.cart_url }}"
-                id="CartDrawer-Viewcart"
-                class="cart__viewcart-button button button--full-width"
-              >
-                <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.cart.view_empty_cart' | t }}">
-                  <span class="button-text-main inline-block relative z-1">
-                    {{- 'content.cart.view_empty_cart' | t -}}
-                  </span>
-                </span>
-              </a>
               <button
                 type="submit"
                 id="CartDrawer-Checkout"
-                class="cart__checkout-button button button--secondary button--full-width"
+                class="cart__checkout-button button button--full-width"
                 name="checkout"
                 form="CartDrawer-Form"
                 {% if cart == empty %}
@@ -431,6 +411,17 @@
                   </span>
                 </span>
               </button>
+              <a
+                href="{{ routes.cart_url }}"
+                id="CartDrawer-Viewcart"
+                class="cart__viewcart-button button button-secondary button--full-width"
+              >
+                <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.cart.view_empty_cart' | t }}">
+                  <span class="button-text-main inline-block relative z-1">
+                    {{- 'content.cart.view_empty_cart' | t -}}
+                  </span>
+                </span>
+              </a>
             </div>
           </div>
         </div>

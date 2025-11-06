@@ -42,31 +42,31 @@
     price-product-container
     price
     {%- if selected_variant.available == false %} price--sold-out{% endif -%}
-    {%- if compare_at_price > price and selected_variant.quantity_price_breaks_configured? != true %} price--on-sale{% endif -%}
-    {%- if compare_at_price > price and selected_variant.quantity_price_breaks_configured? %} volume-pricing--sale-badge{% endif -%}
+    {%- if show_compare_price and selected_variant.quantity_price_breaks_configured? != true %} price--on-sale{% endif -%}
+    {%- if show_compare_price and selected_variant.quantity_price_breaks_configured? %} volume-pricing--sale-badge{% endif -%}
     {%- if selected_variant.price_varies == false and selected_variant.compare_at_price_varies %} price--no-compare{% endif -%}
   "
 >
   {% if show_sale_price_first == false and show_compare_price %}
     <span role="group">
       <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
-      <span class="compare-at-price price-item price-item--sale price-item--last">{{- compare_at_price -}}</span>
+      <span class="compare-at-price price-item price-item--regular">{{- compare_at_price -}}</span>
     </span>
   {% endif %}
 
   {% if show_compare_price %}
     <span role="group">
       <span class="visually-hidden">{{ 'content.price_sale' | t }}&nbsp;</span>
-      <span class="price price-item price-item--regular">{{ price | default: '&nbsp;' }}</span>
+      <span class="price price-item price-item--sale price-item--last">{{ price | default: '&nbsp;' }}</span>
     </span>
   {% else %}
-    <span class="price price-item price-item--regular">{{ price | default: '&nbsp;' }}</span>
+    <span class="price price-item price-item--sale price-item--last">{{ price | default: '&nbsp;' }}</span>
   {% endif %}
 
   {% if show_sale_price_first == true and show_compare_price %}
     <span role="group">
       <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
-      <span class="compare-at-price price-item price-item--sale price-item--last">{{- compare_at_price -}}</span>
+      <span class="compare-at-price price-item price-item--regular">{{- compare_at_price -}}</span>
     </span>
   {% endif %}
 

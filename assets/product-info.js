@@ -366,6 +366,38 @@ if (!customElements.get('product-info')) {
           const variant = this.getSelectedVariant(html);
 
           this.pickupAvailability?.update(variant);
+
+          try {
+            const pid = String(this.dataset?.productId || '').trim();
+            if (pid && variant?.id) {
+              const policyKey = `product_inventory_policy_array_${pid}`;
+              const qtyKey = `product_inventory_array_${pid}`;
+              if (!window[policyKey]) window[policyKey] = {};
+              if (!window[qtyKey]) window[qtyKey] = {};
+
+              if (variant?.inventory_policy) {
+                window[policyKey][variant.id] = variant.inventory_policy;
+              } else {
+                const quantityInputUpdated = html.querySelector(`#Quantity-Form-${this.sectionId} .quantity__input`)
+                  || html.querySelector(`#product-form-${this.sectionId} .quantity__input`);
+                const policyAttr = quantityInputUpdated?.getAttribute('data-inventory-policy');
+                if (policyAttr) window[policyKey][variant.id] = policyAttr;
+              }
+
+              let qty = typeof variant?.inventory_quantity !== 'undefined' ? Number(variant.inventory_quantity) : NaN;
+              if (Number.isNaN(qty)) {
+                const quantityInputUpdated = html.querySelector(`#Quantity-Form-${this.sectionId} .quantity__input`)
+                  || html.querySelector(`#product-form-${this.sectionId} .quantity__input`);
+                const qtyAttr = quantityInputUpdated?.getAttribute('data-inventory-quantity');
+                qty = typeof qtyAttr !== 'undefined' && qtyAttr !== null ? Number(qtyAttr) : NaN;
+              }
+              if (!Number.isNaN(qty)) {
+                window[qtyKey][variant.id] = qty;
+              }
+            }
+          } catch (e) {
+            // silent
+          }
           this.updateOptionValues(html);
           this.updateURL(productUrl, variant?.id);
           this.updateVariantInputs(variant?.id);
@@ -433,22 +465,8 @@ if (!customElements.get('product-info')) {
 
           this.handleHotStock(this);
           this.handleBackInStockAlert(this);
-          this.updateAddButtonText(this, variant);
+          this.updateAddButtonText(this);
         };
-      }
-
-      setInventoryPolicyCache(productId, variant) {
-        try {
-          const pid = String(productId || this.dataset?.productId || '').trim();
-          if (!pid || !variant) return;
-          const key = `product_inventory_policy_array_${pid}`;
-          if (!window[key]) window[key] = {};
-          if (variant?.id && variant?.inventory_policy) {
-            window[key][variant.id] = variant.inventory_policy;
-          }
-        } catch (e) {
-          // silent
-        }
       }
 
       updateVariantStatuses(target) {
@@ -760,34 +778,19 @@ if (!customElements.get('product-info')) {
         }
       }
 
-      updateAddButtonText(data, variant = null) {
+      updateAddButtonText(data) {
         const productForms = document.querySelectorAll(
           `#product-form-${this.dataset.section}`
         );
 
         const variantId = data.productForm?.variantIdInput?.value;
         const productId = data.dataset.productId;
-        
-        // Get variant from parameter, or from selected variant data if not provided
-        if (!variant && variantId) {
-          variant = this.getSelectedVariant(this);
-        }
-
-        console.log('variantssssss', variant);
-
-        // Cache inventory policy if variant is available
-        if (variant) {
-          this.setInventoryPolicyCache(productId, variant);
-        }
 
         const inventoryMapKey = `product_inventory_array_${productId}`;
         const inventoryPolicyMapKey = `product_inventory_policy_array_${productId}`;
         const inventoryMap = window[inventoryMapKey] || {};
-        const inventoryPolicyCache = window[inventoryPolicyMapKey] || {};
         const inventoryQuantity = variantId ? Number(inventoryMap[variantId]) || 0 : 0;
-        const inventoryPolicy = variantId && inventoryPolicyCache[variantId] 
-          ? inventoryPolicyCache[variantId] 
-          : (variant?.inventory_policy || 'deny');
+        const inventoryPolicy = variantId ? window[inventoryPolicyMapKey][variantId] : 'deny';
 
         productForms.forEach((productForm, index) => {
           if (!productForm) return;

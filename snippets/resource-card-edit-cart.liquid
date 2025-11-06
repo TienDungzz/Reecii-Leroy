@@ -4,10 +4,9 @@
     assign variantCount = product.variants | size
   -%}
   <script>
+    {% assign selected_variant = current_variant %}
     window.edit_cart_inven_array_{{ product.id }} = {
-        {% for variant in product.variants %}
-            '{{ variant.id }}': '{{ variant.inventory_quantity }}',
-        {%endfor%}
+      '{{ selected_variant.id }}': '{{ selected_variant.inventory_quantity }}',
     };
   </script>
   <div

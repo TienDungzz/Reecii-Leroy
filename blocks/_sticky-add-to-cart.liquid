@@ -74,7 +74,7 @@ style="
         <div class="large-up-hide medium-hide">
           <div class="sticky-atc__info">
             <div class="sticky-atc__title">
-              <h5 class="{{ type_preset }}">{{ product.title | escape }}</h5>
+              <span class="block font-bold {{ type_preset }}">{{ product.title | escape }}</span>
             </div>
             <div class="sticky-atc__price">
               {%- render 'price', product: product, use_variant: true, show_badges: false, price_class: 'price--large'-%}
@@ -94,10 +94,12 @@ style="
         </div>
         <div class="sticky-atc__info">
           <div class="sticky-atc__title">
-            <h5 class="{{ type_preset }}">{{ product.title | escape }}</h5>
+            <span class="block font-bold {{ type_preset }}">{{ product.title | escape }}</span>
           </div>
           <div class="sticky-atc__price">
-            {%- render 'price', product: product, use_variant: true, show_badges: false, price_class: 'price--large'-%}
+            <product-price>
+              {%- render 'price-product', product_resource: product, show_unit_price: true, show_sale_price_first: true -%}
+            </product-price>
           </div>
         </div>
       </div>
@@ -162,6 +164,7 @@ style="
               form="{{ product_form_id }}"
               {% if product.selected_or_first_available_variant.available == false or quantity_rule_soldout %}disabled{% endif %}
               data-inventory-quantity="{{ product.selected_or_first_available_variant.inventory_quantity }}"
+              data-inventory-policy="{{ product.selected_or_first_available_variant.inventory_policy }}"
             >
               {%- render 'loading-spinner' -%}
               {%- if product.selected_or_first_available_variant.available == false or quantity_rule_soldout -%}

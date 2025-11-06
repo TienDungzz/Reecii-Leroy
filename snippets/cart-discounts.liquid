@@ -2,6 +2,7 @@
   Renders a cart discount form.
 
   @param {string} section.id - The section ID
+  @param {boolean} hidden_label - Whether to hide the label
 {%- enddoc -%}
 
 {% liquid
@@ -21,7 +22,9 @@
   data-section-id="{{ section.id }}"
 >
   <div class="cart-discount__content">
-    <span class="cart-discount__content-title block font-bold" style="--mb: var(--size-9)">{{ 'content.coupon_code' | t }}</span>
+    {% if hidden_label != true %}
+      <span class="cart-discount__content-title block font-bold" style="--mb: var(--size-9)">{{ 'content.coupon_code' | t }}</span>
+    {% endif %}
     <form
       class="cart-discount__form customer"
       autocomplete="off"
