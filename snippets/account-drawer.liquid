@@ -16,7 +16,7 @@
       class="drawer__header flex justify-between items-center relative"
       style="--gap-x: 1rem;--p: var(--padding-lg) 0;"
     >
-      <h5 class="drawer__heading break m-0">
+      <h2 class="drawer__heading break m-0 h5">
         {%- liquid
           if customer
             echo 'Hi, ' | append: customer.name | default: 'Guest'
@@ -24,14 +24,16 @@
             echo 'Login'
           endif
         -%}
-      </h5>
+      </h2>
       <button
         class="drawer__close block t-button bor-none rounded-full cursor-pointer"
         type="button"
         onclick="this.closest('side-drawer').close()"
         aria-label="Close Account Drawer"
       >
-        {{- 'icon-close.svg' | inline_asset_content -}}
+        <span class="svg-wrapper">
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </span>
       </button>
     </div>
 
@@ -135,7 +137,7 @@
                   </span>
                 </a>
               </div>
-              <div style="--mt: var(--margin-6xl);">
+              <div style="--mt: var(--margin-2xl);">
                 <a
                   href="{{ routes.account_register_url }}"
                   class="button size-style button-secondary w-full"

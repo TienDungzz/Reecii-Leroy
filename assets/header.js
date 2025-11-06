@@ -20,8 +20,8 @@ class HeaderComponent extends HTMLElement {
       this.observeStickyPosition(this.stickyMode === "always");
 
       if (this.stickyMode === "scroll-up" || this.stickyMode === "always") {
-        // document.addEventListener("scroll", this.handleWindowScroll.bind(this));
-        document.addEventListener("scroll", theme.utils.rafThrottle(this.handleWindowScroll.bind(this)));
+        document.addEventListener("scroll", this.handleWindowScroll.bind(this));
+        // document.addEventListener("scroll", theme.utils.rafThrottle(this.handleWindowScroll.bind(this)));
       }
     }
   }
@@ -83,7 +83,7 @@ class HeaderComponent extends HTMLElement {
     }
 
     if (this.stickyMode === "always") {
-      const isAtTop = this.getBoundingClientRect().top >= 0;
+      const isAtTop = this.getBoundingClientRect().top >= this.getBoundingClientRect().height;
 
       if (isAtTop) {
         this.dataset.scrollDirection = "none";

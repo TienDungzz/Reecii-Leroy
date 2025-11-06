@@ -2,6 +2,7 @@
   id="Drawer-Search"
   class="search-drawer drawer__container search-drawer--{{ search_type }} drawer fixed top-0 left-0 w-screen h-full z-9 flex no-js-hidden"
   data-drawer-direction="right"
+  data-mobile-drawer-direction="left"
 >
   <div id="Drawer-Overlay-Search" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
 
@@ -10,14 +11,18 @@
     class="search-drawer-content{% if variant == 'mobile' %} color-{{ color_scheme }}{% endif %}"
     data-drawer-content
   >
-    <side-drawer-close href="#" class="drawer__close absolute cursor-pointer" data-side-drawer="#Drawer-Search">
-      <button class="button--drawer focus-inset">
-        <span class="svg-wrapper">
-          {{- 'icon-close.svg' | inline_asset_content -}}
-        </span>
-        <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
-      </button>
-    </side-drawer-close>
+    <div class="drawer__header flex justify-between items-center relative" style="--p: var(--padding-lg);">
+      <h2 class="drawer__heading break m-0 h5">{{ 'content.search' | t }}</h2>
+      <side-drawer-close href="#" class="drawer__close cursor-pointer" data-side-drawer="#Drawer-Search">
+        <button class="button--drawer focus-inset">
+          <span class="svg-wrapper">
+            {{- 'icon-close.svg' | inline_asset_content -}}
+          </span>
+          <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+        </button>
+      </side-drawer-close>
+    </div>
+
     <div
       class="search-drawer__inner drawer__inner"
       role="dialog"
