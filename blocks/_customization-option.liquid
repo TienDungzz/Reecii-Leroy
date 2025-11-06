@@ -1,5 +1,8 @@
-<div class="customization-option product-property spacing-style"
-  style="{% render 'spacing-style', settings: block.settings %}"
+<div class="customization-option layout-panel-flex product-property spacing-style"
+  style="
+    {% render 'spacing-style', settings: block.settings %}
+    {% render 'gap-style', value: block.settings.gap, scale_min: 0  %}
+  "
 >
   {% content_for 'blocks' %}
 </div>
@@ -16,6 +19,20 @@
     }
   ],
   "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
     {
       "type": "header",
       "content": "t:content.padding"

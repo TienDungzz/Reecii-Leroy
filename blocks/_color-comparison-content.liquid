@@ -18,14 +18,11 @@
       assign color = ''
     -%}
     {%- if variantCount > 1 and product.variants.first.title != 'Default Title' -%}
-      <ul class="compare-colors-list hoanghiepne-{{ product.options_with_values[1].name }} list-unstyled left flex flex-wrap items-center justify-start">
-        {%- for variant in product.variants -%}
-          {%- assign color = variant.options[index] -%}
-          {%- assign color_check = color | prepend: "|" | append: "|" -%}
-          {%- unless colorList contains color_check -%}
+      <ul class="compare-colors-list list-unstyled left flex flex-wrap items-center justify-start">
+        {%- for color in product.options_with_values[index].values -%}
             {%- liquid
-              assign text = color | handleize
               assign enable_variant_image = false
+              assign variant = color.variant
               case swatch_type
                 when 'variant_image'
                   assign background_image = variant.image.src | image_url: width: '40x'
@@ -76,11 +73,6 @@
                 <span class="tooltip center absolute bottom-full  left-0  z-1 whitespace-nowrap capitalize text-sm">{{ color | escape }}</span>
               </div>
             </li>
-            {% capture tempList %}
-              {{- colorList | append: color | append: '|' -}}
-            {% endcapture %}
-            {% assign colorList = tempList %}
-          {%- endunless -%}
         {%- endfor -%}
       </ul>
     {%- endif -%}
