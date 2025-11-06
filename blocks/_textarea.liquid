@@ -5,7 +5,7 @@
     assign pb = block.settings.padding_bottom
 
     assign label = block.settings.label
-    assign label_name = label | handleize
+   
     assign border_style = block.settings.border_style
     assign is_required = block.settings.is_required
     assign placeholder = block.settings.placeholder
@@ -17,6 +17,12 @@
     assign input_alignment = block.settings.input_alignment
     assign label_type_preset = block.settings.label_type_preset
     assign form_row_width = block.settings.form_row_width
+
+    if label == blank or show_label == false
+      assign label_name = placeholder | handleize | append: '-textarea'
+    else 
+      assign label_name = label | handleize
+    endif
 %}
 
 {%- capture attr -%}
@@ -44,17 +50,19 @@ style="
 {% schema %}
 {
   "name": "Textarea",
+  "tag": null,
   "settings": [
-    {
-      "type": "text",
-      "id": "label",
-      "label": "t:settings.label"
-    },
     {
       "type": "checkbox",
       "id": "show_label",
       "label": "t:settings.show_label",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:settings.label",
+      "visible_if": "{{ block.settings.show_label == true }}"
     },
     {
       "type": "select",

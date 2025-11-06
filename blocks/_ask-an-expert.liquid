@@ -68,9 +68,10 @@
         {% content_for 'block', type: '_divider', id: 'divider-2' %}
         {% content_for 'block', type: 'text', id: 'text' %}
       </div>
-      <contact-form class="block-contact-form" id="{{ form_id }}">
+      <contact-form class="block-contact-form" id="{{ form_id }}--block">
         {%- form 'contact', id: form_id -%}
           {% content_for 'blocks' %}
+          <div class="block w-full" style="--mt: {{ block_settings.button_margin_top }}px;"></div>
           <button class="button{% if button_style == 'outline' %}-secondary{% endif %} whitespace-nowrap" type="submit">{{ button_label }}</button>
         {%- endform -%}
       </contact-form>
@@ -419,6 +420,20 @@
         }
       ],
       "default": "default"
+    },
+    {
+      "type": "header",
+      "content": "t:content.margin"
+    },
+    {
+      "type": "range",
+      "id": "button_margin_top",
+      "label": "t:settings.spacing_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
     },
     {
       "type": "header",
