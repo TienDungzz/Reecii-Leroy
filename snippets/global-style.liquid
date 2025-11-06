@@ -147,8 +147,14 @@
       --arrow-color-rgb: {{ scheme.settings.arrow_color.rgb }};
       --arrow-color-hover: rgb({{ scheme.settings.arrow_color_hover.rgba }});
       --arrow-color-hover-rgb: {{ scheme.settings.arrow_color_hover.rgb }};
-      --arrow-background: rgb({% if scheme.settings.arrow_background.rgba != '0 0 0 / 0.0' %}{{ scheme.settings.arrow_background.rgba }}{% else %}var(--color-background-rgb){% endif %});
-        --thinh-test: {{ scheme.settings.arrow_background.rgba }};
+
+      {% if scheme.settings.arrow_background.alpha != 0.0 %}
+        --thinh-test: transparent;
+        --arrow-background: rgb({{ scheme.settings.arrow_background.rgba }});
+      {%- else -%}
+        --arrow-background: rgb(var(--color-background-rgb));
+      {% endif %}
+
       --arrow-background-rgb: {{ scheme.settings.arrow_background.rgb }};
       --arrow-border: rgb({{ scheme.settings.arrow_border.rgba }});
       --arrow-background-hover: rgb({{ scheme.settings.arrow_background_hover.rgba }});

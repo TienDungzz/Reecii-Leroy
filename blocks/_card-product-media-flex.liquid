@@ -1,8 +1,9 @@
 {%- liquid
   assign section_id = section.id
-  assign card_product = block.settings.product
-  assign media_aspect_ratio = block.settings.image_ratio
-  assign show_secondary_image = block.settings.show_secondary_image
+  assign bl_stts = block.settings
+  assign card_product = bl_stts.product
+  assign media_aspect_ratio = bl_stts.image_ratio
+  assign show_secondary_image = bl_stts.show_secondary_image
   assign ratio = 1
   if card_product.featured_media and media_aspect_ratio == 'portrait'
     assign ratio = 0.8
@@ -70,10 +71,10 @@
 {%- if card_product and card_product != empty -%}
   {%- if card_product.featured_media -%}
     <div
-      class="card--block-media overflow-hidden card-badge-is-{{ check_pos_badge }} relative group-block w-full{% if block.settings.border != 'none' %} border-style{% endif %}"
+      class="card--block-media overflow-hidden card-badge-is-{{ check_pos_badge }} relative group-block w-full{% if bl_stts.border != 'none' %} border-style{% endif %}"
       style="
-        {%- if block.settings.width_option == 'custom' -%}--globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}
-        {% if block.settings.border != 'none' %}{% render 'border-override', settings: block.settings %}{% endif %}
+        {%- if bl_stts.width_option == 'custom' -%}--globalGroupWidth: {{ bl_stts.custom_width }}%;{%- endif -%}
+        {%- if bl_stts.border != 'none' -%}{%- render 'border-override', settings: bl_stts -%}{% endif -%}
         "
       >
       <div class="ratio" style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;">
@@ -99,7 +100,7 @@
   <div
     class="group-block media-block card__inner{% if settings.card_style == 'standard' %} color-{{ settings.card_color_scheme }}{% endif %} ratio"
     data-cart-media
-    style="--ratio-percent: 100%;{%- if block.settings.width_option == 'custom' -%} --globalGroupWidth: {{ block.settings.custom_width }}%;{%- endif -%}"
+    style="--ratio-percent: 100%;{%- if bl_stts.width_option == 'custom' -%} --globalGroupWidth: {{ bl_stts.custom_width }}%;{%- endif -%}"
   >
     <div class="card__media">
       <div class="media media--transparent">

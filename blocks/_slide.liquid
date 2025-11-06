@@ -129,17 +129,18 @@
 
     {% assign media_count = media_count | plus: 1 %}
     {%- if block_stts.video_1.preview_image -%}
+      {%- assign video_preview_image_alt = block_stts.video_1.preview_image.alt |  default: 'Video preview image' -%}
       {{
         block_stts.video_1.preview_image
         | image_url: width: 3840
         | image_tag:
-          height: height_video_1,
-          sizes: lazy_sizes,
           widths: widths,
           loading: loading,
           class: 'slide__video-poster',
-          alt: block_stts.video_1.preview_image.alt |  default: 'Video preview image',
-          fetchpriority: fetchpriority
+          sizes: lazy_sizes,
+          fetchpriority: fetchpriority,
+          height: height_video_1,
+          alt: video_preview_image_alt
       }}
     {%- endif -%}
 

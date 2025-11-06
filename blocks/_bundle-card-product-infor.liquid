@@ -1,32 +1,25 @@
-{%- stylesheet -%}
-  .card-product-information {
-    height: auto;
-  }
-{%- endstylesheet -%}
+{%- capture card_product_information_class -%}
+  card-product-information group-block w-full flex
+  group-block--{{block.id}}
+  {% if block.settings.inherit_color_scheme == false %}color-scheme-custom{% endif %}
+  layout-panel-flex
+  layout-panel-flex--{{ block.settings.content_direction | default: 'column' }}
+  mobile-{{ block.settings.content_direction_mobile | default: 'column' }}
+{%- endcapture -%}
 
 <div
-  class="
-    card-product-information group-block w-full flex
-    group-block--{{block.id}}
-    {% if block.settings.inherit_color_scheme == false %}color-scheme-custom{% endif %}
-    layout-panel-flex
-    layout-panel-flex--{{ block.settings.content_direction | default: 'column' }}
-    mobile-{{ block.settings.content_direction_mobile | default: 'column' }}
-  "
+  class="{{ card_product_information_class | strip | strip_newlines }}"
   style="
-    --pl:{{ block.settings.padding_left }}px;
-    --pr:{{ block.settings.padding_right }}px;
-    --pt:{{ block.settings.padding_top }}px;
-    --pb:{{ block.settings.padding_bottom }}px;
+    {%- render 'block-padding', settings: block.settings -%}
     {%- if block.settings.width_option == 'custom' -%}
       --globalGroupWidth: {{ block.settings.custom_width }}%;
     {%- endif -%}
     {%- render 'gap-style', value: block.settings.gap_x, name: 'gap-x' -%}
     {%- render 'gap-style', value: block.settings.gap_y, name: 'gap-y' -%}
-    {% render 'layout-panel-style', settings: block.settings, scale_min: 8 %}
-    {% if block.settings.inherit_color_scheme == false %}
-      {% render 'color-scheme-style', settings: block.settings %}
-    {% endif %}
+    {%- render 'layout-panel-style', settings: block.settings, scale_min: 8 -%}
+    {%- if block.settings.inherit_color_scheme == false -%}
+      {%- render 'color-scheme-style', settings: block.settings -%}
+    {%- endif -%}
   "
 >
   {% content_for 'block', type: '_bundle-card-product-title', id: 'bundle-card-product-title' %}
@@ -383,7 +376,7 @@
       "max": 100,
       "step": 1,
       "default": 0,
-      "label": "t:settings.bottom" 
+      "label": "t:settings.bottom"
     },
     {
       "type": "range",

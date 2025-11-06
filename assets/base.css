@@ -1776,9 +1776,10 @@ details>* {
   box-sizing: border-box;
 }
 
-.break {
+/* duplicate break-word class => REMOVE THIS */
+/* .break {
   word-break: break-word;
-}
+} */
 
 .visibility-hidden {
   position: absolute !important;
@@ -3015,6 +3016,7 @@ details[open]>.share-button__fallback {
   position: absolute;
   color: rgb(var(--color-foreground-rgb) / var(--opacity-75));
   transition: top var(--duration-medium) var(--ease-out-cubic),
+  left var(--duration-medium) var(--ease-out-cubic),
     font-size var(--duration-medium) var(--ease-out-cubic),
     letter-spacing var(--duration-medium) var(--ease-out-cubic);
 }
@@ -3357,10 +3359,11 @@ details[open]>.share-button__fallback {
   padding: 0.4rem 0.8rem;
   border-radius: var(--quantity-radius);
   white-space: nowrap;
-  opacity: 0;
+  opacity: var(--opacity-0);
   visibility: hidden;
-  transition: opacity 0.15s ease, visibility 0.15s ease;
+  transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
   z-index: 10;
+  transform: translateX(-50%) translateY(-0.5rem);
 }
 
 .quantity__tooltip:after {
@@ -3376,8 +3379,9 @@ details[open]>.share-button__fallback {
 
 .quantity__tooltip-trigger:hover .quantity__tooltip,
 .quantity__tooltip-trigger:focus .quantity__tooltip {
-  opacity: 1;
+  opacity: var(--opacity-100);
   visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 .product__info-container .loading__spinner:not(.hidden)~*,
@@ -7322,7 +7326,7 @@ img {
 
 .header__icon--text .wishlist-count-bubble {
   top: -1.2rem;
-  left: 100%;
+  left: unset;
   transform: none;
 }
 
@@ -7711,6 +7715,9 @@ section-fetcher {
 }
 
 .button-close-circle {
+  &.button-unstyled {
+    overflow: visible;
+  }
   @media (hover: hover) {
     transition: transform var(--animation-speed) var(--animation-easing);
     will-change: transform;

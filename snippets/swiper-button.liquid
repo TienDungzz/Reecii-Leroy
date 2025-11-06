@@ -58,13 +58,13 @@
 
 
 <hover-button class="swiper-button swiper-button-prev {{ class_prev }}">
-  <span class="fill-bg" data-fill-bg></span>
+  <span class="fill-bg absolute" data-fill-bg></span>
   <span class="svg-wrapper">
     {%- render 'icon-arrow' -%}
   </span>
 </hover-button>
 <hover-button class="swiper-button swiper-button-next {{ class_next }}">
-  <span class="fill-bg" data-fill-bg></span>
+  <span class="fill-bg absolute" data-fill-bg></span>
   <span class="svg-wrapper">
     {%- render 'icon-arrow' -%}
   </span>
@@ -81,10 +81,16 @@
       z-index: -1;
       border-radius: var(--arrow-radius);
     }
+
+    @media (hover: hover) {
+      &:hover {
+        --arrow-color: var(--arrow-color-hover);
+        --arrow-background: var(--arrow-background-hover);
+      }
+    }
   }
 
   .swiper-button .fill-bg {
-    position: absolute;
     background-color: var(--arrow-color);
     z-index: -2;
     inset: -1px;

@@ -22,37 +22,40 @@
 {% enddoc %}
 
 {%- liquid
-  assign card_product = block.settings.product
+  assign bl_stts = block.settings
+  assign card_product = bl_stts.product
 -%}
 
+{%- capture product_card_class -%}
+  card
+  card--quickadd-type-{{ settings.quick_add_type }}
+  {% if card_product.featured_media %} card--media{% else %} card--text{% endif %}
+  flex-{{ bl_stts.content_direction }}
+  flex-{{ bl_stts.wrap }}
+  items-{{ bl_stts.align_items}}
+  justify-{{ bl_stts.justify_content }}
+  gap-style
+  spacing-style
+  border-style
+{%- endcapture -%}
+
 <div
-  class="card--block card-wrapper product-card-wrapper{% if block.settings.inherit_color_scheme == false %} color-scheme-custom{% endif %} size-style"
+  class="card--block card-wrapper product-card-wrapper{% if bl_stts.inherit_color_scheme == false %} color-scheme-custom{% endif %} size-style"
   style="
-    {% render 'size-style', settings: block.settings %}
-    {% if block.settings.inherit_color_scheme == false %}
-      {% render 'color-scheme-style', settings: block.settings %}
-    {% endif %}
+    {%- render 'size-style', settings: bl_stts -%}
+    {%- if bl_stts.inherit_color_scheme == false- %}
+      {% render 'color-scheme-style', settings: bl_stts -%}
+    {%- endif -%}
   "
   data-product-card-id="{{ card_product.id }}"
 >
   <div
-    class="
-      card
-      card--quickadd-type-{{ settings.quick_add_type }}
-      {% if card_product.featured_media %} card--media{% else %} card--text{% endif %}
-      flex-{{ block.settings.content_direction }}
-      flex-{{ block.settings.wrap }}
-      items-{{ block.settings.align_items}}
-      justify-{{ block.settings.justify_content }}
-      gap-style
-      spacing-style
-      border-style
-    "
-    style="{% render 'gap-style', value: block.settings.gap %} {% render 'spacing-style', settings: block.settings, scale_min: 10 %} {% render 'border-override', settings: block.settings %}"
+    class="{{ product_card_class | strip | strip_newlines }}"
+    style="{% render 'gap-style', value: bl_stts.gap %} {% render 'spacing-style', settings: bl_stts, scale_min: 10 %} {% render 'border-override', settings: bl_stts %}"
   >
     <template>
       <div
-        data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'
+        data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{card_product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'
       ></div>
     </template>
     {% content_for 'blocks' %}

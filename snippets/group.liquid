@@ -49,20 +49,22 @@
   {% endif %}
 {% endcapture %}
 
+{%- capture group_block_class -%}
+  group-block relative
+  group-block--height-{{ settings.height }}
+  group-block--width-{{ settings.width }}
+  {% if settings.border != 'none' %}border-style{% endif %}
+  spacing-style
+  size-style
+  shadow-style
+  {% if settings.content_overlay %}group-block--content-overlay{% endif %}
+  {% if settings.inherit_color_scheme == false %}color-{{ settings.color_scheme }}{% endif %}
+  {% if settings.inherit_color_scheme == false %}color-scheme-custom{% endif %}
+  {{ class }}
+{%- endcapture -%}
+
 <{{ element }}
-  class="
-    group-block relative
-    group-block--height-{{ settings.height }}
-    group-block--width-{{ settings.width }}
-    {% if settings.border != 'none' %}border-style{% endif %}
-    spacing-style
-    size-style
-    shadow-style
-    {% if settings.content_overlay %}group-block--content-overlay{% endif %}
-    {% if settings.inherit_color_scheme == false %}color-{{ settings.color_scheme }}{% endif %}
-    {% if settings.inherit_color_scheme == false %}color-scheme-custom{% endif %}
-    {{ class }}
-  "
+  class="{{ group_block_class | strip | strip_newlines }}"
   style="
     {% if settings.border != 'none' %}
       {% render 'border-override', settings: settings %}
@@ -111,7 +113,7 @@
   <div
     class="
       group-block-content relative
-      {% if request.design_mode %}group-block-content--design-mode{% endif %}
+      {%- if request.design_mode %} group-block-content--design-mode{% endif %}
       layout-panel-flex
       layout-panel-flex--{{ settings.content_direction | default: 'column' }}
       {% if settings.content_direction_tablet %}
@@ -120,7 +122,7 @@
       mobile-{{ settings.content_direction_mobile | default: 'column' }}
       {{ class_content }}
     "
-    style="{% render 'layout-panel-style', settings: settings, scale_min: 0 %}"
+    style="{%- render 'layout-panel-style', settings: settings, scale_min: 0 -%}"
   >
     {{- children -}}
   </div>
