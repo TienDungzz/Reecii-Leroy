@@ -14,8 +14,6 @@
 
 {%- liquid
   assign product_form_id = 'product-form-' | append: block.id
-  assign color_list = '|'
-  assign color = ''
 -%}
 
 {%- if is_color -%}
@@ -52,10 +50,9 @@
       {%- endcapture -%}
 
       {%- capture swatch_item -%}
-        {%- for variant in product.variants -%}
+        {%- for color in product.options_with_values[index].values -%}
           {%- liquid
-            assign color = variant.options[index]
-            assign color_check = color | prepend: "|" | append: "|"
+            assign variant = color.variant
             assign variant_option_disabled = true
             if variant.available
               assign variant_option_disabled = false
@@ -63,87 +60,88 @@
           -%}
 
           {%- if color == value -%}
-            {%- unless color_list contains color_check -%}
-              {%- liquid
-                assign enable_variant_image = false
-                assign background_image = ''
-                assign background_color = ''
-                assign has_metaobject = false
+            {%- liquid
+              assign enable_variant_image = false
+              assign background_image = ''
+              assign background_color = ''
+              assign has_metaobject = false
 
-                case swatch_type
-                when 'variant_image'
-                  assign background_image = variant.image.src | image_url: width: '200x'
-                  if variant.image
-                    assign enable_variant_image = true
-                  endif
-                when 'color'
-                  assign background_image = color | handle | append: '.png' | file_url
+              case swatch_type
+              when 'variant_image'
+                assign background_image = variant.image.src | image_url: width: '200x'
+                if variant.image
                   assign enable_variant_image = true
-                when 'metaobjects'
-                  assign metaobject_color = color.swatch.color
-                  assign metaobject_image = color.swatch.image
-                  assign has_metaobject = false
-                  if metaobject_image != blank
-                    assign background_image = metaobject_image | image_url: width: '200x'
-                    assign enable_variant_image = true
-                    assign has_metaobject = true
-                  elsif metaobject_color != blank
-                    assign background_color = metaobject_color
-                    assign enable_variant_image = true
-                    assign has_metaobject = true
-                    assign background_image = ''
-                  elsif variant.image
-                    assign background_image = variant.image.src | image_url: width: '200x'
-                    assign enable_variant_image = true
-                  else
-                    assign background_color = color | handle
-                    assign has_metaobject = true
-                    assign enable_variant_image = true
-                  endif
-                endcase
-              -%}
+                endif
+              when 'color'
+                assign background_image = color | handle | append: '.png'
+                if images[background_image] != blank
+                  assign background_image = background_image | file_url
+                else
+                  assign background_image = ''
+                endif
+                assign enable_variant_image = true
+              when 'metaobjects'
+                assign metaobject_color = color.swatch.color
+                assign metaobject_image = color.swatch.image
+                assign has_metaobject = false
+                if metaobject_image != blank
+                  assign background_image = metaobject_image | image_url: width: '200x'
+                  assign enable_variant_image = true
+                  assign has_metaobject = true
+                elsif metaobject_color != blank
+                  assign background_color = metaobject_color
+                  assign enable_variant_image = true
+                  assign has_metaobject = true
+                  assign background_image = ''
+                elsif variant.image
+                  assign background_image = variant.image.src | image_url: width: '200x'
+                  assign enable_variant_image = true
+                else
+                  assign background_color = color | handle
+                  assign has_metaobject = true
+                  assign enable_variant_image = true
+                endif
+              endcase
+            -%}
 
-              {%- capture class_swatch -%}
-                swatch cursor-pointer block max-w-full color-swacth-color--{{ color | handle }}
-              {%- endcapture -%}
+            {%- capture class_swatch -%}
+              swatch cursor-pointer block max-w-full color-swacth-color--{{ color | handle }}
+            {%- endcapture -%}
 
-              {%- capture class_tooltip -%}
-                {%- if sbs_variant_picker -%}
-                  sbs-text block center w-full
-                {%- else -%}
-                  tooltip center absolute bottom-full left-50 z-1 whitespace-nowrap capitalize text-sm
-                {%- endif -%}
-              {%- endcapture -%}
+            {%- capture class_tooltip -%}
+              {%- if sbs_variant_picker -%}
+                sbs-text block center w-full
+              {%- else -%}
+                tooltip center absolute bottom-full left-50 z-1 whitespace-nowrap capitalize text-sm
+              {%- endif -%}
+            {%- endcapture -%}
 
-              <span
-                {% if enable_variant_image %}
-                  class="{{ class_swatch }}"
-                  style="{%- if swatch_type == 'color' -%}--swatch--background-color: {{ color | split: ' ' | last | handle }};{%- endif -%}
-                    {%- if has_metaobject and metaobject_color != blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
-                    {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}
-                    {%- if swatch_size != blank -%}--swatch-input--size: {{ swatch_size }}px;{%- endif -%}
-                    {%- if sbs_variant_picker -%}--swatch-input--size: 100%;{%- endif -%}"
-                  data-title="{{ color | handle }}"
-                  data-variant-id="{{ variant.id }}"
-                  data-variant-img="{{ variant.image.src | image_url: '800x' }}"
-                {% else %}
-                  class="{{ class_swatch }} swatch--unavailable"
-                  style="{%- if swatch_type == 'color' -%}--swatch--background-color: {{ color | split: ' ' | last | handle }};{%- endif -%}
-                    {%- if has_metaobject and metaobject_color != blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
-                    {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}
-                    {%- if swatch_size != blank -%}--swatch-input--size: {{ swatch_size }}px;{%- endif -%}
-                    {%- if sbs_variant_picker -%}--swatch-input--size: 100%;{%- endif -%}"
-                {% endif %}
-              >
-                <span class="visually-hidden">{{ color | escape }}</span>
-                {%- if variant_option_disabled -%}
-                  {{ label_unavailable }}
-                {%- endif -%}
-              </span>
-
-              {%- assign color_list = color_list | append: color_check -%}
-              {%- break -%}
-            {%- endunless -%}
+            <span
+              {% if enable_variant_image %}
+                class="{{ class_swatch }}"
+                style="{%- if swatch_type == 'color' -%}--swatch--background-color: {{ color | split: ' ' | last | handle }};{%- endif -%}
+                  {%- if has_metaobject and metaobject_color != blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
+                  {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}
+                  {%- if swatch_size != blank -%}--swatch-input--size: {{ swatch_size }}px;{%- endif -%}
+                  {%- if sbs_variant_picker -%}--swatch-input--size: 100%;{%- endif -%}"
+                data-title="{{ color | handle }}"
+                data-variant-id="{{ variant.id }}"
+                data-variant-img="{{ variant.image.src | image_url: '800x' }}"
+              {% else %}
+                class="{{ class_swatch }} swatch--unavailable"
+                style="{%- if swatch_type == 'color' -%}--swatch--background-color: {{ color | split: ' ' | last | handle }};{%- endif -%}
+                  {%- if has_metaobject and metaobject_color != blank -%}--swatch--background-color: {{ background_color }};{%- endif -%}
+                  {%- if background_image != blank -%}--swatch--background: url({{ background_image }});{%- endif -%}
+                  {%- if swatch_size != blank -%}--swatch-input--size: {{ swatch_size }}px;{%- endif -%}
+                  {%- if sbs_variant_picker -%}--swatch-input--size: 100%;{%- endif -%}"
+              {% endif %}
+            >
+              <span class="visually-hidden">{{ color | escape }}</span>
+              {%- if variant_option_disabled -%}
+                {{ label_unavailable }}
+              {%- endif -%}
+            </span>
+            {%- break -%}
           {%- endif -%}
         {%- endfor -%}
       {%- endcapture -%}

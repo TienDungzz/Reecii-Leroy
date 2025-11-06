@@ -199,6 +199,24 @@
                         {% endif %}
                       {%- endif -%}
 
+                      {%- for property in item.properties -%}
+                        {%- assign property_first_char = property.first | slice: 0 -%}
+                        {%- if property.last != blank and property.last != 'undefined' and property_first_char != '_' -%}
+                          <div class="customization-option product-option flex items-center gap-xs whitespace-nowrap">
+                            <dt>{{ property.first }}:</dt>
+                            <dd>
+                              {%- if property.last contains '/uploads/' -%}
+                                <a href="{{ property.last }}" class="link" target="_blank">
+                                  {{ property.last | split: '/' | last }}
+                                </a>
+                              {%- else -%}
+                                {{ property.last }}
+                              {%- endif -%}
+                            </dd>
+                          </div>
+                        {%- endif -%}
+                      {%- endfor -%}
+
                       <ul class="discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">
                         {%- for discount in item.line_level_discount_allocations -%}
                           <li class="discounts__discount">
@@ -355,6 +373,7 @@
                           data-index="{{ item.index | plus: 1 }}"
                           aria-label="{{ 'products.product.quantity.input_label' | t: product: item.product.title | escape }}"
                           inputmode="numeric"
+                          data-quantity-variant-id="{{ item.variant.id }}"
                           {% if item.index %}
                             data-cart-line="{{ item.index | plus: 1 }}"
                           {% endif %}
