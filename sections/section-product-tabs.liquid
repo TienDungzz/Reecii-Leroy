@@ -1,4 +1,4 @@
-{% liquid
+{%- liquid
     assign tabs_design = section.settings.tabs_design
 
     assign padding_top = section.settings.padding_top
@@ -29,7 +29,7 @@
     assign accordion_icon = section.settings.accordion_icon
 
     assign view_content = section.settings.view_content
-%}
+-%}
 
 {%- capture attr -%}
 style="
@@ -96,13 +96,10 @@ style="
 <{{ element }} {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
   <button class="toggle-link cursor-pointer">
     <span class="text">Tab Title</span>
-    <span class="svg-wrapper icon-caret-wrapper">
-      {{- icon -}}
-    </span>
+    <span class="svg-wrapper icon-caret-wrapper">{{- icon -}}</span>
   </button>
 </{{ element }}>
 {%- endcapture -%}
-
 <div class="section section-product-tabs section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
   style="
     {% if section.settings.section_width == 'custom' %}
@@ -132,9 +129,16 @@ style="
                                   continue
                               endif
                             when 'html'
-                              assign page_title = title | default: block.settings.page.title
-                              if page_title == blank or block.settings.content == blank and block.settings.page.content == blank
+                              if title != blank
+                                if block.settings.custom_content_type == 'all'
+                                  if block.settings.content == blank and block.settings.page.content == blank
+                                    continue
+                                  endif
+                                elsif product.metafields.custom[block.settings.product_tab_key_metafield] == blank and product.metafields.c_f[block.settings.product_tab_key_metafield] == blank
                                   continue
+                                endif
+                              else
+                                continue
                               endif
                             when 'liquid'
                               if block.settings.title == blank or block.settings.custom_liquid == blank
@@ -142,19 +146,12 @@ style="
                               endif
                           endcase
                       -%}
-
-                      <li class="tabs-item">
-                        <a class="tab-title{% if forloop.first %} is-active{% endif %}" href="#tabs-{{ block.id }}">{{ title | escape }}</a>
-                      </li>
+                      <li class="tabs-item"><a class="tab-title{% if forloop.first %} is-active{% endif %}" href="#tabs-{{ block.id }}">{{ title | escape }}</a></li>
                   {%- endfor -%}
                 </ul>
-
                 <div class="tabs-content" style="--pb: 20px; --pt: 20px;">
                   {%- for block in section.blocks -%}
-                    {% liquid
-                      assign title = block.settings.title
-                    %}
-
+                    {% assign title = block.settings.title %}
                     {%- case block.type -%}
                       {%- when 'description' -%}
                       {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
@@ -174,28 +171,24 @@ style="
                         </div>
                       {% when 'html' %}
                         {%- assign page_title = title | default: block.settings.page.title -%}
-                        
                         {% liquid
                           assign custom_content_type = block.settings.custom_content_type
-                          assign tabContent = false
-                          if custom_content_type == all
+                          if custom_content_type == 'all'
                             if block.settings.content != blank or block.settings.page.content != blank
                               assign meta_ref = block.settings.content | prepend: '<div class="rte">' | append: '</div>' | append: block.settings.page.content
-                              assign tabContent = true
                             endif
                           else 
                               assign meta_ref = product.metafields.custom[block.settings.product_tab_key_metafield] | default : product.metafields.c_f[block.settings.product_tab_key_metafield]
-                              assign tabContent = true
                           endif
                         %}
-
-                        <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                          {{ tabTitle | replace: 'Tab Title', title }}
-                          <div class="toggle-content">
-                            <div class="rte">{{ block.settings.content }}</div>
-                            {{ block.settings.page.content }}
+                        {% if meta_ref != blank %}
+                          <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
+                            {{ tabTitle | replace: 'Tab Title', title }}
+                            <div class="toggle-content">
+                              {{ meta_ref }}
+                            </div>
                           </div>
-                        </div>
+                        {% endif %}
                       {% when 'liquid' %}
                         {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
 
@@ -217,7 +210,6 @@ style="
           {% liquid
             assign title = block.settings.title
           %}
-
           {%- case block.type -%}
             {%- when 'description' -%}
             {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
@@ -238,27 +230,24 @@ style="
             {% when 'html' %}
               {% liquid
                 assign custom_content_type = block.settings.custom_content_type
-                assign tabContent = false
-                if custom_content_type == all
+                if custom_content_type == 'all'
                   if block.settings.content != blank or block.settings.page.content != blank
                     assign meta_ref = block.settings.content | prepend: '<div class="rte">' | append: '</div>' | append: block.settings.page.content
-                    assign tabContent = true
                   endif
                 else 
                     assign meta_ref = product.metafields.custom[block.settings.product_tab_key_metafield] | default : product.metafields.c_f[block.settings.product_tab_key_metafield]
-                    assign tabContent = true
                 endif
               %}
-
-              <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                {{ tabTitle | replace: 'Tab Title', title }}
-                <div class="toggle-content">
-                  {{ meta_ref }}
+              {% if meta_ref != blank %}
+                <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
+                  {{ tabTitle | replace: 'Tab Title', title }}
+                  <div class="toggle-content">
+                    {{ meta_ref }}
+                  </div>
                 </div>
-              </div>
+              {% endif %}
             {% when 'liquid' %}
               {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
-
               <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
                 {{ tabTitle | replace: 'Tab Title', title }}
                 <div class="toggle-content">
@@ -268,7 +257,7 @@ style="
           {%- endcase -%}
         {%- endfor -%}
       </div>
-
+    {% if view_content == 'popup' %}
       <side-drawer
           class="popup__content drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
           element-s-popup
@@ -277,7 +266,6 @@ style="
         <div id="Drawer-Overlay-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
         <div class="popup__inner color-{{ settings.popover_color_scheme }} w-auto h-full absolute-c-c flex flex-column global-settings-popup" style="--min-w-md: 50vw; --max-w: 90vw;">
           <div class="popup__inner--content relative w-full h-full overflow-auto cus-scrollbar">
-
           <div class="popup-content-wrapper"></div>
             <button
               onclick="this.closest('side-drawer').close()"
@@ -291,66 +279,77 @@ style="
           </div>
         </div>
       </side-drawer>
-
-
+    {% endif %}
     {%- endif -%}
   {%- endif -%}
 </div>
-{% render 'global-sidebar' %}
+
+{% if view_content == 'sidebar' %}
+  {% render 'global-sidebar' %}
+{% endif %}
+
 {% javascript %}
   document.addEventListener('DOMContentLoaded', function() {
     const tabTitles = document.querySelectorAll('.tab-title');
     const tabContents = document.querySelectorAll('.tab-content');
 
-    if (tabTitles.length > 0) {
-      tabTitles.forEach(title => {
-        title.addEventListener('click', function(e) {
+    if (tabTitles.length && tabContents.length && tabTitles.length === tabContents.length) {
+      tabTitles.forEach((title, i) => {
+        title.addEventListener('click', function (e) {
           e.preventDefault();
-          if (e.currentTarget.classList.contains('is-active')) return;
-
-          const currentIndex = Array.from(tabTitles).indexOf(e.currentTarget);
-
-          tabTitles.forEach(title => {
-            title.classList.remove('is-active');
-          });
-
-          tabContents.forEach(content => {
-            content.classList.remove('is-active');
-          });
-
-          tabContents[currentIndex].classList.add('is-active');
-          e.currentTarget.classList.add('is-active');
-          });
+          if (title.classList.contains('is-active')) return;
+          tabTitles.forEach(t => t.classList.remove('is-active'));
+          tabContents.forEach(c => c.classList.remove('is-active'));
+          title.classList.add('is-active');
+          setTimeout(() => {
+            const content = tabContents[i];
+            content.classList.add('is-animating');
+            content.classList.add('is-active');
+            content.addEventListener('transitionend', function handler() {
+              content.classList.remove('is-animating');
+              content.removeEventListener('transitionend', handler);
+            });
+          }, 10);
+        });
       });
     }
 
     const toggleLinks = document.querySelectorAll('.toggle-link');
 
-    if (toggleLinks.length > 0) {
-      toggleLinks.forEach(toggleLink => {
-        toggleLink.addEventListener('click', function(e) {
-          e.preventDefault();
+    toggleLinks.forEach(toggleLink => {
+      toggleLink.addEventListener('click', function(e) {
+        e.preventDefault();
 
-          const viewContentType = toggleLink.closest('.toggle-title').dataset.viewContent;
-          const content = toggleLink.closest('.toggle-title').nextElementSibling;
-          const cloneContent = content.cloneNode(true);
-          
-          if (viewContentType === 'sidebar') {
+        const toggleTitle = toggleLink.closest('.toggle-title');
+        if (!toggleTitle) return;
+
+        const viewContentType = toggleTitle.dataset.viewContent;
+        const content = toggleTitle.nextElementSibling;
+        if (!content) return;
+
+        switch (viewContentType) {
+          case 'sidebar': {
             const drawerContent = document.querySelector('#Global-Drawer .drawer__wrapper');
-            drawerContent.innerHTML = '';
-            drawerContent.appendChild(cloneContent);
-          } else if (viewContentType === 'popup') {
-            const popupContent = document.querySelector('.popup-content-wrapper');
-            popupContent.innerHTML = '';
-            popupContent.appendChild(cloneContent);
-          } else {
-            toggleLink.closest('.toggle-title').classList.toggle('is-open');
+            if (drawerContent) {
+              drawerContent.innerHTML = '';
+              drawerContent.appendChild(content.cloneNode(true));
+            }
+            break;
           }
-        });
+          case 'popup': {
+            const popupContent = document.querySelector('.popup-content-wrapper');
+            if (popupContent) {
+              popupContent.innerHTML = '';
+              popupContent.appendChild(content.cloneNode(true));
+            }
+            break;
+          }
+          default:
+            toggleTitle.classList.toggle('is-open');
+        }
       });
-    }
+    });
 
-    // Open video popup
     const modalTemplate = `
       <side-drawer
         class="popup__content drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
@@ -405,12 +404,11 @@ style="
           const videoId = videoOpenPopup.dataset.videoId;
           const videoWrapper = document.querySelector('.video-modal__content-block');
 
-         const youtubeIframe = `
-          <iframe width="100%" src="https://www.youtube.com/embed/${videoId}?si=6yJ56P_BJEG5d2Uq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-         `;
+        const youtubeIframe = `
+        <iframe width="100%" src="https://www.youtube.com/embed/${videoId}?si=6yJ56P_BJEG5d2Uq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        `;
 
-         videoWrapper.innerHTML = youtubeIframe;
-
+        videoWrapper.innerHTML = youtubeIframe;
         });
       });
     }
@@ -922,9 +920,10 @@ style="
             "content": "The same for all products setting"
           },
           {
-            "type": "textarea",
+            "type": "richtext",
             "id": "content",
-            "label": "t:settings.tab_content"
+            "label": "t:settings.tab_content",
+            "default": "<p>Tab custom HTML</p>"
           },
           {
             "type": "page",
@@ -966,7 +965,7 @@ style="
             "type": "html",
             "settings": {
               "title": "Tab custom HTML",
-              "content": "Tab custom HTML",
+              "content": "<p>Tab custom HTML</p>",
               "page": ""
             }
           }
