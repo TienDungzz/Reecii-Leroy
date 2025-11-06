@@ -14,7 +14,14 @@
 {% # theme-check-disable %}
 {%- assign items_in_cart = cart | line_items_for: product | sum: 'quantity' -%}
 {% # theme-check-enable %}
-<div class="quick-order-list-container{% unless is_modal %} color-{{ section.settings.color_scheme }}{% endunless %}">
+<div class="quick-order-list-container{% unless is_modal %} color-{{ section.settings.color_scheme }}{% endunless %} section section--{{ section.settings.section_width }}"
+  style="
+    {% if section.settings.section_width == 'custom' %}
+      --page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    {% endif %}
+  "
+>
   <quick-order-list
     class="page-width section-bulk-quick-order-list-padding{% unless is_modal %} spacing{% endunless %}"
     id="quick-order-list-{{ product.id }}"
@@ -25,6 +32,8 @@
       {%- unless is_modal %}
         --p-spacing-t: {{ section.settings.padding_top }}px;
         --p-spacing-b: {{ section.settings.padding_bottom }}px;
+        --pl: {{ section.settings.padding_left }}px;
+        --pr: {{ section.settings.padding_right }}px;
       {%- endunless -%}
       --font-size-heading: {{ font_size_heading | default: '1.4rem' }};
       --font-size-info: {{ font_size_info | default: '1.2rem' }};
