@@ -68,22 +68,16 @@ class SideDrawer extends HTMLElement {
     document.body.classList.add('overflow-hidden');
     document.documentElement.setAttribute('scroll-lock', '');
 
-    const dir = this.getAttribute("data-drawer-direction");
+    let dir = this.getAttribute("data-drawer-direction");
+    const mobileDir = this.getAttribute("data-mobile-drawer-direction");
     const contentElement = this.querySelector("[data-drawer-content]");
 
     this.classList.add("open");
+    if(theme.config.mqlSmall && mobileDir) {
+      dir = mobileDir;
+    }
 
     await Motion.timeline([
-      [
-        this.overlay,
-        {
-          transform:
-            dir === "left"
-              ? ["translateX(-100%)", "translateX(0)"]
-              : ["translateX(100%)", "translateX(0)"],
-        },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
-      ],
       [
         contentElement,
         {
@@ -104,13 +98,20 @@ class SideDrawer extends HTMLElement {
     document.documentElement.removeAttribute('scroll-lock');
     this.handleTransition(false, 'drawer--closing');
 
-    const dir = this.getAttribute("data-drawer-direction");
+    let dir = this.getAttribute("data-drawer-direction");
+    const mobileDir = this.getAttribute("data-mobile-drawer-direction");
     const detailsElement = this.overlay.closest("details");
     const contentElement = this.querySelector("[data-drawer-content]");
 
-
     if (document.querySelector('.header__icon--menu button.active')) {
       document.querySelector('.header__icon--menu button').classList.remove('active');
+    }
+
+    console.log(`%c🔍 Log theme.config.mqlSmall:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", theme.config.mqlSmall);
+
+
+    if(theme.config.mqlSmall && mobileDir) {
+      dir = mobileDir;
     }
 
     await Motion.timeline ([
@@ -124,16 +125,6 @@ class SideDrawer extends HTMLElement {
               : ["translateX(0)", "translateX(100%)"],
         },
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
-      ],
-      [
-        this.overlay,
-        {
-          transform:
-            dir === "left"
-              ? ["translateX(0)", "translateX(-100%)"]
-              : ["translateX(0)", "translateX(100%)"],
-        },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.2" },
       ]
     ]).finished;
 

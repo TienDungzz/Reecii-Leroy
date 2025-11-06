@@ -84,15 +84,13 @@ class DetailsModal extends HTMLElement {
   async animateOpen() {
     Motion.timeline([
       [this.contentContainer, { opacity: [0, 1], visibility: 'visible' }, { duration: theme.config.motionReduced ? 0 : 0.3, easing: this.ease }],
-      [this.overlay, { transform: ['translateY(-100%)', 'translateY(0)'] }, { duration: theme.config.motionReduced ? 0 : 0.3, easing: this.ease }],
-      [this.contentWrapper, { transform: ['translateY(-100%)', 'translateY(0)'] }, { duration: theme.config.motionReduced ? 0 : 0.6, easing: this.ease }],
+      [this.contentWrapper, { transform: ['translateY(-100%)', 'translateY(0)'] }, { duration: theme.config.motionReduced ? 0 : 0.3, easing: this.ease }],
     ]).finished
   }
 
   async animateClose() {
     Motion.timeline([
-      [this.contentWrapper, {transform: 'translateY(-100%)'}, { duration: theme.config.motionReduced ? 0 : 0.6, easing: this.ease }],
-      [this.overlay, { transform: 'translateY(-100%)'}, { duration: theme.config.motionReduced ? 0 : 0.3, easing: this.ease }],
+      [this.contentWrapper, {transform: 'translateY(-100%)'}, { duration: theme.config.motionReduced ? 0 : 0.3, easing: this.ease }],
       [this.contentContainer, { opacity: 0, visibility: 'hidden' }, { duration: theme.config.motionReduced ? 0 : 0.3, easing: this.ease }]
     ]).finished;
   }

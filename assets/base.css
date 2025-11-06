@@ -4204,8 +4204,8 @@ details[open]>.share-button__fallback {
   height: var(--minimum-touch-target);
   min-width: var(--minimum-touch-target);
   min-height: var(--minimum-touch-target);
-  color: var(--color-background);
-  background-color: var(--color-foreground);
+  color: var(--color-primary-button-text);
+  background-color: transparent;
   box-shadow: 0 0 0 0.2rem transparent;
   padding: var(--padding-sm);
   display: inline-flex;
@@ -4226,6 +4226,10 @@ details[open]>.share-button__fallback {
       padding: var(--padding-md);
     }
   }
+}
+
+.drawer__header .drawer__close {
+  margin-right: calc(-1 * var(--margin-sm));
 }
 
 .modal--popup .drawer__close {
@@ -4910,11 +4914,19 @@ ul.swiper-wrapper {
 
 
 /* swiper buttons position */
+.swiper-btns-wrap--inside {
+  position: absolute;
+  width: 100%;
+}
 .swiper-btns-wrap--bottom {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: var(--gap-lg);
+}
+
+.swiper:has(.swiper-pagination.swiper-pagination-progressbar) .swiper-btns-wrap--bottom {
+  margin-top: 1rem;
 }
 
 .swiper-pagination-progressbar + .swiper-btns-wrap--bottom {
@@ -5733,6 +5745,18 @@ summary {
 
   &:not(.drawer--menu)[data-drawer-direction="right"] .drawer__close {
     left: calc(var(--minimum-touch-target) * -1);
+  }
+
+  @media screen and (max-width: 749px) {
+    &[data-mobile-drawer-direction="left"] [data-drawer-content] {
+      margin-inline-end: auto;
+      margin-inline-start: 0;
+    }
+
+    &[data-mobile-drawer-direction="right"] [data-drawer-content] {
+      margin-inline-start: auto;
+      margin-inline-end: 0;
+    }
   }
 }
 

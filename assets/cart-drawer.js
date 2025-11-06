@@ -57,16 +57,6 @@ class CartDrawer extends HTMLElement {
 
     Motion.timeline([
       [
-        this.overlay,
-        {
-          transform:
-            dir === "left"
-              ? ["translateX(-100%)", "translateX(0)"]
-              : ["translateX(100%)", "translateX(0)"],
-        },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
-      ],
-      [
         contentElement,
         {
           opacity: [0, 1],
@@ -111,17 +101,7 @@ class CartDrawer extends HTMLElement {
               : ["translateX(0)", "translateX(100%)"],
         },
         { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
-      ],
-      [
-        this.overlay,
-        {
-          transform:
-            dir === "left"
-              ? ["translateX(0)", "translateX(-100%)"]
-              : ["translateX(0)", "translateX(100%)"],
-        },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.2" },
-      ],
+      ]
     ]).finished;
 
     this.classList.remove("open");

@@ -39,14 +39,19 @@
       aria-label="{{ 'accessibility.menu' | t }}"
       tabindex="-1"
     >
-    <button
-      class="drawer__close block t-button bor-none cursor-pointer"
-      type="button"
-      onclick="this.closest('side-drawer').close()"
-      aria-label="{{ 'accessibility.close_dialog' | t }}"
-    >
-      {{- 'icon-close.svg' | inline_asset_content -}}
-    </button>
+    <div class="drawer__header flex justify-between items-center relative" style="--p: var(--padding-lg) 0;">
+      <h2 class="drawer__heading break m-0 h5">{{ 'content.menu' | t }}</h2>
+      <button
+        class="drawer__close block t-button bor-none cursor-pointer"
+        type="button"
+        onclick="this.closest('side-drawer').close()"
+        aria-label="{{ 'accessibility.close_dialog' | t }}"
+      >
+        <span class="svg-wrapper">
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </span>
+      </button>
+    </div>
       {% comment %} <div class="drawer__header flex justify-end items-center relative" style="--p: 0 0 1.5rem;">
       </div> {% endcomment %}
       <div class="drawer__wrapper menu-drawer relative h-full motion-reduce" style="--p: 1.5rem 0 0;">
@@ -190,13 +195,6 @@
 </side-drawer>
 
 {% stylesheet %}
-  .drawer--menu .drawer__close {
-    position: absolute;
-    right: calc(var(--minimum-touch-target) * -1);
-    top: var(--top, 0);
-    z-index: var(--layer-heightened);
-  }
-
   .drawer--menu .menu-drawer__utility-links .menu-drawer__back-button {
     display: flex;
     align-items: center;
