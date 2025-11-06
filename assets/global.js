@@ -1627,8 +1627,6 @@ class SwiperComponent extends HTMLElement {
           const thumbnailPosition = this.querySelector('.swiper-controls__thumbnails-container')?.getAttribute('data-thumbnail-position') || 'bottom';
           const slidesPerView = (thumbnailPosition === 'left' || thumbnailPosition === 'right') ? 'auto' : 4;
 
-          console.log(thumbnailSwiper.getAttribute('data-loop'));
-
           thumbsSwiper = new Swiper(thumbnailSwiper, {
             direction: isVerticalThumbnails ? 'vertical' : 'horizontal',
             spaceBetween: 16,

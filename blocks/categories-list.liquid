@@ -33,6 +33,7 @@
     {% if block.settings.inherit_color_scheme == false %}
       {% render 'color-scheme-style', settings: block.settings %}
     {% endif %}
+    --image-fit: {{ bl_stts.image_fit }};
   "
   {{ block.shopify_attributes }}
 >
@@ -82,6 +83,7 @@
   .categories-list-container .category-item__img {
     aspect-ratio: var(--ratio);
     transition: transform 0.3s ease;
+    object-fit: var(--image-fit);
   }
 
   .categories-list-container .category-item:hover .category-item__img {
@@ -365,6 +367,22 @@
       "label": "t:settings.height",
       "default": 250,
       "visible_if": "{{ block.settings.image_ratio == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "t:settings.image_position",
+      "options": [
+        {
+          "value": "cover",
+          "label": "t:options.cover"
+        },
+        {
+          "value": "contain",
+          "label": "t:options.contain"
+        }
+      ],
+      "default": "contain"
     },
     {
       "type": "range",

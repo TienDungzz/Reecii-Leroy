@@ -141,12 +141,6 @@ if (!customElements.get('media-gallery')) {
 
             const finalSlideIndex = parseInt(targetThumbnail.getAttribute('data-index'), 10);
 
-            try {
-              targetThumbnail.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-            } catch (e) {
-              // ignore scrolling errors
-            }
-
             this.syncThumbnailSwiper(thumbnailsContainer, thumbnailButtons, targetThumbnail, finalSlideIndex);
           }
         } catch (e) {

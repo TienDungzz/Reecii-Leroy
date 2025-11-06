@@ -13,7 +13,7 @@ class HeaderComponent extends HTMLElement {
     this.lastScrollTop = 0;
 
     this.timeout = null;
-    this.animationDelay = 150;
+    this.animationDelay = 0;
     // this.setHeaderHeight();
 
     if (this.stickyMode) {

@@ -11,7 +11,7 @@ class FreeShippingComponent extends HTMLElement {
   static classLabel1 = 'progress-30';
   static classLabel2 = 'progress-60';
   static classLabel3 = 'progress-100';
-  static freeShippingPrice = parseInt(window.free_shipping_price);
+  static freeShippingPrice = Currency.convert(parseInt(window.free_shipping_price), window.free_shipping_default_currency, Shopify.currency.active);
 
   connectedCallback() {
     this.freeShippingEligible = 0;
@@ -57,7 +57,7 @@ class FreeShippingComponent extends HTMLElement {
     }
 
     const cartTotalPrice = parseInt(totalPrice) / 100;
-    const cartTotalPriceFormatted = cartTotalPrice.toFixed(2);
+    const cartTotalPriceFormatted = cartTotalPrice;
     const cartTotalPriceRounded = parseFloat(cartTotalPriceFormatted);
 
     let freeShipBar = Math.abs((cartTotalPriceRounded * 100) / FreeShippingComponent.freeShippingPrice);
@@ -76,7 +76,7 @@ class FreeShippingComponent extends HTMLElement {
 
     if (cartTotalPrice == 0) {
       this.progressBar.classList.add('progress-hidden');
-      text = '<span>' + FreeShippingComponent.freeShippingText + ' ' + Shopify.formatMoney(FreeShippingComponent.freeShippingPrice * 100, window.money_format) + '!</span>';
+      text = '<span>' + FreeShippingComponent.freeShippingText + ' ' + Shopify.formatMoney(FreeShippingComponent.freeShippingPrice.toFixed(2) * 100, window.money_format) + '!</span>';
     } else if (cartTotalPrice >= FreeShippingComponent.freeShippingPrice) {
       this.progressBar.classList.remove('progress-hidden');
       this.freeShippingEligible = 1;
@@ -84,7 +84,7 @@ class FreeShippingComponent extends HTMLElement {
     } else {
       this.progressBar.classList.remove('progress-hidden');
       const remainingPrice = Math.abs(FreeShippingComponent.freeShippingPrice - cartTotalPrice);
-      text = '<span>' + FreeShippingComponent.freeShippingText2 + ' </span>' + Shopify.formatMoney(remainingPrice * 100, window.money_format) + '<span> ' + FreeShippingComponent.freeShippingText3 + ' </span><span class="text">' + FreeShippingComponent.freeShippingText4 + '</span>';
+      text = '<span>' + FreeShippingComponent.freeShippingText2 + ' </span>' + Shopify.formatMoney(remainingPrice.toFixed(2) * 100, window.money_format) + '<span> ' + FreeShippingComponent.freeShippingText3 + ' </span><span class="text">' + FreeShippingComponent.freeShippingText4 + '</span>';
       this.shipVal = window.free_shipping_text.free_shipping_2;
     }
 

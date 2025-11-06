@@ -390,9 +390,7 @@
       --color-border-rgb: inherit;
 
       .header__row {
-        /* Faster transition for "in" animation */
-        /* transition: color var(--animation-values-fast), border-color var(--animation-values-fast),
-          background-color var(--animation-values-fast); */
+        transition: none;
 
         .button {
           --animation-speed: var(--animation-speed-fast);
@@ -406,8 +404,7 @@
     }
 
     .header__row {
-      transition: color var(--animation-values-slow), border-color var(--animation-values-slow),
-        background-color var(--animation-values-slow);
+      transition: none;
 
       .button {
         --animation-speed: var(--animation-speed-slow);
@@ -472,23 +469,13 @@
     z-index: var(--layer-sticky);
   }
 
-  /* .header[data-sticky-state] {
-    transition: opacity var(--animation-speed);
-    opacity: 1;
-  } */
-
   .header-section:has(.header[data-sticky-type='always'][data-sticky-state='active']) ,
   .header-section:has(.header[data-sticky-type='scroll-up'][data-sticky-state='active']) {
     view-transition-name: header-component;
-    animation: header-sticky-slide-down var(--animation-speed-slowest) forwards;
-/*
-    .header:has(.header__row--bottom) .row-group--shadow .header__row--bottom {
-      box-shadow: rgba(var(--color-shadow-rgb) / var(--opacity-20)) 0rem 0.2rem 2rem 0rem;
-    }
 
-    .header:not(:has(.header__row--bottom)) .row-group--shadow .header__row--top {
-      box-shadow: rgba(var(--color-shadow-rgb) / var(--opacity-20)) 0rem 0.2rem 2rem 0rem;
-    } */
+    &:has([data-sticky-type="scroll-up"]) {
+      animation: header-sticky-slide-down var(--animation-speed-slowest) forwards;
+    }
   }
 
   .header-section:has(.header[data-sticky-type='scroll-up'][data-sticky-state='idle']),

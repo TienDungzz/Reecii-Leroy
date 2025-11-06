@@ -40,7 +40,12 @@
                     assign enable_variant_image = true
                   endif
                 when 'color'
-                  assign background_image = color | handle | append: '.png' | file_url
+                  assign background_image = color | handle | append: '.png'
+                  if images[background_image] != blank
+                    assign background_image = background_image | file_url
+                  else
+                    assign background_image = ''
+                  endif
                   assign enable_variant_image = true
                 when 'metaobjects'
                   assign metaobject_color = color.swatch.color
@@ -91,7 +96,7 @@
                       "
                       data-title="{{ color | handle }}"
                       data-variant-id="{{ variant.id }}"
-                      data-variant-img="{{ variant.image.src | image_url: width: '800x' }}"
+                      data-variant-img="{% if variant.image != blank %}{{ variant.image.src | image_url: width: '800x' }}{% endif %}"
                     {% else %}
                       class="{{ class_swatch }} color-swacth-color--{{ color | handle }} swatch--unavailable"
                     {% endif %}
@@ -113,7 +118,7 @@
                       "
                       data-title="{{ color | handle }}"
                       data-variant-id="{{ variant.id }}"
-                      data-variant-img="{{ variant.image.src | image_url: width: '800x' }}"
+                      data-variant-img="{% if variant.image != blank %}{{ variant.image.src | image_url: width: '800x' }}{% endif %}"
                     {% else %}
                       class="{{ class_swatch }} color-swacth-color--{{ color | handle }} swatch--unavailable"
                     {% endif %}

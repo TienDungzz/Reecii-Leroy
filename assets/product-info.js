@@ -274,7 +274,6 @@ if (!customElements.get('product-info')) {
             : this.handleUpdateProductInfo(productUrl, event.target),
           isStickyChanged,
         });
-
       }
 
       resetProductFormState() {
@@ -289,6 +288,8 @@ if (!customElements.get('product-info')) {
 
           const selector = updateFullPage ? "product-info[id^='MainProduct']" : 'product-info';
           const variant = this.getSelectedVariant(html.querySelector(selector));
+          
+
           this.updateURL(productUrl, variant?.id);
 
           if (updateFullPage) {
@@ -376,6 +377,7 @@ if (!customElements.get('product-info')) {
 
           this.updateMedia(html, variant?.featured_media?.id);
 
+
           try {
             if (typeof MainEvents !== 'undefined' && MainEvents.variantUpdate) {
               const eventDetail = {
@@ -431,8 +433,22 @@ if (!customElements.get('product-info')) {
 
           this.handleHotStock(this);
           this.handleBackInStockAlert(this);
-          this.updateAddButtonText(this);
+          this.updateAddButtonText(this, variant);
         };
+      }
+
+      setInventoryPolicyCache(productId, variant) {
+        try {
+          const pid = String(productId || this.dataset?.productId || '').trim();
+          if (!pid || !variant) return;
+          const key = `product_inventory_policy_array_${pid}`;
+          if (!window[key]) window[key] = {};
+          if (variant?.id && variant?.inventory_policy) {
+            window[key][variant.id] = variant.inventory_policy;
+          }
+        } catch (e) {
+          // silent
+        }
       }
 
       updateVariantStatuses(target) {
@@ -744,20 +760,34 @@ if (!customElements.get('product-info')) {
         }
       }
 
-      updateAddButtonText(data) {
+      updateAddButtonText(data, variant = null) {
         const productForms = document.querySelectorAll(
           `#product-form-${this.dataset.section}`
         );
-        const productFormQuantities = document.querySelectorAll('.product-form__quantity');
 
         const variantId = data.productForm?.variantIdInput?.value;
         const productId = data.dataset.productId;
+        
+        // Get variant from parameter, or from selected variant data if not provided
+        if (!variant && variantId) {
+          variant = this.getSelectedVariant(this);
+        }
+
+        console.log('variantssssss', variant);
+
+        // Cache inventory policy if variant is available
+        if (variant) {
+          this.setInventoryPolicyCache(productId, variant);
+        }
 
         const inventoryMapKey = `product_inventory_array_${productId}`;
         const inventoryPolicyMapKey = `product_inventory_policy_array_${productId}`;
         const inventoryMap = window[inventoryMapKey] || {};
+        const inventoryPolicyCache = window[inventoryPolicyMapKey] || {};
         const inventoryQuantity = variantId ? Number(inventoryMap[variantId]) || 0 : 0;
-        const inventoryPolicy = variantId ? window[inventoryPolicyMapKey][variantId] : 'deny';
+        const inventoryPolicy = variantId && inventoryPolicyCache[variantId] 
+          ? inventoryPolicyCache[variantId] 
+          : (variant?.inventory_policy || 'deny');
 
         productForms.forEach((productForm, index) => {
           if (!productForm) return;
@@ -786,7 +816,6 @@ if (!customElements.get('product-info')) {
           } else {
             addButtonText.innerHTML = window.variantStrings.addToCart;
           }
-
         });
       }
 
