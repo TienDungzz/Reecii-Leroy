@@ -301,7 +301,7 @@
         {% endif %}
       {% endcapture %}
       {% capture class %}
-        {{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if bl_stts.zoom %} product-media-container--zoomable{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}
+        {{ product_media_container_class }} product-media-container--{{ media.media_type }} product-media-container--slide{% if bl_stts.zoom %} product-media-container--zoomable{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}
       {% endcapture %}
       {% if bl_stts.aspect_ratio == 'adapt' %}
         {% capture style %}
@@ -337,7 +337,8 @@
           controls_on_media: controls_on_media,
           pagination_position: bl_stts.pagination_position,
           thumbnail_position: thumbnail_position,
-          aspect_ratio: bl_stts.aspect_ratio
+          thumbnail_direction: thumbnail_direction,
+          aspect_ratio: bl_stts.aspect_ratio,
           video_type: bl_stts.video_type
         -%}
       {% endif %}
@@ -384,8 +385,6 @@
     slides: slides,
     controls: controls,
     video_dialog_html: video_dialog_html,
-    thumbnail_position: thumbnail_position,
-    thumbnail_direction: thumbnail_direction,
   %}
 
   {% if bl_stts.media_presentation == 'grid' %}

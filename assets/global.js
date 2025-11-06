@@ -1469,24 +1469,18 @@ class SwiperComponent extends HTMLElement {
     this.arrowOnHeader = this.closest(
       ".arrow-on-header:has(.swiper-btns-on-header)"
     );
+    this._thumbnailSwiper = null;
+    this._thumbsSwiper = null;
   }
   get items() {
-    return this._items = this._items || Array.from(this.querySelector(".swiper-wrapper").children);
+    return (this._items = this._items || Array.from(this.querySelector(".swiper-wrapper").children));
   }
 
   connectedCallback() {
-    // this.initializeSwiper();
-    // const observer = new IntersectionObserver(entries => {
-    //   if (entries[0].isIntersecting) this.initializeSwiper();
-    // });
-    // observer.observe(this);
-
-    Motion.inView(this, this.initializeSwiper.bind(this), { margin: '200px 0px 200px 0px' });
+    Motion.inView(this, this.initializeSwiper.bind(this), { margin: "200px 0px 200px 0px" });
   }
 
   disconnectedCallback() {
-    // this._observer?.disconnect();
-    // Cleanup event listeners and swiper instance
     if (this.breakpoint && this.breakpointChecker) {
       this.breakpoint.removeEventListener("change", this.breakpointChecker);
     }
@@ -1494,16 +1488,14 @@ class SwiperComponent extends HTMLElement {
       this.initSwiper.destroy(true, true);
       this.initSwiper = null;
     }
-    // Remove initialization flag
     if (this.swiperEl) {
       this.swiperEl._swiperInitialized = false;
     }
   }
 
   initializeSwiper() {
-    if(this.items.length > 1) {
+    if (this.items.length > 1) {
       this.swiperEl = this.querySelector(".swiper");
-
       if (!this.swiperEl) return;
 
       // Debug: Check if swiper elements exist
@@ -1520,7 +1512,6 @@ class SwiperComponent extends HTMLElement {
       const getOption = (name, defaultValue = undefined) => {
         const attr = this.getAttribute(`data-${name}`);
         if (attr === null) return defaultValue;
-
         try {
           return JSON.parse(attr);
         } catch {
@@ -1534,10 +1525,9 @@ class SwiperComponent extends HTMLElement {
       const baseSpaceBetween = getOption("space-between", 20);
       const baseBreakpoints = getOption("breakpoints", null);
 
-      // Calculate default space between slides if not breakpoint provided
       const defaultSpacebetween = !baseBreakpoints
         ? baseSpaceBetween * 0.5
-        : baseSpaceBetween; // Mobile
+        : baseSpaceBetween;
 
       const spaceBetweenTablet = !baseBreakpoints
         ? baseSpaceBetween * 0.75
@@ -1545,19 +1535,53 @@ class SwiperComponent extends HTMLElement {
 
       const defaultBreakpoints = !baseBreakpoints
         ? {
-            750: { spaceBetween: spaceBetweenTablet }, // Tablet
-            990: { spaceBetween: baseSpaceBetween }, // Desktop
+            750: { spaceBetween: spaceBetweenTablet },
+            990: { spaceBetween: baseSpaceBetween },
           }
         : baseBreakpoints;
 
-      // Options
+      this._thumbnailSwiper = this.querySelector(".swiper-controls__thumbnails-container .swiper");
+      this._thumbsSwiper = null;
+      if (this._thumbnailSwiper && !this._thumbnailSwiper._swiperInitialized) {
+        this._thumbnailSwiper._swiperInitialized = true;
+
+        const thumbnailDirection = this.getAttribute("data-thumbnail-direction") || "horizontal";
+        const isVerticalThumbnails = thumbnailDirection === "vertical";
+        const thumbnailPosition =
+          this.querySelector(".swiper-controls__thumbnails-container")?.getAttribute("data-thumbnail-position") ||
+          "bottom";
+        const slidesPerView =
+          thumbnailPosition === "left" || thumbnailPosition === "right" ? "auto" : 4;
+
+        this._thumbsSwiper = new Swiper(this._thumbnailSwiper, {
+          direction: isVerticalThumbnails ? "vertical" : "horizontal",
+          spaceBetween: 16,
+          slidesPerView: slidesPerView,
+          freeMode: false,
+          watchSlidesProgress: true,
+          allowTouchMove: true,
+          grabCursor: true,
+          slideToClickedSlide: true,
+          loop: this._thumbnailSwiper.getAttribute("data-loop") || false,
+          breakpoints: {
+            768: { slidesPerView: slidesPerView },
+            1024: { slidesPerView: slidesPerView },
+            1400: { slidesPerView: slidesPerView },
+          },
+          pagination: {
+            el: ".swiper-controls__thumbnails-container .swiper-pagination",
+            type: "bullets",
+            clickable: true,
+          },
+        });
+      }
+
       this.options = {
         observer: false,
         observeParents: false,
         resistance: false,
         resistanceRatio: 0.85,
         direction: getOption("direction", "horizontal"),
-        // mousewheel: getOption("mousewheel", false),
         watchSlidesProgress: getOption("watch-slides-progress", false),
         loop: getOption("loop", false),
         speed: getOption("speed", 500),
@@ -1586,16 +1610,78 @@ class SwiperComponent extends HTMLElement {
           dynamicBullets: getOption("dynamic-bullets", false),
         },
         breakpoints: defaultBreakpoints,
-        thumbs: {
-          swiper: null,
-        },
+        ...(this._thumbsSwiper
+          ? {
+              thumbs: {
+                swiper: this._thumbsSwiper,
+              },
+            }
+          : {
+              thumbs: {
+                swiper: null,
+              },
+            }),
       };
 
-      if(this.isMobileOnly) {
+      if (this.isMobileOnly) {
         this.initSwiperMobile();
       } else {
         this.initSwiper = new Swiper(this.swiperEl, this.options);
+
+        if (this._thumbnailSwiper && this._thumbsSwiper) {
+          this._setupThumbnailSync();
+        }
       }
+    }
+  }
+
+  _setupThumbnailSync() {
+    const thumbnailButtons = this._thumbnailSwiper.querySelectorAll(".swiper-controls__thumbnail");
+    thumbnailButtons.forEach((button, index) => {
+      if (!button._listenerAttached) {
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.initSwiper.slideTo(index);
+        });
+        button._listenerAttached = true;
+      }
+    });
+
+    this.initSwiper.on("slideChange", () => {
+      thumbnailButtons.forEach((button, index) => {
+        if (index === this.initSwiper.activeIndex) {
+          button.setAttribute("aria-selected", "true");
+          button.classList.add("active");
+        } else {
+          button.removeAttribute("aria-selected");
+          button.classList.remove("active");
+        }
+      });
+
+      const realIndex = this.initSwiper.realIndex;
+      let thumbsPerView = this._thumbsSwiper.params.slidesPerView;
+
+      if (thumbsPerView == "auto") {
+        thumbsPerView = this._thumbsSwiper.slides.filter((slide) =>
+          slide.classList.contains("swiper-slide-visible")
+        ).length;
+      }
+
+      const firstVisible = this._thumbsSwiper.activeIndex;
+      const lastVisible = firstVisible + thumbsPerView - 1;
+
+      if (realIndex >= lastVisible - 1) {
+        this._thumbsSwiper.slideTo(realIndex - 2);
+      }
+
+      if (realIndex <= firstVisible + 1 && firstVisible > 0) {
+        this._thumbsSwiper.slideTo(realIndex - 2 < 0 ? 0 : realIndex - 2);
+      }
+    });
+
+    if (thumbnailButtons.length > 0) {
+      thumbnailButtons[0].setAttribute("aria-selected", "true");
+      thumbnailButtons[0].classList.add("active");
     }
   }
 
@@ -1611,107 +1697,20 @@ class SwiperComponent extends HTMLElement {
       }
 
       try {
-        // Check for thumbnail swiper - works on both mobile and desktop
-        const thumbnailSwiper = this.querySelector('.swiper-controls__thumbnails-container .swiper');
-
-        let thumbsSwiper = null;
-
-        if (thumbnailSwiper && !thumbnailSwiper._swiperInitialized) {
-          thumbnailSwiper._swiperInitialized = true;
-
-          // Get thumbnail direction from data attribute
-          const thumbnailDirection = this.getAttribute('data-thumbnail-direction') || 'horizontal';
-          const isVerticalThumbnails = thumbnailDirection === 'vertical';
-
-          // Get thumbnail position to determine slidesPerView
-          const thumbnailPosition = this.querySelector('.swiper-controls__thumbnails-container')?.getAttribute('data-thumbnail-position') || 'bottom';
-          const slidesPerView = (thumbnailPosition === 'left' || thumbnailPosition === 'right') ? 'auto' : 4;
-
-          thumbsSwiper = new Swiper(thumbnailSwiper, {
-            direction: isVerticalThumbnails ? 'vertical' : 'horizontal',
-            spaceBetween: 16,
-            slidesPerView: slidesPerView,
-            freeMode: false,
-            watchSlidesProgress: true,
-            allowTouchMove: true,
-            grabCursor: true,
-            slideToClickedSlide: true,
-            loop: thumbnailSwiper.getAttribute('data-loop') || false,
-            breakpoints: {
-              768: { slidesPerView: slidesPerView },
-              1024: { slidesPerView: slidesPerView },
-              1400: { slidesPerView: slidesPerView }
-            },
-            pagination: {
-              el: '.swiper-controls__thumbnails-container .swiper-pagination',
-              type: 'bullets',
-              clickable: true,
-            },
-          });
-        }
-
         const swiperOptions = {
           ...this.options,
-          thumbs: thumbsSwiper ? {
-            swiper: thumbsSwiper,
-          } : undefined,
         };
 
         this.initSwiper = new Swiper(this.swiperEl, swiperOptions);
 
-        if (thumbnailSwiper && thumbsSwiper) {
-          const thumbnailButtons = thumbnailSwiper.querySelectorAll('.swiper-controls__thumbnail');
-          thumbnailButtons.forEach((button, index) => {
-            button.addEventListener('click', (e) => {
-              e.preventDefault();
-              this.initSwiper.slideTo(index);
-            });
-          });
-
-          // Update active thumbnail on slide change
-          this.initSwiper.on('slideChange', () => {
-            thumbnailButtons.forEach((button, index) => {
-              if (index === this.initSwiper.activeIndex) {
-                button.setAttribute('aria-selected', 'true');
-                button.classList.add('active');
-              } else {
-                button.removeAttribute('aria-selected');
-                button.classList.remove('active');
-              }
-            });
-
-            const realIndex = this.initSwiper.realIndex;
-            let thumbsPerView = thumbsSwiper.params.slidesPerView;
-
-            if (thumbsPerView == 'auto') {
-              thumbsPerView = thumbsSwiper.slides.filter(slide =>
-                slide.classList.contains('swiper-slide-visible')
-              ).length;
-            }
-
-            const firstVisible = thumbsSwiper.activeIndex;
-            const lastVisible = firstVisible + thumbsPerView - 1;
-
-            if (realIndex >= lastVisible - 1) {
-              thumbsSwiper.slideTo(realIndex - 2);
-            }
-
-            if (realIndex <= firstVisible + 1 && firstVisible > 0) {
-              thumbsSwiper.slideTo(realIndex - 2 < 0 ? 0 : realIndex - 2);
-            }
-          });
-
-          // Set initial active state
-          if (thumbnailButtons.length > 0) {
-            thumbnailButtons[0].setAttribute('aria-selected', 'true');
-            thumbnailButtons[0].classList.add('active');
-          }
+        if (this._thumbnailSwiper && this._thumbsSwiper) {
+          this._setupThumbnailSync();
         }
 
         if (this.initSwiper) {
           this.initSwiper.update();
-          if (thumbsSwiper) {
-            thumbsSwiper.update();
+          if (this._thumbsSwiper) {
+            this._thumbsSwiper.update();
           }
         }
       } catch (error) {
@@ -1722,33 +1721,27 @@ class SwiperComponent extends HTMLElement {
 
     this.breakpointChecker = () => {
       if (this.isMobileOnly) {
-        // For mobile-only swipers, only enable on mobile
         if (this.breakpoint.matches) {
-          // Desktop - destroy swiper
           if (this.initSwiper) {
             this.initSwiper.destroy(true, true);
             this.initSwiper = null;
           }
         } else {
-          // Mobile - enable swiper
           if (!this.initSwiper) {
             enableSwiper();
           }
         }
       } else {
-        // For regular swipers, always enable (works on both mobile and desktop)
         if (!this.initSwiper) {
           enableSwiper();
         }
       }
     };
 
-    // Add event listener for breakpoint changes
     if (this.isMobileOnly) {
       this.breakpoint.addEventListener("change", this.breakpointChecker);
     }
 
-    // Initial check
     this.breakpointChecker();
   }
 }
@@ -2097,35 +2090,6 @@ class GridView extends HTMLElement {
 
     if (!this.productGrid) return;
     this.transitionGrid(column, cards);
-
-    // switch (column) {
-    //   case 1:
-    //     break;
-
-    //   default:
-    //     switch (column) {
-    //       case 2:
-    //         // productListing.setAttribute('data-view', 2);
-    //         this.transitionGrid(column, cards);
-
-    //         break;
-    //       case 3:
-    //         // productListing.setAttribute('data-view', 3);
-    //         this.transitionGrid(column, cards);
-
-    //         break;
-    //       case 4:
-    //         // productListing.setAttribute('data-view', 4);
-    //         this.transitionGrid(column, cards);
-
-    //         break;
-    //       case 5:
-    //         // productListing.setAttribute('data-view', 5);
-    //         this.transitionGrid(column, cards);
-
-    //         break;
-    //     }
-    // }
   }
 }
 if (!customElements.get("grid-view"))
