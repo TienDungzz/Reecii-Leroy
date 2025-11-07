@@ -99,6 +99,7 @@
   }
 
   .button:not(.button-unstyled) {
+    --color-effect-background: var(--color-primary-button-hover-background);
     transition: color var(--animation-speed) var(--animation-easing),
       box-shadow var(--animation-speed) var(--animation-easing),
       background-color var(--animation-speed) var(--animation-easing),
@@ -109,10 +110,15 @@
     }
   }
 
+  .button-hover--effect .button-secondary:not(.button-unstyled, .header__icon, [disabled]) {
+    --color-effect-background: var(--color-secondary-button-hover-background);
+  }
+
   .button-hover--effect .button:not(.button-unstyled, .header__icon, .button--outline) {
     background-color: var(--color-primary-button-background);
   }
 
+  .button-hover--effect .button-secondary:not(.button-unstyled, .header__icon, [disabled]),
   .button-hover--effect .button:not(.button-unstyled, .header__icon, [disabled]) {
     --tss: transform var(--animation-slowest-smooth), opacity var(--animation-slowest-smooth);
     position: relative;
@@ -144,7 +150,7 @@
       left: 50%;
       width: 120%;
       height: calc(100% + (max(0.2rem, var(--button-border-width)) * 2));
-      background-color: var(--color-primary-button-hover-background);
+      background-color: var(--color-effect-background);
       backface-visibility: hidden;
       will-change: transform;
       transform: translate(-50%, -50%) rotate3d(0, 0, 2, 20deg) translate3d(-1.2em, 105%, 0);
