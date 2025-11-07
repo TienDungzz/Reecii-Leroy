@@ -950,12 +950,6 @@
               {%- endif -%}
             </span>
           </side-drawer-opener>
-
-          <span tabindex="0" class="mobile-facets__close" data-close-drawer="Drawer-Facets">
-            <span class="svg-wrapper">
-              {{- 'icon-close.svg' | inline_asset_content -}}
-            </span>
-          </span>
         </summary>
         <facet-filters-form>
           <form
@@ -971,8 +965,8 @@
             ></div>
             <div class="mobile-facets__inner" data-drawer-content>
               <div class="mobile-facets__header flex sticky top-0 z-2">
-                <div class="mobile-facets__header-inner relative">
-                  <h2 class="mobile-facets__heading large-up-hide">
+                <div class="mobile-facets__header-inner relative flex justify-between items-center relative">
+                  <h5 class="mobile-facets__heading large-up-hide">
                     {%- if enable_filtering and enable_sorting -%}
                       {{ 'products.facets.filter_and_sort' | t }}
                     {%- elsif enable_filtering -%}
@@ -980,15 +974,61 @@
                     {%- elsif enable_sorting -%}
                       {{ 'products.facets.sort_button' | t }}
                     {%- endif -%}
-                  </h2>
-                  <h2 class="mobile-facets__heading small-hide medium-hide">
+                  </h5>
+                  <h5 class="mobile-facets__heading small-hide medium-hide">
                     {%- if enable_filtering -%}
                       {{ 'products.facets.filter_button' | t }}
                     {%- endif -%}
-                  </h2>
+                  </h5>
+                  <button
+                    class="drawer__close block t-button bor-none cursor-pointer"
+                    type="button" 
+                    data-close-drawer="Drawer-Facets" 
+                    onclick="this.closest('facet-filters-form').closeDrawer()"
+                    aria-label="{{ 'accessibility.close_dialog' | t }}"
+                  >
+                    <span class="svg-wrapper">
+                      {{- 'icon-close.svg' | inline_asset_content -}}
+                    </span>
+                  </button>
                 </div>
               </div>
-              {{ sidebar_categories }}
+
+              {%- if enable_sorting -%}
+                <div
+                  id="Details-Mobile-SortBy-{{ section.id }}"
+                  class="mobile-facets__details js-filter{% if filter_type == 'drawer' %} large-up-hide{% endif %}"
+                  data-index="mobile-{{ forloop.index }}"
+                >
+                  <div class="mobile-facets__summary">
+                    <div class="mobile-facets__sort">
+                      <label for="SortBy-mobile">{{ 'products.facets.sort_by_label' | t }}</label>
+                      <div class="select global-settings-popup">
+                        <select
+                          name="sort_by"
+                          class="select__select"
+                          id="SortBy-mobile"
+                          aria-describedby="a11y-refresh-page-message"
+                        >
+                          {%- for option in results.sort_options -%}
+                            <option
+                              value="{{ option.value | escape }}"
+                              {% if option.value == sort_by %}
+                                selected="selected"
+                              {% endif %}
+                            >
+                              {{ option.name | escape }}
+                            </option>
+                          {%- endfor -%}
+                        </select>
+                        <span class="svg-wrapper">
+                          {{- 'icon-caret.svg' | inline_asset_content -}}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
 
               {%- if filter_type == 'vertical' -%}
                 <div class="active-facets flex flex-wrap w-full active-facets-mobile large-up-hide">
@@ -1045,6 +1085,7 @@
                 </div>
               {%- endif -%}
               <div id="FacetsWrapperMobile" class="mobile-facets__main has-submenu cus-scrollbar">
+                {{ sidebar_categories }}
                 {%- if enable_filtering -%}
                   {%- for filter in results.filters -%}
                     {% liquid
@@ -1264,42 +1305,6 @@
                         </accordion-custom>
                     {% endcase %}
                   {%- endfor -%}
-                {%- endif -%}
-
-                {%- if enable_sorting -%}
-                  <div
-                    id="Details-Mobile-SortBy-{{ section.id }}"
-                    class="mobile-facets__details js-filter{% if filter_type == 'drawer' %} large-up-hide{% endif %}"
-                    data-index="mobile-{{ forloop.index }}"
-                  >
-                    <div class="mobile-facets__summary">
-                      <div class="mobile-facets__sort">
-                        <label for="SortBy-mobile">{{ 'products.facets.sort_by_label' | t }}</label>
-                        <div class="select global-settings-popup">
-                          <select
-                            name="sort_by"
-                            class="select__select"
-                            id="SortBy-mobile"
-                            aria-describedby="a11y-refresh-page-message"
-                          >
-                            {%- for option in results.sort_options -%}
-                              <option
-                                value="{{ option.value | escape }}"
-                                {% if option.value == sort_by %}
-                                  selected="selected"
-                                {% endif %}
-                              >
-                                {{ option.name | escape }}
-                              </option>
-                            {%- endfor -%}
-                          </select>
-                          <span class="svg-wrapper">
-                            {{- 'icon-caret.svg' | inline_asset_content -}}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 {%- endif -%}
 
                 {{ children }}

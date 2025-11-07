@@ -85,12 +85,12 @@ style="
       </div>
     </div>
   {%- endunless -%}
-  {% comment %} get variant length  {% endcomment %}
   <div class="section section--page-width">
     <div class="flex justify-between align-center" {{ attr }}>
       <div class="sticky-atc__content w-full flex items-center small-hide" style="--gap: {{ content_gap }};">
         <div class="sticky-atc__media">
-          {{- product.featured_media | image_url: width: 64 | image_tag: height: '64', sizes: '64px', widths: '64', loading: 'lazy', class: 'w-full h-auto object-cover' -}}
+          {%- assign current_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
+          {{- current_media | image_url: width: 64 | image_tag: height: '64', sizes: '64px', widths: '64', loading: 'lazy', class: 'w-full h-auto object-cover' -}}
         </div>
         <div class="sticky-atc__info">
           <div class="sticky-atc__title">
@@ -330,6 +330,12 @@ style="
 
     .variant-alignment--center variant-selects {
       justify-content: center;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .sticky-atc__action {
+      width: 100%;
     }
   }
 {% endstylesheet %}

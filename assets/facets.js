@@ -15,6 +15,9 @@ class FacetFiltersForm extends HTMLElement {
 
     // Add event listener for price range apply button
     this.addEventListener('click', this.onPriceRangeApply.bind(this));
+
+    // Add event listener for drawer overlay click to close drawer
+    this.setupDrawerOverlayClose();
   }
 
   static setListeners() {
@@ -262,6 +265,11 @@ class FacetFiltersForm extends HTMLElement {
     });
 
     document.getElementById('FacetFiltersFormMobile').closest('menu-drawer').bindEvents();
+
+    const facetFiltersForm = document.querySelector('facet-filters-form');
+    if (facetFiltersForm) {
+      facetFiltersForm.setupDrawerOverlayClose();
+    }
   }
 
   static renderCounts(source, target) {
@@ -387,6 +395,33 @@ class FacetFiltersForm extends HTMLElement {
         item.removeAttribute('style');
         item.removeAttribute('open')
       })
+    }
+  }
+
+  setupDrawerOverlayClose() {
+    const drawerOverlay = this.querySelector('[data-drawer-overlay]');
+    if (drawerOverlay) {
+      drawerOverlay.addEventListener('click', (event) => {
+        event.preventDefault();
+        this.closeDrawer();
+      });
+    }
+  }
+
+  closeDrawer() {
+    const closeButton = this.querySelector('[data-close-drawer]');
+    if (closeButton) {
+      closeButton.click();
+      document.body.classList.remove('overflow-hidden-mobile');
+    } else {
+      const menuDrawer = this.closest('menu-drawer');
+      if (menuDrawer) {
+        const details = menuDrawer.querySelector('details');
+        if (details && details.hasAttribute('open')) {
+          details.removeAttribute('open');
+          document.body.classList.remove('overflow-hidden-mobile');
+        }
+      }
     }
   }
 }

@@ -172,6 +172,12 @@ if (!customElements.get('product-info')) {
         if (stickyVariantInput && variant) {
           stickyVariantInput.value = variant.id;
         }
+
+        try {
+          this.updateStickyThumbnail(variant);
+        } catch (e) {
+          // silent
+        }
       }
 
       initQuantityHandlers() {
@@ -622,6 +628,28 @@ if (!customElements.get('product-info')) {
         const modalContent = this.productModal?.querySelector(`.product-media-modal__content`);
         const newModalContent = html.querySelector(`product-modal .product-media-modal__content`);
         if (modalContent && newModalContent) modalContent.innerHTML = newModalContent.innerHTML;
+      }
+
+      updateStickyThumbnail(variant) {
+        if (!variant) return;
+        const sectionId = this.sectionId;
+        const stickyScope = document.querySelector(`sticky-atc[data-sticky-section-id="${sectionId}"]`)
+          || document.querySelector('sticky-atc');
+        if (!stickyScope) return;
+
+        const img = stickyScope.querySelector('.sticky-atc__media img');
+        if (!img) return;
+
+        const srcCandidate = variant?.featured_media?.preview_image?.src || variant?.featured_media?.src;
+        if (!srcCandidate) return;
+
+        const url = srcCandidate.includes('?') ? `${srcCandidate}&width=64` : `${srcCandidate}?width=64`;
+        img.src = url;
+        if (img.hasAttribute('srcset')) img.removeAttribute('srcset');
+        img.setAttribute('sizes', '64px');
+        img.setAttribute('width', '64');
+        img.setAttribute('height', '64');
+        img.loading = 'lazy';
       }
 
       setQuantityBoundries() {
