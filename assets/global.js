@@ -1173,6 +1173,8 @@ class HeaderDrawer extends MenuDrawer {
   }
 
   openMenuDrawer(summaryElement) {
+    console.log(`%c🔍 Log this.mainDetailsToggle:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.mainDetailsToggle);
+
     this.header = this.header || document.querySelector(".section-header-main");
     this.borderOffset =
       this.borderOffset ||
@@ -1187,7 +1189,7 @@ class HeaderDrawer extends MenuDrawer {
     //     this.header.getBoundingClientRect().bottom - this.borderOffset
     //   )}px`
     // );
-    this.header.classList.add("menu-open");
+    // this.header.classList.add("menu-open");
 
     setTimeout(() => {
       this.mainDetailsToggle.classList.add("menu-opening");
@@ -1202,7 +1204,7 @@ class HeaderDrawer extends MenuDrawer {
   closeMenuDrawer(event, elementToFocus) {
     if (!elementToFocus) return;
     super.closeMenuDrawer(event, elementToFocus);
-    this.header.classList.remove("menu-open");
+    // this.header.classList.remove("menu-open");
     window.removeEventListener("resize", theme.utils.rafThrottle(this.onResize));
   }
 
