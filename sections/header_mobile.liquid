@@ -27,14 +27,19 @@
         aria-label="{{ 'accessibility.menu' | t }}"
         tabindex="-1"
       >
-        <button
-          class="drawer__close block t-button bor-none cursor-pointer"
-          type="button"
-          onclick="this.closest('side-drawer').close()"
-          aria-label="{{ 'accessibility.close_dialog' | t }}"
-        >
-          {{- 'icon-close.svg' | inline_asset_content -}}
-        </button>
+        <div class="drawer__header flex justify-between items-center relative" style="--p: var(--padding-xs) var(--padding-lg);">
+          <h2 class="drawer__heading break m-0 h5">{{ 'content.menu' | t }}</h2>
+          <button
+            class="drawer__close block t-button bor-none cursor-pointer"
+            type="button"
+            onclick="this.closest('side-drawer').close()"
+            aria-label="{{ 'accessibility.close_dialog' | t }}"
+          >
+            <span class="svg-wrapper">
+              {{- 'icon-close.svg' | inline_asset_content -}}
+            </span>
+          </button>
+        </div>
         <div class="drawer__wrapper menu-drawer relative h-full motion-reduce color-{{ section.settings.menu_color_scheme }}">
           <div class="header-mobile mobile--multi-tab">
             <section-fetcher
