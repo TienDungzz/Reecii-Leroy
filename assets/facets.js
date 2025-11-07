@@ -345,9 +345,17 @@ class FacetFiltersForm extends HTMLElement {
       sortFilterForms.forEach((form) => {
         if (!isMobile) {
           if (form.id === 'FacetSortForm' || form.id === 'FacetFiltersForm' || form.id === 'FacetSortDrawerForm') {
+            console.log(`%c🔍 Log form.id desk:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", form.id);
+            console.log(`%c🔍 Log this.createSearchParams:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.createSearchParams);
+
             forms.push(this.createSearchParams(form));
           }
         } else if (form.id === 'FacetFiltersFormMobile') {
+          console.log(`%c🔍 Log form.id:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", form.id);
+
+          console.log(`%c🔍 Log this.createSearchParams:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.createSearchParams);
+
+
           forms.push(this.createSearchParams(form));
         }
       });
