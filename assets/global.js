@@ -2126,13 +2126,11 @@ class RecentlyViewedProducts extends HTMLElement {
 
         if (!recentlyViewedProducts) return;
 
-        const trimmedText = recentlyViewedProducts.textContent.trim();
-        if (trimmedText === '') {
+        this.innerHTML = recentlyViewed.innerHTML;
+
+        const updatedProducts = this.querySelector(".collection--grid-layout");
+        if (updatedProducts && updatedProducts.textContent.trim() === '') {
           this.classList.add("hidden");
-          return;
-        } else {
-          this.classList.remove("hidden");
-          this.innerHTML = recentlyViewed.innerHTML;
         }
 
         // Callback loadContent if it exists

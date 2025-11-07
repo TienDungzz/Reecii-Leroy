@@ -57,6 +57,10 @@
       spacing-style
     "
     style="
+    {% if sec_stts.section_width == 'custom' %}
+      --page-content-width: {{ sec_stts.page_width_custom | divided_by: 10 }}rem;
+      --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
+    {% endif %}
       {% render 'spacing-style', settings: sec_stts %}
     "
   >
