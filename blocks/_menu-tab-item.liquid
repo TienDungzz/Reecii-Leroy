@@ -44,6 +44,12 @@
   </span>
 {%- endcapture -%}
 
+{%- capture icon_arrow_forward -%}
+  <span class="svg-wrapper icon-arrow--backward">
+    {%- render 'icon-arrow' -%}
+  </span>
+{%- endcapture -%}
+
 {%- capture media_level_1 -%}
   {% if show_image_level_1 %}
     {% if image_type_level_1 == 'svg' %}
@@ -79,134 +85,207 @@
 
 <li>
   {%- if submenu != blank -%}
-    <details id="Details-tab-drawer-menu-item-{{ block.id }}">
-      <summary class="{{ class_link }}">
-        {{ media_level_1 }}
+    <header-drawer>
+      <details id="Details-tab-drawer-menu-item-{{ block.id }}">
+        <summary class="{{ class_link }}">
+          {{ media_level_1 }}
 
-        {{ bl_stts.title }}
+          {{ bl_stts.title }}
 
-        {{ icon_arrow }}
-      </summary>
-      <div
-        id="link-{{ bl_id | escape }}"
-        class="{{ class_submenu }}"
-        tabindex="-1"
-      >
-        <div class="menu-drawer__inner-submenu">
-          <button class="menu-drawer__close-button link link--text focus-inset" aria-expanded="true">
-            {{ icon_arrow }}
-            {{ bl_stts.title | escape }}
-          </button>
-          {% if banner_level_2 != blank %}
-            <div
-              class="sub-banner sub-banner--lv2 media media--adapt"
-              style="--media-adapt-ratio: {{ ratio_level_2 }};"
+          {{ icon_arrow }}
+        </summary>
+        <div
+          id="link-{{ bl_id | escape }}"
+          class="{{ class_submenu }}"
+          tabindex="-1"
+        >
+          <div class="menu-drawer__inner-submenu">
+            <button class="menu-drawer__close-button link link--text focus-inset" aria-expanded="true">
+              {{ icon_arrow_forward }}
+              {{ bl_stts.title | escape }}
+            </button>
+            {% if banner_level_2 != blank %}
+              <div
+                class="sub-banner sub-banner--lv2 media media--adapt"
+                style="--media-adapt-ratio: {{ ratio_level_2 }};"
+              >
+                {{
+                  banner_level_2
+                  | image_url: width: 1025
+                  | image_tag: widths: widths_banner, sizes: sizes_banner, class: 'sub-banner__image'
+                }}
+              </div>
+            {% endif %}
+            <ul
+              class="menu-drawer__menu list-menu grid"
+              role="list"
+              tabindex="-1"
             >
-              {{
-                banner_level_2
-                | image_url: width: 1025
-                | image_tag: widths: widths_banner, sizes: sizes_banner, class: 'sub-banner__image'
-              }}
-            </div>
-          {% endif %}
-          <ul
-            class="menu-drawer__menu list-menu grid"
-            role="list"
-            tabindex="-1"
-          >
-            {%- for childlink in submenu.links -%}
-              <li>
-                {%- if childlink.links == blank -%}
-                  <a
-                    id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
-                    href="{{ childlink.url }}"
-                    class="{{ class_link }}{% if childlink.current %} menu-drawer__menu-item--active{% endif %}"
-                    {% if childlink.current %}
-                      aria-current="page"
-                    {% endif %}
-                  >
-                    {{ childlink.title | escape }}
-                  </a>
-                {%- else -%}
-                  <div id="Details-menu-drawer-{{ link.handle }}-{{ childlink.handle }}">
+              {%- for childlink in submenu.links -%}
+                <li>
+                  {%- if childlink.links == blank -%}
                     <a
-                      href="{{ childlink.url }}"
                       id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
-                      class="{{ class_link }}"
+                      href="{{ childlink.url }}"
+                      class="{{ class_link }}{% if childlink.current %} menu-drawer__menu-item--active{% endif %}"
+                      {% if childlink.current %}
+                        aria-current="page"
+                      {% endif %}
+                      style="--gap-x: var(--gap-xl)"
                     >
+                      {% if show_image_sub_menu %}
+                        {% liquid
+                          assign width = width_level_1
+
+                          assign ratio = 1
+
+                          assign image_style = 'width: ' | append: width | append: 'px;' | append: ';' | append: '--media-adapt-ratio:' | append: ratio | append: ';'
+
+                          assign image_sources = 'jpg,png,webp,avif' | split: ','
+                          assign found_image = false
+
+                        -%}
+
+                        {% for ext in image_sources %}
+                          {% assign ext = ext | strip %}
+                          {% assign item_image = childlink.handle | prepend: '-' | prepend: menu_handle | handleize | append: '.' | append: ext %}
+                          {% if images[item_image] != blank and found_image == false %}
+                            {% assign found_image = true %}
+                            {% assign image = item_image | file_url %}
+                            <span class="media media--adapt media--circle" style="{{ image_style }}">
+                              <img
+                                src="{{ image }}"
+                                srcset="{{ image }} 450w, {{ image }} 900w"
+                                width="450"
+                                height="450"
+                                sizes="{{ sizes }}"
+                                loading="lazy"
+                                class="media--adapt"
+                                style="{{ image_style }}"
+                                alt="{{ shop.name | escape }}"
+                              >
+                            </span>
+                          {% endif %}
+                        {% endfor %}
+                      {% endif %}
                       {{ childlink.title | escape }}
                     </a>
-                    <div
-                      id="childlink-{{ childlink.handle | escape }}"
-                      class="list-menu-wrap"
-                    >
-                      <ul
-                        class="menu-drawer__menu-grid grid-layout grid-layout--3 list-menu"
-                        role="list"
-                        tabindex="-1"
+                  {%- else -%}
+                    <div id="Details-menu-drawer-{{ link.handle }}-{{ childlink.handle }}">
+                      <a
+                        href="{{ childlink.url }}"
+                        id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
+                        class="{{ class_link }}"
                       >
-                        {%- for grandchildlink in childlink.links -%}
-                          <li>
-                            <a
-                              id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                              href="{{ grandchildlink.url }}"
-                              class="
-                                link link--text list-menu__item focus-inset flex-column gap-xs center
-                                {%- if grandchildlink.current %} menu-drawer__menu-item--active{% endif -%}
-                              "
-                              {% if grandchildlink.current %}
-                                aria-current="page"
-                              {% endif %}
-                            >
-                              {% if show_image_sub_menu %}
-                                {% liquid
-                                  assign width = media_width_sub_menu
+                        {% if show_image_sub_menu %}
+                          {% liquid
+                            assign width = media_width_sub_menu
 
-                                  assign ratio = 1
+                            assign ratio = 1
 
-                                  assign image_style = 'width: ' | append: width | append: 'px;' | append: ';' | append: '--media-adapt-ratio:' | append: ratio | append: ';'
+                            assign image_style = 'width: ' | append: width | append: 'px;' | append: ';' | append: '--media-adapt-ratio:' | append: ratio | append: ';'
 
-                                  assign image_sources = 'jpg,png,webp,avif' | split: ','
-                                  assign found_image = false
+                            assign image_sources = 'jpg,png,webp,avif' | split: ','
+                            assign found_image = false
 
-                                -%}
+                          -%}
 
-                                {% for ext in image_sources %}
-                                  {% assign ext = ext | strip %}
-                                  {% assign item_image = grandchildlink.handle | prepend: '-' | prepend: menu_handle | handleize | append: '.' | append: ext %}
-                                  {% if images[item_image] != blank and found_image == false %}
-                                    {% assign found_image = true %}
-                                    {% assign image = item_image | file_url %}
-                                    <span class="media media--adapt" style="{{ image_style }}">
-                                      <img
-                                        src="{{ image }}"
-                                        srcset="{{ image }} 450w, {{ image }} 900w"
-                                        width="450"
-                                        height="450"
-                                        sizes="{{ sizes }}"
-                                        loading="lazy"
-                                        class="media--adapt"
-                                        style="{{ image_style }}"
-                                        alt="{{ shop.name | escape }}"
-                                      >
-                                    </span>
-                                  {% endif %}
-                                {% endfor %}
-                              {% endif %}
-                              {{ grandchildlink.title | escape }}
-                            </a>
-                          </li>
-                        {%- endfor -%}
-                      </ul>
+                          {% for ext in image_sources %}
+                            {% assign ext = ext | strip %}
+                            {% assign item_image = childlink.handle | prepend: '-' | prepend: menu_handle | handleize | append: '.' | append: ext %}
+                            {% if images[item_image] != blank and found_image == false %}
+                              {% assign found_image = true %}
+                              {% assign image = item_image | file_url %}
+                              <span class="media media--adapt" style="{{ image_style }}">
+                                <img
+                                  src="{{ image }}"
+                                  srcset="{{ image }} 450w, {{ image }} 900w"
+                                  width="450"
+                                  height="450"
+                                  sizes="{{ sizes }}"
+                                  loading="lazy"
+                                  class="media--adapt"
+                                  style="{{ image_style }}"
+                                  alt="{{ shop.name | escape }}"
+                                >
+                              </span>
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}
+                        {{ childlink.title | escape }}
+                      </a>
+                      <div
+                        id="childlink-{{ childlink.handle | escape }}"
+                        class="list-menu-wrap"
+                      >
+                        <ul
+                          class="menu-drawer__menu-grid grid-layout grid-layout--3 list-menu"
+                          role="list"
+                          tabindex="-1"
+                        >
+                          {%- for grandchildlink in childlink.links -%}
+                            <li>
+                              <a
+                                id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
+                                href="{{ grandchildlink.url }}"
+                                class="
+                                  link link--text list-menu__item focus-inset flex-column gap-xs center
+                                  {%- if grandchildlink.current %} menu-drawer__menu-item--active{% endif -%}
+                                "
+                                {% if grandchildlink.current %}
+                                  aria-current="page"
+                                {% endif %}
+                              >
+                                {% if show_image_sub_menu %}
+                                  {% liquid
+                                    assign width = media_width_sub_menu
+
+                                    assign ratio = 1
+
+                                    assign image_style = 'width: ' | append: width | append: 'px;' | append: ';' | append: '--media-adapt-ratio:' | append: ratio | append: ';'
+
+                                    assign image_sources = 'jpg,png,webp,avif' | split: ','
+                                    assign found_image = false
+
+                                  -%}
+
+                                  {% for ext in image_sources %}
+                                    {% assign ext = ext | strip %}
+                                    {% assign item_image = grandchildlink.handle | prepend: '-' | prepend: menu_handle | handleize | append: '.' | append: ext %}
+                                    {% if images[item_image] != blank and found_image == false %}
+                                      {% assign found_image = true %}
+                                      {% assign image = item_image | file_url %}
+                                      <span class="media media--adapt" style="{{ image_style }}">
+                                        <img
+                                          src="{{ image }}"
+                                          srcset="{{ image }} 450w, {{ image }} 900w"
+                                          width="450"
+                                          height="450"
+                                          sizes="{{ sizes }}"
+                                          loading="lazy"
+                                          class="media--adapt"
+                                          style="{{ image_style }}"
+                                          alt="{{ shop.name | escape }}"
+                                        >
+                                      </span>
+                                    {% endif %}
+                                  {% endfor %}
+                                {% endif %}
+                                {{ grandchildlink.title | escape }}
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      </div>
                     </div>
-                  </div>
-                {%- endif -%}
-              </li>
-            {%- endfor -%}
-          </ul>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
         </div>
-      </div>
-    </details>
+      </details>
+    </header-drawer>
   {%- else -%}
     <a
       id="HeaderDrawer-{{ bl_id }}"

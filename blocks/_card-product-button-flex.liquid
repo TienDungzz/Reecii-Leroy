@@ -9,7 +9,7 @@
     assign quick_add_type_icon = true
     assign class_button = 'card-product__group-btn rounded-full bor-none center cursor-pointer flex items-center justify-center relative w-fit leading-none'
     assign class_text = 'text whitespace-nowrap overflow-hidden pointer-events-none absolute-c-y z--1 opacity-0'
-    assign class_text_inner = 'text-inner text-sm inline-block'
+    assign class_text_inner = 'text-inner inline-block'
   else
     assign padding_block = block.settings.padding_block | times: 0.1 | append: 'rem'
     assign padding_inline = block.settings.padding_inline | times: 0.1 | append: 'rem'
@@ -118,7 +118,7 @@
                 id="{{ product_form_id }}-submit"
                 type="submit"
                 name="add"
-                class="add-to-cart-button quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class != 'link' %} button--full-width{% endif %}"
+                class="add-to-cart-button quick-add__submit quick-add__submit--{{ settings.quick_add_type }} {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class != 'link' %} button--full-width{% endif %} {{ class_button }}"
                 aria-haspopup="dialog"
                 aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                 aria-live="polite"
@@ -127,16 +127,39 @@
                   disabled
                 {% endif %}
               >
-                <span>
-                  {%- if card_product.selected_or_first_available_variant.available -%}
-                    {{ 'products.product.add_to_cart' | t }}
-                  {%- else -%}
+                {%- if quick_add_type_icon == false -%}
+                  <span>
+                    {%- if card_product.selected_or_first_available_variant.available -%}
+                      {{ 'products.product.add_to_cart' | t }}
+                    {%- else -%}
+                      {{ 'products.product.sold_out' | t }}
+                    {%- endif -%}
+                  </span>
+                  <span class="sold-out-message hidden">
                     {{ 'products.product.sold_out' | t }}
-                  {%- endif -%}
-                </span>
-                <span class="sold-out-message hidden">
-                  {{ 'products.product.sold_out' | t }}
-                </span>
+                  </span>
+                {%- else -%}
+                  <span class="text-in-mb md:hidden">
+                    {{ 'products.product.choose_options' | t }}
+                  </span>
+                  <span class="{{ class_text }}">
+                    <span class="{{ class_text_inner }}">{{ 'products.product.choose_options' | t }}</span>
+                  </span>
+                  <svg
+                    class="icon-cart"
+                    aria-hidden="true"
+                    focusable="false"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 20 22"
+                    stroke="currentColor"
+                    fill="none"
+                  >
+                    {%- render 'icon', icon: 'cart', class: 'max-sm:hidden' -%}
+                  </svg>
+                {%- endif -%}
+
                 {%- render 'loading-spinner' -%}
               </button>
             {%- endform -%}

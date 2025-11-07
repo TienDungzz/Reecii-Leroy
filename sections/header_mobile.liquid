@@ -1,4 +1,7 @@
 {% if settings.enable_multi_tab_layout_mobile %}
+
+  <link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
+
   {%- liquid
     if localization.available_countries.size > 1 and section.settings.show_country or section.settings.show_language and localization.available_languages.size > 1
       assign localization_forms = true
@@ -16,7 +19,7 @@
     data-drawer-direction="left"
   >
     <div id="Drawer-Overlay-Menu" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-    <header-drawer class="side-drawer" data-drawer-content data-breakpoint="tablet">
+    <div class="side-drawer" data-drawer-content data-breakpoint="tablet">
       <div
         class="drawer__inner d-flex flex-column h-full"
         role="dialog"
@@ -63,7 +66,7 @@
           </div>
         </div>
       </div>
-    </header-drawer>
+    </div>
   </side-drawer>
 {% endif %}
 
@@ -87,8 +90,15 @@
   .menu-drawer__menu-item.menu-drawer__menu-item--multi-tab {
     padding-inline: var(--padding-xl);
   }
-  [open] > .menu-drawer__menu-item.menu-drawer__menu-item--multi-tab .svg-wrapper {
-    transform: rotate(-180deg);
+  /* [open] > .menu-drawer__menu-item.menu-drawer__menu-item--multi-tab .svg-wrapper {
+    transform: translateY(-50%) rotate(-180deg);
+  } */
+
+
+  .mobile--multi-tab .section-resource-list,
+  .mobile--multi-tab .section-resource-list__content,
+  .mobile--multi-tab {
+    height: 100%;
   }
 
   .mobile--multi-tab .menu-drawer__utility-links {
