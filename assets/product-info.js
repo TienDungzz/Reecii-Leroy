@@ -74,13 +74,23 @@ if (!customElements.get('product-info')) {
             if (!stickyOption) return;
 
             if (stickyOption.tagName === 'INPUT' && stickyOption.type === 'radio') {
+
+              stickyVariantSelects.querySelectorAll('input[type="radio"]').forEach(input => input.classList.remove('checked'));
+              stickyVariantSelects.querySelectorAll('label').forEach(label => label.classList.remove('checked'));
+              if (mainOption) {
+                mainVariantSelects.querySelectorAll('input[type="radio"]').forEach(input => input.classList.remove('checked'));
+                mainVariantSelects.querySelectorAll('label').forEach(label => label.classList.remove('checked'));
+              }
+
               if (!stickyOption.checked) {
-                stickyVariantSelects.querySelectorAll(`input[type='radio']`).forEach(opt => opt.classList.remove('checked'));
-                stickyOption.classList.add('checked');
-                if (mainOption) {
-                  mainVariantSelects.querySelectorAll(`input[type='radio']`).forEach(opt => opt.classList.remove('checked'));
-                  mainOption.classList.add('checked');
-                }
+                setTimeout(() => {
+                  stickyOption.classList.add('checked');
+                  stickyOption.nextElementSibling.classList.add('checked');
+                  if (mainOption) {
+                    mainOption.classList.add('checked');
+                    mainOption.nextElementSibling.classList.add('checked');
+                  }
+                }, 10);
                 const selectedValueSpan = stickyOption.closest('.product-form__input')?.querySelector('[data-selected-value]');
                 if (selectedValueSpan) {
                   selectedValueSpan.innerHTML = stickyOption.value;
@@ -129,7 +139,7 @@ if (!customElements.get('product-info')) {
         } finally {
           setTimeout(() => {
             this.isSyncingVariant = false;
-          }, 100);
+          }, 10);
         }
       }
 
