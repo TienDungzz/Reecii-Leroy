@@ -186,7 +186,7 @@
       endif
     -%}
     <{{ element }}
-      class="slideshow__container"
+      class="slideshow__container relative"
       {%- render 'swiper-data',
         settings: section.settings,
         space_between: 0,
@@ -245,6 +245,7 @@
           </div>
         {% endif %}
       </div>
+      {% content_for 'block', type: 'content-absolute', id: 'static-content-absolute', content_type: 'custom' %}
     </{{ element }}>
 
     {%- if sec_stts.enable_multi_level_category -%}
@@ -605,7 +606,7 @@
   "disabled_on": {
     "groups": ["header", "custom.popup", "aside"]
   },
-  "blocks": [{ "type": "_slide" }],
+  "blocks": [{ "type": "_slide" },{ "type": "content-absolute" }],
   "settings": [
     {
       "type": "header",

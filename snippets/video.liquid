@@ -35,6 +35,7 @@
 {% assign video_preview_image = video_preview_image | default: video.preview_image %}
 {% assign video_autoplay = video_autoplay | default: block.settings.video_autoplay %}
 {% assign video_loop = video_loop | default: block.settings.video_loop %}
+{% assign video_custom_handle = video_custom_handle | default: block.settings.video_custom_handle %}
 {% liquid
   assign media_width_desktop = 100 | divided_by: 2 | append: 'vw'
   assign media_width_mobile = '100vw'
@@ -98,7 +99,11 @@
       assign controls = false
       assign enable_js_api = true
     else
-      assign controls = true
+      if video_custom_handle
+        assign controls = false
+      else
+        assign controls = true
+      endif
       assign enable_js_api = false
     endif
   %}
@@ -117,28 +122,30 @@
         | external_video_tag: data-video-type: 'vimeo'
       }}
     {% else %}
-      {{ video | video_tag: image_size: '2500x', autoplay: true, loop: video_loop, muted: true, controls: controls }}
+      {{ video | video_tag: image_size: '2500x', autoplay: true, loop: video_loop, muted: true, controls: controls, class: 'border-style', style: video_style }}
     {% endif %}
   {% endcapture %}
 {% endif %}
 
 {% if video != blank %}
   <deferred-media
-    class="deferred-media relative overflow-hidden {{ video_class }} sdasaddasads"
-    style="{{ video_style }}"
+    class="deferred-media relative{% unless video_custom_handle %} overflow-hidden{% endunless %} {{ video_class }}"
     data-media-id="{{ video_id }}"
     {% if video_autoplay %}
       autoplay
+    {% endif %}
+    {% if video_custom_handle %}
+      custom-handle
     {% endif %}
     {{ additional_attributes }}
   >
     {% if video_preview_image != blank %}
       <button
         id="Deferred-Poster-Modal-{{ video_id }}"
-        class="button deferred-media__poster deferred-media__poster-button button-unstyled w-full media--{{ video_ratio }}"
+        class="button deferred-media__poster deferred-media__poster-button button-unstyled w-full border-style media--{{ video_ratio }}"
         aria-label="{{ alt }}"
         type="button"
-        style="--video-aspect-ratio: {{ video.aspect_ratio }}"
+        style="--video-aspect-ratio: {{ video.aspect_ratio }};{{ video_style }}"
       >
         {{
           video_preview_image
@@ -170,6 +177,19 @@
       </button>
     {% endif %}
 
+    {% if video_custom_handle %}
+      <button
+        class="button primary deferred-media-close hidden"
+        data-click-handler="handleCloseMedia"
+        type="button"
+      >
+        <span class="deferred-media__poster-icon icon-close">
+          <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </span>
+      </button>
+    {% endif %}
+
     <template>
       {% if video_from_url %}
         {{ video_iframe }}
@@ -178,7 +198,7 @@
       {% endif %}
     </template>
 
-    {% if video_autoplay or video_preview_image == blank %}
+    {% if video_autoplay or video_preview_image == blank or video_custom_handle %}
       {% if video_from_url %}
         {{ video_iframe }}
       {% else %}

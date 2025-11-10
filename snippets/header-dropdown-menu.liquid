@@ -33,13 +33,14 @@
             <a
               id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
               href="{{ childlink.url }}"
-              class="header__menu-item list-menu__item link link--text focus-inset link--hover-underline caption-large mega-menu__link--level-3 {{ class_item_hover_reveal }}{% if childlink.current %} list-menu__item--active{% endif %}{% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: sec_settings %}"
+              class="header__menu-item list-menu__item link link--text focus-inset caption-large mega-menu__link--level-2 {{ class_item_hover_reveal }}{% if childlink.current %} list-menu__item--active{% endif %}{% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: sec_settings %}"
               {% if childlink.current %}
                 aria-current="page"
               {% endif %}
               style="{%  render 'highlight-style', order: '2', keys: keys, compare: childlink.title, color: highlight_color, settings: sec_settings %}"
             >
               {{ childlink.title | escape }}
+              {{- 'icon-arrow.svg' | inline_asset_content -}}
               {% render 'highlight-label-menu',
                 order: '2',
                 keys: keys,
@@ -57,15 +58,10 @@
             >
               <summary
                 id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                class="details__summary header__menu-item link link--text list-menu__item link--hover-underline focus-inset caption-large mega-menu__link--level-3 {{ class_item_hover_reveal }}{% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: sec_settings %}"
-                style="{%  render 'highlight-style', order: '2', keys: keys, compare: childlink.title, color: highlight_color, settings: sec_settings %}"
+                class="details__summary header__menu-item link link--text list-menu__item focus-inset caption-large mega-menu__link--level-2 {{ class_item_hover_reveal }}{% render 'highlight-class', order: '2', keys: keys, compare: childlink.title, settings: sec_settings %}"
               >
                 {{ childlink.title | escape }}
-                {% if icon_type == 'caret' %}
-                  <span class="svg-wrapper">
-                    {{- 'icon-caret.svg' | inline_asset_content -}}
-                  </span>
-                {% endif %}
+                {{- 'icon-arrow.svg' | inline_asset_content -}}
                 {% render 'highlight-label-menu',
                   order: '2',
                   keys: keys,
@@ -73,7 +69,7 @@
                   settings: sec_settings
                 %}
               </summary>
-              <div class="details__list header__submenu-wrapper header__submenu-wrapper-grandchild list-menu--wrapper list-menu list-menu--disclosure top-0 left-full z-1 motion-reduce global-settings-popup">
+              <div class="details__list header__submenu-wrapper header__submenu-wrapper-grandchild list-menu--wrapper list-menu list-menu--disclosure top-0 z-1 motion-reduce global-settings-popup">
                 <ul
                   id="HeaderMenu-SubMenuList-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
                   class="header__submenu list-menu"
@@ -84,7 +80,7 @@
                         id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
                         href="{{ grandchildlink.url }}"
                         class="
-                          header__menu-item header__menu-item--last list-menu__item link link--text focus-inset link--hover-underline caption-large mega-menu__link--level-3 {{ class_item_hover_reveal }}{% if grandchildlink.current %} list-menu__item--active{% endif %}
+                          header__menu-item header__menu-item--last list-menu__item link link--text focus-inset caption-large mega-menu__link--level-3 {{ class_item_hover_reveal }}{% if grandchildlink.current %} list-menu__item--active{% endif %}
                           {% render 'highlight-class', order: '3', keys: keys, compare: grandchildlink.title, settings: sec_settings %}
                         "
                         {% if grandchildlink.current %}
@@ -93,6 +89,7 @@
                         style="{%  render 'highlight-style', order: '3', keys: keys, compare: grandchildlink.title, color: highlight_color, settings: sec_settings %}"
                       >
                         {{ grandchildlink.title | escape }}
+                        {{- 'icon-arrow.svg' | inline_asset_content -}}
                         {% render 'highlight-label-menu',
                           order: '3',
                           keys: keys,

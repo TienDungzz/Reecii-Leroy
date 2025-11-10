@@ -1,0 +1,222 @@
+{% liquid
+  assign content_type = block.settings.content_type
+  assign content_position_top = block.settings.content_position_top
+  assign content_position_right = block.settings.content_position_right
+  assign content_position_bottom = block.settings.content_position_bottom
+  assign content_position_left = block.settings.content_position_left
+%}
+
+{% capture attr %}
+style="{%- if content_position_top != 0 -%}--posTop: {{ content_position_top }}px;{%- else -%}--posTop: auto;{%- endif -%}
+{%- if content_position_right != 0 -%}--posRight: {{ content_position_right }}px;{%- else -%}--posRight: auto;{%- endif -%}
+{%- if content_position_bottom != 0 -%}--posBottom: {{ content_position_bottom }}px;{%- else -%}--posBottom: auto;{%- endif -%}
+{%- if content_position_left != 0 -%}--posLeft: {{ content_position_left }}px;{%- else -%}--posLeft: auto;{%- endif -%}
+{% render 'size-style', settings: block.settings %}"
+{% endcapture %}
+
+{% capture class %}
+  {% if content_type == 'absolute-c-x' %} top-0 {% endif %}{{ content_type }}
+{% endcapture %}
+
+<div class="content-absolute-block size-style{{ class }}" {{ attr }}>
+  {% content_for 'blocks' %}
+</div>
+
+{% stylesheet %}
+  .content-absolute-block {
+    z-index: 1;
+    position: absolute;
+  }
+
+  .content-absolute-block.custom {
+    top: var(--posTop, unset);
+    right: var(--posRight, unset);
+    bottom: var(--posBottom, unset);
+    left: var(--posLeft, unset);
+  }
+{% endstylesheet %}
+
+{% schema %}
+  {
+    "name": "t:names.content_absolute",
+    "blocks": [
+      {
+        "type": "group"
+      }
+    ],
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:content.content"
+      },
+      {
+        "type": "select",
+        "id": "width",
+        "label": "t:settings.width",
+        "options": [
+            {
+            "value": "fit-content",
+            "label": "t:options.fit"
+            },
+            {
+            "value": "100%",
+            "label": "t:options.fill"
+            },
+            {
+            "value": "custom",
+            "label": "t:options.custom"
+            }
+        ],
+        "default": "fit-content"
+      },
+      {
+        "type": "select",
+        "id": "unit",
+        "label": "t:settings.unit",
+        "visible_if": "{{ block.settings.width == 'custom' }}",
+        "options": [
+            {
+            "value": "pixel",
+            "label": "t:options.pixel"
+            },
+            {
+            "value": "percent",
+            "label": "t:options.percent"
+            }
+        ],
+        "default": "percent"
+      },
+      {
+        "type": "range",
+        "id": "custom_width",
+        "label": "t:settings.custom_width",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "default": 100,
+        "visible_if": "{{ block.settings.width == 'custom' and block.settings.unit == 'percent' }}"
+      },
+      {
+        "type": "range",
+        "id": "custom_width_pixel",
+        "label": "t:settings.custom_width",
+        "min": 100,
+        "max": 2000,
+        "step": 20,
+        "unit": "px",
+        "default": 500,
+        "visible_if": "{{ block.settings.width == 'custom' and block.settings.unit == 'pixel' }}"
+      },
+      {
+        "type": "select",
+        "id": "height",
+        "label": "t:settings.height",
+        "options": [
+          {
+            "value": "auto",
+            "label": "t:options.auto"
+          },
+          {
+            "value": "fit-content",
+            "label": "t:options.fit_content"
+          },
+          {
+            "value": "fill",
+            "label": "t:options.fill"
+          },
+          {
+            "value": "custom",
+            "label": "t:options.custom"
+          }
+        ],
+        "default": "fit-content"
+      },
+      {
+        "type": "range",
+        "id": "custom_height",
+        "label": "t:settings.custom_height",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "default": 100,
+        "visible_if": "{{ block.settings.height == 'custom' }}"
+      },
+      {
+        "type": "select",
+        "id": "content_type",
+        "label": "t:settings.content_type",
+        "options": [
+          {
+            "value": "absolute-c-c",
+            "label": "t:options.center_center"
+          },
+          {
+            "value": "absolute-c-x",
+            "label": "t:options.center_horizontal"
+          },
+          {
+            "value": "absolute-c-y",
+            "label": "t:options.center_vertical"
+          },
+          {
+            "value": "custom",
+            "label": "t:options.custom"
+          }
+        ],
+        "default": "absolute-c-c"
+      },
+      {
+        "type": "range",
+        "id": "content_position_top",
+        "label": "t:settings.top",
+        "min": -100,
+        "max": 100,
+        "step": 2,
+        "unit": "px",
+        "default": 0,
+        "visible_if": "{{ block.settings.content_type == 'custom' }}"
+      },
+      {
+        "type": "range",
+        "id": "content_position_left",
+        "label": "t:options.left",
+        "min": -100,
+        "max": 100,
+        "step": 2,
+        "unit": "px",
+        "default": 20,
+        "visible_if": "{{ block.settings.content_type == 'custom' }}"
+      },
+      {
+        "type": "range",
+        "id": "content_position_right",
+        "label": "t:options.right",
+        "min": -100,
+        "max": 100,
+        "step": 2,
+        "unit": "px",
+        "default": 0,
+        "visible_if": "{{ block.settings.content_type == 'custom' }}"
+      },
+      {
+        "type": "range",
+        "id": "content_position_bottom",
+        "label": "t:settings.bottom",  
+        "min": -100,
+        "max": 100,
+        "step": 2,
+        "unit": "px",
+        "default": 20,
+        "visible_if": "{{ block.settings.content_type == 'custom' }}"
+      }
+    ],
+    "presets": [
+      {
+        "name": "t:names.content_absolute",
+        "category": "t:categories.custom"
+      }
+    ]
+  }
+{% endschema %}

@@ -267,7 +267,7 @@
   {% endstyle %}
 
   {%- if block.settings.slide_background %}
-    <div class="slide__image-container flex size-full overflow-hidden absolute">
+    <div class="slide__image-container flex size-full overflow-hidden absolute"{%- if block.settings.border_radius -%} style="--corner-radius: {{ block.settings.border_radius | divided_by: 10.0 }}rem;"{%- endif -%}>
       <div
         class="slide__img-wrapper grid w-full"
         {%- if block_stts.image_1 != blank -%}
@@ -404,6 +404,16 @@
         }
       ],
       "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "select",
