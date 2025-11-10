@@ -33,6 +33,7 @@
   assign button_style = button_style | default: block.settings.button_style
   assign wrap = wrap | default: block.settings.wrap
   assign font_style = font_style | default: block.settings.font_style
+  assign icon = icon | default: block.settings.buttons_icon
 -%}
 <a
   {% if link == blank %}
@@ -81,14 +82,31 @@
   {% if link_reveal and style_class == 'link' %}
     <span class="text-mask link none{% if link_hover_underline and style_class == 'link' and link_underline == false %} link--hover-underline{% endif %}" data-text="{{ label }}">{{ label }}</span>
   {% endif %}
-  {% if icon %}
-    {{ icon }}
+  {% if icon != blank or icon != 'none' %}
+    {{- icon | append: '.svg' | inline_asset_content -}}
   {% endif %}
 </a>
 
 {% stylesheet %}
   .button.size-style {
     height: auto;
+    &:has(.icon) {
+      display: flex;
+      gap: 0.8rem;
+    }
+    .icon {
+      display: inline;
+    }
+  }
+
+  .button-secondary {
+    &:has(.icon) {
+      display: flex;
+      gap: 0.8rem;
+    }
+    .icon {
+      display: inline;
+    }
   }
 
   .button.button--outline,
