@@ -592,13 +592,11 @@ style="
             .querySelectorAll('input[type="radio"]')
             .forEach((el) => {
               el.checked = false;
-              el.classList.remove('checked');
               if (el.nextElementSibling && el.nextElementSibling.tagName === 'LABEL') {
                 el.nextElementSibling.classList.remove('checked');
               }
             });
           stickyOption.checked = true;
-          stickyOption.classList.add('checked');
           if (stickyOption.nextElementSibling && stickyOption.nextElementSibling.tagName === 'LABEL') {
             stickyOption.nextElementSibling.classList.add('checked');
           }
@@ -642,11 +640,9 @@ style="
         Array.from(document.getElementsByName(group)).forEach((el) => {
           if (el instanceof HTMLInputElement && el.type === 'radio') {
             el.checked = false;
-            el.classList.remove('checked');
           }
         });
         mainOption.checked = true;
-        mainOption.classList.add('checked');
         requestAnimationFrame(() => {
           mainOption.dispatchEvent(new Event('input', { bubbles: true }));
           mainOption.dispatchEvent(new Event('change', { bubbles: true }));
