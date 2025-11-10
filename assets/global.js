@@ -1652,10 +1652,8 @@ class SwiperComponent extends HTMLElement {
     this.initSwiper.on("slideChange", () => {
       thumbnailButtons.forEach((button, index) => {
         if (index === this.initSwiper.activeIndex) {
-          button.setAttribute("aria-selected", "true");
           button.classList.add("active");
         } else {
-          button.removeAttribute("aria-selected");
           button.classList.remove("active");
         }
       });
@@ -1682,7 +1680,6 @@ class SwiperComponent extends HTMLElement {
     });
 
     if (thumbnailButtons.length > 0) {
-      thumbnailButtons[0].setAttribute("aria-selected", "true");
       thumbnailButtons[0].classList.add("active");
     }
   }
