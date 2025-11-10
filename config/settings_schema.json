@@ -2131,13 +2131,13 @@
             "label": "t:options.capitalize"
           }
         ],
-        "default": "normal",
+        "default": "normal"
       },
       {
         "type": "checkbox",
         "id": "show_new_badge",
         "label": "t:settings.show_new_badge",
-        "default": false
+        "default": true
       },
       {
         "type": "select",
@@ -2153,7 +2153,8 @@
             "label": "t:options.manual"
           }
         ],
-        "default": "auto"
+        "default": "auto",
+        "visible_if": "{{ settings.show_new_badge == true }}"
       },
       {
         "type": "range",
@@ -2163,7 +2164,26 @@
         "step": 1,
         "unit": "day",
         "label": "t:settings.new_badge_calculation_period",
-        "default": 30
+        "default": 30,
+        "visible_if": "{{ settings.show_new_badge == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sold_out_badge",
+        "label": "Show sold out badge",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sale_badge",
+        "label": "Show sale badge",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_custom_badge",
+        "label": "Show custom badge",
+        "default": true
       },
       {
         "type": "header",
