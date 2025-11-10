@@ -488,12 +488,14 @@ class DropdownDetails extends HTMLDetailsElement {
 
     if (open) {
       this.setAttribute('open', 'true');
+      this.elements.dropdown.classList.add('active');
 
       document.addEventListener('click', this.onClickOutsideListener);
       document.addEventListener('keydown', this.onEscKeyboardListener);
       document.addEventListener('focusout', this.onFocusOutListener);
       this.transitionIn()
     } else {
+      this.elements.dropdown.classList.remove('active');
       this.elements.dropdown.removeAttribute('open');
       document.removeEventListener('click', this.onClickOutsideListener);
       document.removeEventListener('keydown', this.onEscKeyboardListener);

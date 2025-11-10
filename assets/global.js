@@ -1244,14 +1244,41 @@ class DeferredMedia extends HTMLElement {
 
   connectedCallback() {
     this.toggleMediaButton = this.querySelector('button[data-click-handler="toggleMediaButton"]');
+    this.closeMediaButton = this.querySelector('button[data-click-handler="handleCloseMedia"]');
     this.isPlaying = false;
     this.abortController = new AbortController();
     const { signal } = this.abortController;
+    const self = this
 
     this.setupEventListeners();
 
     if (typeof MainEvents !== 'undefined' && MainEvents.mediaStartedPlaying) {
       document.addEventListener(MainEvents.mediaStartedPlaying, this.pauseMedia.bind(this), { signal });
+    }
+
+    // Handle custom
+    if (this.hasAttribute('custom-handle')) {
+      this.isPlaying = true;
+      const $video = this.querySelector('video')
+      const $parent = $video.closest('.content-absolute-block');
+
+      if ($video) {
+        $video.addEventListener('click', (e) => {
+          if (e.target.hasAttribute('controls')) return
+          if (this.closeMediaButton) this.closeMediaButton.classList.remove('hidden')
+
+          $video.currentTime = 0;
+          $video.setAttribute('controls', 'controls');
+          $video.removeAttribute('muted');
+          $video.removeAttribute('autoplay');
+          this.pauseMedia.bind(self)
+        });
+      }
+
+      this.closeMediaButton.addEventListener('click', function() {
+        $parent.remove();
+      })
+      return;
     }
 
     // Handle autoplay videos
