@@ -386,26 +386,26 @@ blockquote {
 }
 
 .caption {
-  font-size: 1rem;
+  font-size: var(--font-size--3xs);
   letter-spacing: 0.07rem;
   @media screen and (min-width: 750px) {
-    font-size: 1.2rem;
+    font-size: var(--font-size--2xs);
   }
 }
 
 .caption-with-letter-spacing {
-  font-size: 1rem;
+  font-size: var(--font-size--3xs);
   letter-spacing: 0.05rem;
   text-transform: uppercase;
 }
 
 .caption-with-letter-spacing--medium {
-  font-size: 1.2rem;
+  font-size: var(--font-size--2xs);
   letter-spacing: 0.05rem;
 }
 
 .caption-with-letter-spacing--large {
-  font-size: 1.4rem;
+  font-size: var(--font-size--sm);
   letter-spacing: 0.1rem;
 }
 
@@ -415,7 +415,7 @@ blockquote {
 .field__input,
 .form__label,
 .select__select {
-  font-size: 1.4rem;
+  font-size: var(--font-size--sm);
   letter-spacing: 0.04rem;
 }
 
@@ -426,7 +426,7 @@ blockquote {
 table:not([class]) {
   table-layout: fixed;
   border-collapse: collapse;
-  font-size: 1.4rem;
+  font-size: var(--font-size--sm);
   border-style: hidden;
   box-shadow: 0 0 0 0.1rem rgb(var(--color-foreground-rgb) / var(--opacity-20));
 }
@@ -1683,7 +1683,7 @@ img {
 
 .link-with-icon {
   display: inline-flex;
-  font-size: 1.4rem;
+  font-size: var(--font-size--sm);
   font-weight: 600;
   letter-spacing: 0.1rem;
   text-decoration: none;
@@ -1894,7 +1894,7 @@ summary {
   list-style: none;
 }
 
-details[open="true"]>summary .icon-caret {
+details[open='true']>summary .icon-caret {
   transform: rotate(180deg);
 }
 
@@ -1910,11 +1910,11 @@ summary .icon-plus-wrapper :is(.horizontal, .vertical) {
 }
 
 details[open] > summary .icon-plus-wrapper {
-  & .horizontal {
+  .horizontal {
     transform: rotate(90deg);
   }
 
-  & .vertical {
+  .vertical {
     transform: rotate(90deg);
     opacity: 0;
   }
@@ -1995,6 +1995,14 @@ details[open] > summary .icon-plus-wrapper {
   opacity: var(--opacity-0);
   visibility: hidden;
   overflow: hidden;
+}
+
+@media screen and (max-width: 1024px) {
+  .details--dropdown[open]:not([open='true'],[open='false']) > .details__list:not(.list-menu--wrapper) {
+    opacity: var(--opacity-100);
+    visibility: visible;
+    overflow: visible;
+  }
 }
 
 .no-js .details--dropdown[open] .details__list,
@@ -2213,18 +2221,18 @@ details[open] > summary .icon-plus-wrapper {
 }
 
 .subtitle {
-  font-size: 1.8rem;
+  font-size: var(--font-size--lg);
   letter-spacing: 0.06rem;
   color: rgb(var(--color-foreground-rgb) / var(--opacity-70));
 }
 
 .subtitle--small {
-  font-size: 1.4rem;
+  font-size: var(--font-size--sm);
   letter-spacing: 0.1rem;
 }
 
 .subtitle--medium {
-  font-size: 1.6rem;
+  font-size: var(--font-size--md);
   letter-spacing: 0.08rem;
 }
 
@@ -2446,12 +2454,12 @@ deferred-media {
 .button-label,
 .shopify-challenge__button,
 .customer button {
-  font-size: 1.5rem;
+  font-size: var(--font-size--md);  
   letter-spacing: 0.1rem;
 }
 
 .button--tertiary {
-  font-size: 1.2rem;
+  font-size: var(--font-size--2xs);
   padding: 1rem 1.5rem;
   min-width: calc(9rem + var(--style-border-width-secondary) * 2);
   min-height: calc(3.5rem + var(--style-border-width-secondary) * 2);
@@ -2702,7 +2710,7 @@ button.shopify-payment-button__button--unbranded:hover:not([disabled]) {
 }
 
 .share-button__button {
-  font-size: 1.4rem;
+  font-size: var(--font-size--sm);
   display: flex;
   align-items: center;
   color: var(--color-primary);
@@ -2933,7 +2941,7 @@ details[open]>.share-button__fallback {
   font-family: var(--font-body--family);
   font-style: var(--font-body--style);
   font-weight: var(--font-body--weight);
-  font-size: 1.4rem;
+  font-size: var(--font-size--sm);
   color: rgb(var(--color-foreground-rgb) / var(--opacity-75));
 }
 
@@ -3029,7 +3037,7 @@ details[open]>.share-button__fallback {
 .field__input:focus~.field__label,
 .field__input:not(:placeholder-shown)~.field__label,
 .field__input:-webkit-autofill~.field__label{
-  font-size: 1rem;
+  font-size: var(--font-size--3xs);
   top: calc(var(--inputs-border-width) + 0.2rem);
   transform: none;
   left: 1.5rem;
@@ -3094,17 +3102,17 @@ details[open]>.share-button__fallback {
 .form__message {
   align-items: center;
   display: flex;
-  font-size: 1.4rem;
+  font-size: var(--font-size--sm);
   line-height: 1;
   margin-top: 1rem;
 }
 
 .form__message--large {
-  font-size: 1.6rem;
+  font-size: var(--font-size--md);
 }
 
 .customer .field .form__message {
-  font-size: 1.4rem;
+  font-size: var(--font-size--sm);
   text-align: left;
 }
 
@@ -3129,7 +3137,7 @@ details[open]>.share-button__fallback {
 
 .form-status {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: var(--font-size--md);
 }
 
 .form-status-list {
@@ -3249,7 +3257,7 @@ details[open]>.share-button__fallback {
 .quantity__button {
   width: 3rem;
   flex-shrink: 0;
-  font-size: 1.8rem;
+  font-size: var(--font-size--lg);
   border: 0;
   background-color: transparent;
   cursor: pointer;
@@ -3355,7 +3363,7 @@ details[open]>.share-button__fallback {
   transform: translateX(-50%);
   background: var(--color-black);
   color: var(--color-white);
-  font-size: 1.2rem;
+  font-size: var(--font-size--2xs);
   padding: 0.4rem 0.8rem;
   border-radius: var(--quantity-radius);
   white-space: nowrap;
@@ -3518,7 +3526,7 @@ details[open]>.share-button__fallback {
 
 .utility-bar .localization-wrapper .disclosure .localization-form__select,
 .utility-bar .localization-wrapper .disclosure__link {
-  font-size: 1.3rem;
+  font-size: var(--font-size--xs);
 }
 
 /* Main Header Layout */
@@ -3544,7 +3552,7 @@ details[open]>.share-button__fallback {
   border: 1px solid transparent;
   border-radius: var(--badge-corner-radius);
   display: flex;
-  font-size: 1rem;
+  font-size: var(--font-size--3xs);
   letter-spacing: 0.1rem;
   line-height: 1;
   padding: var(--pt, 0.5rem) var(--pr, 1.3rem) var(--pb, 0.6rem) var(--pl, 1.3rem);
@@ -3556,7 +3564,7 @@ details[open]>.share-button__fallback {
   width: max-content;
 
   @media screen and (min-width: 750px) {
-    font-size: 1.2rem;
+    font-size: var(--font-size--2xs);
   }
 }
 

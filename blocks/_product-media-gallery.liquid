@@ -112,14 +112,12 @@
         align-items: center;
       }
 
-      /* Mobile constraint wrapper sizing - use width-based approach since max-height is disabled */
       .product-media-constraint-wrapper {
         width: 100%;
         max-width: 100%;
         flex-shrink: 0;
       }
 
-      /* Desktop constraint wrapper sizing */
       @media screen and (min-width: 750px) {
         .product-media-constraint-wrapper {
           width: min(100%, calc(var(--constrained-height) * {{ bl_stts.aspect_ratio }}));
@@ -127,7 +125,6 @@
       }
     {% endif %}
 
-    /* Constrain all deferred-media content to parent bounds when specific aspect ratio is set */
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media deferred-media,
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media product-model {
       width: 100%;
@@ -136,7 +133,6 @@
       left: 0;
     }
 
-    /* Ensure video and iframe elements respect container aspect ratio */
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media deferred-media video,
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media deferred-media iframe {
       width: 100%;
@@ -144,13 +140,11 @@
       object-fit: cover;
     }
 
-    /* 3D models need special handling since they don't support object-fit */
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media product-model model-viewer {
       width: 100%;
       height: 100%;
     }
 
-    /* Clear gallery aspect ratio for zoom dialog - let media display at natural aspect ratios */
     .dialog-zoomed-gallery .product-media {
       --gallery-aspect-ratio: var(--ratio);
     }
@@ -161,14 +155,12 @@
       --product-media-fit: {{ bl_stts.media_fit }};
     }
 
-    /* Media fit for all media elements */
     .media-fit-{{ bl_stts.media_fit }} :is(img, video, iframe, .deferred-media__poster-image) {
       object-fit: {{ bl_stts.media_fit }};
       width: 100%;
       height: 100%;
     }
 
-    /* 3D Models (no object-fit support, just sizing) */
     .media-fit-{{ bl_stts.media_fit }} model-viewer {
       width: 100%;
       height: 100%;
@@ -180,21 +172,18 @@
       --product-media-fit: cover;
     }
 
-    /* Media fit for all media elements - default to cover */
     .media-fit-cover :is(img, video, iframe, .deferred-media__poster-image) {
       object-fit: cover;
       width: 100%;
       height: 100%;
     }
 
-    /* 3D Models (no object-fit support, just sizing) */
     .media-fit-cover model-viewer {
       width: 100%;
       height: 100%;
     }
   {% endunless %}
 
-  /* Add background color so carousel arrows' mix-blend-mode works correctly even on transparent areas. */
   {% if bl_stts.media_fit == 'contain' %}
     .media-fit-contain :is(img, .deferred-media__poster-image) {
       background-color: var(--color-background);

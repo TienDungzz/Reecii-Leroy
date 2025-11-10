@@ -2,7 +2,10 @@
   assign sec_stts = section.settings
   assign page_width = sec_stts.page_width
   assign color_scheme = sec_stts.color_scheme
+  assign color_scheme_image = sec_stts.color_scheme_image
   assign section_height = sec_stts.section_height
+  assign show_collection_image = sec_stts.show_collection_image
+  assign image_overlay_opacity = sec_stts.image_overlay_opacity
   assign scroll_reveal = settings.animations_reveal_on_scroll
   assign alignment = sec_stts.alignment
   assign vertical_alignment = sec_stts.vertical_alignment
@@ -23,12 +26,12 @@
     "
     id="collection-hero-{{ section.id }}"
   >
-    <div class="collection-hero{% if sec_stts.show_collection_image and collection.image %} collection-hero--with-image color-{{ sec_stts.color_scheme_image }}{% else %} color-{{ sec_stts.color_scheme }}{% endif %}">
-      {%- if sec_stts.show_collection_image and collection.image -%}
+    <div class="collection-hero{% if show_collection_image and collection.image %} collection-hero--with-image color-{{ color_scheme_image }}{% else %} color-{{ color_scheme }}{% endif %}">
+      {%- if show_collection_image and collection.image -%}
         {{ 'section-media-banner.css' | asset_url | stylesheet_tag }}
         {%- style -%}
           .collection-hero__image-wrapper.banner__media:after {
-            opacity: {{ sec_stts.image_overlay_opacity | divided_by: 100.0 }};
+            opacity: {{ image_overlay_opacity | divided_by: 100.0 }};
             background: var(--color-background);
           }
 

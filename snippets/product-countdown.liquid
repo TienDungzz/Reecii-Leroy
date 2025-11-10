@@ -27,9 +27,9 @@
       <span>00<span>S</span></span>
     </span>
   {%- endcapture -%}
-  <div class="card-countdown-wrapper body-s-font-size w-fit m-x-auto border-style" style="{{ styles }}">
+  <div class="card-countdown-wrapper body-s-font-size w-fit m-x-auto border-style" >
     {%- if countdown_type == 'all_product' -%}
-      <div class="card-countdown countdown_{{ product.id }} style-{{ countdown_style }}" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}">
+      <div class="card-countdown countdown_{{ product.id }} style-{{ countdown_style }}" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}" style="{{ styles }}">
         {{ number_html }}
       </div>
     {%- elsif countdown_type == 'collection_product' -%}
@@ -45,14 +45,14 @@
         endif
       -%}
       {%- if has_countdown -%}
-        <div class="card-countdown countdown_{{ product.id }} style-{{ countdown_style }} w-fit m-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}">
+        <div class="card-countdown countdown_{{ product.id }} style-{{ countdown_style }} w-fit m-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_time }}" style="{{ styles }}">
           {{ number_html }}
         </div>
       {%- endif -%}
     {%- else -%}
       {%- if product.metafields.c_f.countdown -%}
         {% assign countdown_type = product.metafields.c_f.countdown %}
-        <div class="card-countdown countdown_{{ product.id }} style-{{ countdown_style }} w-fit m-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_type }}">
+        <div class="card-countdown countdown_{{ product.id }} style-{{ countdown_style }} w-fit m-x-auto" data-countdown-id="{{ product.id }}" data-countdown="{{ countdown_type }}" style="{{ styles }}">
           {{ number_html }}
         </div>
       {%- endif -%}
