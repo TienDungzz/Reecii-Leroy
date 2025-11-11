@@ -93,7 +93,7 @@ style="
     endif
   %}
 
-  <{{ element }} {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title" data-view-content="{{ view_content }}">
+  <{{ element }} {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title{% if view_content == 'default' %} isCheckingOpenDefault {% endif %}" data-view-content="{{ view_content }}">
     <button class="toggle-link cursor-pointer">
       <span class="text">Tab Title</span>
       <span class="svg-wrapper icon-caret-wrapper">{{- icon -}}</span>
@@ -209,12 +209,17 @@ style="
         {%- for block in section.blocks -%}
           {% liquid
             assign title = block.settings.title
+            assign is_open_default = block.settings.open_by_default
           %}
           {%- case block.type -%}
             {%- when 'description' -%}
               {%- if title == blank or product.description == blank -%}{%- continue -%}{%- endif -%}
               <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                {{ tab_title | replace: 'Tab Title', title }}
+                {% if is_open_default %}
+                  {{ tab_title | replace: 'Tab Title', title | replace: 'isCheckingOpenDefault', 'is-open' }}
+                {% else %}
+                  {{ tab_title | replace: 'Tab Title', title }}
+                {% endif %}
                 <div class="toggle-content">
                   {{ product.description }}
                 </div>
@@ -222,7 +227,11 @@ style="
             {%- when 'review' -%}
               {%- if title == blank or product.reviews.rating_average == blank -%}{%- continue -%}{%- endif -%}
               <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                {{ tab_title | replace: 'Tab Title', title }}
+                {% if is_open_default %}
+                  {{ tab_title | replace: 'Tab Title', title | replace: 'isCheckingOpenDefault', 'is-open' }}
+                {% else %}
+                  {{ tab_title | replace: 'Tab Title', title }}
+                {% endif %}
                 <div class="toggle-content">
                   {{ product.reviews.rating_average }}
                 </div>
@@ -240,7 +249,11 @@ style="
               %}
               {% if meta_ref != blank %}
                 <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                  {{ tab_title | replace: 'Tab Title', title }}
+                  {% if is_open_default %}
+                    {{ tab_title | replace: 'Tab Title', title | replace: 'isCheckingOpenDefault', 'is-open' }}
+                  {% else %}
+                    {{ tab_title | replace: 'Tab Title', title }}
+                  {% endif %}
                   <div class="toggle-content">
                     {{ meta_ref }}
                   </div>
@@ -249,7 +262,11 @@ style="
             {% when 'liquid' %}
               {%- if block.settings.title == blank or block.settings.custom_liquid == blank -%}{%- continue -%}{%- endif -%}
               <div class="tab-content{% if forloop.first %} is-active{% endif %}{% if accordion_border_style == 'accordion' %} border-{{ accordion_border_style }}{% endif %}">
-                {{ tab_title | replace: 'Tab Title', title }}
+                {% if is_open_default %}
+                  {{ tab_title | replace: 'Tab Title', title | replace: 'isCheckingOpenDefault', 'is-open' }}
+                {% else %}
+                  {{ tab_title | replace: 'Tab Title', title }}
+                {% endif %}
                 <div class="toggle-content">
                   {{ block.settings.custom_liquid }}
                 </div>
@@ -257,32 +274,13 @@ style="
           {%- endcase -%}
         {%- endfor -%}
       </div>
-      {% if view_content == 'popup' %}
-        <side-drawer
-          class="popup__content drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
-          element-s-popup
-          id="PopupModal-{{ section.id }}"
-        >
-          <div id="Drawer-Overlay-{{ section.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-          <div class="popup__inner color-{{ settings.popover_color_scheme }} w-auto h-full absolute-c-c flex flex-column global-settings-popup" style="--min-w-md: 50vw; --max-w: 90vw;">
-            <div class="popup__inner--content relative w-full h-full overflow-auto cus-scrollbar">
-              <div class="popup-content-wrapper"></div>
-              <button
-                onclick="this.closest('side-drawer').close()"
-                class="button button-unstyled close-button popup__close drawer__close block t-button bor-none rounded-full cursor-pointer absolute"
-                type="button"
-                aria-label="{{ 'accessibility.close_dialog' | t }}"
-                style="--top: 0.3rem; --right: 0.3rem;"
-              >
-                {{- 'icon-close.svg' | inline_asset_content -}}
-              </button>
-            </div>
-          </div>
-        </side-drawer>
-      {% endif %}
     {%- endif -%}
   {%- endif -%}
 </div>
+
+{% if view_content == 'popup' %}
+  {% render 'global-popup' %}
+{% endif %}
 
 {% if view_content == 'sidebar' %}
   {% render 'global-sidebar' %}
@@ -323,6 +321,11 @@ style="
         const toggleTitle = toggleLink.closest('.toggle-title');
         if (!toggleTitle) return;
 
+        const tabTitleText = document.querySelector('.tab-title-text');
+        if (tabTitleText) {
+          tabTitleText.textContent = toggleLink.textContent;
+        }
+
         const viewContentType = toggleTitle.dataset.viewContent;
         const content = toggleTitle.nextElementSibling;
         if (!content) return;
@@ -333,6 +336,7 @@ style="
             if (drawerContent) {
               drawerContent.innerHTML = '';
               drawerContent.appendChild(content.cloneNode(true));
+              renderVideo();
             }
             break;
           }
@@ -341,6 +345,7 @@ style="
             if (popupContent) {
               popupContent.innerHTML = '';
               popupContent.appendChild(content.cloneNode(true));
+              renderVideo();
             }
             break;
           }
@@ -349,10 +354,9 @@ style="
         }
       });
     });
-
     const modalTemplate = `
       <side-drawer
-        class="popup__content drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
+        class="popup__content video-modal drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
         element-s-popup=""
         id="PopupModal-AZDFEMWdKNDFCVHdoM__popup_link_desc_video"
         data-moved="true"
@@ -392,26 +396,31 @@ style="
         </div>
       </side-drawer>
     `;
-
     document.body.insertAdjacentHTML('beforeend', modalTemplate);
 
-    const videoOpenPopups = document.querySelectorAll('.video-open-popup');
-    if (videoOpenPopups.length > 0) {
-      videoOpenPopups.forEach(videoOpenPopup => {
-        videoOpenPopup.addEventListener('click', function(e) {
-          e.preventDefault();
+    function renderVideo() {
+      const videoOpenPopups = document.querySelectorAll('.video-open-popup');
+    
+      if (videoOpenPopups.length > 0) {
+        videoOpenPopups.forEach(videoOpenPopup => {
+          console.log("videoOpenPopup", videoOpenPopup);
+          
+          videoOpenPopup.addEventListener('click', function(e) {
+            e.preventDefault();
 
-          const videoId = videoOpenPopup.dataset.videoId;
-          const videoWrapper = document.querySelector('.video-modal__content-block');
+            const videoId = videoOpenPopup.dataset.videoId;
+            const videoWrapper = document.querySelector('.video-modal__content-block');
 
-          const youtubeIframe = `
-          <iframe width="100%" src="https://www.youtube.com/embed/${videoId}?si=6yJ56P_BJEG5d2Uq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-          `;
+            const youtubeIframe = `
+            <iframe width="100%" src="https://www.youtube.com/embed/${videoId}?si=6yJ56P_BJEG5d2Uq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            `;
 
-          videoWrapper.innerHTML = youtubeIframe;
+            videoWrapper.innerHTML = youtubeIframe;
+          });
         });
-      });
+      }
     }
+    renderVideo();
   });
 {% endjavascript %}
 
@@ -863,6 +872,13 @@ style="
           "id": "title",
           "label": "t:settings.title",
           "default": "Description"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open tab by default",
+          "default": false,
+          "info": "This setting only works if the tabs design is set to accordion with default view"
         }
       ]
     },
@@ -876,6 +892,13 @@ style="
           "id": "title",
           "label": "t:settings.title",
           "default": "Reviews"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open tab by default",
+          "default": false,
+          "info": "This setting only works if the tabs design is set to accordion with default view"
         }
       ]
     },
@@ -888,6 +911,13 @@ style="
           "id": "title",
           "label": "t:settings.title",
           "default": "Tab custom HTML"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open tab by default",
+          "default": false,
+          "info": "This setting only works if the tabs design is set to accordion with default view"
         },
         {
           "type": "select",
@@ -943,6 +973,13 @@ style="
           "default": "Tab custom Liquid"
         },
         {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open tab by default",
+          "default": false,
+          "info": "This setting only works if the tabs design is set to accordion with default view"
+        },
+        {
           "type": "liquid",
           "id": "custom_liquid",
           "label": "t:settings.tab_content"
@@ -958,13 +995,15 @@ style="
           "type": "description",
           "name": "t:settings.description",
           "settings": {
-            "title": "Description"
+            "title": "Description",
+            "open_by_default": false
           }
         },
         "html_bpg6VR": {
           "type": "html",
           "settings": {
             "title": "Tab custom HTML",
+            "open_by_default": false,
             "content": "<p>Tab custom HTML</p>",
             "page": ""
           }
