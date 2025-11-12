@@ -524,12 +524,17 @@
                 assign fluid_font_size_min = font_size_value
               endif
             else
-              assign fluid_font_size_min = next_font_size_value | times: 1
+              assign fluid_font_size_min = fluid_size_cutoff
             endif
           endif
 
-          assign fluid_size = font_size_value| times: 1.6
+          assign fluid_size = font_size_value | times: 1.6
 
+          if next_font_size_value_number >= fluid_size_cutoff
+            assign fluid_size = font_size_value | times: 0.8
+          endif
+          
+          echo '--font-size--dung: [fluid_size_cutoff] [next_font_size_value];' | replace: '[next_font_size_value]', next_font_size_value  | replace: '[fluid_size_cutoff]', fluid_size_cutoff 
           echo '--font-size--[font_size]: clamp([fluid_font_size_min]rem, [fluid_size]vw, [font_size_value]rem);' | replace: '[font_size]', font_size | replace: '[fluid_font_size_min]', fluid_font_size_min | replace: '[fluid_size]', fluid_size | replace: '[font_size_value]', font_size_value
         else
           echo '--font-size--[font_size]: [font_size_value]rem;' | replace: '[font_size]', font_size | replace: '[font_size_value]', font_size_value
@@ -634,7 +639,7 @@
 
     /* Page layout */
     --page-margin: 2.4rem; /* 24px */
-    --page-content-width: {{ settings.page_width | divided_by: 10 }}rem;
+    --page-content-width: {{ settings.page_width | divided_by: 10.0 }}rem;
     --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);
     --sidebar-width: 25rem; /* 250px */
     --side-cart-width: 34rem; /* 340px */

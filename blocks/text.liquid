@@ -101,6 +101,7 @@
       "id": "highlight_text_color",
       "label": "t:settings.highlight_color",
       "default": "#000000",
+      "alpha": true,
       "visible_if": "{{ block.settings.typing_text == false and block.settings.highlight_text == true and block.settings.highlight_text_type == 'text' }}"
     },
     {
@@ -657,6 +658,31 @@
     },
     {
       "type": "select",
+      "id": "weight",
+      "label": "t:settings.weight",
+      "visible_if": "{{ block.settings.type_preset == 'custom' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
       "id": "case",
       "label": "t:settings.case",
       "options": [
@@ -716,6 +742,23 @@
         }
       ],
       "default": "var(--color-foreground)",
+      "visible_if": "{{ block.settings.type_preset != 'rte' }}"
+    },
+    {
+      "type": "select",
+      "id": "font_style",
+      "label": "t:content.style",
+      "options": [
+        {
+          "value": "normal",
+          "label": "t:options.normal"
+        },
+        {
+          "value": "italic",
+          "label": "t:options.italic"
+        }
+      ],
+      "default": "normal",
       "visible_if": "{{ block.settings.type_preset != 'rte' }}"
     },
     {
