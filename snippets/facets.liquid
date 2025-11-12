@@ -107,8 +107,8 @@
                   <div class="active-facets-vertical-filter w-full flex items-center justify-between flex-wrap gap-xs">
                     {%- unless results.filters == empty -%}
                       <h2
-                        class="facets__heading facets__heading--vertical caption-large"
-                        style="--font-h2--case: {{ heading_label_case }};"
+                        class="facets__heading facets__heading--vertical"
+                        style="--font-h2--case: {{ heading_label_case }};--font-size--h2: {{ heading_label_font_size }};"
                         id="verticalTitle"
                         tabindex="-1"
                       >
@@ -274,9 +274,12 @@
                             >
                               <{{ element_label }}
                                 class="facets__label flex items-center"
+                                style="
                                 {%- if heading_label_case == 'uppercase' -%}
-                                  style="--facet-label-transform: uppercase;"
+                                  --facet-label-transform: uppercase;
                                 {%- endif -%}
+                                --font-size: {{ heading_label_font_size }};
+                                "
                               >
                                 {{- listTagHeading }}
                                 <span class="facets__status{% if countTagActive == 0 %} hidden{% endif %}">
@@ -372,7 +375,7 @@
                                       {%- assign valueIndex = valueIndex | plus: 1 -%}
                                       <li class="list-menu__item facets__item{% if valueIndex > show_more_number and filter_type == 'vertical' %} show-more-item hidden{% endif %}{% if is_swatch %} swatch-item{% endif %}">
                                         {%- if is_swatch -%}
-                                          <div class="{{ label_class }}">
+                                          <div class="{{ label_class }}" style="--font-size: {{ text_label_font_size }};">
                                             <div class="swatch-input-wrapper {{ value.swatch }}">
                                               <input
                                                 type="checkbox"
@@ -417,7 +420,7 @@
                                             </div>
                                           </div>
                                         {%- else -%}
-                                          <label for="{{ input_id }}" class="{{ label_class }}">
+                                          <label for="{{ input_id }}" class="{{ label_class }}" style="--font-size: {{ text_label_font_size }};">
                                             <input
                                               type="checkbox"
                                               name="{{ value.param_name }}"
@@ -519,9 +522,12 @@
                       >
                         <{{ element_label }}
                           class="facets__label flex items-center"
+                          style="
                           {%- if heading_label_case == 'uppercase' -%}
-                            style="--facet-label-transform: uppercase;"
+                            --facet-label-transform: uppercase;
                           {%- endif -%}
+                            --font-size: {{ heading_label_font_size }};
+                          "
                         >
                           {{- filter_label }}
                           <span class="facets__status{% if active_values_size == 0 %} hidden{% endif %}">
@@ -618,7 +624,7 @@
                               {%- assign valueIndex = valueIndex | plus: 1 -%}
                               <li class="list-menu__item facets__item{% if valueIndex > show_more_number and filter_type == 'vertical' %} show-more-item hidden{% endif %}{% if is_swatch %} swatch-item{% endif %}">
                                 {%- if is_swatch -%}
-                                  <div class="{{ label_class }}">
+                                  <div class="{{ label_class }}" style="--font-size: {{ text_label_font_size }};">
                                     <div class="swatch-input-wrapper {{ value.swatch }}">
                                       <input
                                         type="checkbox"
@@ -663,7 +669,7 @@
                                     </div>
                                   </div>
                                 {%- else -%}
-                                  <label for="{{ input_id }}" class="{{ label_class }}">
+                                  <label for="{{ input_id }}" class="{{ label_class }}" style="--font-size: {{ text_label_font_size }};">
                                     <input
                                       type="checkbox"
                                       name="{{ value.param_name }}"
@@ -744,9 +750,12 @@
                       <summary class="details__summary facets__summary caption-large focus-offset">
                         <{{ element_label }}
                           class="facets__label"
+                          style="
                           {%- if heading_label_case == 'uppercase' -%}
-                            style="--facet-label-transform: uppercase;"
+                            --facet-label-transform: uppercase;
                           {%- endif -%}
+                          --font-size: {{ heading_label_font_size }};
+                          "
                         >
                           {{- filter.label | escape -}}
                         </{{ element_label }}>
@@ -885,7 +894,9 @@
                 filter_type: filter_type,
                 style: style,
                 enable_hover_reveal: enable_hover_reveal,
-                heading_label_case: heading_label_case
+                heading_label_case: heading_label_case,
+                heading_label_font_size: heading_label_font_size,
+                text_label_font_size: text_label_font_size
               %}
             {%- endif -%}
 
@@ -897,7 +908,9 @@
                     style: style,
                     enable_hover_reveal: enable_hover_reveal,
                     heading_label_case: heading_label_case,
-                    text_label_case: text_label_case
+                    text_label_case: text_label_case,
+                    heading_label_font_size: heading_label_font_size,
+                    text_label_font_size: text_label_font_size
                   %}
                 </div>
               {%- endif -%}
@@ -911,7 +924,9 @@
                   style: style,
                   filter_type: filter_type,
                   heading_label_case: heading_label_case,
-                  text_label_case: text_label_case
+                  text_label_case: text_label_case,
+                  heading_label_font_size: heading_label_font_size,
+                  text_label_font_size: text_label_font_size
                 %}
               {%- endif -%}
             </div>
@@ -1121,9 +1136,12 @@
                           >
                             <summary class="mobile-facets__summary focus-inset">
                               <div class="flex items-center justify-between w-full"
+                                style="
                                 {%- if heading_label_case == 'uppercase' -%}
-                                  style="--facet-label-transform: uppercase;"
+                                  --facet-label-transform: uppercase;
                                 {%- endif -%}
+                                --font-size: {{ heading_label_font_size }};
+                                "
                               >
                                 <span>{{ filter.label | escape }}</span>
                                 <span class="mobile-facets__arrow svg-wrapper">
@@ -1181,7 +1199,7 @@
 
                                   <li class="mobile-facets__item list-menu__item{% if is_swatch %} swatch-item{% endif %}">
                                     {%- if is_swatch -%}
-                                      <div class="{{ label_class }}">
+                                      <div class="{{ label_class }}" style="--font-size: {{ text_label_font_size }};">
                                         <div class="swatch-input-wrapper {{ value.swatch }}">
                                           <input
                                             type="checkbox"
@@ -1226,7 +1244,7 @@
                                         </div>
                                       </div>
                                     {% else %}
-                                      <label for="{{ input_id }}" class="{{ label_class }}">
+                                      <label for="{{ input_id }}" class="{{ label_class }}" style="--font-size: {{ text_label_font_size }};">
                                         <input
                                           class="mobile-facets__checkbox"
                                           type="checkbox"
@@ -1407,7 +1425,9 @@
         {% render 'products-per-page',
           limit: limit,
           heading_label_case: heading_label_case,
-          dropdown_content_case: dropdown_content_case
+          dropdown_content_case: dropdown_content_case,
+          heading_label_font_size: heading_label_font_size,
+          text_label_font_size: text_label_font_size
         %}
       </div>
     {%- endif -%}
@@ -1426,7 +1446,9 @@
             style: style,
             filter_type: filter_type,
             heading_label_case: heading_label_case,
-            text_label_case: text_label_case
+            text_label_case: text_label_case,
+            heading_label_font_size: heading_label_font_size,
+            text_label_font_size: text_label_font_size
           %}
           {% if results.current_vendor or results.current_type %}
             <input
@@ -1457,7 +1479,9 @@
         columns_desktop: section.settings.columns_desktop,
         filter_type: filter_type,
         style: style,
-        heading_label_case: heading_label_case
+        heading_label_case: heading_label_case,
+        heading_label_font_size: heading_label_font_size,
+        text_label_font_size: text_label_font_size
       %}
     {%- endif -%}
 

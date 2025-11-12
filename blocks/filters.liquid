@@ -56,6 +56,8 @@
   assign enable_hover_reveal = bl_stts.enable_hover_reveal
   assign heading_label_case = bl_stts.heading_label_case
   assign text_label_case = bl_stts.text_label_case
+  assign heading_label_font_size = bl_stts.heading_label_font_size
+  assign text_label_font_size = bl_stts.text_label_font_size
   assign enable_divider = bl_stts.enable_divider
   assign divider_color = bl_stts.divider_color
   assign divider_spacing_top = bl_stts.divider_spacing_top
@@ -116,9 +118,10 @@
     "
     id="main-collection-filters"
     data-id="{{ section.id }}"
+    style="--font-size--sidebar-heading: {{ heading_label_font_size }};"
   >
     {%- capture sidebar_categories -%}
-      {%- content_for 'block', type: '_blog-post-sidebar-category', id: 'static-collection-categories', in_facets: true, heading_label_case: heading_label_case, text_label_case: text_label_case -%}
+      {%- content_for 'block', type: '_blog-post-sidebar-category', id: 'static-collection-categories', in_facets: true, heading_label_case: heading_label_case, text_label_case: text_label_case, heading_label_font_size: heading_label_font_size, text_label_font_size: text_label_font_size -%}
     {%- endcapture -%}
     {%- if filter_type == 'vertical' -%}
       {{ sidebar_categories }}
@@ -141,6 +144,8 @@
       enable_hover_reveal: enable_hover_reveal,
       heading_label_case: heading_label_case,
       text_label_case: text_label_case,
+      heading_label_font_size: heading_label_font_size,
+      text_label_font_size: text_label_font_size,
       style: style,
       limit: limit,
       enable_divider: enable_divider,
@@ -708,7 +713,7 @@
     box-shadow: var(--popup-shadow);
     background: var(--color-background);
     position: absolute;
-    top: calc(100% + 0.5rem);
+    top: 100%;
     left: 0rem;
     width: 35rem;
     box-shadow: rgba(var(--color-shadow-rgb) / 0.2) 0px 0px 20px;
@@ -791,7 +796,7 @@
   .facets__label {
     color: var(--color-foreground);
     cursor: pointer;
-    font-size: var(--body-s-font-size);
+    font-size: var(--font-size, var(--body-s-font-size));
     margin: 0;
   }
 
@@ -800,7 +805,7 @@
     padding: 0rem;
     flex-grow: 1;
     position: relative;
-    font-size: var(--body-xs-font-size);
+    font-size: var(--font-size, var(--body-xs-font-size));
     display: flex;
     align-items: center;
     word-break: break-word;
@@ -1026,6 +1031,17 @@
   .facets--horizontal {
     display: flex;
 
+    .facets__list {
+      padding: 1rem 0;
+      gap: var(--gap-md);
+      display: flex;
+      flex-flow: column;
+    }
+
+    .facet-filters__sort .facets__list {
+      padding: .5rem 2rem;
+    }
+
     @media screen and (min-width: 750px) {
       padding-block: var(--padding-block-start) var(--padding-block-end);
       align-items: center;
@@ -1106,11 +1122,15 @@
       }
     }
 
+    .facet-filters__field-label {
+      font-size: var(--font-size);
+    }
+
     .facets__summary {
       padding: var(--padding-xs) var(--padding-sm);
       min-width: 9rem;
       @media screen and (min-width: 750px) {
-        font-size: var(--font-paragraph--size);
+        font-size: var(--font-size);
         justify-content: flex-start;
         height: var(--minimum-touch-target);
       }
@@ -1126,14 +1146,19 @@
       }
     }
 
+    .facets__form:not(.facets__form--divider) .sorting-wrapper {
+      flex-wrap: wrap;
+    }
+
     .facets__form.facets__form--divider {
       .sorting-wrapper {
         display: grid;
         grid-template-columns: 1fr;
         gap: var(--margin-xl);
+        width: 100%;
 
         @media screen and (min-width: 1025px) {
-          grid-template-columns: 1fr max-content 1fr;
+          grid-template-columns: 1fr max-content minmax(max-content, 1fr);
         }
       }
 
@@ -1165,6 +1190,37 @@
         flex-wrap: wrap;
         gap: var(--margin-2xl);
       }
+    }
+
+    .swatch-input-wrapper .swatch-input__label {
+      display: flex;
+      align-items: center;
+      gap: var(--gap-xs);
+      font-size: var(--font-size--sm);
+    }
+
+    .swatch-input-wrapper .swatch-input__label .visually-hidden {
+      position: static !important;
+      overflow: visible;
+      width: auto;
+      height: auto;
+      margin: 0;
+      padding: unset;
+      border: initial;
+      clip: auto;
+      word-wrap: break-word !important;
+    }
+
+    .swatch-input-wrapper .swatch-input__label .facet-checkbox__text {
+      position: absolute !important;
+      overflow: hidden;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      border: 0;
+      clip: rect(0 0 0 0);
+      word-wrap: normal !important;
     }
   }
 
@@ -1264,6 +1320,47 @@
     },
     {
       "type": "select",
+      "id": "heading_label_font_size",
+      "label": "Heading label size",
+      "options": [
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        }
+      ],
+      "default": "1.2rem",
+      "visible_if": "{{ block.settings.enable_filtering == true }}"
+    },
+    {
+      "type": "select",
       "id": "text_label_case",
       "label": "t:settings.text_label_case",
       "options": [
@@ -1277,6 +1374,39 @@
         }
       ],
       "default": "normal-case",
+      "visible_if": "{{ block.settings.enable_filtering == true }}"
+    },
+    {
+      "type": "select",
+      "id": "text_label_font_size",
+      "label": "Text label size",
+      "options": [
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        }
+      ],
+      "default": "1.6rem",
       "visible_if": "{{ block.settings.enable_filtering == true }}"
     },
     {
@@ -1500,7 +1630,7 @@
     {
       "type": "text",
       "id": "fbt_heading_1",
-      "label": "t:settings.Heading_1",
+      "label": "t:settings.heading_1",
       "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true }}"
     },
     {
@@ -1512,7 +1642,7 @@
     {
       "type": "text",
       "id": "fbt_heading_2",
-      "label": "t:settings.Heading_2",
+      "label": "t:settings.heading_2",
       "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters > 1 }}"
     },
     {
@@ -1524,7 +1654,7 @@
     {
       "type": "text",
       "id": "fbt_heading_3",
-      "label": "t:settings.Heading_3",
+      "label": "t:settings.heading_3",
       "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters > 2 }}"
     },
     {
@@ -1536,7 +1666,7 @@
     {
       "type": "text",
       "id": "fbt_heading_4",
-      "label": "t:settings.Heading_4",
+      "label": "t:settings.heading_4",
       "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters > 3 }}"
     },
     {
@@ -1548,7 +1678,7 @@
     {
       "type": "text",
       "id": "fbt_heading_5",
-      "label": "t:settings.Heading_5",
+      "label": "t:settings.heading_5",
       "visible_if": "{{ block.settings.enable_filtering == true and block.settings.show_filter_by_tags_sidebar == true and block.settings.number_filters == 5 }}"
     },
     {

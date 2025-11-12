@@ -61,11 +61,7 @@
     --section-height-offset: 0px;
   }
 
-  body:has(> #header-group > .header-section > #header-component[transparent]):not(
-      :has(> #header-group > .header-section + .shopify-section)
-    )
-    > main
-    > .section-wrapper:first-child {
+  body:has(> #header-group > .header-section > #header-component[transparent]):not(:has(> #header-group > .header-section + .shopify-section)) > main > .section-wrapper:first-child {
     --section-height-offset: var(--header-group-height, 0);
   }
 
@@ -350,7 +346,8 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 0
+      "default": 0,
+      "visible_if": "{{ section.settings.border != 'none' }}"
     },
     {
       "type": "checkbox",

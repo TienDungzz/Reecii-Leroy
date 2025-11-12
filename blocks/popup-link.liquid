@@ -37,27 +37,29 @@
 </side-drawer-opener>
 
 <side-drawer
-    class="popup__content{% if bl_stts.behavior == 'drawer' %} popup__content--drawer dialog-drawer{% endif %} drawer fixed top-0 left-0 z-9 w-screen h-full flex justify-center no-js-hidden"
+    class="popup__content{% if bl_stts.behavior == 'drawer' %} popup__content--drawer dialog-drawer{% endif %} drawer fixed top-0 left-0 z-9 w-screen h-full flex-center no-js-hidden"
     element-s-popup
     id="PopupModal-{{ block.id }}"
+    data-drawer-direction="center"
 >
   <div id="Drawer-Overlay-{{ block.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-  <div 
-    class="popup__inner w-auto h-full absolute-c-c flex flex-column color-{{ settings.popover_color_scheme }} global-settings-popup"
+  <div
+    class="popup__inner w-auto h-full flex flex-column color-{{ settings.popover_color_scheme }} global-settings-popup"
     role="dialog"
     aria-modal="true"
     aria-label="Popup link"
     tabindex="-1"
     style="--modal-max-width: 72rem;"
+    data-drawer-content
   >
     <div class="popup__inner--content relative w-full h-full overflow-auto cus-scrollbar">
       {% content_for 'blocks' %}
       <button
         onclick="this.closest('side-drawer').close()"
-        class="button button-unstyled close-button popup__close drawer__close block t-button bor-none rounded-full cursor-pointer absolute"
+        class="button button-unstyled close-button popup__close drawer__close block t-button bor-none rounded-full cursor-pointer absolute button-close-circle"
         type="button"
         aria-label="{{ 'accessibility.close_dialog' | t }}"
-        style="--top: 0.3rem; --right: 0.3rem;"
+        style="--top: 1rem; --right: 1rem;"
       >
         {{- 'icon-close.svg' | inline_asset_content -}}
       </button>

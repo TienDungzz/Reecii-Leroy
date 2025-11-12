@@ -13,22 +13,7 @@
 {% endcapture %}
 {% assign product_card_size = product_card_size | strip %}
 
-{%- capture product_card_size_number -%}
-  {% case section.settings.product_card_size %}
-    {% when 'small' %}
-      {% assign product_card_number = 5 %}
-    {% when 'medium' %}
-      {% assign product_card_number = 4 %}
-    {% when 'large' %}
-      {% assign product_card_number = 3 %}
-    {% when 'extra-large' %}
-      {% assign product_card_number = 2 %}
-    {% when 'extra-extra-large' %}
-      {% assign product_card_number = 1 %}
-  {% endcase %}
-{%- endcapture -%}
-
-{% style %}
+{%- style -%}
   @media (min-width: 750px) {
     {% case section.settings.layout_type %}
       {% when 'grid' %}
@@ -37,7 +22,6 @@
         }
 
         .template-collection:has(.switcher-grid) .product-grid--{{ section.id }}:is(.product-grid--grid:not([data-view])) {
-          /* --product-grid-columns-desktop: repeat({{ product_card_number }}, 1fr); */
           --product-grid-columns-desktop: repeat(auto-fill, minmax(calc(100% / {{ product_card_number | plus: 1 }}), 1fr));
         }
       {% when 'organic' %}
@@ -63,7 +47,6 @@
         }
     {% endcase %}
 
-    /* This logic helps prevent displaying one column for an large or extra-large product card size on a small screen. We want it to display at least two columns. */
     {% case section.settings.product_card_size %}
       {% when 'extra-large' or 'large' %}
         @container product-grid (max-width: calc({{ product_card_size }} * 3 + {{ section.settings.columns_gap_horizontal }}px * 2)) {
@@ -73,7 +56,6 @@
         }
     {% endcase %}
 
-    /* When zoomed out, fit as many 100px-wide columns as possible */
     .product-grid--{{ section.id }}:is([product-grid-view='zoom-out']) {
       --product-grid-columns-desktop: repeat(auto-fill, minmax(6.25rem, 1fr));
     }
@@ -89,7 +71,7 @@
       padding-block-end: var(--zoom-out-padding-block-end, 0);
     }
   }
-{% endstyle %}
+{%- endstyle -%}
 
 <div id="ResultsList">
   <div
@@ -138,9 +120,6 @@
   </div>
 </div>
 
-{% comment %}
-  This script is used to set the grid view on the product grid stored in sessionStorage. Keeping it here helps us prevent seeing the default state.
-{% endcomment %}
 {% unless request.design_mode %}
   <script>
     (() => {
@@ -178,7 +157,6 @@
 
   /* This triggers iOS < 16.4 */
   @supports not (background-color: rgb(from red 150 g b / alpha)) {
-    /* Force aspect ratio to auto for iOS < 16.4 since it's not compatible with the infinite pagination */
     .product-grid .product-media,
     .product-grid .product-media-container {
       aspect-ratio: auto;

@@ -2,13 +2,13 @@
 
 {% if section.settings.image_shape == 'blob' %}
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
-{%- endif -%}
+{% endif %}
 
-{%- if section.settings.quick_add != 'none' -%}
+{% if section.settings.quick_add != 'none' %}
   {{ 'quick-add.css' | asset_url | stylesheet_tag }}
-{%- endif -%}
+{% endif %}
 
-{%- liquid
+{% liquid
   if cart.attributes.pagination != blank and cart.attributes.pagination
     assign paginate_by = cart.attributes.pagination
   else
@@ -16,21 +16,7 @@
   endif
 
   assign limit = paginate_by
-
-  if section.settings.enable_sorting or section.settings.enable_grid_view or section.settings.enable_products_per_page
-    assign show_sort = true
-  endif
-
-  assign columns_tablet = 2
-  assign columns_mobile = section.settings.columns_mobile
-  assign horizontal_class = false
-  if section.settings.columns_desktop == 1
-    assign columns_tablet = 1
-    assign columns_mobile = 1
-    assign horizontal_class = true
-  endif
-
--%}
+%}
 
 <div
   class="template-collection collection-wrapper grid-base gap-style gradient color-{{ section.settings.color_scheme }} spacing"
@@ -49,13 +35,13 @@
 
   {% content_for 'block', type: '_collection-header', id: 'collection-header' %}
 
-  {%- paginate collection.products by collection_products_per_page -%}
+  {% paginate collection.products by paginate_by %}
     <div
       class="
         main-collection-grid
-        {%- if section.settings.inherit_color_scheme == false %} color-{{ section.settings.color_scheme }}{% endif %}
-        {%- if section.settings.product_grid_width == 'full-width' %} collection-wrapper--full-width{% endif %}
-        {%- if section.settings.full_width_on_mobile == true %} collection-wrapper--full-width-on-mobile{% endif %}
+        {% if section.settings.inherit_color_scheme == false %} color-{{ section.settings.color_scheme }}{% endif %}
+        {% if section.settings.product_grid_width == 'full-width' %} collection-wrapper--full-width{% endif %}
+        {% if section.settings.full_width_on_mobile == true %} collection-wrapper--full-width-on-mobile{% endif %}
         spacing-style
       "
       style="
@@ -67,7 +53,7 @@
       "
     >
       <div class="product-grid-container" id="ProductGridContainer">
-        {%- if collection.products.size == 0 -%}
+        {% if collection.products.size == 0 %}
           <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
             <div class="loading-overlay gradient">
               {% render 'loading-spinner' %}
@@ -83,7 +69,7 @@
               </h2>
             </div>
           </div>
-        {%- else -%}
+        {% else %}
           <div
             class="collection"
             data-id="{{ section.id }}"
@@ -92,110 +78,113 @@
               {% render 'loading-spinner' %}
             </div>
 
-            {%- liquid
+            {% liquid
               assign img_banner1 = section.settings.img_banner1
               assign img_banner2 = section.settings.img_banner2
               assign img_banner3 = section.settings.img_banner3
               assign banner_position_1 = section.settings.banner_position_1 | round | default: 4
               assign banner_position_2 = section.settings.banner_position_2 | round | default: 5
               assign banner_position_3 = section.settings.banner_position_3 | round | default: 12
-            -%}
+            %}
 
-            {%- capture class_banner -%}
+            {% capture class_banner %}
               product-grid__item product-grid__item--banner product-grid__item--{{ forloop.index0 }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}
-            {%- endcapture -%}
+            {% endcapture %}
 
-            {%- capture class_banner_img -%}
+            {% capture class_banner_img %}
               product-grid__item--banner-image
-            {%- endcapture -%}
+            {% endcapture %}
 
-            {%- capture class_tag_a -%}
+            {% capture class_tag_a %}
               media media--adapt
-            {%- endcapture -%}
+            {% endcapture %}
 
-            {%- capture attr_tag_a_1 -%}
+            {% capture attr_tag_a_1 %}
               {% if section.settings.link_banner_1 == blank %}
-                role="link" aria-disabled="true"{% else %}
+                role="link" aria-disabled="true"
+              {% else %}
                 href="{{ section.settings.link_banner_1 }}"
               {% endif %}
-              style="{%- if img_banner1 != blank -%}--media-adapt-ratio: {{ img_banner1.aspect_ratio }};{% endif %}"
-            {%- endcapture -%}
+              style="{% if img_banner1 != blank %}--media-adapt-ratio: {{ img_banner1.aspect_ratio }};{% endif %}"
+            {% endcapture %}
 
-            {%- capture attr_tag_a_2 -%}
+            {% capture attr_tag_a_2 %}
               {% if section.settings.link_banner_2 == blank %}
-                role="link" aria-disabled="true"{% else %}
+                role="link" aria-disabled="true"
+              {% else %}
                 href="{{ section.settings.link_banner_2 }}"
               {% endif %}
-              style="{%- if img_banner2 != blank -%}--media-adapt-ratio: {{ img_banner2.aspect_ratio }};{% endif %}"
-            {%- endcapture -%}
+              style="{% if img_banner2 != blank %}--media-adapt-ratio: {{ img_banner2.aspect_ratio }};{% endif %}"
+            {% endcapture %}
 
-            {%- capture attr_tag_a_3 -%}
+            {% capture attr_tag_a_3 %}
               {% if section.settings.link_banner_3 == blank %}
-                role="link" aria-disabled="true"{% else %}
+                role="link" aria-disabled="true"
+              {% else %}
                 href="{{ section.settings.link_banner_3 }}"
               {% endif %}
-              style="{%- if img_banner3 != blank -%}--media-adapt-ratio: {{ img_banner3.aspect_ratio }};{% endif %}"
-            {%- endcapture -%}
+              style="{% if img_banner3 != blank %}--media-adapt-ratio: {{ img_banner3.aspect_ratio }};{% endif %}"
+            {% endcapture %}
 
             {% capture children %}
               {% for product in collection.products %}
-                {%- if forloop.index == banner_position_1 and section.settings.show_banner_1 -%}
+                {% if forloop.index == banner_position_1 and section.settings.show_banner_1 %}
                   <li class="{{ class_banner }}" data-product-banner="1" data-first-position="{{ banner_position_1 }}">
-                      <div class="{{ class_banner_img }}">
-                          <a
-                            class="{{ class_tag_a }}"
-                            {{ attr_tag_a_1 }}
-                          >
-                          {%- if img_banner1 != blank -%}
-                              {%- assign height = img_banner1.width | divided_by: img_banner1.aspect_ratio | round -%}
-                              <img {% if settings.enable_lazyload %}data-{% endif %}srcset="{{ img_banner1 | img_url: 'master' }}" src="{{ img_banner1 | img_url: 'master' }}" alt="{{ img_banner1.alt | default: shop.name | escape }}"{% if settings.enable_lazyload %} loading="lazy"{% endif %} width="{{img_banner1.width}}" height="{{height}}">
-                          {%- else -%}
-                              <div class="placeholder" style="--height_placeholder: clamp(270px, calc(560 / 1920 * 100vw), 560px);">
-                                  {{ 'blog-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
-                              </div>
-                          {%- endif -%}
-                          </a>
-                      </div>
+                    <div class="{{ class_banner_img }}">
+                      <a
+                        class="{{ class_tag_a }}"
+                        {{ attr_tag_a_1 }}
+                      >
+                        {% if img_banner1 != blank %}
+                          {% assign height = img_banner1.width | divided_by: img_banner1.aspect_ratio | round %}
+                          <img {% if settings.enable_lazyload %}data-{% endif %}srcset="{{ img_banner1 | image_url: width: 2048 }}" src="{{ img_banner1 | image_url: width: 2048 }}" alt="{{ img_banner1.alt | default: shop.name | escape }}"{% if settings.enable_lazyload %} loading="lazy"{% endif %} width="{{img_banner1.width}}" height="{{height}}">
+                        {% else %}
+                          <div class="placeholder" style="--height_placeholder: clamp(270px, calc(560 / 1920 * 100vw), 560px);">
+                            {{ 'blog-apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                          </div>
+                        {% endif %}
+                      </a>
+                    </div>
                   </li>
-              {%- endif -%}
-              {%- if forloop.index == banner_position_2 and section.settings.show_banner_2 -%}
+                {% endif %}
+                {% if forloop.index == banner_position_2 and section.settings.show_banner_2 %}
                   <li class="{{ class_banner }}" data-product-banner="2" data-first-position="{{ banner_position_2 }}">
-                      <div class="{{ class_banner_img }}">
-                          <a
-                            class="{{ class_tag_a }}"
-                            {{ attr_tag_a_2 }}
-                          >
-                          {%- if img_banner2 != blank -%}
-                              {%- assign height = img_banner2.width | divided_by: img_banner2.aspect_ratio | round -%}
-                              <img {% if settings.enable_lazyload %}data-{% endif %}srcset="{{ img_banner2 | img_url: 'master' }}" src="{{ img_banner2 | img_url: 'master' }}" alt="{{ img_banner2.alt | default: shop.name | escape }}"{% if settings.enable_lazyload %} loading="lazy"{% endif %} width="{{img_banner2.width}}" height="{{height}}">
-                          {%- else -%}
-                              <div class="placeholder" style="--height_placeholder: clamp(270px, calc(560 / 1920 * 100vw), 560px);">
-                                  {{ 'blog-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
-                              </div>
-                          {%- endif -%}
-                          </a>
-                      </div>
+                    <div class="{{ class_banner_img }}">
+                      <a
+                        class="{{ class_tag_a }}"
+                        {{ attr_tag_a_2 }}
+                      >
+                        {% if img_banner2 != blank %}
+                          {% assign height = img_banner2.width | divided_by: img_banner2.aspect_ratio | round %}
+                          <img {% if settings.enable_lazyload %}data-{% endif %}srcset="{{ img_banner2 | image_url: width: 2048 }}" src="{{ img_banner2 | image_url: width: 2048 }}" alt="{{ img_banner2.alt | default: shop.name | escape }}"{% if settings.enable_lazyload %} loading="lazy"{% endif %} width="{{img_banner2.width}}" height="{{height}}">
+                        {% else %}
+                          <div class="placeholder" style="--height_placeholder: clamp(270px, calc(560 / 1920 * 100vw), 560px);">
+                            {{ 'blog-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                          </div>
+                        {% endif %}
+                      </a>
+                    </div>
                   </li>
-              {%- endif -%}
-              {%- if forloop.index == banner_position_3 and section.settings.show_banner_3 -%}
+                {% endif %}
+                {% if forloop.index == banner_position_3 and section.settings.show_banner_3 %}
                   <li class="{{ class_banner }}" data-product-banner="3" data-first-position="{{ banner_position_3 | plus: 2 }}">
-                      <div class="{{ class_banner_img }}">
-                          <a
-                            class="{{ class_tag_a }}"
-                            {{ attr_tag_a_3 }}
-                          >
-                          {%- if img_banner3 != blank -%}
-                              {%- assign height = img_banner3.width | divided_by: img_banner3.aspect_ratio | round -%}
-                              <img {% if settings.enable_lazyload %}data-{% endif %}srcset="{{ img_banner3 | img_url: 'master' }}" src="{{ img_banner3 | img_url: 'master' }}" alt="{{ img_banner3.alt | default: shop.name | escape }}"{% if settings.enable_lazyload %} loading="lazy"{% endif %} width="{{img_banner3.width}}" height="{{height}}">
-                          {%- else -%}
-                              <div class="placeholder" style="--height_placeholder: clamp(270px, calc(560 / 1920 * 100vw), 560px);">
-                                  {{ 'blog-apparel-3' | placeholder_svg_tag: 'placeholder-svg' }}
-                              </div>
-                          {%- endif -%}
-                          </a>
-                      </div>
+                    <div class="{{ class_banner_img }}">
+                      <a
+                        class="{{ class_tag_a }}"
+                        {{ attr_tag_a_3 }}
+                      >
+                        {% if img_banner3 != blank %}
+                          {% assign height = img_banner3.width | divided_by: img_banner3.aspect_ratio | round %}
+                          <img {% if settings.enable_lazyload %}data-{% endif %}srcset="{{ img_banner3 | image_url: width: 2048 }}" src="{{ img_banner3 | image_url: width: 2048 }}" alt="{{ img_banner3.alt | default: shop.name | escape }}"{% if settings.enable_lazyload %} loading="lazy"{% endif %} width="{{img_banner3.width}}" height="{{height}}">
+                        {% else %}
+                          <div class="placeholder" style="--height_placeholder: clamp(270px, calc(560 / 1920 * 100vw), 560px);">
+                            {{ 'blog-apparel-3' | placeholder_svg_tag: 'placeholder-svg' }}
+                          </div>
+                        {% endif %}
+                      </a>
+                    </div>
                   </li>
-              {%- endif -%}
+                {% endif %}
                 <li
                   id="{{ section.id }}-{{ product.id }}"
                   class="product-grid__item product-grid__item--{{ forloop.index0 }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
@@ -223,38 +212,38 @@
             <div class="product-count pos-relative light left hidden" role="status">
               <h2 class="product-count__text text-body mar-0">
                 <span id="ProductCount">
-                  {%- if collection.results_count -%}
+                  {% if collection.results_count %}
                     {{
                       'content.results_with_count'
                       | t: terms: collection.terms, count: collection.results_count
                     }}
-                  {%- elsif collection.products_count == collection.all_products_count -%}
+                  {% elsif collection.products_count == collection.all_products_count %}
                     {{ 'products.facets.product_count_simple' | t: count: collection.products_count }}
-                  {%- else -%}
+                  {% else %}
                     {{
                       'products.facets.product_count'
                       | t: product_count: collection.products_count, count: collection.all_products_count
                     }}
-                  {%- endif -%}
+                  {% endif %}
                 </span>
               </h2>
-              {%- render 'loading-spinner' -%}
+              {% render 'loading-spinner' %}
             </div>
 
-            {%- if paginate.pages > 1 -%}
+            {% if paginate.pages > 1 %}
               {% render 'pagination', paginate: paginate, anchor: '', settings: section.settings, suffix: 'pagination' %}
-            {%- endif -%}
+            {% endif %}
           </div>
-        {%- endif -%}
+        {% endif %}
       </div>
     </div>
-  {%- endpaginate -%}
+  {% endpaginate %}
   {% if section.settings.image_shape == 'arch' %}
     {{ 'mask-arch.svg' | inline_asset_content }}
-  {%- endif -%}
+  {% endif %}
 </div>
 
-{%- stylesheet -%}
+{% stylesheet %}
   .main-collection-grid {
     grid-column: var(--grid-column--mobile);
 
@@ -408,40 +397,45 @@
       margin-inline-end: calc(-1 * max(var(--padding-xs), var(--padding-inline-end)));
     }
   }
-{%- endstylesheet -%}
+{% endstylesheet %}
 
-{%- style -%}
-  /* product grid */
+{% style %}
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] {
     --product-grid-columns-desktop: repeat(1, 1fr);
     --card-grid-per-row: 1;
+  }
 
-    .card {
-      --width-block-media: 40%;
-      display: grid;
-      grid-template-columns: var(--width-block-media) 1fr;
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .card {
+    --width-block-media: 40%;
+    display: grid;
+    grid-template-columns: var(--width-block-media) 1fr;
+  }
 
-      @media screen and (max-width: 749px) {
-        --width-block-media: 11rem;
-      }
-
-      @media screen and (min-width: 750px) {
-        --width-block-media: 30%;
-      }
-
-      @media screen and (min-width: 1600px) {
-        --width-block-media: 20%;
-      }
+  @media screen and (max-width: 749px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .card {
+      --width-block-media: 11rem;
     }
+  }
 
-    .product-description__collection {
-      display: block;
+  @media screen and (min-width: 750px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .card {
+      --width-block-media: 30%;
     }
+  }
 
-    .card--block-media {
-      grid-column: 1;
-      grid-row: 1 / span calc(var(--total-blocks) - 1);
+  @media screen and (min-width: 1600px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .card {
+      --width-block-media: 20%;
     }
+  }
+
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .product-description__collection {
+    display: block;
+  }
+
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .card--block-media {
+    grid-column: 1;
+    grid-row: 1 / span calc(var(--total-blocks) - 1);
   }
 
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='2'] {
@@ -450,40 +444,52 @@
 
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='3'] {
     --product-grid-columns-desktop: repeat(3, 1fr);
+  }
 
-    @media screen and (max-width: 749px) {
+  @media screen and (max-width: 749px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='3'] {
       --product-grid-columns-desktop: repeat(2, 1fr);
     }
   }
 
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='4'] {
     --product-grid-columns-desktop: repeat(4, 1fr);
+  }
 
-    @media screen and (max-width: 989px) {
+  @media screen and (max-width: 989px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='4'] {
       --product-grid-columns-desktop: repeat(3, 1fr);
     }
+  }
 
-    @media screen and (max-width: 749px) {
+  @media screen and (max-width: 749px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='4'] {
       --product-grid-columns-desktop: repeat(2, 1fr);
     }
   }
 
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='5'] {
     --product-grid-columns-desktop: repeat(5, 1fr);
+  }
 
-    @media screen and (max-width: 1599px) {
+  @media screen and (max-width: 1599px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='5'] {
       --product-grid-columns-desktop: repeat(4, 1fr);
     }
+  }
 
-    @media screen and (max-width: 989px) {
+  @media screen and (max-width: 989px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='5'] {
       --product-grid-columns-desktop: repeat(3, 1fr);
     }
+  }
 
-    @media screen and (max-width: 749px) {
+  @media screen and (max-width: 749px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='5'] {
       --product-grid-columns-desktop: repeat(2, 1fr);
     }
   }
-{%- endstyle -%}
+{% endstyle %}
 
 {% schema %}
 {

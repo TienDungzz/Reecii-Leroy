@@ -36,6 +36,7 @@
   assign thumbnail_position = bl_stts.thumbnail_position
   if thumbnail_position == 'left' or thumbnail_position == 'right'
     assign thumbnail_direction = 'vertical'
+    assign thumbnail_width = bl_stts.thumbnail_width
   else
     assign thumbnail_direction = 'horizontal'
   endif
@@ -112,14 +113,12 @@
         align-items: center;
       }
 
-      /* Mobile constraint wrapper sizing - use width-based approach since max-height is disabled */
       .product-media-constraint-wrapper {
         width: 100%;
         max-width: 100%;
         flex-shrink: 0;
       }
 
-      /* Desktop constraint wrapper sizing */
       @media screen and (min-width: 750px) {
         .product-media-constraint-wrapper {
           width: min(100%, calc(var(--constrained-height) * {{ bl_stts.aspect_ratio }}));
@@ -127,7 +126,6 @@
       }
     {% endif %}
 
-    /* Constrain all deferred-media content to parent bounds when specific aspect ratio is set */
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media deferred-media,
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media product-model {
       width: 100%;
@@ -136,7 +134,6 @@
       left: 0;
     }
 
-    /* Ensure video and iframe elements respect container aspect ratio */
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media deferred-media video,
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media deferred-media iframe {
       width: 100%;
@@ -144,13 +141,11 @@
       object-fit: cover;
     }
 
-    /* 3D models need special handling since they don't support object-fit */
     .product-media-container:not(.dialog-zoomed-gallery *) .product-media product-model model-viewer {
       width: 100%;
       height: 100%;
     }
 
-    /* Clear gallery aspect ratio for zoom dialog - let media display at natural aspect ratios */
     .dialog-zoomed-gallery .product-media {
       --gallery-aspect-ratio: var(--ratio);
     }
@@ -161,14 +156,12 @@
       --product-media-fit: {{ bl_stts.media_fit }};
     }
 
-    /* Media fit for all media elements */
     .media-fit-{{ bl_stts.media_fit }} :is(img, video, iframe, .deferred-media__poster-image) {
       object-fit: {{ bl_stts.media_fit }};
       width: 100%;
       height: 100%;
     }
 
-    /* 3D Models (no object-fit support, just sizing) */
     .media-fit-{{ bl_stts.media_fit }} model-viewer {
       width: 100%;
       height: 100%;
@@ -180,21 +173,18 @@
       --product-media-fit: cover;
     }
 
-    /* Media fit for all media elements - default to cover */
     .media-fit-cover :is(img, video, iframe, .deferred-media__poster-image) {
       object-fit: cover;
       width: 100%;
       height: 100%;
     }
 
-    /* 3D Models (no object-fit support, just sizing) */
     .media-fit-cover model-viewer {
       width: 100%;
       height: 100%;
     }
   {% endunless %}
 
-  /* Add background color so carousel arrows' mix-blend-mode works correctly even on transparent areas. */
   {% if bl_stts.media_fit == 'contain' %}
     .media-fit-contain :is(img, .deferred-media__poster-image) {
       background-color: var(--color-background);
@@ -230,6 +220,20 @@
       endif
     endfor
   endif
+
+  capture class_thumbnail
+    echo 'swiper-controls__thumbnails-container'
+    if bl_stts.constrain_to_viewport
+      echo ' constrain-height'
+    endif
+    if bl_stts.aspect_ratio != 'adapt'
+      echo ' media-fit-cover'
+    elsif bl_stts.constrain_to_viewport
+      echo ' media-fit-' | append: bl_stts.media_fit
+    else
+      echo ' media-fit-contain'
+    endif
+  endcapture
 %}
 
 <media-gallery
@@ -330,7 +334,7 @@
     {% capture controls %}
       {% if render_slideshow_controls %}
         {%- render 'slideshow-controls',
-          class: '',
+          class: class_thumbnail,
           style: pagination_type,
           loop: bl_stts.loop,
           thumbnails: sorted_media,
@@ -338,6 +342,7 @@
           pagination_position: bl_stts.pagination_position,
           thumbnail_position: thumbnail_position,
           thumbnail_direction: thumbnail_direction,
+          thumbnail_width: thumbnail_width,
           aspect_ratio: bl_stts.aspect_ratio,
           video_type: bl_stts.video_type
         -%}
@@ -384,6 +389,9 @@
     class: slideshow_class,
     slides: slides,
     controls: controls,
+    thumbnail_position: thumbnail_position,
+    thumbnail_direction: thumbnail_direction,
+    thumbnail_width: thumbnail_width,
     video_dialog_html: video_dialog_html,
   %}
 
@@ -790,7 +798,7 @@
 
   @media screen and (max-width: 749px) {
     media-gallery swiper-component .swiper {
-      padding-bottom: 0 !important;
+      padding-bottom: 0.5rem !important;
     }
 
     .dialog-zoomed-gallery {
@@ -1079,6 +1087,17 @@
       ],
       "default": "bottom",
       "visible_if": "{{ block.settings.media_presentation == 'carousel' and block.settings.pagination_type == 'thumbnails' }}"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_width",
+      "label": "t:settings.width",
+      "min": 70,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 70,
+      "visible_if": "{{ block.settings.thumbnail_position == 'left' or block.settings.thumbnail_position == 'right' }}"
     },
     {
       "type": "select",

@@ -34,7 +34,7 @@
     data-product-id="{{ closest.product.id }}"
     data-update-url="true"
     data-url="{{ closest.product.url }}"
-    style="{% render 'spacing-style', settings: section.settings %} --gap: {{ section.settings.gap }}px;"
+    style="{% render 'spacing-style', settings: section.settings %}"
   >
     {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
     {{ 'section-main-product-quick-add.css' | asset_url | stylesheet_tag }}
@@ -84,6 +84,7 @@
     <div
       class="{{ product_grid_class }}"
       data-product-grid-content
+      style="--gap: {{ section.settings.gap }}px;"
     >
       {% assign render_order_array = render_order | split: ',' %}
       {% capture media %}
@@ -91,11 +92,7 @@
           class="product-information__media"
           data-testid="product-information-media"
         >
-          <div class="product-quick-add__media">
-            <div class="media media--adapt" style="--media-adapt-ratio: {{ closest.product.media[0].aspect_ratio }}">
-              {%- render 'image', image: closest.product.media[0] -%}
-            </div>
-
+          <div class="product-quick-add__media product-information__media--{{ section.settings.desktop_media_position }}">
             {%- content_for 'block',
               type: '_quick-add-product-media-gallery',
               id: 'media-gallery',
@@ -177,19 +174,6 @@
         }
       ],
       "default": "left"
-    },
-    {
-      "type": "checkbox",
-      "id": "equal_columns",
-      "label": "t:settings.equal_columns",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "limit_details_width",
-      "label": "t:settings.limit_product_details_width",
-      "default": false,
-      "visible_if": "{{ section.settings.equal_columns }}"
     },
     {
       "type": "range",

@@ -15,8 +15,9 @@
     assign element = 'parallax-background'
     assign class = 'parallax-image'
   elsif image_behavior == 'reveal_on_scroll'
-    assign element = 'image-reveal'
-    assign class = 'image-reveal__image'
+    assign is_animated_image = true
+    assign element = 'animate-image'
+    assign class = 'animate-image__image'
   endif
 
   assign style_value = 'object-position: center;'
@@ -29,6 +30,9 @@
   data-axis="y"
   data-range="25%"
   data-offset="start end, end start"
+  {% if is_animated_image %}
+    data-animate-type="{{ image_behavior }}"
+  {% endif %}
 >
   {% liquid
     assign media_width_desktop = '100vw'

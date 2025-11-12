@@ -1,0 +1,49 @@
+--swiper-navigation-top-offset
+
+
+
+/*----------------- DARK/LIGHT MODE -----------------*/
+
+|| File: theme.liquid
+
+Add class: data-theme="dark"
+
+
+|| File: global-style.liquid
+
+[data-theme="dark"] .color-{{ scheme.id }} {
+    {%- liquid
+        assign color_settings = "background, foreground, shadow, border, secondary_button_text, primary_button_text, primary_button_background, primary_button_border, primary_button_hover_background, primary_button_hover_border, secondary_button_background, secondary_button_border, secondary_button_hover_background, secondary_button_hover_border, input_background, input_text_color, input_border_color, input_hover_background, payment_terms_background, arrow_color, arrow_background, arrow_border, pagination_color, pagination_active_color" | split: ", "
+
+        for color_setting in color_settings
+            assign r = scheme.settings[color_setting].red | plus: 0
+            assign g = scheme.settings[color_setting].green | plus: 0
+            assign b = scheme.settings[color_setting].blue | plus: 0
+
+            assign avg = r | plus: g | plus: b | divided_by: 3
+            assign color_var = color_setting | replace: "_", "-"
+
+            if r == 255 and g == 255 and b == 255
+                comment
+                    Thuần trắng → đảo thành đen
+                endcomment
+                echo '--color-' | append: color_var | append: ': rgb(0,0,0);'
+            elsif r == 0 and g == 0 and b == 0
+                comment
+                    Thuần đen → đảo thành trắng
+                endcomment
+                echo '--color-' | append: color_var | append: ': rgb(255,255,255);'
+            elsif avg > 127
+                comment
+                    xám đen
+                endcomment
+                echo '--color-' | append: color_var | append: ': rgb(34,34,34);'
+            else
+                comment
+                    xám trắng
+                endcomment
+                echo '--color-' | append: color_var | append: ': rgb(221,221,221);'
+            endif
+        endfor
+    -%}
+}
