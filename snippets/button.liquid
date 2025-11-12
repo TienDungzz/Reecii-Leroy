@@ -34,6 +34,7 @@
   assign wrap = wrap | default: block.settings.wrap
   assign font_style = font_style | default: block.settings.font_style
   assign icon = icon | default: block.settings.buttons_icon
+  assign custom_class = custom_class | default: block.settings.button_custom_class
 -%}
 <a
   {% if link == blank %}
@@ -44,6 +45,7 @@
   {% endif %}
   class="
     {{ class }}
+    {{ custom_class }}
     size-style
     {{ style_class }}
     {% if link_reveal and style_class == 'link' %}link--reveal{% endif %}

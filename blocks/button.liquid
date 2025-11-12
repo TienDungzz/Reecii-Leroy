@@ -65,6 +65,12 @@
       "default": "default"
     },
     {
+      "type": "text",
+      "id": "button_custom_class",
+      "label": "Button custom class",
+      "visible_if": "{{ block.settings.button_style == 'custom' and block.settings.style_class != 'link' }}"
+    },
+    {
       "type": "range",
       "id": "button_border_width",
       "min": 0,
@@ -378,7 +384,7 @@
         }
       ],
       "default": "normal",
-      "visible_if": "{{ block.settings.style_class == 'link' }}"
+      "visible_if": "{{ block.settings.style_class == 'link' or block.settings.button_style == 'custom' }}"
     },
     {
       "type": "checkbox",
@@ -400,6 +406,26 @@
       "label": "t:settings.reveal_on_hover",
       "default": false,
       "visible_if": "{{ block.settings.style_class == 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "buttons_icon",
+      "label": "t:content.icon",
+      "options": [
+        {
+          "value": "icon-arrow",
+          "label": "t:options.right_arrow"
+        },
+        {
+          "value": "icon-cart",
+          "label": "t:names.cart"
+        },
+        {
+          "value": "none",
+          "label": "t:options.none"
+        }
+      ],
+      "default": "none"
     },
     {
       "type": "header",
@@ -481,26 +507,6 @@
       "unit": "px",
       "default": 20,
       "visible_if": "{{ block.settings.width == 'custom' }}"
-    },
-    {
-      "type": "select",
-      "id": "buttons_icon",
-      "label": "t:content.icon",
-      "options": [
-        {
-          "value": "icon-arrow",
-          "label": "t:options.right_arrow"
-        },
-        {
-          "value": "icon-cart",
-          "label": "t:names.cart"
-        },
-        {
-          "value": "none",
-          "label": "t:options.none"
-        }
-      ],
-      "default": "none"
     },
     {
       "type": "select",
