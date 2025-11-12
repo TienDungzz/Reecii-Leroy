@@ -74,7 +74,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
     <div
       class="
         email-signup__input-groups
-        border-style
+        {% if block.settings.border != 'none' %}border-style{% endif %}
         spacing-style
       "
       style="
@@ -266,7 +266,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
     width: 100%;
     border-width: var(--input-border-width);
     border-radius: var(--input-border-radius);
-    border-style: solid;
+    {% if block.settings %}: solid;
     border-color: var(--color-input-border);
     box-shadow: var(--inputs-shadow-horizontal-offset) var(--inputs-shadow-vertical-offset)
       var(--inputs-shadow-blur-radius) var(--box-shadow-color);
@@ -313,7 +313,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
     padding: 1.6rem 2.8rem;
     border: none;
     border-radius: 0;
-    box-shadow: 0 calc(var(--border-width) * var(--box-shadow-multiplier)) 0 var(--box-shadow-color);
+    border-bottom: var(--border-width) solid var(--border-color);
     transition: box-shadow var(--animation-values);
 
     &:focus-visible {

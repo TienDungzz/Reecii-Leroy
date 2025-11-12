@@ -60,10 +60,6 @@
   endif
 -%}
 
-{%- capture style_badge -%}
-  style="--badge-top: {{ settings.badge_top }}px; --badge-left: {{ settings.badge_left }}px;"
-{%- endcapture -%}
-
 {%- capture class_badge -%}
   {{ settings.badge_position }} {{ settings.badge_text_transform }}
 {%- endcapture -%}
@@ -81,7 +77,7 @@
         {%- render 'card-product-media', show_secondary_image: show_secondary_image, card_product: card_product -%}
 
         <div class="card__content relative">
-          <div class="card__badge absolute {{ class_badge }}" {{ style_badge }}>
+          <div class="card__badge absolute {{ class_badge }}" style="{%- render 'badge-position-style' -%}">
             {%- render 'product-badge',
               card_product: card_product,
               new_badge: new_badge,

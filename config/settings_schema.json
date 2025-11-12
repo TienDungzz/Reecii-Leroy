@@ -2176,14 +2176,6 @@
         "id": "badge_position",
         "options": [
           {
-            "value": "bottom left",
-            "label": "t:options.bottom_left"
-          },
-          {
-            "value": "bottom right",
-            "label": "t:options.bottom_right"
-          },
-          {
             "value": "top left",
             "label": "t:options.top_left"
           },
@@ -2192,8 +2184,12 @@
             "label": "t:options.top_right"
           },
           {
-            "value": "custom",
-            "label": "t:options.custom"
+            "value": "bottom left",
+            "label": "t:options.bottom_left"
+          },
+          {
+            "value": "bottom right",
+            "label": "t:options.bottom_right"
           }
         ],
         "default": "bottom left",
@@ -2207,8 +2203,19 @@
         "max": 100,
         "step": 1,
         "unit": "px",
-        "default": 0,
-        "visible_if": "{{ settings.badge_position == 'custom' }}"
+        "default": 20,
+        "visible_if": "{{ settings.badge_position == 'top left' or settings.badge_position == 'top right' }}"
+      },
+      {
+        "type": "range",
+        "id": "badge_bottom",
+        "label": "t:settings.bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 20,
+        "visible_if": "{{ settings.badge_position == 'bottom left' or settings.badge_position == 'bottom right' }}"
       },
       {
         "type": "range",
@@ -2218,8 +2225,19 @@
         "max": 100,
         "step": 1,
         "unit": "px",
-        "default": 0,
-        "visible_if": "{{ settings.badge_position == 'custom' }}"
+        "default": 20,
+        "visible_if": "{{ settings.badge_position == 'top left' or settings.badge_position == 'bottom left' }}"
+      },
+      {
+        "type": "range",
+        "id": "badge_right",
+        "label": "t:settings.right",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 20,
+        "visible_if": "{{ settings.badge_position == 'top right' or settings.badge_position == 'bottom right' }}"
       },
       {
         "type": "range",

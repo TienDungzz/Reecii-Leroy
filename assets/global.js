@@ -2664,10 +2664,13 @@ class ShowMoreGrid extends HTMLElement {
     );
     if (!template) return;
 
+    const collectionListEditorial = sectionContent.querySelector(".editorial-collection__grid");
+
     const allHiddenItems = Array.from(
-      template.content.querySelectorAll(".resource-list__item")
+      collectionListEditorial ? template.content.querySelectorAll(".editorial-collection__item") : template.content.querySelectorAll(".resource-list__item")
     );
-    const collectionList = sectionContent.querySelector(".resource-list");
+
+    const collectionList = collectionListEditorial ? collectionListEditorial : sectionContent.querySelector(".resource-list");
     if (!collectionList || !allHiddenItems.length) return;
 
     const nextItems = allHiddenItems.slice(
