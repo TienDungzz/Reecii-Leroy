@@ -75,7 +75,7 @@
   background-color: transparent;
   border: 0;
   border-radius: 0;
-  font-size: var(--font-size--sm);
+  font-size: var(--font-size, var(--font-size--sm));
   height: auto;
   margin: 0;
   padding-inline: 2rem;
@@ -160,7 +160,6 @@
 
 .facets__heading {
   margin: -1.5rem 0 0 0;
-  font-size: var(--body-s-font-size);
 }
 
 .facets__reset {
@@ -262,6 +261,19 @@
 .facets__item {
   display: flex;
   align-items: center;
+}
+
+.facets--horizontal .facets__item.swatch-item {
+  border: none;
+}
+
+.facets--horizontal .facets-layout .swatch-item .input--primary:after {
+  display: none;
+}
+
+.facets--horizontal .swatch-input__input:active+.swatch-input__label,
+.facets--horizontal .swatch-input__input:checked+.swatch-input__label {
+  border-color: transparent;
 }
 
 /* Hover/focus state */
