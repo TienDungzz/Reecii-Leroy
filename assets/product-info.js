@@ -899,301 +899,305 @@ if (!customElements.get('product-info')) {
   );
 }
 
-class ProductInfoList extends HTMLElement {
-  connectedCallback() {
-    try {
-      if (typeof MainEvents !== 'undefined' && MainEvents.variantUpdate) {
-        document.addEventListener(MainEvents.variantUpdate, this.updateInfo);
-      }
-    } catch (e) {
-      // silent
-    }
-  }
-
-  disconnectedCallback() {
-    try {
-      if (typeof MainEvents !== 'undefined' && MainEvents.variantUpdate) {
-        document.removeEventListener(MainEvents.variantUpdate, this.updateInfo);
-      }
-    } catch (e) {
-      // silent
-    }
-  }
-
-  updateInfo = (event) => {
-    try {
-      if (event?.detail?.data?.newProduct) {
-        this.dataset.productId = event.detail.data.newProduct.id;
-      } else if (event?.target instanceof HTMLElement && event.target.dataset.productId !== this.dataset.productId) {
-        return;
-      }
-
-      const source = event?.detail?.data?.html;
-      if (!source) return;
-
-      // Try to find the new info list by block-id first, then by product-id
-      let newInfoList = null;
-      if (this.dataset.blockId) {
-        newInfoList = source.querySelector(`product-info-list[data-block-id="${this.dataset.blockId}"]`);
-      }
-      if (!newInfoList && this.dataset.productId) {
-        newInfoList = source.querySelector(`product-info-list[data-product-id="${this.dataset.productId}"]`);
-      }
-      if (!newInfoList) return;
-
-      const currentInfoList = this.querySelector('.product-info-list');
-      const newInfoListContent = newInfoList.querySelector('.product-info-list');
-      
-      if (!currentInfoList || !newInfoListContent) return;
-
-      // Update SKU item
-      const skuItem = currentInfoList.querySelector('[data-sku]');
-      if (skuItem) {
-        const newSkuItem = newInfoListContent.querySelector('[data-sku]');
-        if (newSkuItem) {
-          const currentValue = skuItem.querySelector('.product-info-value');
-          const newValue = newSkuItem.querySelector('.product-info-value');
-          if (currentValue && newValue) {
-            currentValue.innerHTML = newValue.innerHTML;
-          }
-          
-          // Update visibility based on whether the value exists
-          const hasValue = newValue?.textContent?.trim() !== '';
-          if (hasValue) {
-            skuItem.style.display = '';
-          } else {
-            skuItem.style.display = 'none';
-          }
-        }
-      }
-
-      // Update barcode item
-      const barcodeItem = currentInfoList.querySelector('[data-barcode]');
-      if (barcodeItem) {
-        const newBarcodeItem = newInfoListContent.querySelector('[data-barcode]');
-        if (newBarcodeItem) {
-          const currentValue = barcodeItem.querySelector('.product-info-value');
-          const newValue = newBarcodeItem.querySelector('.product-info-value');
-          if (currentValue && newValue) {
-            currentValue.innerHTML = newValue.innerHTML;
-          }
-          
-          // Update visibility based on whether the value exists
-          const hasValue = newValue?.textContent?.trim() !== '';
-          if (hasValue) {
-            barcodeItem.style.display = '';
-          } else {
-            barcodeItem.style.display = 'none';
-          }
-        }
-      }
-
-      // Update inventory/availability item
-      const inventoryItem = currentInfoList.querySelector('[data-inventory]');
-      if (inventoryItem) {
-        const newInventoryItem = newInfoListContent.querySelector('[data-inventory]');
-        if (newInventoryItem) {
-          const currentValue = inventoryItem.querySelector('.product-info-value');
-          const newValue = newInventoryItem.querySelector('.product-info-value');
-          if (currentValue && newValue) {
-            currentValue.innerHTML = newValue.innerHTML;
-          }
-          
-          // Update stock level display attribute if needed
-          const stockLevel = newInventoryItem.dataset.stockLevel;
-          if (stockLevel) {
-            inventoryItem.dataset.stockLevel = stockLevel;
-          }
-        }
-      }
-
-      // Update all other items (vendor, product type) that don't have special data attributes
-      const otherItems = currentInfoList.querySelectorAll('.product-info-item:not([data-sku]):not([data-barcode]):not([data-inventory])');
-      otherItems.forEach((item) => {
-        const infoName = item.querySelector('.product-info-name')?.textContent?.trim();
-        if (!infoName) return;
-
-        const newItem = Array.from(newInfoListContent.querySelectorAll('.product-info-item:not([data-sku]):not([data-barcode]):not([data-inventory])'))
-          .find(newItem => newItem.querySelector('.product-info-name')?.textContent?.trim() === infoName);
-        
-        if (newItem) {
-          const currentValue = item.querySelector('.product-info-value');
-          const newValue = newItem.querySelector('.product-info-value');
-          if (currentValue && newValue && currentValue.innerHTML !== newValue.innerHTML) {
-            currentValue.innerHTML = newValue.innerHTML;
-          }
-        }
-      });
-    } catch (e) {
-      // silent
-    }
-  };
-}
-
 if (!customElements.get('product-info-list')) {
+  class ProductInfoList extends HTMLElement {
+    connectedCallback() {
+      try {
+        if (typeof MainEvents !== 'undefined' && MainEvents.variantUpdate) {
+          document.addEventListener(MainEvents.variantUpdate, this.updateInfo);
+        }
+      } catch (e) {
+        // silent
+      }
+    }
+
+    disconnectedCallback() {
+      try {
+        if (typeof MainEvents !== 'undefined' && MainEvents.variantUpdate) {
+          document.removeEventListener(MainEvents.variantUpdate, this.updateInfo);
+        }
+      } catch (e) {
+        // silent
+      }
+    }
+
+    updateInfo = (event) => {
+      try {
+        if (event?.detail?.data?.newProduct) {
+          this.dataset.productId = event.detail.data.newProduct.id;
+        } else if (event?.target instanceof HTMLElement && event.target.dataset.productId !== this.dataset.productId) {
+          return;
+        }
+
+        const source = event?.detail?.data?.html;
+        if (!source) return;
+
+        // Try to find the new info list by block-id first, then by product-id
+        let newInfoList = null;
+        if (this.dataset.blockId) {
+          newInfoList = source.querySelector(`product-info-list[data-block-id="${this.dataset.blockId}"]`);
+        }
+        if (!newInfoList && this.dataset.productId) {
+          newInfoList = source.querySelector(`product-info-list[data-product-id="${this.dataset.productId}"]`);
+        }
+        if (!newInfoList) return;
+
+        const currentInfoList = this.querySelector('.product-info-list');
+        const newInfoListContent = newInfoList.querySelector('.product-info-list');
+        
+        if (!currentInfoList || !newInfoListContent) return;
+
+        // Update SKU item
+        const skuItem = currentInfoList.querySelector('[data-sku]');
+        if (skuItem) {
+          const newSkuItem = newInfoListContent.querySelector('[data-sku]');
+          if (newSkuItem) {
+            const currentValue = skuItem.querySelector('.product-info-value');
+            const newValue = newSkuItem.querySelector('.product-info-value');
+            if (currentValue && newValue) {
+              currentValue.innerHTML = newValue.innerHTML;
+            }
+            
+            // Update visibility based on whether the value exists
+            const hasValue = newValue?.textContent?.trim() !== '';
+            if (hasValue) {
+              skuItem.style.display = '';
+            } else {
+              skuItem.style.display = 'none';
+            }
+          }
+        }
+
+        // Update barcode item
+        const barcodeItem = currentInfoList.querySelector('[data-barcode]');
+        if (barcodeItem) {
+          const newBarcodeItem = newInfoListContent.querySelector('[data-barcode]');
+          if (newBarcodeItem) {
+            const currentValue = barcodeItem.querySelector('.product-info-value');
+            const newValue = newBarcodeItem.querySelector('.product-info-value');
+            if (currentValue && newValue) {
+              currentValue.innerHTML = newValue.innerHTML;
+            }
+            
+            // Update visibility based on whether the value exists
+            const hasValue = newValue?.textContent?.trim() !== '';
+            if (hasValue) {
+              barcodeItem.style.display = '';
+            } else {
+              barcodeItem.style.display = 'none';
+            }
+          }
+        }
+
+        // Update inventory/availability item
+        const inventoryItem = currentInfoList.querySelector('[data-inventory]');
+        if (inventoryItem) {
+          const newInventoryItem = newInfoListContent.querySelector('[data-inventory]');
+          if (newInventoryItem) {
+            const currentValue = inventoryItem.querySelector('.product-info-value');
+            const newValue = newInventoryItem.querySelector('.product-info-value');
+            if (currentValue && newValue) {
+              currentValue.innerHTML = newValue.innerHTML;
+            }
+            
+            // Update stock level display attribute if needed
+            const stockLevel = newInventoryItem.dataset.stockLevel;
+            if (stockLevel) {
+              inventoryItem.dataset.stockLevel = stockLevel;
+            }
+          }
+        }
+
+        // Update all other items (vendor, product type) that don't have special data attributes
+        const otherItems = currentInfoList.querySelectorAll('.product-info-item:not([data-sku]):not([data-barcode]):not([data-inventory])');
+        otherItems.forEach((item) => {
+          const infoName = item.querySelector('.product-info-name')?.textContent?.trim();
+          if (!infoName) return;
+
+          const newItem = Array.from(newInfoListContent.querySelectorAll('.product-info-item:not([data-sku]):not([data-barcode]):not([data-inventory])'))
+            .find(newItem => newItem.querySelector('.product-info-name')?.textContent?.trim() === infoName);
+          
+          if (newItem) {
+            const currentValue = item.querySelector('.product-info-value');
+            const newValue = newItem.querySelector('.product-info-value');
+            if (currentValue && newValue && currentValue.innerHTML !== newValue.innerHTML) {
+              currentValue.innerHTML = newValue.innerHTML;
+            }
+          }
+        });
+      } catch (e) {
+        // silent
+      }
+    };
+  }
+
   customElements.define('product-info-list', ProductInfoList);
 }
 
-class ProductPrice extends HTMLElement {
-  connectedCallback() {
-    try {
-      if (typeof MainEvents !== 'undefined' && MainEvents.variantUpdate) {
-        document.addEventListener(MainEvents.variantUpdate, this.updatePrice);
-      }
-    } catch (e) {
-      // silent
-    }
-  }
-
-  disconnectedCallback() {
-    try {
-      if (typeof MainEvents !== 'undefined' && MainEvents.variantUpdate) {
-        document.removeEventListener(MainEvents.variantUpdate, this.updatePrice);
-      }
-    } catch (e) {
-      // silent
-    }
-  }
-
-  updatePrice = (event) => {
-    try {
-      if (event?.detail?.data?.newProduct) {
-        this.dataset.productId = event.detail.data.newProduct.id;
-      } else if (event?.target instanceof HTMLElement && event.target.dataset.productId !== this.dataset.productId) {
-        return;
-      }
-
-      const source = event?.detail?.data?.html;
-      if (!source) return;
-
-      const newPrice = source.querySelector('.price-product-container');
-      const currentPrice = this.querySelector('.price-product-container');
-
-      if (!newPrice || !currentPrice) return;
-
-      if (currentPrice.innerHTML !== newPrice.innerHTML) {
-        currentPrice.replaceWith(newPrice);
-      }
-    } catch (e) {
-      // silent
-    }
-  };
-}
-
 if (!customElements.get('product-price')) {
+  class ProductPrice extends HTMLElement {
+    connectedCallback() {
+      try {
+        if (typeof MainEvents !== 'undefined' && MainEvents.variantUpdate) {
+          document.addEventListener(MainEvents.variantUpdate, this.updatePrice);
+        }
+      } catch (e) {
+        // silent
+      }
+    }
+
+    disconnectedCallback() {
+      try {
+        if (typeof MainEvents !== 'undefined' && MainEvents.variantUpdate) {
+          document.removeEventListener(MainEvents.variantUpdate, this.updatePrice);
+        }
+      } catch (e) {
+        // silent
+      }
+    }
+
+    updatePrice = (event) => {
+      try {
+        if (event?.detail?.data?.newProduct) {
+          this.dataset.productId = event.detail.data.newProduct.id;
+        } else if (event?.target instanceof HTMLElement && event.target.dataset.productId !== this.dataset.productId) {
+          return;
+        }
+
+        const source = event?.detail?.data?.html;
+        if (!source) return;
+
+        const newPrice = source.querySelector('.price-product-container');
+        const currentPrice = this.querySelector('.price-product-container');
+
+        if (!newPrice || !currentPrice) return;
+
+        if (currentPrice.innerHTML !== newPrice.innerHTML) {
+          currentPrice.replaceWith(newPrice);
+        }
+      } catch (e) {
+        // silent
+      }
+    };
+  }
+
   customElements.define('product-price', ProductPrice);
 }
 
-class VariantSelects extends HTMLElement {
-  constructor() {
-    super();
-  }
+if (!customElements.get("variant-selects")){
+  class VariantSelects extends HTMLElement {
+    constructor() {
+      super();
+    }
 
-  connectedCallback() {
-    this.addEventListener("change", (event) => {
-      const target = this.getInputForEventTarget(event.target);
-      if (target.classList.contains('not-change')) return;
-      this.updateSelectionMetadata(event);
+    connectedCallback() {
+      this.addEventListener("change", (event) => {
+        const target = this.getInputForEventTarget(event.target);
+        if (target.classList.contains('not-change')) return;
+        this.updateSelectionMetadata(event);
 
-      publish(PUB_SUB_EVENTS.optionValueSelectionChange, {
-        data: {
-          event,
-          target,
-          selectedOptionValues: this.selectedOptionValues,
-        },
+        publish(PUB_SUB_EVENTS.optionValueSelectionChange, {
+          data: {
+            event,
+            target,
+            selectedOptionValues: this.selectedOptionValues,
+          },
+        });
       });
-    });
-  }
+    }
 
-  updateSelectionMetadata({ target }) {
-    const { value, tagName } = target;
+    updateSelectionMetadata({ target }) {
+      const { value, tagName } = target;
 
-    if (tagName === "SELECT" && target.selectedOptions.length) {
-      Array.from(target.options)
-        .find((option) => option.getAttribute("selected"))
-        .removeAttribute("selected");
-      target.selectedOptions[0].setAttribute("selected", "selected");
+      if (tagName === "SELECT" && target.selectedOptions.length) {
+        Array.from(target.options)
+          .find((option) => option.getAttribute("selected"))
+          .removeAttribute("selected");
+        target.selectedOptions[0].setAttribute("selected", "selected");
 
-      const swatchValue = target.selectedOptions[0].dataset.optionSwatchValue;
-      const selectedDropdownSwatchValue = target
-        .closest(".product-form__input")
-        .querySelector("[data-selected-value] > .swatch");
-      if (!selectedDropdownSwatchValue) return;
-      if (swatchValue) {
+        const swatchValue = target.selectedOptions[0].dataset.optionSwatchValue;
+        const selectedDropdownSwatchValue = target
+          .closest(".product-form__input")
+          .querySelector("[data-selected-value] > .swatch");
+        if (!selectedDropdownSwatchValue) return;
+        if (swatchValue) {
+          selectedDropdownSwatchValue.style.setProperty(
+            "--swatch--background",
+            swatchValue
+          );
+          selectedDropdownSwatchValue.classList.remove("swatch--unavailable");
+        } else {
+          selectedDropdownSwatchValue.style.setProperty(
+            "--swatch--background",
+            "unset"
+          );
+          selectedDropdownSwatchValue.classList.add("swatch--unavailable");
+        }
+
         selectedDropdownSwatchValue.style.setProperty(
-          "--swatch--background",
-          swatchValue
+          "--swatch-focal-point",
+          target.selectedOptions[0].dataset.optionSwatchFocalPoint || "unset"
         );
-        selectedDropdownSwatchValue.classList.remove("swatch--unavailable");
-      } else {
-        selectedDropdownSwatchValue.style.setProperty(
-          "--swatch--background",
-          "unset"
-        );
-        selectedDropdownSwatchValue.classList.add("swatch--unavailable");
+      } else if (tagName === "INPUT" && target.type === "radio") {
+        const selectedSwatchValue = target
+          .closest(`.product-form__input`)
+          .querySelector("[data-selected-value]");
+        if (selectedSwatchValue) selectedSwatchValue.innerHTML = value;
       }
+    }
 
-      selectedDropdownSwatchValue.style.setProperty(
-        "--swatch-focal-point",
-        target.selectedOptions[0].dataset.optionSwatchFocalPoint || "unset"
-      );
-    } else if (tagName === "INPUT" && target.type === "radio") {
-      const selectedSwatchValue = target
-        .closest(`.product-form__input`)
-        .querySelector("[data-selected-value]");
-      if (selectedSwatchValue) selectedSwatchValue.innerHTML = value;
+    getInputForEventTarget(target) {
+      return target.tagName === "SELECT" ? target.selectedOptions[0] : target;
+    }
+
+    get selectedOptionValues() {
+      return Array.from(
+        this.querySelectorAll("select option[selected], fieldset input:checked")
+      ).map(({ dataset }) => dataset.optionValueId);
     }
   }
 
-  getInputForEventTarget(target) {
-    return target.tagName === "SELECT" ? target.selectedOptions[0] : target;
-  }
-
-  get selectedOptionValues() {
-    return Array.from(
-      this.querySelectorAll("select option[selected], fieldset input:checked")
-    ).map(({ dataset }) => dataset.optionValueId);
-  }
-}
-if (!customElements.get("variant-selects"))
   customElements.define("variant-selects", VariantSelects);
-
-class FeaturedProduct extends HTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    const productInfo = this.querySelector('product-info');
-    if (productInfo) {
-      productInfo.dataset.updateUrl = 'false';
-    }
-
-    const variantSelects = this.querySelector('variant-selects');
-    if (variantSelects) {
-      this.initializeVariantSwatches(variantSelects);
-    }
-
-    this.classList.add('initialized');
-  }
-
-  initializeVariantSwatches(variantSelects) {
-    const selects = variantSelects.querySelectorAll('select, input[type="radio"]');
-
-    selects.forEach((target) => {
-      if (target.tagName === 'INPUT' && !target.checked) return;
-      if (target.tagName === 'SELECT' && !target.selectedOptions.length) return;
-
-      const optionEl =
-        target.tagName === 'SELECT'
-          ? target.selectedOptions[0]
-          : target;
-
-      if (optionEl?.dataset?.optionSwatchValue) {
-        variantSelects.updateSelectionMetadata?.({ target });
-      }
-    });
-  }
 }
-if (!customElements.get('featured-product'))
+
+if (!customElements.get('featured-product')){
+  class FeaturedProduct extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    connectedCallback() {
+      const productInfo = this.querySelector('product-info');
+      if (productInfo) {
+        productInfo.dataset.updateUrl = 'false';
+      }
+
+      const variantSelects = this.querySelector('variant-selects');
+      if (variantSelects) {
+        this.initializeVariantSwatches(variantSelects);
+      }
+
+      this.classList.add('initialized');
+    }
+
+    initializeVariantSwatches(variantSelects) {
+      const selects = variantSelects.querySelectorAll('select, input[type="radio"]');
+
+      selects.forEach((target) => {
+        if (target.tagName === 'INPUT' && !target.checked) return;
+        if (target.tagName === 'SELECT' && !target.selectedOptions.length) return;
+
+        const optionEl =
+          target.tagName === 'SELECT'
+            ? target.selectedOptions[0]
+            : target;
+
+        if (optionEl?.dataset?.optionSwatchValue) {
+          variantSelects.updateSelectionMetadata?.({ target });
+        }
+      });
+    }
+  }
+
   customElements.define('featured-product', FeaturedProduct);
+}

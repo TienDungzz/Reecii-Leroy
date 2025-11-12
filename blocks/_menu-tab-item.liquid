@@ -7,7 +7,9 @@
   assign menu_handle = submenu.handle
 
   assign show_image_level_1 = sec_stts.show_image_level_1
+
   assign show_image_sub_menu = sec_stts.show_image_sub_menu
+  assign sub_media_type = sec_stts.sub_media_type
 
   assign media_width_desktop = '100vw'
   assign media_width_mobile = '100vw'
@@ -143,7 +145,6 @@
 
                           assign image_sources = 'jpg,png,webp,avif' | split: ','
                           assign found_image = false
-
                         -%}
 
                         {% for ext in image_sources %}
@@ -154,7 +155,7 @@
                             {% assign image = item_image | file_url %}
                             <span class="media media--adapt media--circle" style="{{ image_style }}">
                               <img
-                                src="{{ image }}"
+                                src="{{ image | image_url: width: 450 }}"
                                 srcset="{{ image }} 450w, {{ image }} 900w"
                                 width="450"
                                 height="450"
@@ -196,9 +197,9 @@
                             {% if images[item_image] != blank and found_image == false %}
                               {% assign found_image = true %}
                               {% assign image = item_image | file_url %}
-                              <span class="media media--adapt" style="{{ image_style }}">
+                              <span class="media media--adapt media--{{ sub_media_type }}" style="{{ image_style }}">
                                 <img
-                                  src="{{ image }}"
+                                  src="{{ image | image_url: width: 450 }}"
                                   srcset="{{ image }} 450w, {{ image }} 900w"
                                   width="450"
                                   height="450"
@@ -255,9 +256,9 @@
                                     {% if images[item_image] != blank and found_image == false %}
                                       {% assign found_image = true %}
                                       {% assign image = item_image | file_url %}
-                                      <span class="media media--adapt" style="{{ image_style }}">
+                                      <span class="media media--adapt media--{{ sub_media_type }}" style="{{ image_style }}">
                                         <img
-                                          src="{{ image }}"
+                                          src="{{ image | image_url: width: 450 }}"
                                           srcset="{{ image }} 450w, {{ image }} 900w"
                                           width="450"
                                           height="450"

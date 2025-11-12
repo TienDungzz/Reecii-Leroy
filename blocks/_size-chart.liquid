@@ -12,7 +12,6 @@
       endif
     endif
   endcapture
-  
   assign has_size_chart = false
   assign size_chart_type = bl_stts.size_chart_type
 
@@ -54,35 +53,37 @@
   </side-drawer-opener>
 
   <side-drawer
-    class="popup__content product-popup-modal__drawer--keep drawer fixed top-0 left-0 z-10 w-screen h-full flex justify-center no-js-hidden"
+    class="popup__content product-popup-modal__drawer--keep drawer fixed top-0 left-0 z-10 w-screen h-full flex-center no-js-hidden"
     element-s-popup
     id="PopupModal-{{ block.id }}"
+    data-drawer-direction="center"
   >
     <div id="Drawer-Overlay-{{ block.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
     <div
-      class="popup__inner color-{{ settings.popover_color_scheme }} w-full h-auto absolute-c-c flex flex-column global-settings-popup"
+      class="popup__inner color-{{ settings.popover_color_scheme }} w-full h-auto flex flex-column global-settings-popup cus-scrollbar"
       role="dialog"
       aria-modal="true"
       aria-label="Size chart"
       tabindex="-1"
       style="--modal-max-width: 72rem;"
+      data-drawer-content
     >
       <button
         onclick="this.closest('side-drawer').close()"
-        class="drawer__close block t-button bor-none rounded-full cursor-pointer absolute"
+        class="drawer__close block t-button bor-none rounded-full cursor-pointer absolute button-close-circle"
         type="button"
         aria-label="{{ 'accessibility.close_dialog' | t }}"
-        style="--top: 0.5rem; --right: 0.5rem;"
+        style="--top: 1rem; --right: 1rem;"
       >
         {{- 'icon-close.svg' | inline_asset_content -}}
       </button>
-      <div class="w-full h-full overflow-auto cus-scrollbar" style="--p: 0 1rem;">
+      <div class="w-full h-full overflow-auto cus-scrollbar" style="--p: 1rem;">
         <div class="drawer__header relative center"
           style="--p: 1.5rem 0; --mb: 2.5rem;"
         >
-          <h2 class="drawer__heading break m-0">
+          <h5 class="drawer__heading break m-0">
             {{ size_chart_heading | default: 'products.product.size_chart.name_popup' }}
-          </h2>
+          </h5>
         </div>
         <div class="size-chart-popup-modal__content-info m-auto">
           <picture class="size-chart-details center">

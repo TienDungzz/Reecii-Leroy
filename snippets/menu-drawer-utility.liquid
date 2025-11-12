@@ -83,51 +83,53 @@
   {%- endif -%}
 </div>
 
-{% style %}
-  .menu-drawer__utility-links {
-    .header__icon--wishlist {
-      display: flex;
-      width: 100%;
-      justify-content: flex-start;
-      padding: var(--padding-sm) var(--padding-xl);
-      border-top: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-8));
+{% stylesheet %}
+  .menu-drawer__utility-links .header__icon--wishlist {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    padding: var(--padding-sm) var(--padding-xl);
+    gap: var(--gap-lg);
 
-      .svg-wrapper {
-        width: var(--size-24);
-        margin-right: var(--margin-md);
-      }
+    .svg-wrapper {
+      width: var(--size-24);
     }
 
-    .disclosure__list.country-selector__list,
-    .disclosure__list.language-selector__list {
-      padding-block-end: var(--padding-sm);
-    }
-
-    .disclosure__list-wrapper {
-      position: fixed;
-      width: 100%;
-      top: 0;
-      height: 100dvh;
-      left: 0;
-      background-color: var(--color-background);
-      max-height: initial;
-      display: grid;
-      grid-template-rows: 4.5rem 1fr 5rem;
-    }
-
-    localization-form:has(.country-selector__list--with-multiple-currencies) {
-      width: 100%;
-      max-height: calc(100dvh - 9.5rem);
-      display: block;
-
-      .country-selector__list--with-multiple-currencies {
-        width: 100%;
-        max-height: calc(100dvh - 16.5rem);
-      }
-    }
-
-    .language-selector--only .details--dropdown-language {
-      width: 100%;
+    .wishlist-count-bubble{
+      position: unset;
+      transform: unset;
     }
   }
-{% endstyle %}
+
+  .menu-drawer__utility-links .disclosure__list.country-selector__list,
+  .menu-drawer__utility-links .disclosure__list.language-selector__list {
+    padding-block-end: var(--padding-sm);
+  }
+
+  .menu-drawer__utility-links .disclosure__list-wrapper {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    height: 100dvh;
+    left: 0;
+    background-color: var(--color-background);
+    max-height: initial;
+    display: grid;
+    grid-template-rows: 4.5rem 1fr 5rem;
+  }
+
+  .menu-drawer__utility-links localization-form:has(.country-selector__list--with-multiple-currencies) {
+    width: 100%;
+    max-height: calc(100dvh - 9.5rem);
+    display: block;
+
+    .country-selector__list--with-multiple-currencies {
+      width: 100%;
+      max-height: calc(100dvh - 16.5rem);
+    }
+  }
+
+  .menu-drawer__utility-links .language-selector--only .details--dropdown-language {
+    width: 100%;
+  }
+{% endstylesheet %}

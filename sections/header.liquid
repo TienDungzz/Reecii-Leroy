@@ -79,11 +79,11 @@
   endif
 
   capture search
-    render 'header-search', style: search_style, input_id: 'Search-In-Modal', class: search_class
+    render 'header-search', style: search_style, input_id: 'Search-In-Modal', class: search_class, display_type: sec_stts.search_display_type
   endcapture
 
   capture multi_tab_menu
-    render 'header-multi-site', settings: sec_stts, blocks: section.blocks
+    render 'header-multi-site', settings: sec_stts, blocks: section.blocks, menu_gap: sec_stts.menu_gap
   endcapture
 
   capture message
@@ -320,6 +320,12 @@
   body:has(> #header-group:empty) {
     --header-group-height: 0px;
   }
+
+  .header:not([transparent]) {
+    min-height: var(--header-height);
+    display: block;
+  }
+
   .header[transparent='not-sticky']:not([data-sticky-state]) ,
   .header[transparent='not-sticky'][data-sticky-state='inactive'] {
     .header__icon.button  {
@@ -361,28 +367,7 @@
     background-color: transparent;
     z-index: var(--layer-overlay);
 
-
-
-    &[transparent='not-sticky'][data-sticky-state='active'],
-    /* Only show opaque background when hovering over menu items with children (mega menu)
-       Multiple selectors for performance: each simple :has() check is faster than one complex selector with multiple conditions */
-
-    &:has(.header__icon--menu button.active),
-    &:has(.mega-menu__list:hover),
-    &:has(.list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])),
-    &:has(.details--dropdown:not(.details--dropdown-language):is(:hover)),
-    &:has(.menu-list__list-item[slot='overflow'] .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])) {
-      /* --header-logo-opacity: 1;
-      --header-logo-inverse-opacity: 0;
-      --header-bg-color: unset;
-      --color-foreground: inherit;
-      --color-foreground-rgb: inherit;
-      --color-background: inherit;
-      --color-background-rgb: inherit;
-      --color-border: inherit;
-      --color-border-rgb: inherit;
-      --color-primary-button-text: var(--color-foreground);
-      --color-primary-button-hover-text: var(--color-foreground); */
+    &[transparent='not-sticky'][data-sticky-state='active'] {
       --header-logo-opacity: 1;
       --header-logo-inverse-opacity: 0;
       --header-bg-color: unset;
@@ -394,9 +379,7 @@
       --color-border-rgb: inherit;
 
       .header__row {
-        /* Faster transition for "in" animation */
-        /* transition: color var(--animation-values-fast), border-color var(--animation-values-fast),
-          background-color var(--animation-values-fast); */
+        transition: none;
 
         .button {
           --animation-speed: var(--animation-speed-fast);
@@ -409,43 +392,80 @@
       }
     }
 
+    @media screen and (min-width: 1025px) {
+      &:hover {
+        --header-logo-opacity: 1;
+        --header-logo-inverse-opacity: 0;
+        --header-bg-color: unset;
+        --color-foreground: inherit;
+        --color-foreground-rgb: inherit;
+        --color-background: inherit;
+        --color-background-rgb: inherit;
+        --color-border: inherit;
+        --color-border-rgb: inherit;
+
+        .header__row {
+          transition: none;
+
+          .button {
+            --animation-speed: var(--animation-speed-fast);
+          }
+        }
+
+        .details--dropdown:is(:hover) > .link.link--hover-underline .text {
+          background-position-x: left;
+          background-size: 100% 1px;
+        }
+      }
+    }
+
     .header__row {
-      transition: color var(--animation-values-slow), border-color var(--animation-values-slow),
-        background-color var(--animation-values-slow);
+      transition: none;
 
       .button {
         --animation-speed: var(--animation-speed-slow);
       }
     }
   }
-
-  :is(.header[transparent]:not([data-sticky-state='active']),
-  .header[transparent='always'][data-sticky-state='active'])
-    .header__row:not(
-      :has(
-          .mega-menu__list:hover,
-          .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating]),
-          .details--dropdown:not(.details--dropdown-language):is(:hover),
-          .menu-list__list-item[slot='overflow'] .list-menu__item:is(:hover, [aria-expanded='true'], [data-animating])
-        )
-    ) {
-    --color-foreground: inherit;
-    --color-foreground-rgb: inherit;
-    --color-border: inherit;
-    --color-border-rgb: inherit;
-    --color-primary-button-text: inherit;
-    --color-primary-button-hover-text: inherit;
-    --color-primary-button-hover-border: inherit;
-    --color-primary-button-hover-background: inherit;
-    --color-primary: inherit;
-    --color-primary-rgb: inherit;
-    --color-input-text: inherit;
-    --color-input-border: inherit;
-
-    .search--inline {
+  @media screen and (max-width: 1024px) {
+    :is(.header[transparent]:not([data-sticky-state='active']),
+    .header[transparent='always'][data-sticky-state='active']) .header__row {
+      --color-foreground: inherit;
+      --color-foreground-rgb: inherit;
+      --color-border: inherit;
+      --color-border-rgb: inherit;
+      --color-primary-button-text: inherit;
+      --color-primary: inherit;
+      --color-primary-rgb: inherit;
       --color-input-text: inherit;
       --color-input-border: inherit;
+
+      .search--inline {
+        --color-input-text: inherit;
+        --color-input-border: inherit;
+        --color-primary-button-text: inherit;
+      }
+    }
+  }
+
+  @media screen and (min-width: 1025px) {
+    :is(.header[transparent]:not([data-sticky-state='active']),
+    .header[transparent='always'][data-sticky-state='active']) .header__row:not(:hover) {
+      --color-foreground: inherit;
+      --color-foreground-rgb: inherit;
+      --color-border: inherit;
+      --color-border-rgb: inherit;
       --color-primary-button-text: inherit;
+      --color-primary: inherit;
+      --color-primary-rgb: inherit;
+      --color-input-text: inherit;
+      --color-input-border: inherit;
+
+      .search--inline {
+        --color-input-text: inherit;
+        --color-input-border: inherit;
+        --color-primary-button-text: inherit;
+      }
     }
   }
 
@@ -477,7 +497,10 @@
   .header-section:has(.header[data-sticky-type='always'][data-sticky-state='active']) ,
   .header-section:has(.header[data-sticky-type='scroll-up'][data-sticky-state='active']) {
     view-transition-name: header-component;
-    animation: header-sticky-slide-down var(--animation-speed-slowest) forwards;
+
+    &:has([data-sticky-type="scroll-up"]) {
+      animation: header-sticky-slide-down var(--animation-speed-slowest) forwards;
+    }
   }
 
   .header-section:has(.header[data-sticky-type='scroll-up'][data-sticky-state='idle']),
@@ -486,6 +509,9 @@
   }
 
   .header__row {
+    --color-primary-button-background: transparent;
+    --color-primary-button-border: transparent;
+
     position: relative;
     background-color: var(--header-bg-color, var(--color-background));
 
@@ -505,10 +531,20 @@
     .header__row--top {
       padding-block-start: var(--padding-block-start-top);
       padding-block-end: var(--padding-block-end-top);
+
+      @media screen and (max-width: 749px) {
+        padding-block-start: var(--padding-block-start-top) * 0.5;
+        padding-block-end: var(--padding-block-end-top) * 0.5;
+      }
     }
     .header__row--bottom {
       padding-block-start: var(--padding-block-start-bottom);
       padding-block-end: var(--padding-block-end-bottom);
+
+      @media screen and (max-width: 749px) {
+        padding-block-start: var(--padding-block-start-bottom) * 0.5;
+        padding-block-end: var(--padding-block-end-bottom) * 0.5;
+      }
     }
   }
 
@@ -992,6 +1028,22 @@
             "label": "t:settings.show_promotion_banner"
           },
           {
+            "type": "select",
+            "id": "promotion_banner_layout",
+            "options": [
+              {
+                "value": "left",
+                "label": "t:options.left_large_block"
+              },
+              {
+                "value": "right",
+                "label": "t:options.right_large_block"
+              }
+            ],
+            "default": "left",
+            "label": "t:settings.collage_layout"
+          },
+          {
             "type": "range",
             "id": "image_border_thickness",
             "min": 0,
@@ -1191,7 +1243,8 @@
             "step": 1,
             "unit": "px",
             "label": "t:settings.image_border_thickness",
-            "default": 0
+            "default": 0,
+            "visible_if": "{{ block.settings.show_promotion_banner == true }}"
           },
           {
             "type": "range",
@@ -1201,49 +1254,14 @@
             "step": 2,
             "unit": "px",
             "label": "t:settings.image_corner_radius",
-            "default": 0
-          },
-          {
-            "type": "header",
-            "content": "t:content.first_promotion_banner"
-          },
-          {
-            "type": "image_picker",
-            "id": "image_1",
-            "label": "t:settings.image"
+            "default": 0,
+            "visible_if": "{{ block.settings.show_promotion_banner == true }}"
           },
           {
             "type": "url",
             "id": "link_url_1",
-            "label": "t:settings.link"
-          },
-          {
-            "type": "header",
-            "content": "t:content.second_promotion_banner"
-          },
-          {
-            "type": "image_picker",
-            "id": "image_2",
-            "label": "t:settings.image"
-          },
-          {
-            "type": "url",
-            "id": "link_url_2",
-            "label": "t:settings.link"
-          },
-          {
-            "type": "header",
-            "content": "t:content.third_promotion_banner"
-          },
-          {
-            "type": "image_picker",
-            "id": "image_3",
-            "label": "t:settings.image"
-          },
-          {
-            "type": "url",
-            "id": "link_url_3",
-            "label": "t:settings.link"
+            "label": "t:settings.link",
+            "visible_if": "{{ block.settings.show_promotion_banner == true }}"
           },
           {
             "type": "header",
@@ -1956,6 +1974,27 @@
       },
       {
         "type": "select",
+        "id": "search_display_type",
+        "label": "t:settings.type",
+        "options": [
+          {
+            "value": "text",
+            "label": "t:options.text"
+          },
+          {
+            "value": "icon",
+            "label": "t:options.icon"
+          },
+          {
+            "value": "both",
+            "label": "t:options.both"
+          }
+        ],
+        "default": "icon",
+        "visible_if": "{{ section.settings.show_search and settings.search_type != 'inline' }}"
+      },
+      {
+        "type": "select",
         "id": "search_type",
         "label": "t:settings.type",
         "visible_if": "{{ section.settings.show_search and settings.search_type == 'inline' }}",
@@ -2050,10 +2089,6 @@
           {
             "value": "body",
             "label": "t:options.body"
-          },
-          {
-            "value": "accent",
-            "label": "t:options.accent"
           }
         ],
         "default": "heading",
@@ -2581,117 +2616,6 @@
         "default": 0
       }
     ],
-    "presets": [
-      {
-        "name": "Header - Classic",
-        "blocks": {
-          "mega_menu_1_mDeNwB": {
-            "type": "mega_menu_1",
-            "settings": {
-              "grid": "3",
-              "menu_item": "theme demo",
-              "width": "full",
-              "show_promotion_banner": true,
-              "image_border_thickness": 1,
-              "image_corner_radius": 0,
-              "image_1": "shopify://shop_images/Instagram_Post_-_NEW_ARRIVALS_315_x_315_px.jpg",
-              "image_2": "shopify://shop_images/Instagram_Post_-_NEW_ARRIVALS_315_x_315_px_1.jpg",
-              "image_3": "shopify://shop_images/CLEARANCE_250_x_490_px_2.jpg",
-              "megamenu_submenu": "custom-megamenu"
-            }
-          },
-          "mega_menu_2_AGJyYm": {
-            "type": "mega_menu_2",
-            "settings": {
-              "menu_item": "shop",
-              "width": "page-width",
-              "show_promotion_banner": true,
-              "image_border_thickness": 1,
-              "image_corner_radius": 0,
-              "inherit_color_scheme": false,
-              "color_scheme": "scheme-2",
-              "image_1": "shopify://shop_images/summer-collection-banner.webp",
-              "link_url_1": "",
-              "image_2": "shopify://shop_images/mask-collection-banner.webp",
-              "link_url_2": "",
-              "image_3": "shopify://shop_images/mask-collection-banner.webp",
-              "link_url_3": ""
-            }
-          }
-        },
-        "block_order": [
-          "mega_menu_1_mDeNwB",
-          "mega_menu_2_AGJyYm"
-        ],
-        "settings": {
-          "logo_width": 90,
-          "logo_width_mobile": 50,
-          "logo_position": "left",
-          "logo_row": "top",
-          "menu": "main-menu",
-          "menu_position": "left",
-          "menu_row": "top",
-          "icon_type": "none",
-          "button_type_size_link": "1.2rem",
-          "button_font_weight_link": "default",
-          "case": "none",
-          "show_message": true,
-          "message": "",
-          "font": "var(--font-body--family)",
-          "font_size": "1.2rem",
-          "message_position": "top",
-          "message_row": "top",
-          "show_account": true,
-          "account_type": "icon",
-          "account_row": "top",
-          "show_search": true,
-          "search_type": "frame",
-          "search_position": "right",
-          "search_row": "top",
-          "show_country": true,
-          "show_language": true,
-          "country_selector_style": true,
-          "localization_font": "body",
-          "localization_font_size": "1.2rem",
-          "localization_type": "icon",
-          "localization_position": "right",
-          "localization_row": "top",
-          "gift_cards_enabled": false,
-          "link_giftcards": "",
-          "actions_type": "icon",
-          "actions_row": "top",
-          "section_width": "full-width",
-          "enable_sticky_header": "always",
-          "divider_width": 0,
-          "divider_size": "page-width",
-          "border_width": 0,
-          "color_scheme_top": "scheme-d7f921cf-7fb5-4803-b182-cb4a9f9dec28",
-          "color_scheme_search_inline": "",
-          "color_scheme_bottom": "",
-          "color_scheme_transparent": "scheme-4",
-          "menu_mobile_color_scheme": "scheme-d7f921cf-7fb5-4803-b182-cb4a9f9dec28",
-          "highlighted_item_1": "",
-          "highlighted_item_2": "",
-          "highlighted_item_3": "",
-          "highlighted_item_color": "#d12442",
-          "new_label_1": "",
-          "new_label_2": "",
-          "new_label_3": "Exclusive Mobile Menu,Shopify OS 2.0,Layout 05 - Gallery ,Layout 05 - Gallery",
-          "new_label_color": "#ffffff",
-          "new_label_bg": "#06bfe2",
-          "sale_label_1": "",
-          "sale_label_2": "Collection Pages",
-          "sale_label_3": "",
-          "sale_label_color": "#ffffff",
-          "sale_label_bg": "#ff1a00",
-          "enable_transparent_header_home": true,
-          "home_color_scheme": "inverse",
-          "enable_transparent_header_product": false,
-          "product_color_scheme": "default",
-          "enable_transparent_header_collection": false,
-          "collection_color_scheme": "default"
-        }
-      }
-    ]
+    "presets": []
   }
 {% endschema %}

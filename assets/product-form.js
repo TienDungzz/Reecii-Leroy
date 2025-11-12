@@ -128,12 +128,14 @@ if (!customElements.get('product-form-component')) {
         const properties = document.querySelectorAll('.product-form__input [name^="properties"]')
 
         properties.forEach(property => {
-          if (property.value == null) return;
-            if (property.type == 'file') {
-              formData.append(property.name, property.files[0])
-            } else {
-              formData.append(property.name, property.value)
-            }
+          if (property.type === 'file') {
+            if (!property.files || property.files.length === 0 || !property.files[0]) return;
+            formData.append(property.name, property.files[0]);
+            return;
+          }
+
+          if (property.value == null || property.value === '') return;
+          formData.append(property.name, property.value);
         })
 
         config.body = formData;

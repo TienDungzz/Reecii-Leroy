@@ -33,14 +33,13 @@
 
 {% capture list_items %}
   {% for child_block in block.blocks %}
-    <li id="Slide-{{ child_block.id }}-{{ forloop.index }}" class="grid__item{% if show_mobile_slider or block.settings.layout_type == 'carousel' %} swiper-slide{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    <div id="Slide-{{ child_block.id }}-{{ forloop.index }}" class="grid__item{% if show_mobile_slider or block.settings.layout_type == 'carousel' %} swiper-slide{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
       {% if settings.animations_reveal_on_scroll %} style="--animation-order: {{ forloop.index }};"{% endif %}
     >
       {% render child_block %}
-    </li>
+    </div>
 
     {% unless forloop.last %}
-      <!--@list/split-->
     {% endunless %}
   {% endfor %}
 {% endcapture %}
@@ -126,16 +125,15 @@
             {% endif %}
           ">
         {%- endif -%}
-        <ul
+        <div
           id="Grid-{{ block.id }}"
           data-id="{{ block.id }}"
           class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
-          role="list"
           aria-label="{{ 'content.grid.name' | t }}"
           style="--grid-desktop-horizontal-spacing: {{ block.settings.gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.gap }}px;"
         >
           {{- list_items -}}
-        </ul>
+        </div>
         {%- if show_mobile_slider -%}
             </div>
           </swiper-component>
@@ -175,13 +173,13 @@
               --progress-top-offset: {{ block.settings.progress_top_offset }}px;
             {% endif %}
           ">
-          <ul
+          <div
             id="Slider-{{ block.id }}"
             data-id="{{ block.id }}"
             class="swiper-wrapper grid-layout-no-js list-unstyled lg:grid-layout--{{ columns_desktop }} md:grid-layout--3 grid--{{ mobile_columns }}-col-mobile"
           >
             {{ list_items }}
-          </ul>
+          </div>
 
           {%- if enable_navigation -%}
             <div class="swiper-btns-wrap small-hide">

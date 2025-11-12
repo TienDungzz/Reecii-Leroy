@@ -61,7 +61,7 @@
           {%- endif -%}
         </div>
       {%- else -%}
-        <div class="drawer__header flex justify-between items-center relative" style="--p: 1.5rem 0;">
+        <div class="drawer__header flex justify-between items-center relative" style="--p: 1.5rem 0 0 0;">
           <h2 class="drawer__heading break m-0 h5">{{ 'content.your_cart' | t }}</h2>
           <button
             class="drawer__close block t-button bor-none rounded-full cursor-pointer"
@@ -71,6 +71,10 @@
           >
             <span class="svg-wrapper"> {{- 'icon-close.svg' | inline_asset_content -}} </span>
           </button>
+        </div>
+
+        <div class="wrapper-cart-count" data-cart-text style="--p: 0 0 1.5rem 0;">
+          {{ cart.item_count }} {{ cart.item_count | pluralize: 'item', 'items' }}
         </div>
       {%- endif -%}
 

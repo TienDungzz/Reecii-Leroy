@@ -163,7 +163,7 @@
             {%- endif -%}
           </div>
           {%- if search.performed -%}
-            {%- unless section.settings.enable_filtering or show_sort -%}
+            {%- unless section.settings.enable_filtering -%}
               {%- if search.results_count > 0 -%}
                 <p role="status">
                   {{
@@ -254,7 +254,7 @@
                                       </a>
                                     </h3>
                                   </div>
-                                  <div class="card__badge absolute {{ settings.badge_position }}" style="--badge-top: {{ settings.badge_top }}px; --badge-left: {{ settings.badge_left }}px;">
+                                  <div class="card__badge absolute {{ settings.badge_position }}" style="{%- render 'badge-position-style' -%}">
                                     <span class="badge color-{{ settings.color_schemes | first }}">
                                       {{- 'content.page' | t -}}
                                     </span>
@@ -289,37 +289,42 @@
 </div>
 
 {%- style -%}
-  /* product grid */
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] {
     --product-grid-columns-desktop: repeat(1, 1fr);
     --card-grid-per-row: 1;
+  }
 
-    .card {
-      --width-block-media: 40%;
-      display: grid;
-      grid-template-columns: var(--width-block-media) 1fr;
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .card {
+    --width-block-media: 40%;
+    display: grid;
+    grid-template-columns: var(--width-block-media) 1fr;
+  }
 
-      @media screen and (max-width: 749px) {
-        --width-block-media: 11rem;
-      }
-
-      @media screen and (min-width: 750px) {
-        --width-block-media: 30%;
-      }
-
-      @media screen and (min-width: 1600px) {
-        --width-block-media: 20%;
-      }
+  @media screen and (max-width: 749px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .card {
+      --width-block-media: 11rem;
     }
+  }
 
-    .product-description__collection {
-      display: block;
+  @media screen and (min-width: 750px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .card {
+      --width-block-media: 30%;
     }
+  }
 
-    .card--block-media {
-      grid-column: 1;
-      grid-row: 1 / span calc(var(--total-blocks) - 1);
+  @media screen and (min-width: 1600px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .card {
+      --width-block-media: 20%;
     }
+  }
+
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .product-description__collection {
+    display: block;
+  }
+
+  .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='1'] .card--block-media {
+    grid-column: 1;
+    grid-row: 1 / span calc(var(--total-blocks) - 1);
   }
 
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='2'] {
@@ -328,36 +333,48 @@
 
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='3'] {
     --product-grid-columns-desktop: repeat(3, 1fr);
+  }
 
-    @media screen and (max-width: 749px) {
+  @media screen and (max-width: 749px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='3'] {
       --product-grid-columns-desktop: repeat(2, 1fr);
     }
   }
 
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='4'] {
     --product-grid-columns-desktop: repeat(4, 1fr);
+  }
 
-    @media screen and (max-width: 989px) {
+  @media screen and (max-width: 989px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='4'] {
       --product-grid-columns-desktop: repeat(3, 1fr);
     }
+  }
 
-    @media screen and (max-width: 749px) {
+  @media screen and (max-width: 749px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='4'] {
       --product-grid-columns-desktop: repeat(2, 1fr);
     }
   }
 
   .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='5'] {
     --product-grid-columns-desktop: repeat(5, 1fr);
+  }
 
-    @media screen and (max-width: 1599px) {
+  @media screen and (max-width: 1599px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='5'] {
       --product-grid-columns-desktop: repeat(4, 1fr);
     }
+  }
 
-    @media screen and (max-width: 989px) {
+  @media screen and (max-width: 989px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='5'] {
       --product-grid-columns-desktop: repeat(3, 1fr);
     }
+  }
 
-    @media screen and (max-width: 749px) {
+  @media screen and (max-width: 749px) {
+    .product-grid--{{ section.id }}:is(.product-grid--grid)[data-view='5'] {
       --product-grid-columns-desktop: repeat(2, 1fr);
     }
   }

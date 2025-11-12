@@ -66,42 +66,49 @@
               assign background_color = ''
               assign has_metaobject = false
 
-              case swatch_type
-              when 'variant_image'
+              if sbs_variant_picker
                 assign background_image = variant.image.src | image_url: width: '200x'
                 if variant.image
                   assign enable_variant_image = true
                 endif
-              when 'color'
-                assign background_image = color | handle | append: '.png'
-                if images[background_image] != blank
-                  assign background_image = background_image | file_url
-                else
-                  assign background_image = ''
-                endif
-                assign enable_variant_image = true
-              when 'metaobjects'
-                assign metaobject_color = color.swatch.color
-                assign metaobject_image = color.swatch.image
-                assign has_metaobject = false
-                if metaobject_image != blank
-                  assign background_image = metaobject_image | image_url: width: '200x'
-                  assign enable_variant_image = true
-                  assign has_metaobject = true
-                elsif metaobject_color != blank
-                  assign background_color = metaobject_color
-                  assign enable_variant_image = true
-                  assign has_metaobject = true
-                  assign background_image = ''
-                elsif variant.image
+              else
+                case swatch_type
+                when 'variant_image'
                   assign background_image = variant.image.src | image_url: width: '200x'
+                  if variant.image
+                    assign enable_variant_image = true
+                  endif
+                when 'color'
+                  assign background_image = color | handle | append: '.png'
+                  if images[background_image] != blank
+                    assign background_image = background_image | file_url
+                  else
+                    assign background_image = ''
+                  endif
                   assign enable_variant_image = true
-                else
-                  assign background_color = color | handle
-                  assign has_metaobject = true
-                  assign enable_variant_image = true
-                endif
-              endcase
+                when 'metaobjects'
+                  assign metaobject_color = color.swatch.color
+                  assign metaobject_image = color.swatch.image
+                  assign has_metaobject = false
+                  if metaobject_image != blank
+                    assign background_image = metaobject_image | image_url: width: '200x'
+                    assign enable_variant_image = true
+                    assign has_metaobject = true
+                  elsif metaobject_color != blank
+                    assign background_color = metaobject_color
+                    assign enable_variant_image = true
+                    assign has_metaobject = true
+                    assign background_image = ''
+                  elsif variant.image
+                    assign background_image = variant.image.src | image_url: width: '200x'
+                    assign enable_variant_image = true
+                  else
+                    assign background_color = color | handle
+                    assign has_metaobject = true
+                    assign enable_variant_image = true
+                  endif
+                endcase
+              endif
             -%}
 
             {%- capture class_swatch -%}

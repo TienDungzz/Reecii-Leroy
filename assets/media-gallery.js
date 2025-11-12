@@ -120,7 +120,6 @@ if (!customElements.get('media-gallery')) {
 
           thumbnailButtons.forEach((button) => {
             button.classList.remove('active', 'swiper-slide-thumb-active');
-            button.removeAttribute('aria-selected');
           });
 
           let targetThumbnail = thumbnailButtons.find((button) => {
@@ -137,7 +136,6 @@ if (!customElements.get('media-gallery')) {
 
           if (targetThumbnail) {
             targetThumbnail.classList.add('active', 'swiper-slide-thumb-active');
-            targetThumbnail.setAttribute('aria-selected', 'true');
 
             const finalSlideIndex = parseInt(targetThumbnail.getAttribute('data-index'), 10);
 
