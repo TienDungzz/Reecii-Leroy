@@ -1820,8 +1820,10 @@ details>* {
 .underlined-link:hover,
 .customer a:not(.button):hover,
 .inline-richtext a:hover {
-  color: var(--color-primary);
-  text-decoration-thickness: 0.2rem;
+  @media screen and (min-width: 1025px) {
+    color: var(--color-primary);
+    text-decoration-thickness: 0.2rem;
+  }
 }
 
 .icon-arrow {
@@ -5647,6 +5649,31 @@ summary {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 0.1em;
+  }
+
+  &.agree-condition-checkbox {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+
+    side-drawer-opener {
+      display: inline-block;
+    }
+  
+    button {
+      color: var(--color-primary);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+      text-decoration-thickness: 0.1em;
+      text-transform: none;
+    }
+  }
 }
 
 .checkbox .icon-checkmark path {
@@ -6430,64 +6457,64 @@ media-gallery.media-gallery--grid .media-gallery__grid .product-media-container 
   }
 }
 
-@media screen and (min-width: 750px) {
-  swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
-    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']),
-    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
-      display: flex;
-      align-items: stretch;
-      gap: var(--padding-2xs);
+swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
+  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']),
+  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
+    display: flex;
+    align-items: stretch;
+    gap: var(--padding-2xs);
 
-      .swiper-controls__thumbnails-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
+    .swiper-controls__thumbnails-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      height: 100%;
+
+      .swiper {
         height: 100%;
-
-        .swiper {
-          height: 100%;
-        }
       }
-    }
-
-    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
-      .swiper-main {
-        width: 100%;
-        margin-left: calc(68px + var(--padding-2xs));
-      }
-    }
-
-    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']) {
-      .swiper-controls__thumbnails-container {
-        left: auto;
-        right: 0;
-      }
-
-      .swiper-main {
-        width: 100%;
-        margin-right: calc(68px + var(--padding-2xs));
-      }
-    }
-
-    .swiper-controls__thumbnails-container[data-thumbnail-position='left'] {
-      order: -1;
-    }
-
-    [data-thumbnail-position='right'],
-    [data-thumbnail-position='left'] {
-      width: 68px;
-    }
-
-    [data-thumbnail-position='right'] {
-      justify-content: flex-end;
-    }
-
-    [data-thumbnail-position='left'] {
-      justify-content: flex-start;
     }
   }
 
+  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
+    .swiper-main {
+      width: 100%;
+      margin-left: calc(var(--thumbnail-width, 7rem) + var(--size-10));
+    }
+  }
+
+  &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']) {
+    .swiper-controls__thumbnails-container {
+      left: auto;
+      right: 0;
+    }
+
+    .swiper-main {
+      width: 100%;
+      margin-right: calc(var(--thumbnail-width, 7rem) + var(--size-10));
+    }
+  }
+
+  .swiper-controls__thumbnails-container[data-thumbnail-position='left'] {
+    order: -1;
+  }
+
+  [data-thumbnail-position='right'],
+  [data-thumbnail-position='left'] {
+    width: var(--thumbnail-width, 7rem);
+  }
+
+  [data-thumbnail-position='right'] {
+    justify-content: flex-end;
+  }
+
+  [data-thumbnail-position='left'] {
+    justify-content: flex-start;
+  }
+}
+
+@media screen and (min-width: 750px) {
   .product-media-container.constrain-height {
     --viewport-offset: var(--header-height, 100px);
     --constrained-min-height: 500px;
@@ -6508,6 +6535,22 @@ media-gallery.media-gallery--grid .media-gallery__grid .product-media-container 
 
   media-gallery:where(.media-gallery--grid) .media-gallery__grid {
     display: grid !important;
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  swiper-component:has(.swiper-controls__thumbnails-container[thumbnails]) {
+    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='left']) {
+      .swiper-main {
+        margin-left: calc(var(--thumbnail-width, 7rem) + var(--size-30));
+      }
+    }
+  
+    &:has(.swiper-controls__thumbnails-container[data-thumbnail-position='right']) {
+      .swiper-main {
+        margin-right: calc(var(--thumbnail-width, 7rem) + var(--size-30));
+      }
+    }
   }
 }
 
@@ -7028,11 +7071,6 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
   }
 }
 
-.swiper-controls__thumbnails-container {
-  padding-top: var(--padding-xl);
-  padding-bottom: var(--padding-xl);
-}
-
 .swiper-controls__thumbnails-container .swiper:not(.swiper-initialized) .swiper-wrapper {
   height: auto;
 }
@@ -7047,6 +7085,13 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
 
     img {
       border-radius: var(--media-radius);
+    }
+  }
+
+  &[data-thumbnail-direction="vertical"]:not(.swiper-initialized) {
+    .swiper-wrapper {
+      flex-direction: column;
+      gap: 0.8rem;
     }
   }
 }

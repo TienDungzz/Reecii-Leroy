@@ -101,7 +101,10 @@
         {%- endif -%}
         <div
           class="product-form__buttons spacing-style{% if block_settings.stacking %} product-form__buttons--stacked{% endif %}"
-          style="{% render 'spacing-style', settings: block_settings %}"
+          style="
+            {% render 'spacing-style', settings: block_settings %}
+            --gap: {{ block_settings.gap }}px;
+          "
         >
           {% content_for 'block',
             type: 'quantity',
@@ -133,7 +136,12 @@
       {%- endform -%}
     </product-form-component>
   {%- else -%}
-    <div class="product-form__buttons">
+    <div class="product-form__buttons spacing-style{% if block_settings.stacking %} product-form__buttons--stacked{% endif %}"
+      style="
+        {% render 'spacing-style', settings: block_settings %}
+        --gap: {{ block_settings.gap }}px;
+      "
+    >
       <button
         type="submit"
         name="add"
@@ -190,11 +198,7 @@
     display: flex;
     align-items: flex-end;
     flex-wrap: wrap;
-    gap: 1rem;
-
-    @media screen and (min-width: 750px) {
-      gap: var(--gap-sm);
-    }
+    gap: var(--gap);
   }
 
   .product-form__buttons > *:not(.quantity-selector, .product-form__quantity, .add-to-cart-button-container) {
@@ -372,6 +376,16 @@
     {
       "type": "paragraph",
       "content": "t:content.gift_card_form_description"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 10
     },
     {
       "type": "header",

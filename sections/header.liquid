@@ -367,24 +367,7 @@
     background-color: transparent;
     z-index: var(--layer-overlay);
 
-
-
-    &[transparent='not-sticky'][data-sticky-state='active'],
-    /* Only show opaque background when hovering over menu items with children (mega menu)
-       Multiple selectors for performance: each simple :has() check is faster than one complex selector with multiple conditions */
-
-    &:hover {
-      /* --header-logo-opacity: 1;
-      --header-logo-inverse-opacity: 0;
-      --header-bg-color: unset;
-      --color-foreground: inherit;
-      --color-foreground-rgb: inherit;
-      --color-background: inherit;
-      --color-background-rgb: inherit;
-      --color-border: inherit;
-      --color-border-rgb: inherit;
-      --color-primary-button-text: var(--color-foreground);
-      --color-primary-button-hover-text: var(--color-foreground); */
+    &[transparent='not-sticky'][data-sticky-state='active'] {
       --header-logo-opacity: 1;
       --header-logo-inverse-opacity: 0;
       --header-bg-color: unset;
@@ -409,6 +392,33 @@
       }
     }
 
+    @media screen and (min-width: 1025px) {
+      &:hover {
+        --header-logo-opacity: 1;
+        --header-logo-inverse-opacity: 0;
+        --header-bg-color: unset;
+        --color-foreground: inherit;
+        --color-foreground-rgb: inherit;
+        --color-background: inherit;
+        --color-background-rgb: inherit;
+        --color-border: inherit;
+        --color-border-rgb: inherit;
+
+        .header__row {
+          transition: none;
+
+          .button {
+            --animation-speed: var(--animation-speed-fast);
+          }
+        }
+
+        .details--dropdown:is(:hover) > .link.link--hover-underline .text {
+          background-position-x: left;
+          background-size: 100% 1px;
+        }
+      }
+    }
+
     .header__row {
       transition: none;
 
@@ -417,36 +427,45 @@
       }
     }
   }
-
-  :is(.header[transparent]:not([data-sticky-state='active']),
-  .header[transparent='always'][data-sticky-state='active'])
-    .header__row:not(:hover) {
-    /* while transparent, header-row ignores its color-scheme settings, pull from the header-component */
-    /* --color-foreground: inherit;
-    --color-foreground-rgb: inherit;
-    --color-border: inherit;
-    --color-border-rgb: inherit;
-    --color-primary-button-background: inherit;
-    --color-primary-button-text: inherit;
-    --color-primary-button-border: inherit;
-    --color-primary-button-hover-text: inherit; */
-    --color-foreground: inherit;
-    --color-foreground-rgb: inherit;
-    --color-border: inherit;
-    --color-border-rgb: inherit;
-    --color-primary-button-text: inherit;
-    --color-primary-button-hover-text: inherit;
-    --color-primary-button-hover-border: inherit;
-    --color-primary-button-hover-background: inherit;
-    --color-primary: inherit;
-    --color-primary-rgb: inherit;
-    --color-input-text: inherit;
-    --color-input-border: inherit;
-
-    .search--inline {
+  @media screen and (max-width: 1024px) {
+    :is(.header[transparent]:not([data-sticky-state='active']),
+    .header[transparent='always'][data-sticky-state='active']) .header__row {
+      --color-foreground: inherit;
+      --color-foreground-rgb: inherit;
+      --color-border: inherit;
+      --color-border-rgb: inherit;
+      --color-primary-button-text: inherit;
+      --color-primary: inherit;
+      --color-primary-rgb: inherit;
       --color-input-text: inherit;
       --color-input-border: inherit;
+
+      .search--inline {
+        --color-input-text: inherit;
+        --color-input-border: inherit;
+        --color-primary-button-text: inherit;
+      }
+    }
+  }
+
+  @media screen and (min-width: 1025px) {
+    :is(.header[transparent]:not([data-sticky-state='active']),
+    .header[transparent='always'][data-sticky-state='active']) .header__row:not(:hover) {
+      --color-foreground: inherit;
+      --color-foreground-rgb: inherit;
+      --color-border: inherit;
+      --color-border-rgb: inherit;
       --color-primary-button-text: inherit;
+      --color-primary: inherit;
+      --color-primary-rgb: inherit;
+      --color-input-text: inherit;
+      --color-input-border: inherit;
+
+      .search--inline {
+        --color-input-text: inherit;
+        --color-input-border: inherit;
+        --color-primary-button-text: inherit;
+      }
     }
   }
 
@@ -495,7 +514,6 @@
 
     position: relative;
     background-color: var(--header-bg-color, var(--color-background));
-    /* transition: var(--animation-speed-fast); */
 
     &:has(.header__search--inline),
     &:has(.header__search--inline .search__input.field__input:focus) {

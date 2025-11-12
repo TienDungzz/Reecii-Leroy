@@ -1557,7 +1557,7 @@ class SwiperComponent extends HTMLElement {
 
         this._thumbsSwiper = new Swiper(this._thumbnailSwiper, {
           direction: isVerticalThumbnails ? "vertical" : "horizontal",
-          spaceBetween: 16,
+          spaceBetween: isVerticalThumbnails ? 8 : 16,
           slidesPerView: slidesPerView,
           freeMode: false,
           watchSlidesProgress: true,
@@ -1638,47 +1638,47 @@ class SwiperComponent extends HTMLElement {
   }
 
   _setupThumbnailSync() {
+    const mainSwiper = this.initSwiper;
+    const thumbsSwiper = this._thumbsSwiper;
     const thumbnailButtons = this._thumbnailSwiper.querySelectorAll(".swiper-controls__thumbnail");
+  
     thumbnailButtons.forEach((button, index) => {
       if (!button._listenerAttached) {
         button.addEventListener("click", (e) => {
           e.preventDefault();
-          this.initSwiper.slideTo(index);
+          mainSwiper.slideTo(index);
         });
         button._listenerAttached = true;
       }
     });
-
-    this.initSwiper.on("slideChange", () => {
+  
+    mainSwiper.on("slideChange", () => {
+      const { activeIndex, realIndex } = mainSwiper;
+  
       thumbnailButtons.forEach((button, index) => {
-        if (index === this.initSwiper.activeIndex) {
-          button.classList.add("active");
-        } else {
-          button.classList.remove("active");
-        }
+        button.classList.toggle("active", index === activeIndex);
       });
-
-      const realIndex = this.initSwiper.realIndex;
-      let thumbsPerView = this._thumbsSwiper.params.slidesPerView;
-
-      if (thumbsPerView == "auto") {
-        thumbsPerView = this._thumbsSwiper.slides.filter((slide) =>
-          slide.classList.contains("swiper-slide-visible")
-        ).length;
+  
+      if (!thumbsSwiper || thumbsSwiper.destroyed) return;
+  
+      let thumbsPerView = thumbsSwiper.params.slidesPerView;
+      if (thumbsPerView === "auto") {
+        thumbsPerView = thumbsSwiper.slides.filter((s) =>
+          s.classList.contains("swiper-slide-visible")
+        ).length || 1;
       }
-
-      const firstVisible = this._thumbsSwiper.activeIndex;
-      const lastVisible = firstVisible + thumbsPerView - 1;
-
-      if (realIndex >= lastVisible - 1) {
-        this._thumbsSwiper.slideTo(realIndex - 2);
+  
+      const totalSlides = thumbsSwiper.slides.length;
+  
+      let targetIndex = realIndex - Math.floor(thumbsPerView / 2);
+      if (targetIndex < 0) targetIndex = 0;
+      if (targetIndex > totalSlides - thumbsPerView) {
+        targetIndex = totalSlides - thumbsPerView;
       }
-
-      if (realIndex <= firstVisible + 1 && firstVisible > 0) {
-        this._thumbsSwiper.slideTo(realIndex - 2 < 0 ? 0 : realIndex - 2);
-      }
+  
+      thumbsSwiper.slideTo(targetIndex);
     });
-
+  
     if (thumbnailButtons.length > 0) {
       thumbnailButtons[0].classList.add("active");
     }

@@ -12,6 +12,7 @@
   @param {string} [class] - Additional classes to apply to the controls
   @param {string} [thumbnail_position] - The position of the thumbnails, defaults to 'bottom'
   @param {string} [thumbnail_direction] - The direction of the thumbnails, defaults to 'horizontal'
+  @param {number} [thumbnail_width] - The width of the thumbnails, defaults to 70px
   @param {string} [video_type] - The type of video, defaults to 'inline'
   @param {boolean} [loop] - Whether the slideshow will loop, defaults to false
   @example
@@ -41,18 +42,28 @@
   {% endif %}
   data-thumbnail-position="{{ thumbnail_position }}"
   data-thumbnail-direction="{{ thumbnail_direction }}"
-  style="
-    {% render 'swiper-style',
-      columns_mobile: 4,
-      columns_tablet: 4,
-      columns_desktop: 4,
-      columns_gap: 16,
-    %}
-  "
+  {% if thumbnail_position == 'bottom' %}
+    style="
+      {% render 'swiper-style',
+        columns_mobile: 4,
+        columns_tablet: 4,
+        columns_desktop: 4,
+        columns_gap: 16,
+      %}
+      {% if thumbnail_width %}
+        --thumbnail-width: {{ thumbnail_width }}px;
+      {% endif %}
+    "
+  {% endif %}
 >
-  <div class="swiper" data-loop="{% if loop %}true{% else %}false{% endif %}">
+  <div 
+    class="swiper swiper-controls__thumbnails"
+    data-thumbnail-position="{{ thumbnail_position }}"
+    data-thumbnail-direction="{{ thumbnail_direction }}"
+    data-loop="{% if loop %}true{% else %}false{% endif %}"
+  >
     <div
-      class="swiper-wrapper swiper-controls__thumbnails grid-layout-no-js list-unstyled lg:grid-layout--4 md:grid-layout--4 grid--4-col-mobile w-full{% if class %} {{ class }}{% endif %}"
+      class="swiper-wrapper swiper-controls__thumbnails w-full{% if thumbnail_position == 'bottom' %} grid-layout-no-js list-unstyled lg:grid-layout--4 md:grid-layout--4 grid--4-col-mobile{% endif %}"
       style="
         --card-grid-per-row-desktop: 4;
         --card-grid-per-row-tablet: 4;
