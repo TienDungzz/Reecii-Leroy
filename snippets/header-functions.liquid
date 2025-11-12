@@ -94,7 +94,7 @@
   </a>
 {%- endif -%}
 
-{%- if enable_cart -%}
+{%- if enable_cart and settings.cart_type != 'none' -%}
   {%- if request.page_type != 'cart' and settings.cart_type == 'drawer' -%}
     <side-drawer-opener
       class="no-js-hidden header-actions"
@@ -178,7 +178,7 @@
         {%- endif -%}
       </a>
     </noscript>
-  {%- else -%}
+  {%- elsif settings.cart_type == 'page' -%}
     <a
       href="{{ routes.cart_url }}"
       class="

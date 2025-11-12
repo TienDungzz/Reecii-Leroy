@@ -27,6 +27,12 @@
   unless lazy_load == false
     assign loading = "lazy"
   endunless
+
+  if collection and collection.handle
+    assign href_product_url = '/collections/' | append: collection.handle | append: '/products/' | append: card_product.handle
+  else
+    assign href_product_url = card_product.url
+  endif
 -%}
 
 <card-media class="card__media block{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }}{% endif %}">
@@ -53,7 +59,7 @@
       {%- endcase -%}
     {%- endif -%}
   </div>
-  <a href="{{ card_product.url }}" class="full-unstyled-link link-wrap z-2" aria-labelledby="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}" id="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}">
+  <a href="{{ href_product_url }}" class="full-unstyled-link link-wrap z-2" aria-labelledby="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}" id="MediaStandardCardNoMediaLink-{{ section_id }}-{{ card_product.id }}">
     <span class="visually-hidden">{{ card_product.title | escape }}</span>
   </a>
 </card-media>

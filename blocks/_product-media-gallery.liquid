@@ -36,6 +36,7 @@
   assign thumbnail_position = bl_stts.thumbnail_position
   if thumbnail_position == 'left' or thumbnail_position == 'right'
     assign thumbnail_direction = 'vertical'
+    assign thumbnail_width = bl_stts.thumbnail_width
   else
     assign thumbnail_direction = 'horizontal'
   endif
@@ -219,6 +220,20 @@
       endif
     endfor
   endif
+
+  capture class_thumbnail
+    echo 'swiper-controls__thumbnails-container'
+    if bl_stts.constrain_to_viewport
+      echo ' constrain-height'
+    endif
+    if bl_stts.aspect_ratio != 'adapt'
+      echo ' media-fit-cover'
+    elsif bl_stts.constrain_to_viewport
+      echo ' media-fit-' | append: bl_stts.media_fit
+    else
+      echo ' media-fit-contain'
+    endif
+  endcapture
 %}
 
 <media-gallery
@@ -319,7 +334,7 @@
     {% capture controls %}
       {% if render_slideshow_controls %}
         {%- render 'slideshow-controls',
-          class: '',
+          class: class_thumbnail,
           style: pagination_type,
           loop: bl_stts.loop,
           thumbnails: sorted_media,
@@ -327,6 +342,7 @@
           pagination_position: bl_stts.pagination_position,
           thumbnail_position: thumbnail_position,
           thumbnail_direction: thumbnail_direction,
+          thumbnail_width: thumbnail_width,
           aspect_ratio: bl_stts.aspect_ratio,
           video_type: bl_stts.video_type
         -%}
@@ -373,6 +389,9 @@
     class: slideshow_class,
     slides: slides,
     controls: controls,
+    thumbnail_position: thumbnail_position,
+    thumbnail_direction: thumbnail_direction,
+    thumbnail_width: thumbnail_width,
     video_dialog_html: video_dialog_html,
   %}
 
@@ -779,7 +798,7 @@
 
   @media screen and (max-width: 749px) {
     media-gallery swiper-component .swiper {
-      padding-bottom: 0 !important;
+      padding-bottom: 0.5rem !important;
     }
 
     .dialog-zoomed-gallery {
@@ -1068,6 +1087,17 @@
       ],
       "default": "bottom",
       "visible_if": "{{ block.settings.media_presentation == 'carousel' and block.settings.pagination_type == 'thumbnails' }}"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_width",
+      "label": "t:settings.width",
+      "min": 70,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 70,
+      "visible_if": "{{ block.settings.thumbnail_position == 'left' or block.settings.thumbnail_position == 'right' }}"
     },
     {
       "type": "select",

@@ -131,22 +131,26 @@
 
 .card__badge {
   align-self: flex-end;
-  grid-row-start: 3;
   justify-self: flex-start;
 
   &.top {
-    align-self: flex-start;
-    grid-row-start: 1;
-    top: 0;
+    top: var(--badge-top, 0);
+    bottom: auto;
   }
 
   &.left {
-    left: 0;
+    left: var(--badge-left, 0);
+    right: auto;
   }
 
   &.right {
-    justify-self: flex-end;
-    right: 0;
+    right: var(--badge-right, 0);
+    left: auto;
+  }
+
+  &.bottom {
+    bottom: var(--badge-bottom, 0);
+    top: auto;
   }
 
   & .badge + .badge {
@@ -416,11 +420,24 @@
   height: 3rem;
   background: var(--color-background-icon);
   color: var(--color-icon);
-  transition: color var(--duration-default), background-color var(--duration-default);
+  /* transition: color var(--duration-default), background var(--duration-default); */
+  /* will-change: background, color; */
   padding: 0;
+  &:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-icon);
+    opacity: 0;
+    transition: opacity var(--duration-default) ease;
+    z-index: -1;
+  }
 
   svg {
-    fill: currentColor;
+    color: var(--color-background-icon);
+    position: relative;
+    z-index: 2;
+    /* fill: currentColor; */
   }
 }
 
@@ -449,6 +466,9 @@
   padding: 0 3rem 0 1.5rem;
   border-radius: 3.6rem;
   box-shadow: rgb(99 99 99 / var(--opacity-20)) 0px 2px 40px 0px;
+  color: var(--color-background-icon);
+  background: var(--color-icon);
+  z-index: 1;
 }
 
 .card-product__group-wrapper .card-product__group-btn .text-inner {
@@ -468,10 +488,8 @@
 }
 
 @media (hover: hover) {
-  .card-product__group-wrapper .card-product__group-btn:hover .text,
-  .card-product__group-wrapper .card-product__group-btn:hover {
+  .card-product__group-wrapper .card-product__group-btn:hover svg {
     color: var(--color-background-icon);
-    background-color: var(--color-icon);
   }
 
   .card-product__group-wrapper .card-product__group-btn:hover .text {

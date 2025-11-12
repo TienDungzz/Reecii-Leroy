@@ -145,6 +145,10 @@
 }
 {%- endcapture -%}
 
+{%- liquid
+  assign fluid_font_size = settings.font_size | replace: 'rem', '' | times: 0.5 | append: 'vw'
+-%}
+
 <script type="application/ld+json">
   {{ breadcrumb_json }}
 </script>
@@ -169,7 +173,7 @@
   class="link link--hover-underline link--text"
 {%- endcapture -%}
 
-<nav class="breadcrumbs element-margin-bottom custom-font-size" role="navigation" aria-label="{{ 'content.breadcrumb.title' | t }}" style="--font-size: {{ settings.font_size }};">
+<nav class="breadcrumbs element-margin-bottom custom-font-size" role="navigation" aria-label="{{ 'content.breadcrumb.title' | t }}" style="--font-size: {{ settings.font_size }};--button-font-size-link: var(--font-size);--fluid-font-size: {{ fluid_font_size }}">
   <ol
     class="breadcrumbs__list list-unstyled flex justify-{{ settings.horizontal_alignment }} items-center gap-style overflow-x-a hide-scrollbar"
     style="{% render 'gap-style', value: settings.gap %}"
@@ -327,7 +331,7 @@
   }
 
   .breadcrumbs__separator .svg-wrapper {
-    width: calc(var(--font-size) * 0.9);
+    width: clamp(1rem, var(--fluid-font-size), calc(var(--font-size) * 0.8));
     height: auto;
     display: block;
   }

@@ -1557,7 +1557,7 @@ class SwiperComponent extends HTMLElement {
 
         this._thumbsSwiper = new Swiper(this._thumbnailSwiper, {
           direction: isVerticalThumbnails ? "vertical" : "horizontal",
-          spaceBetween: 16,
+          spaceBetween: isVerticalThumbnails ? 8 : 16,
           slidesPerView: slidesPerView,
           freeMode: false,
           watchSlidesProgress: true,
@@ -1638,47 +1638,47 @@ class SwiperComponent extends HTMLElement {
   }
 
   _setupThumbnailSync() {
+    const mainSwiper = this.initSwiper;
+    const thumbsSwiper = this._thumbsSwiper;
     const thumbnailButtons = this._thumbnailSwiper.querySelectorAll(".swiper-controls__thumbnail");
+  
     thumbnailButtons.forEach((button, index) => {
       if (!button._listenerAttached) {
         button.addEventListener("click", (e) => {
           e.preventDefault();
-          this.initSwiper.slideTo(index);
+          mainSwiper.slideTo(index);
         });
         button._listenerAttached = true;
       }
     });
-
-    this.initSwiper.on("slideChange", () => {
+  
+    mainSwiper.on("slideChange", () => {
+      const { activeIndex, realIndex } = mainSwiper;
+  
       thumbnailButtons.forEach((button, index) => {
-        if (index === this.initSwiper.activeIndex) {
-          button.classList.add("active");
-        } else {
-          button.classList.remove("active");
-        }
+        button.classList.toggle("active", index === activeIndex);
       });
-
-      const realIndex = this.initSwiper.realIndex;
-      let thumbsPerView = this._thumbsSwiper.params.slidesPerView;
-
-      if (thumbsPerView == "auto") {
-        thumbsPerView = this._thumbsSwiper.slides.filter((slide) =>
-          slide.classList.contains("swiper-slide-visible")
-        ).length;
+  
+      if (!thumbsSwiper || thumbsSwiper.destroyed) return;
+  
+      let thumbsPerView = thumbsSwiper.params.slidesPerView;
+      if (thumbsPerView === "auto") {
+        thumbsPerView = thumbsSwiper.slides.filter((s) =>
+          s.classList.contains("swiper-slide-visible")
+        ).length || 1;
       }
-
-      const firstVisible = this._thumbsSwiper.activeIndex;
-      const lastVisible = firstVisible + thumbsPerView - 1;
-
-      if (realIndex >= lastVisible - 1) {
-        this._thumbsSwiper.slideTo(realIndex - 2);
+  
+      const totalSlides = thumbsSwiper.slides.length;
+  
+      let targetIndex = realIndex - Math.floor(thumbsPerView / 2);
+      if (targetIndex < 0) targetIndex = 0;
+      if (targetIndex > totalSlides - thumbsPerView) {
+        targetIndex = totalSlides - thumbsPerView;
       }
-
-      if (realIndex <= firstVisible + 1 && firstVisible > 0) {
-        this._thumbsSwiper.slideTo(realIndex - 2 < 0 ? 0 : realIndex - 2);
-      }
+  
+      thumbsSwiper.slideTo(targetIndex);
     });
-
+  
     if (thumbnailButtons.length > 0) {
       thumbnailButtons[0].classList.add("active");
     }
@@ -2664,10 +2664,13 @@ class ShowMoreGrid extends HTMLElement {
     );
     if (!template) return;
 
+    const collectionListEditorial = sectionContent.querySelector(".editorial-collection__grid");
+
     const allHiddenItems = Array.from(
-      template.content.querySelectorAll(".resource-list__item")
+      collectionListEditorial ? template.content.querySelectorAll(".editorial-collection__item") : template.content.querySelectorAll(".resource-list__item")
     );
-    const collectionList = sectionContent.querySelector(".resource-list");
+
+    const collectionList = collectionListEditorial ? collectionListEditorial : sectionContent.querySelector(".resource-list");
     if (!collectionList || !allHiddenItems.length) return;
 
     const nextItems = allHiddenItems.slice(
@@ -3831,6 +3834,22 @@ class MarqueeComponent extends HTMLElement {
   }
 
   connectedCallback() {
+    theme.initSectionVisible({
+      element: this,
+      callback: this.init.bind(this),
+      threshold: 400,
+    });
+  }
+
+  disconnectedCallback() {
+    if (this.isDesktop) {
+      window.removeEventListener("resize", this.#handleResize);
+      // this.removeEventListener("pointerenter", this.#slowDown);
+      this.removeEventListener("pointerleave", this.#speedUp);
+    }
+  }
+
+  init() {
     if (this.content.firstElementChild?.children.length === 0) return;
 
     this.#addRepeatedItems();
@@ -3841,14 +3860,6 @@ class MarqueeComponent extends HTMLElement {
       window.addEventListener("resize", this.#handleResize);
       // this.addEventListener("pointerenter", this.#slowDown);
       this.addEventListener("pointerleave", this.#speedUp);
-    }
-  }
-
-  disconnectedCallback() {
-    if (this.isDesktop) {
-      window.removeEventListener("resize", this.#handleResize);
-      // this.removeEventListener("pointerenter", this.#slowDown);
-      this.removeEventListener("pointerleave", this.#speedUp);
     }
   }
 

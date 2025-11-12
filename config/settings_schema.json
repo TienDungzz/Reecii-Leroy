@@ -1406,6 +1406,128 @@
       },
       {
         "type": "header",
+        "content": "t:content.countdown"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_countdown",
+        "label": "t:settings.show_countdown",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "countdown_type",
+        "label": "t:settings.type",
+        "options": [
+          {
+            "value": "all_product",
+            "label": "t:options.for_all_products"
+          },
+          {
+            "value": "different_product",
+            "label": "t:options.for_each_product"
+          },
+          {
+            "value": "collection_product",
+            "label": "t:options.for_collection"
+          }
+        ],
+        "default": "all_product",
+        "visible_if": "{{ settings.show_countdown == true }}"
+      },
+      {
+        "type": "paragraph",
+        "content": "This setting only works if a metafield is set up for each product.",
+        "visible_if": "{{ settings.show_countdown == true and settings.countdown_type == 'different_product' }}"
+      },
+      {
+        "type": "text",
+        "id": "countdown_time",
+        "label": "t:settings.countdown_time",
+        "default": "Dec 31, 2022 18:00:00",
+        "info": "Example: Dec 31, 2024 18:00:00",
+        "visible_if": "{{ settings.show_countdown == true and settings.countdown_type != 'different_product' }}"
+      },
+      {
+        "type": "collection",
+        "id": "countdown_collection",
+        "label": "t:settings.collection",
+        "info": "Only works if the countdown type is 'For collection'."
+      },
+      {
+        "type": "color",
+        "id": "countdown_text_color",
+        "label": "t:settings.color",
+        "default": "#000000",
+        "alpha": true,
+        "visible_if": "{{ settings.show_countdown == true }}"
+      },
+      {
+        "type": "color",
+        "id": "countdown_background_color",
+        "label": "t:settings.background",
+        "default": "#ffffff",
+        "alpha": true,
+        "visible_if": "{{ settings.show_countdown == true }}"
+      },
+      {
+        "type": "color_background",
+        "id": "countdown_background_gradient",
+        "label": "t:settings.background_gradient",
+        "visible_if": "{{ settings.show_countdown == true }}"
+      },
+      {
+        "type": "select",
+        "id": "countdown_border",
+        "label": "t:settings.borders",
+        "options": [
+          {
+            "value": "none",
+            "label": "t:options.none"
+          },
+          {
+            "value": "solid",
+            "label": "t:options.solid"
+          }
+        ],
+        "default": "none",
+        "visible_if": "{{ settings.show_countdown == true }}"
+      },
+      {
+        "type": "range",
+        "id": "countdown_border_width",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "unit": "px",
+        "label": "t:settings.border_width",
+        "default": 1,
+        "visible_if": "{{ settings.countdown_border != 'none' }}"
+      },
+      {
+        "type": "range",
+        "id": "countdown_border_opacity",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "label": "t:settings.border_opacity",
+        "default": 0,
+        "visible_if": "{{ settings.countdown_border != 'none' }}"
+      },
+      {
+        "type": "range",
+        "id": "countdown_border_radius",
+        "label": "t:settings.border_radius",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 0,
+        "visible_if": "{{ settings.countdown_border != 'none' }}"
+      },
+      {
+        "type": "header",
         "content": "t:settings.mobile_menu"
       },
       {
@@ -1462,7 +1584,7 @@
         "default": true
       },
       {
-        "type": "liquid",
+        "type": "text",
         "id": "dynamic_browser_title_content",
         "label": "Reminder text",
         "default": "Come back ⚡"
@@ -2054,14 +2176,6 @@
         "id": "badge_position",
         "options": [
           {
-            "value": "bottom left",
-            "label": "t:options.bottom_left"
-          },
-          {
-            "value": "bottom right",
-            "label": "t:options.bottom_right"
-          },
-          {
             "value": "top left",
             "label": "t:options.top_left"
           },
@@ -2070,8 +2184,12 @@
             "label": "t:options.top_right"
           },
           {
-            "value": "custom",
-            "label": "t:options.custom"
+            "value": "bottom left",
+            "label": "t:options.bottom_left"
+          },
+          {
+            "value": "bottom right",
+            "label": "t:options.bottom_right"
           }
         ],
         "default": "bottom left",
@@ -2085,8 +2203,19 @@
         "max": 100,
         "step": 1,
         "unit": "px",
-        "default": 0,
-        "visible_if": "{{ settings.badge_position == 'custom' }}"
+        "default": 20,
+        "visible_if": "{{ settings.badge_position == 'top left' or settings.badge_position == 'top right' }}"
+      },
+      {
+        "type": "range",
+        "id": "badge_bottom",
+        "label": "t:settings.bottom",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 20,
+        "visible_if": "{{ settings.badge_position == 'bottom left' or settings.badge_position == 'bottom right' }}"
       },
       {
         "type": "range",
@@ -2096,8 +2225,19 @@
         "max": 100,
         "step": 1,
         "unit": "px",
-        "default": 0,
-        "visible_if": "{{ settings.badge_position == 'custom' }}"
+        "default": 20,
+        "visible_if": "{{ settings.badge_position == 'top left' or settings.badge_position == 'bottom left' }}"
+      },
+      {
+        "type": "range",
+        "id": "badge_right",
+        "label": "t:settings.right",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "px",
+        "default": 20,
+        "visible_if": "{{ settings.badge_position == 'top right' or settings.badge_position == 'bottom right' }}"
       },
       {
         "type": "range",
@@ -2238,6 +2378,10 @@
         "type": "select",
         "id": "cart_type",
         "options": [
+          {
+            "value": "none",
+            "label": "t:options.none"
+          },
           {
             "value": "drawer",
             "label": "t:options.drawer"
@@ -2578,121 +2722,6 @@
         "id": "card_color_scheme",
         "label": "t:settings.color_scheme",
         "default": "scheme-2"
-      },
-      {
-        "type": "header",
-        "content": "t:content.countdown"
-      },
-      {
-        "type": "checkbox",
-        "id": "show_countdown",
-        "label": "t:settings.show_countdown",
-        "default": false
-      },
-      {
-        "type": "select",
-        "id": "countdown_type",
-        "label": "t:settings.type",
-        "options": [
-          {
-            "value": "all_product",
-            "label": "t:options.for_all_products"
-          },
-          {
-            "value": "different_product",
-            "label": "t:options.for_each_product"
-          },
-          {
-            "value": "collection_product",
-            "label": "t:options.for_collection"
-          }
-        ],
-        "default": "all_product",
-        "visible_if": "{{ settings.show_countdown == true }}"
-      },
-      {
-        "type": "text",
-        "id": "countdown_time",
-        "label": "t:settings.countdown_time",
-        "default": "Dec 31, 2022 18:00:00",
-        "info": "Example: Dec 31, 2024 18:00:00",
-        "visible_if": "{{ settings.show_countdown == true }}"
-      },
-      {
-        "type": "collection",
-        "id": "countdown_collection",
-        "label": "t:settings.collection"
-      },
-      {
-        "type": "color",
-        "id": "countdown_text_color",
-        "label": "t:settings.color",
-        "default": "#000000",
-        "alpha": true,
-        "visible_if": "{{ settings.show_countdown == true }}"
-      },
-      {
-        "type": "color",
-        "id": "countdown_background_color",
-        "label": "t:settings.background",
-        "default": "#ffffff",
-        "alpha": true,
-        "visible_if": "{{ settings.show_countdown == true }}"
-      },
-      {
-        "type": "color_background",
-        "id": "countdown_background_gradient",
-        "label": "t:settings.background_gradient",
-        "visible_if": "{{ settings.show_countdown == true }}"
-      },
-      {
-        "type": "select",
-        "id": "countdown_border",
-        "label": "t:settings.borders",
-        "options": [
-          {
-            "value": "none",
-            "label": "t:options.none"
-          },
-          {
-            "value": "solid",
-            "label": "t:options.solid"
-          }
-        ],
-        "default": "none"
-      },
-      {
-        "type": "range",
-        "id": "countdown_border_width",
-        "min": 0,
-        "max": 10,
-        "step": 1,
-        "unit": "px",
-        "label": "t:settings.border_width",
-        "default": 1,
-        "visible_if": "{{ settings.countdown_border != 'none' }}"
-      },
-      {
-        "type": "range",
-        "id": "countdown_border_opacity",
-        "min": 0,
-        "max": 100,
-        "step": 1,
-        "unit": "%",
-        "label": "t:settings.border_opacity",
-        "default": 0,
-        "visible_if": "{{ settings.countdown_border != 'none' }}"
-      },
-      {
-        "type": "range",
-        "id": "countdown_border_radius",
-        "label": "t:settings.border_radius",
-        "min": 0,
-        "max": 100,
-        "step": 1,
-        "unit": "px",
-        "default": 0,
-        "visible_if": "{{ settings.countdown_border != 'none' }}"
       },
       {
         "type": "header",
