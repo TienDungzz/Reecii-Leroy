@@ -77,17 +77,25 @@ class SideDrawer extends HTMLElement {
       dir = mobileDir;
     }
 
+    let transform = ['translateX(0)', 'translateX(0)'];
+    let duration = 0.3;
+    if(dir === "left") {
+      transform = ['translateX(-100%)', 'translateX(0)'];
+    } else if(dir === "right") {
+       transform = ['translateX(100%)', 'translateX(0)'];
+    } else if(dir === "center") {
+       transform = ['translateY(55%)', 'translateY(0)'];
+       duration = 0.6;
+    }
+
     await Motion.timeline([
       [
         contentElement,
         {
           opacity: [0, 1],
-          transform:
-            dir === "left"
-              ? ["translateX(-100%)", "translateX(0)"]
-              : ["translateX(100%)", "translateX(0)"],
+          transform: transform,
         },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1], at: "-0.05" },
+        { duration: duration, easing: theme.config.easing, at: "-0.05" },
       ]
     ]).finished;
   }
@@ -107,11 +115,19 @@ class SideDrawer extends HTMLElement {
       document.querySelector('.header__icon--menu button').classList.remove('active');
     }
 
-    console.log(`%c🔍 Log theme.config.mqlSmall:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", theme.config.mqlSmall);
-
 
     if(theme.config.mqlSmall && mobileDir) {
       dir = mobileDir;
+    }
+
+    let transform = ['translateX(0)', 'translateX(0)'];
+    let duration = 0.3;
+    if(dir === "left") {
+      transform = ["translateX(0)", "translateX(-100%)"];
+    } else if(dir === "right") {
+       transform = ["translateX(0)", "translateX(100%)"];
+    } else if(dir === "center") {
+       transform = ["translateY(0)", "translateY(55%)"];
     }
 
     await Motion.timeline ([
@@ -120,11 +136,9 @@ class SideDrawer extends HTMLElement {
         {
           opacity: [1, 0],
           transform:
-            dir === "left"
-              ? ["translateX(0)", "translateX(-100%)"]
-              : ["translateX(0)", "translateX(100%)"],
+            transform,
         },
-        { duration: 0.3, easing: [0.61, 0.22, 0.23, 1] },
+        { duration: duration, easing: theme.config.easing },
       ]
     ]).finished;
 

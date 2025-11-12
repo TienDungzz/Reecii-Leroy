@@ -3831,6 +3831,22 @@ class MarqueeComponent extends HTMLElement {
   }
 
   connectedCallback() {
+    theme.initSectionVisible({
+      element: this,
+      callback: this.init.bind(this),
+      threshold: 400,
+    });
+  }
+
+  disconnectedCallback() {
+    if (this.isDesktop) {
+      window.removeEventListener("resize", this.#handleResize);
+      // this.removeEventListener("pointerenter", this.#slowDown);
+      this.removeEventListener("pointerleave", this.#speedUp);
+    }
+  }
+
+  init() {
     if (this.content.firstElementChild?.children.length === 0) return;
 
     this.#addRepeatedItems();
@@ -3841,14 +3857,6 @@ class MarqueeComponent extends HTMLElement {
       window.addEventListener("resize", this.#handleResize);
       // this.addEventListener("pointerenter", this.#slowDown);
       this.addEventListener("pointerleave", this.#speedUp);
-    }
-  }
-
-  disconnectedCallback() {
-    if (this.isDesktop) {
-      window.removeEventListener("resize", this.#handleResize);
-      // this.removeEventListener("pointerenter", this.#slowDown);
-      this.removeEventListener("pointerleave", this.#speedUp);
     }
   }
 
