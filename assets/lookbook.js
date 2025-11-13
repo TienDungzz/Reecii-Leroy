@@ -21,10 +21,18 @@ function eventLoad() {
 eventLoad();
 
 function handleViewLookbook() {
-    const lookbookPopup = document.querySelector('.lookbook-section-list.style-popup');
-    const lookbookOnImage = document.querySelector('.lookbook-section-list.style-on-image');
-    if(lookbookPopup) lookbookViewPopup();
-    if(lookbookOnImage) lookbookViewOnImage();
+    const lookbookPopup = document.querySelector('.lookbook-section-list.style-popup') || document.querySelector('.lookbook-wrapper.style-popup');
+    const lookbookOnImage = document.querySelector('.lookbook-section-list.style-on-image') || document.querySelector('.lookbook-wrapper.style-on-image');
+
+    this.isDesktop = window.innerWidth > 1024;
+
+    console.log('lookbookPopup', lookbookPopup)
+
+    if(lookbookOnImage && this.isDesktop) {
+        lookbookViewOnImage(lookbookOnImage);
+    } else if (lookbookPopup) {
+        lookbookViewPopup();
+    }
 }
 
 function lookbookViewPopup() {
@@ -215,69 +223,46 @@ function lookbookViewPopup() {
     });
 }
 
-function lookbookViewOnImage() {
-    const popupTemplate = `
-        <div class="lookBook__imgPopup">
-            <a href="#" class="close lookbook-close">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </a>
-            <div class="lookBook__imgPopup-wrapper"></div>
-        </div>
-    `;
+function lookbookViewOnImage(lookbookWrapper) {
+    const widthWrapper = lookbookWrapper.clientWidth;
+    const heightWrapper = lookbookWrapper.clientHeight;
+    const lookBookItems = lookbookWrapper.querySelectorAll('.lookbook-dot');
 
-    const lookBookItems = document.querySelectorAll('.lookbook-section-list.style-on-image .lookbook-item');
+    lookBookItems.forEach((dot, index) => {
+        const topPercent = parseFloat(dot.style.getPropertyValue('--dot-position-top'));
+        const leftPercent = parseFloat(dot.style.getPropertyValue('--dot-position-left'));
+        const topPx = (topPercent / 100) * heightWrapper;
+        const leftPx = (leftPercent / 100) * widthWrapper;
+        const dotWidth = 64;
+        const dotHeight = 64;
+        let contentLeft = 0, contentTop = 0;
 
-    lookBookItems.forEach((item) => {
-        if (!item.querySelector('.lookBook__imgPopup')) {
-            item.insertAdjacentHTML('beforeend', popupTemplate);
+        const content = dot.querySelector('.lookbook-dot__content');
+
+        if (!content) return;
+        const contentRect = content.getBoundingClientRect();
+        const contentWidth = contentRect.width;
+        const contentHeight = contentRect.height;
+
+        const overflowRight = leftPx + dotWidth + contentWidth > widthWrapper;
+        const overflowBottom = topPx + dotHeight + contentHeight > heightWrapper;
+        const overflowLeft = leftPx - contentWidth < 0;
+        const overflowTop = topPx - contentHeight < 0;
+
+        if (overflowLeft && overflowRight) {
+            contentLeft = -((contentWidth - 32) / 2)
+        } else if (overflowRight) {
+            contentLeft = -(contentWidth + 16)
+        } else if (overflowLeft) {
+            contentLeft = dotWidth
         }
 
-        const button = item.querySelector('.lookBook__btnShowProducts');
-        const showText = button?.querySelector('.show_products');
-        const hideText = button?.querySelector('.hide_products');
-        const popupEl = item.querySelector('.lookBook__imgPopup');
-        const wrapper = popupEl.querySelector('.lookBook__imgPopup-wrapper');
-        const closeBtn = popupEl.querySelector('.close');
-
-        function getCards() {
-            return Array.from(item.querySelectorAll('.product-card-lookbook'))
-                .filter((el) => !el.closest('.lookBook__imgPopup'))
-                .map((el) => el.cloneNode(true));
+        if (overflowBottom) {
+            contentTop = -(contentHeight - (heightWrapper - topPx))
         }
 
-        button?.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const isOpen = button.classList.contains('is-open');
-
-            if (isOpen) {
-                button.classList.remove('is-open');
-                showText.classList.remove('hidden');
-                hideText.classList.add('hidden');
-                popupEl.classList.remove('is-open');
-                wrapper.innerHTML = '';
-            } else {
-                button.classList.add('is-open');
-                showText.classList.add('hidden');
-                hideText.classList.remove('hidden');
-                wrapper.innerHTML = '';
-                getCards().forEach((card) => wrapper.appendChild(card));
-                popupEl.classList.add('is-open');
-            }
-        });
-
-        closeBtn?.addEventListener('click', (e) => {
-            e.preventDefault();
-            popupEl.classList.remove('is-open');
-            button.classList.remove('is-open');
-            showText.classList.remove('hidden');
-            hideText.classList.add('hidden');
-            wrapper.innerHTML = '';
-        });
+        content.style.left = contentLeft + 'px';
+        content.style.top = contentTop + 'px';
     });
 }
 
@@ -428,6 +413,10 @@ function initializeLookbook() {
             this.icon = this.querySelector('[data-product-lookbook]');
             this.isDesktop = window.innerWidth > 1024;
             this.handleClick = this.handleClick.bind(this);
+            
+            this.content.addEventListener('click', function(e) {
+                e.stopPropagation();
+            })
         }
 
         connectedCallback() {
@@ -444,8 +433,8 @@ function initializeLookbook() {
 
             const allDots = document.querySelectorAll('lookbook-dot');
             const alreadyActive = this.classList.contains('is-active');
-            const isShowProductsDot = this.classList.contains('lookbook-dot--showProducts');
             const isAllItemsLayout = this.closest('.lookbook-section-list.lookbook-all-items-layout');
+            const lookbookType = this.closest('.lookbook-wrapper.style-on-image')
 
             allDots.forEach(dot => {
                 if (!alreadyActive) {
@@ -454,13 +443,15 @@ function initializeLookbook() {
                 }
             });
 
-            if (!alreadyActive) {
-                this.classList.add('is-active');
-                this.content?.classList.add('is-open');
-            }
-
-            // class lookbook-dot--showProducts
-            if (isShowProductsDot) {
+            if (lookbookType && this.isDesktop) {
+                if (!alreadyActive) {
+                    this.classList.add('is-active');
+                    this.content?.classList.add('is-open');
+                } else {
+                    this.classList.remove('is-active');
+                    this.content?.classList.remove('is-open');
+                }
+            } else if ((lookbookType && !this.isDesktop) || !lookbookType) {
                 const productInfoEl = this.querySelector('[data-json-product]');
                 if (!productInfoEl) return;
 
@@ -512,17 +503,18 @@ function initializeLookbook() {
                 });
             }
 
-            // class lookBook__btnShowProducts
-            else if (!this.isDesktop) {
-                const lookbookItem = this.closest('.lookbook-item');
-                const btnShow = lookbookItem?.querySelector('.lookBook__btnShowProducts');
-                btnShow?.click();
 
-                const allDotsArr = Array.from(allDots);
-                const index = allDotsArr.indexOf(this);
-                const swiperEl = document.querySelector('.lookbook-popup .swiper');
-                if (swiperEl?.swiper) swiperEl.swiper.slideTo(index, 600);
-            }
+            // class lookBook__btnShowProducts
+            // else if (!this.isDesktop) {
+            //     const lookbookItem = this.closest('.lookbook-item');
+            //     const btnShow = lookbookItem?.querySelector('.lookBook__btnShowProducts');
+            //     btnShow?.click();
+
+            //     const allDotsArr = Array.from(allDots);
+            //     const index = allDotsArr.indexOf(this);
+            //     const swiperEl = document.querySelector('.lookbook-popup .swiper');
+            //     if (swiperEl?.swiper) swiperEl.swiper.slideTo(index, 600);
+            // }
         }
     }
     customElements.define('lookbook-dot', LookbookDot);

@@ -37,7 +37,7 @@
   endif
 -%}
 
-<div class="option-{{ option }}" data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{card_product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'>
+<div class="option-wrapper" data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{card_product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'>
   <div class="card--block product-card-lookbook card-wrapper product-card-wrapper color-{{ block.settings.color_scheme }}">
     {% if show_product_image %}
       <a href="{{ card_product.url }}" class="product-image">
@@ -50,16 +50,19 @@
     {% endif %}
     <div class="product-information">
       {% if card_product != empty %}
+        {% if show_product_price and card_product.price%}
+          <div class="product-price">
+            {% render 'price',
+              product: card_product,
+              price_class: ''
+            %}
+          </div>
+        {% endif %}
+
         {% if show_product_title and card_product.title %}
           <a href="{{ card_product.url  }}" class="product-title">
               {{ card_product.title }}
           </a>
-        {% endif %}
-    
-        {% if show_product_price and card_product.price%}
-          <div class="product-price">
-            {{ card_product.price | money }}
-          </div>
         {% endif %}
     
         {% if show_product_variant and card_product.options_with_values.size > 1 and isColor %}
