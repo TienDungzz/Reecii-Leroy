@@ -24,7 +24,7 @@
     class="card--block-button relative z-2 w-full size-style"
     style="
       {% if quick_add_type_icon %}
-      --pl: 0; --pr: 0;--md-pl: 1rem; --md-pr: 1rem;--lg-pl: 1.6rem; --lg-pr: 1.6rem;
+      --pl: 0; --pr: 0;--md-pl: 0rem; --md-pr: 0rem;--lg-pl: 0rem; --lg-pr: 0rem;
       {% else %}
         --p: {{ padding_block }} {{ padding_inline }};
         {% if  block.settings.style_class != 'link' %}
@@ -139,25 +139,13 @@
                     {{ 'products.product.sold_out' | t }}
                   </span>
                 {%- else -%}
-                  <span class="text-in-mb md:hidden">
+                  <span class="text-in-mb hidden">
                     {{ 'products.product.choose_options' | t }}
                   </span>
                   <span class="{{ class_text }}">
                     <span class="{{ class_text_inner }}">{{ 'products.product.choose_options' | t }}</span>
                   </span>
-                  <svg
-                    class="icon-cart"
-                    aria-hidden="true"
-                    focusable="false"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 20 22"
-                    stroke="currentColor"
-                    fill="none"
-                  >
-                    {%- render 'icon', icon: 'cart', class: 'max-sm:hidden' -%}
-                  </svg>
+                  {{ 'icon-cart.svg' | inline_asset_content }}
                 {%- endif -%}
 
                 {%- render 'loading-spinner' -%}
