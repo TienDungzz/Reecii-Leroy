@@ -87,7 +87,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
         --input-border-width: {{ block.settings.input_border_width }}px;
         --input-border-radius: {{ block.settings.input_border_radius }}px;
         {% if block.settings.integrated_button %}
-          --padding-vertical: 1.6rem;
+          --padding-vertical: 1.4rem;
           --padding-horizontal: 1.2rem;
         {% endif %}
         {% render 'border-override', settings: block.settings %}
@@ -145,6 +145,7 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
             --icon-size-mobile: {{ block.settings.icon_size_mobile }}px;
           {%- if block.settings.integrated_button -%}
             --size-style-width: fit-content;
+            --size-style-width-tablet: fit-content;
           {%- else -%}
             --size-style-width: fill-content;
             --size-style-width-tablet: fill-content;
@@ -288,13 +289,15 @@ email-signup__button--size-{{ block.settings.submit_width }} {{ block.settings.b
 
   .email-signup__input,
   .email-signup__button--text {
-    padding: var(--padding-lg) var(--padding-3xl);
+    padding: 1.4rem 1.6rem;
   }
 
   .email-signup__input-groups:has(.email-signup__button--integrated) {
     & .email-signup__input {
-      padding-inline: 1.8rem 5.5rem;
       padding-inline: var(--padding-vertical) var(--padding-horizontal);
+      @media screen and (max-width: 768px) {
+        padding: var(--padding-horizontal);
+      }
     }
 
     &:has(.email-signup__button--text) .email-signup__input {
