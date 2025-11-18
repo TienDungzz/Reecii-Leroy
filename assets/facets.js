@@ -376,15 +376,15 @@ class FacetFiltersForm extends HTMLElement {
   }
 
   onInputChange(event) {
+    this.debouncedOnSubmit(event);
     // Check if the input is a price range input
-    const isPriceRangeInput =
-      event.target.classList.contains("filter__price_change") ||
-      event.target.classList.contains("filter__price_number");
+    // const isPriceRangeInput =
+    //   event.target.classList.contains("filter__price_change") ||
+    //   event.target.classList.contains("filter__price_number");
 
     // Only auto-submit if it's not a price range input
-    if (!isPriceRangeInput) {
-      this.debouncedOnSubmit(event);
-    }
+    // if (!isPriceRangeInput) {
+    // }
   }
 
   onPriceRangeApply(event) {
