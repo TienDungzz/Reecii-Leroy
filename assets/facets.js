@@ -7,14 +7,14 @@ class FacetFiltersForm extends HTMLElement {
       this.onSubmitHandler(event);
     }, 800);
 
-    const facetForm = this.querySelector('form');
-    facetForm.addEventListener('input', this.onInputChange.bind(this));
+    const facetForm = this.querySelector("form");
+    facetForm.addEventListener("input", this.onInputChange.bind(this));
 
-    const facetWrapper = this.querySelector('#FacetsWrapperDesktop');
-    if (facetWrapper) facetWrapper.addEventListener('keyup', onKeyUpEscape);
+    const facetWrapper = this.querySelector("#FacetsWrapperDesktop");
+    if (facetWrapper) facetWrapper.addEventListener("keyup", onKeyUpEscape);
 
     // Add event listener for price range apply button
-    this.addEventListener('click', this.onPriceRangeApply.bind(this));
+    this.addEventListener("click", this.onPriceRangeApply.bind(this));
 
     // Add event listener for drawer overlay click to close drawer
     this.setupDrawerOverlayClose();
@@ -27,30 +27,30 @@ class FacetFiltersForm extends HTMLElement {
       FacetFiltersForm.renderPage(searchParams, null, false);
     };
     FacetFiltersForm.renderProductPerPage();
-    window.addEventListener('popstate', onHistoryChange);
+    window.addEventListener("popstate", onHistoryChange);
   }
 
   static toggleActiveFacets(disable = true) {
-    document.querySelectorAll('.js-facet-remove').forEach((element) => {
-      element.classList.toggle('disabled', disable);
+    document.querySelectorAll(".js-facet-remove").forEach((element) => {
+      element.classList.toggle("disabled", disable);
     });
   }
 
   static renderPage(searchParams, event, updateURLHash = true) {
     FacetFiltersForm.searchParamsPrev = searchParams;
     const sections = FacetFiltersForm.getSections();
-    const countContainer = document.getElementById('ProductCount');
-    const countContainerMobile = document.getElementById('ProductCountMobile');
+    const countContainer = document.getElementById("ProductCount");
+    const countContainerMobile = document.getElementById("ProductCountMobile");
     const loadingSpinners = document.querySelectorAll(
-      '.product-count .loading__spinner, .product-grid-container .loading__spinner'
+      ".product-count .loading__spinner, .product-grid-container .loading__spinner",
     );
-    loadingSpinners.forEach((spinner) => spinner.classList.remove('hidden'));
-    document.getElementById('ProductGridContainer').querySelector('.collection').classList.add('loading');
+    loadingSpinners.forEach((spinner) => spinner.classList.remove("hidden"));
+    document.getElementById("ProductGridContainer").querySelector(".collection").classList.add("loading");
     if (countContainer) {
-      countContainer.classList.add('loading');
+      countContainer.classList.add("loading");
     }
     if (countContainerMobile) {
-      countContainerMobile.classList.add('loading');
+      countContainerMobile.classList.add("loading");
     }
 
     sections.forEach((section) => {
@@ -76,7 +76,7 @@ class FacetFiltersForm extends HTMLElement {
         FacetFiltersForm.renderProductCount(html);
         FacetFiltersForm.renderProductPerPage();
         FacetFiltersForm.clickGridView(html);
-        if (typeof initializeScrollAnimationTrigger === 'function') initializeScrollAnimationTrigger(html.innerHTML);
+        if (typeof initializeScrollAnimationTrigger === "function") initializeScrollAnimationTrigger(html.innerHTML);
       });
   }
 
@@ -87,102 +87,99 @@ class FacetFiltersForm extends HTMLElement {
     FacetFiltersForm.renderProductCount(html);
     FacetFiltersForm.renderProductPerPage();
     FacetFiltersForm.clickGridView(html);
-    if (typeof initializeScrollAnimationTrigger === 'function') initializeScrollAnimationTrigger(html.innerHTML);
+    if (typeof initializeScrollAnimationTrigger === "function") initializeScrollAnimationTrigger(html.innerHTML);
   }
 
   static renderProductGridContainer(html) {
-    document.getElementById('ProductGridContainer').innerHTML = new DOMParser()
-      .parseFromString(html, 'text/html')
-      .getElementById('ProductGridContainer').innerHTML;
+    document.getElementById("ProductGridContainer").innerHTML = new DOMParser()
+      .parseFromString(html, "text/html")
+      .getElementById("ProductGridContainer").innerHTML;
 
     document
-      .getElementById('ProductGridContainer')
-      .querySelectorAll('.scroll-trigger')
+      .getElementById("ProductGridContainer")
+      .querySelectorAll(".scroll-trigger")
       .forEach((element) => {
-        element.classList.add('scroll-trigger--cancel');
+        element.classList.add("scroll-trigger--cancel");
       });
 
     // Rebind 'show more swatches' buttons after grid re-render
-    if (typeof initMoreSwatchButtons === 'function') {
-      const container = document.getElementById('ProductGridContainer');
+    if (typeof initMoreSwatchButtons === "function") {
+      const container = document.getElementById("ProductGridContainer");
       initMoreSwatchButtons(container || document);
     }
   }
 
-  static clickGridView (event) {
-    document.querySelectorAll('.button--grid-view').forEach((button) => {
-      button.addEventListener('click', this.changeLayoutGrid.bind(this));
+  static clickGridView(event) {
+    document.querySelectorAll(".button--grid-view").forEach((button) => {
+      button.addEventListener("click", this.changeLayoutGrid.bind(this));
     });
   }
 
-  static changeLayoutGrid (event) {
+  static changeLayoutGrid(event) {
     const gridView = event.currentTarget.dataset.grid;
-    document.querySelectorAll('.button--grid-view').forEach((button) => {
-      button.classList.add('cursor-pointer');
-      button.classList.remove('active');
+    document.querySelectorAll(".button--grid-view").forEach((button) => {
+      button.classList.add("cursor-pointer");
+      button.classList.remove("active");
     });
 
-    event.currentTarget.classList.remove('cursor-pointer');
-    event.currentTarget.classList.add('active');
-    document.querySelector('.product-grid-container .product-grid').setAttribute('data-view', gridView);
+    event.currentTarget.classList.remove("cursor-pointer");
+    event.currentTarget.classList.add("active");
+    document.querySelector(".product-grid-container .product-grid").setAttribute("data-view", gridView);
   }
 
   static renderProductPerPage() {
-    const productGrid = document.querySelector('.product-grid-container .product-grid');
+    const productGrid = document.querySelector(".product-grid-container .product-grid");
 
-    document.querySelectorAll('input[name="per_page"]').forEach(function(input) {
-      input.addEventListener('change', function() {
-        input.closest('.details__list').querySelector('.selected').classList.remove('selected', 'pointer-events-none');
-        input.closest('.facet-filters__sort_item').classList.add('selected', 'pointer-events-none');
-        input.closest('details').querySelector('.label-text').innerHTML = this.value;
+    document.querySelectorAll('input[name="per_page"]').forEach(function (input) {
+      input.addEventListener("change", function () {
+        input.closest(".details__list").querySelector(".selected").classList.remove("selected", "pointer-events-none");
+        input.closest(".facet-filters__sort_item").classList.add("selected", "pointer-events-none");
+        input.closest("details").querySelector(".label-text").innerHTML = this.value;
         var data = new URLSearchParams();
-        data.append('attributes[pagination]', this.value);
+        data.append("attributes[pagination]", this.value);
 
-        fetch('/cart.js', {
-          method: 'POST',
+        fetch("/cart.js", {
+          method: "POST",
           body: data,
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        })
-        .then((response) => response.text());
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }).then((response) => response.text());
       });
     });
 
     if (productGrid) {
-      const gridViewButton = document.querySelector('.button--grid-view.active');
+      const gridViewButton = document.querySelector(".button--grid-view.active");
 
       if (gridViewButton) {
-        productGrid.setAttribute('data-view', gridViewButton.dataset.grid);
+        productGrid.setAttribute("data-view", gridViewButton.dataset.grid);
       }
     }
   }
 
   static renderProductCount(html) {
-    const count = new DOMParser().parseFromString(html, 'text/html').getElementById('ProductCount').innerHTML;
-    const container = document.getElementById('ProductCount');
-    const containerMobile = document.getElementById('ProductCountMobile');
+    const count = new DOMParser().parseFromString(html, "text/html").getElementById("ProductCount").innerHTML;
+    const container = document.getElementById("ProductCount");
+    const containerMobile = document.getElementById("ProductCountMobile");
     container.innerHTML = count;
-    container.classList.remove('loading');
+    container.classList.remove("loading");
 
-    if(containerMobile) {
+    if (containerMobile) {
       containerMobile.innerHTML = count;
-      containerMobile.classList.remove('loading');
+      containerMobile.classList.remove("loading");
     }
 
-    const loadingSpinners = document.querySelectorAll(
-      '.product-count .loading__spinner'
-    );
-    loadingSpinners.forEach((spinner) => spinner.classList.add('hidden'));
+    const loadingSpinners = document.querySelectorAll(".product-count .loading__spinner");
+    loadingSpinners.forEach((spinner) => spinner.classList.add("hidden"));
   }
 
   static renderFilters(html, event) {
-    const parsedHTML = new DOMParser().parseFromString(html, 'text/html');
+    const parsedHTML = new DOMParser().parseFromString(html, "text/html");
     const facetDetailsElementsFromFetch = parsedHTML.querySelectorAll(
-      '#FacetFiltersForm .js-filter, #FacetFiltersFormMobile .js-filter, #FacetFiltersPillsForm .js-filter'
+      "#FacetFiltersForm .js-filter, #FacetFiltersFormMobile .js-filter, #FacetFiltersPillsForm .js-filter",
     );
     const facetDetailsElementsFromDom = document.querySelectorAll(
-      '#FacetFiltersForm .js-filter, #FacetFiltersFormMobile .js-filter, #FacetFiltersPillsForm .js-filter'
+      "#FacetFiltersForm .js-filter, #FacetFiltersFormMobile .js-filter, #FacetFiltersPillsForm .js-filter",
     );
 
     // Remove facets that are no longer returned from the server
@@ -193,7 +190,7 @@ class FacetFiltersForm extends HTMLElement {
     });
 
     const matchesId = (element) => {
-      const jsFilter = event ? event.target.closest('.js-filter') : undefined;
+      const jsFilter = event ? event.target.closest(".js-filter") : undefined;
       return jsFilter ? element.id === jsFilter.id : false;
     };
 
@@ -225,19 +222,19 @@ class FacetFiltersForm extends HTMLElement {
     FacetFiltersForm.renderAdditionalElements(parsedHTML);
 
     if (countsToRender) {
-      const closestJSFilterID = event.target.closest('.js-filter').id;
+      const closestJSFilterID = event.target.closest(".js-filter").id;
 
       if (closestJSFilterID) {
-        FacetFiltersForm.renderCounts(countsToRender, event.target.closest('.js-filter'));
+        FacetFiltersForm.renderCounts(countsToRender, event.target.closest(".js-filter"));
         FacetFiltersForm.renderMobileCounts(countsToRender, document.getElementById(closestJSFilterID));
 
         const newFacetDetailsElement = document.getElementById(closestJSFilterID);
-        const newElementSelector = newFacetDetailsElement.classList.contains('mobile-facets__details')
+        const newElementSelector = newFacetDetailsElement.classList.contains("mobile-facets__details")
           ? `.mobile-facets__close-button`
           : `.facets__summary`;
         const newElementToActivate = newFacetDetailsElement.querySelector(newElementSelector);
 
-        const isTextInput = event.target.getAttribute('type') === 'text';
+        const isTextInput = event.target.getAttribute("type") === "text";
 
         if (newElementToActivate && !isTextInput) newElementToActivate.focus();
       }
@@ -245,7 +242,7 @@ class FacetFiltersForm extends HTMLElement {
   }
 
   static renderActiveFacets(html) {
-    const activeFacetElementSelectors = ['.active-facets-mobile', '#FacetsWrapperDesktop', '.active-facets-desktop'];
+    const activeFacetElementSelectors = [".active-facets-mobile", "#FacetsWrapperDesktop", ".active-facets-desktop"];
 
     activeFacetElementSelectors.forEach((selector) => {
       const activeFacetsElement = html.querySelector(selector);
@@ -257,45 +254,45 @@ class FacetFiltersForm extends HTMLElement {
   }
 
   static renderAdditionalElements(html) {
-    const mobileElementSelectors = ['.mobile-facets__open', '.mobile-facets__count', '.sorting'];
+    const mobileElementSelectors = [".mobile-facets__open", ".mobile-facets__count", ".sorting"];
 
     mobileElementSelectors.forEach((selector) => {
       if (!html.querySelector(selector)) return;
       document.querySelector(selector).innerHTML = html.querySelector(selector).innerHTML;
     });
 
-    document.getElementById('FacetFiltersFormMobile').closest('menu-drawer').bindEvents();
+    document.getElementById("FacetFiltersFormMobile").closest("menu-drawer").bindEvents();
 
-    const facetFiltersForm = document.querySelector('facet-filters-form');
+    const facetFiltersForm = document.querySelector("facet-filters-form");
     if (facetFiltersForm) {
       facetFiltersForm.setupDrawerOverlayClose();
     }
   }
 
   static renderCounts(source, target) {
-    const targetSummary = target.querySelector('.facets__summary');
-    const sourceSummary = source.querySelector('.facets__summary');
+    const targetSummary = target.querySelector(".facets__summary");
+    const sourceSummary = source.querySelector(".facets__summary");
 
     if (sourceSummary && targetSummary) {
       targetSummary.outerHTML = sourceSummary.outerHTML;
     }
 
-    const targetHeaderElement = target.querySelector('.facets__header');
-    const sourceHeaderElement = source.querySelector('.facets__header');
+    const targetHeaderElement = target.querySelector(".facets__header");
+    const sourceHeaderElement = source.querySelector(".facets__header");
 
     if (sourceHeaderElement && targetHeaderElement) {
       targetHeaderElement.outerHTML = sourceHeaderElement.outerHTML;
     }
 
-    const targetWrapElement = target.querySelector('.facets-wrap');
-    const sourceWrapElement = source.querySelector('.facets-wrap');
+    const targetWrapElement = target.querySelector(".facets-wrap");
+    const sourceWrapElement = source.querySelector(".facets-wrap");
 
     if (sourceWrapElement && targetWrapElement) {
-      const isShowingMore = Boolean(target.querySelector('show-more-button .label-show-more.hidden'));
+      const isShowingMore = Boolean(target.querySelector("show-more-button .label-show-more.hidden"));
       if (isShowingMore) {
         sourceWrapElement
-          .querySelectorAll('.facets__item.hidden')
-          .forEach((hiddenItem) => hiddenItem.classList.replace('hidden', 'show-more-item'));
+          .querySelectorAll(".facets__item.hidden")
+          .forEach((hiddenItem) => hiddenItem.classList.replace("hidden", "show-more-item"));
       }
 
       targetWrapElement.outerHTML = sourceWrapElement.outerHTML;
@@ -303,8 +300,8 @@ class FacetFiltersForm extends HTMLElement {
   }
 
   static renderMobileCounts(source, target) {
-    const targetFacetsList = target.querySelector('.mobile-facets__list');
-    const sourceFacetsList = source.querySelector('.mobile-facets__list');
+    const targetFacetsList = target.querySelector(".mobile-facets__list");
+    const sourceFacetsList = source.querySelector(".mobile-facets__list");
 
     if (sourceFacetsList && targetFacetsList) {
       targetFacetsList.outerHTML = sourceFacetsList.outerHTML;
@@ -312,13 +309,13 @@ class FacetFiltersForm extends HTMLElement {
   }
 
   static updateURLHash(searchParams) {
-    history.pushState({ searchParams }, '', `${window.location.pathname}${searchParams && '?'.concat(searchParams)}`);
+    history.pushState({ searchParams }, "", `${window.location.pathname}${searchParams && "?".concat(searchParams)}`);
   }
 
   static getSections() {
     return [
       {
-        section: document.getElementById('product-grid').dataset.id,
+        section: document.getElementById("product-grid").dataset.id,
       },
     ];
   }
@@ -334,39 +331,55 @@ class FacetFiltersForm extends HTMLElement {
 
   onSubmitHandler(event) {
     event.preventDefault();
-    const sortFilterForms = document.querySelectorAll('facet-filters-form form');
-    if (event.srcElement.className == 'mobile-facets__checkbox') {
-      const searchParams = this.createSearchParams(event.target.closest('form'));
+    const sortFilterForms = document.querySelectorAll("facet-filters-form form");
+    if (event.srcElement.className == "mobile-facets__checkbox") {
+      const searchParams = this.createSearchParams(event.target.closest("form"));
       this.onSubmitForm(searchParams, event);
     } else {
       const forms = [];
-      const isMobile = event.target.closest('form').id === 'FacetFiltersFormMobile';
+      const isMobile = event.target.closest("form").id === "FacetFiltersFormMobile";
 
       sortFilterForms.forEach((form) => {
         if (!isMobile) {
-          if (form.id === 'FacetSortForm' || form.id === 'FacetFiltersForm' || form.id === 'FacetSortDrawerForm') {
-            console.log(`%c🔍 Log form.id desk:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", form.id);
-            console.log(`%c🔍 Log this.createSearchParams:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.createSearchParams);
+          if (form.id === "FacetSortForm" || form.id === "FacetFiltersForm" || form.id === "FacetSortDrawerForm") {
+            console.log(
+              `%c🔍 Log form.id desk:`,
+              "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;",
+              form.id,
+            );
+            console.log(
+              `%c🔍 Log this.createSearchParams:`,
+              "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;",
+              this.createSearchParams,
+            );
 
             forms.push(this.createSearchParams(form));
           }
-        } else if (form.id === 'FacetFiltersFormMobile') {
-          console.log(`%c🔍 Log form.id:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", form.id);
+        } else if (form.id === "FacetFiltersFormMobile") {
+          console.log(
+            `%c🔍 Log form.id:`,
+            "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;",
+            form.id,
+          );
 
-          console.log(`%c🔍 Log this.createSearchParams:`, "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;", this.createSearchParams);
-
+          console.log(
+            `%c🔍 Log this.createSearchParams:`,
+            "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;",
+            this.createSearchParams,
+          );
 
           forms.push(this.createSearchParams(form));
         }
       });
-      this.onSubmitForm(forms.join('&'), event);
+      this.onSubmitForm(forms.join("&"), event);
     }
   }
 
   onInputChange(event) {
     // Check if the input is a price range input
-    const isPriceRangeInput = event.target.classList.contains('filter__price_change') ||
-                             event.target.classList.contains('filter__price_number');
+    const isPriceRangeInput =
+      event.target.classList.contains("filter__price_change") ||
+      event.target.classList.contains("filter__price_number");
 
     // Only auto-submit if it's not a price range input
     if (!isPriceRangeInput) {
@@ -376,11 +389,11 @@ class FacetFiltersForm extends HTMLElement {
 
   onPriceRangeApply(event) {
     // Check if the clicked element is the price range apply button
-    if (event.target.closest('.facets-price__apply button')) {
+    if (event.target.closest(".facets-price__apply button")) {
       event.preventDefault();
 
       // Find the form and submit it manually
-      const form = this.querySelector('form');
+      const form = this.querySelector("form");
       if (form) {
         const searchParams = this.createSearchParams(form);
         this.onSubmitForm(searchParams, event);
@@ -392,24 +405,24 @@ class FacetFiltersForm extends HTMLElement {
     event.preventDefault();
     FacetFiltersForm.toggleActiveFacets();
     const url =
-      event.currentTarget.href.indexOf('?') == -1
-        ? ''
-        : event.currentTarget.href.slice(event.currentTarget.href.indexOf('?') + 1);
+      event.currentTarget.href.indexOf("?") == -1
+        ? ""
+        : event.currentTarget.href.slice(event.currentTarget.href.indexOf("?") + 1);
     FacetFiltersForm.renderPage(url);
     FacetFiltersForm.renderPage(url);
 
-    if(window.innerWidth <= 1024) {
-      document.querySelectorAll('.mobile-facets__details').forEach(item => {
-        item.removeAttribute('style');
-        item.removeAttribute('open')
-      })
+    if (window.innerWidth <= 1024) {
+      document.querySelectorAll(".mobile-facets__details").forEach((item) => {
+        item.removeAttribute("style");
+        item.removeAttribute("open");
+      });
     }
   }
 
   setupDrawerOverlayClose() {
-    const drawerOverlay = this.querySelector('[data-drawer-overlay]');
+    const drawerOverlay = this.querySelector("[data-drawer-overlay]");
     if (drawerOverlay) {
-      drawerOverlay.addEventListener('click', (event) => {
+      drawerOverlay.addEventListener("click", (event) => {
         event.preventDefault();
         this.closeDrawer();
       });
@@ -417,17 +430,17 @@ class FacetFiltersForm extends HTMLElement {
   }
 
   closeDrawer() {
-    const closeButton = this.querySelector('[data-close-drawer]');
+    const closeButton = this.querySelector("[data-close-drawer]");
     if (closeButton) {
       closeButton.click();
-      document.body.classList.remove('overflow-hidden-mobile');
+      document.body.classList.remove("overflow-hidden-mobile");
     } else {
-      const menuDrawer = this.closest('menu-drawer');
+      const menuDrawer = this.closest("menu-drawer");
       if (menuDrawer) {
-        const details = menuDrawer.querySelector('details');
-        if (details && details.hasAttribute('open')) {
-          details.removeAttribute('open');
-          document.body.classList.remove('overflow-hidden-mobile');
+        const details = menuDrawer.querySelector("details");
+        if (details && details.hasAttribute("open")) {
+          details.removeAttribute("open");
+          document.body.classList.remove("overflow-hidden-mobile");
         }
       }
     }
@@ -437,22 +450,23 @@ class FacetFiltersForm extends HTMLElement {
 FacetFiltersForm.filterData = [];
 FacetFiltersForm.searchParamsInitial = window.location.search.slice(1);
 FacetFiltersForm.searchParamsPrev = window.location.search.slice(1);
-if (!customElements.get('facet-filters-form')) customElements.define('facet-filters-form', FacetFiltersForm);
+if (!customElements.get("facet-filters-form")) customElements.define("facet-filters-form", FacetFiltersForm);
 FacetFiltersForm.setListeners();
 
 class PriceRange extends HTMLElement {
   constructor() {
     super();
     this.rangeSliderPrice();
-    this.querySelectorAll('input').forEach((element) => {
-      element.addEventListener('change', this.onRangeChange.bind(this));
-      element.addEventListener('keydown', this.onKeyDown.bind(this));
+    this.querySelectorAll("input").forEach((element) => {
+      element.addEventListener("change", this.onRangeChange.bind(this));
+      element.addEventListener("keydown", this.onKeyDown.bind(this));
     });
     this.setMinAndMaxValues();
 
-    const numberS = this.querySelectorAll('.filter__price_change');
+    const numberS = this.querySelectorAll(".filter__price_change");
     let value1 = numberS[0].value;
     let value2 = numberS[1].value;
+
     this.updateDisplay(value1, value2);
   }
 
@@ -470,14 +484,14 @@ class PriceRange extends HTMLElement {
   }
 
   setMinAndMaxValues() {
-    const inputs = this.querySelectorAll('input');
+    const inputs = this.querySelectorAll("input");
     const minInput = inputs[0];
     const maxInput = inputs[1];
 
     // if (maxInput.value) minInput.setAttribute('data-max', maxInput.value);
     // if (minInput.value) maxInput.setAttribute('data-min', minInput.value);
-    if (minInput.value === '') maxInput.setAttribute('data-min', 0);
-    if (maxInput.value === '') minInput.setAttribute('data-max', maxInput.getAttribute('data-max'));
+    if (minInput.value === "") maxInput.setAttribute("data-min", 0);
+    if (maxInput.value === "") minInput.setAttribute("data-max", maxInput.getAttribute("data-max"));
   }
 
   // adjustToValidValues(input) {
@@ -490,17 +504,19 @@ class PriceRange extends HTMLElement {
   // }
 
   rangeSliderPrice() {
-    let rangeS = this.querySelectorAll('.filter__price_change'),
-        numberS = this.querySelectorAll('.filter__price_number'),
-        isFireFox = typeof InstallTrigger !== 'undefined',
-        lowerSlider = rangeS[0],
-        upperSlider = rangeS[1];
+    let rangeS = this.querySelectorAll(".filter__price_change"),
+      numberS = this.querySelectorAll(".filter__price_number"),
+      isFireFox = typeof InstallTrigger !== "undefined",
+      lowerSlider = rangeS[0],
+      upperSlider = rangeS[1];
 
-    rangeS.forEach(element => {
+    rangeS.forEach((element) => {
       element.oninput = () => {
         let slide1 = Math.floor(rangeS[0].value),
           slide2 = Math.ceil(rangeS[1].value),
-          slide = Math.round(Number(this.querySelector('.filter__price_change').max) / 100 * (72 / (this.offsetWidth / 100)));
+          slide = Math.round(
+            (Number(this.querySelector(".filter__price_change").max) / 100) * (72 / (this.offsetWidth / 100)),
+          );
 
         if (slide1 > slide2 - slide) {
           if (slide2 != upperSlider.max) {
@@ -531,16 +547,17 @@ class PriceRange extends HTMLElement {
 
         numberS[0].value = slide1;
         numberS[1].value = slide2;
+
         if (!isFireFox) this.updateDisplay(numberS[0].value, numberS[1].value);
-      }
+      };
     });
 
     numberS.forEach((element) => {
       element.oninput = () => {
         var number1 = parseFloat(numberS[0].placeholder),
-            checkValue1 = number1 != number1,
-            number2 = parseFloat(numberS[1].placeholder),
-            checkValue2 = number2 != number2;
+          checkValue1 = number1 != number1,
+          number2 = parseFloat(numberS[1].placeholder),
+          checkValue2 = number2 != number2;
 
         if (!checkValue1) {
           rangeS[0].placeholder = number1;
@@ -555,37 +572,45 @@ class PriceRange extends HTMLElement {
         } else {
           if (!isFireFox) this.updateDisplay(number1, number2);
         }
-      }
+      };
     });
   }
 
   updateDisplay(value1, value2) {
-    const priceRange = this.querySelector('.facets-price__range');
-    const max = this.querySelector('.filter__price_change').max;
+    const priceRange = this.querySelector(".facets-price__range");
+    const max = this.querySelector(".filter__price_change").max;
+    const labelMin = this.querySelector(".facets-price__value.min .value");
+    const labelMax = this.querySelector(".facets-price__value.max .value");
     const width = priceRange.clientWidth;
 
-    priceRange.style.setProperty('--left-space', (parseInt(value1) / parseInt(max)) * width + 'px');
-    priceRange.style.setProperty('--right-space', (width - (parseInt(value2) / parseInt(max)) * width) + 'px');
+    console.log("width", width);
+
+    priceRange.style.setProperty("--left-space", (parseInt(value1) / parseInt(max)) * width + "px");
+    priceRange.style.setProperty("--right-space", width - (parseInt(value2) / parseInt(max)) * width + "px");
+    labelMin.textContent = value1;
+    labelMax.textContent = value2;
+    labelMax.closest(".facets-price__value.max").style.setProperty("--offset", (value2 / max) * 24 - 12 + "px");
+    labelMin.closest(".facets-price__value.min").style.setProperty("--offset", (1 - value1 / max) * 24 - 12 + "px");
   }
 }
-if (!customElements.get('price-range')) customElements.define('price-range', PriceRange);
+if (!customElements.get("price-range")) customElements.define("price-range", PriceRange);
 
 class FacetRemove extends HTMLElement {
   constructor() {
     super();
-    const facetLink = this.querySelector('a');
-    facetLink.setAttribute('role', 'button');
-    facetLink.addEventListener('click', this.closeFilter.bind(this));
-    facetLink.addEventListener('keyup', (event) => {
+    const facetLink = this.querySelector("a");
+    facetLink.setAttribute("role", "button");
+    facetLink.addEventListener("click", this.closeFilter.bind(this));
+    facetLink.addEventListener("keyup", (event) => {
       event.preventDefault();
-      if (event.code.toUpperCase() === 'SPACE') this.closeFilter(event);
+      if (event.code.toUpperCase() === "SPACE") this.closeFilter(event);
     });
   }
 
   closeFilter(event) {
     event.preventDefault();
-    const form = this.closest('facet-filters-form') || document.querySelector('facet-filters-form');
+    const form = this.closest("facet-filters-form") || document.querySelector("facet-filters-form");
     form.onActiveFilterClick(event);
   }
 }
-if (!customElements.get('facet-remove')) customElements.define('facet-remove', FacetRemove);
+if (!customElements.get("facet-remove")) customElements.define("facet-remove", FacetRemove);
