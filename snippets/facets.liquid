@@ -45,7 +45,7 @@
 -%}
 
 <div class="facets-container w-full{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-    <div class="facets--left flex items-center justify-start gap-md">
+    <div class="facets--left flex items-center justify-start gap-md small-hide medium-hide">
       {%- if enable_grid_view -%}
         {% render 'switcher-grid',
           columns_desktop: columns_desktop,
@@ -58,7 +58,7 @@
       {%- endif -%}
       {% if enable_count %}
       {% comment %} Sorting and product count are the last elements when filter type is horizontal {% endcomment %}
-        <div class="results-count results-count--mobile flex items-center">
+        <div class="results-count results-count--mobile flex items-center small-hide medium-hide">
           <span class="results">
             <span id="ProductCountMobile">
               {%- if results.results_count -%}
@@ -80,7 +80,7 @@
     {% comment %} Sort, product count and filter pills at the end when filter is type of Drawer for the correct tabbing order {% endcomment %}
     <div class="facets--right flex items-center justify-end gap-md">
       {%- if enable_products_per_page -%}
-        <div class="facet-per-page products-per-page caption">
+        <div class="facet-per-page products-per-page caption small-hide medium-hide">
           {% render 'products-per-page',
             limit: limit,
             heading_label_case: heading_label_case,
@@ -167,13 +167,13 @@
               <div class="mobile-facets__inner" data-drawer-content>
                 <div class="mobile-facets__header flex sticky top-0 z-2">
                   <div class="mobile-facets__header-inner relative flex justify-between items-center relative">
-                    <h5 class="mobile-facets__heading small-hide medium-hide">
+                    <h5 class="mobile-facets__heading">
                       {%- if enable_filtering -%}
                         {{ 'products.facets.filter_button' | t }}
                       {%- endif -%}
                     </h5>
                     <button
-                      class="drawer__close block t-button bor-none cursor-pointer"
+                      class="drawer__close block button t-button bor-none cursor-pointer"
                       type="button"
                       data-close-drawer="Drawer-Facets"
                       onclick="this.closest('facet-filters-form').closeDrawer()"
@@ -319,7 +319,7 @@
                                               <span
                                                 class="swatch block color-swacth-color--{{ value.value | handle }}"
                                                 style="
-                                                  --swatch--background-color: {{ value.value | split: ' ' | last | handle }};
+                                                  --swatch--background-color: {%- if value.swatch -%}{{ value.swatch.color }}{%- else -%}{{ value.value | split: ' ' | last | handle }}{%- endif -%};
                                                   {% if background_image != blank %}--swatch--background: url({{ background_image }});{% endif %}
                                                 "
                                               ></span>
@@ -380,9 +380,7 @@
                             >
                               <summary class="mobile-facets__summary focus-inset">
                                 <div class="flex items-center justify-between w-full"
-                                {%- if heading_label_case == 'uppercase' -%}
-                                  style="--font-heading--case: uppercase;"
-                                {%- endif -%}
+                                  style="{%- if heading_label_case == 'uppercase' -%}--font-heading--case: uppercase;{%- endif -%}--font-size: {{ heading_label_font_size }};" 
                                 >
                                   <span>{{ filter.label | escape }}</span>
                                 </div>
@@ -404,13 +402,14 @@
 
                   {{ children }}
 
-                  <div class="mobile-facets__footer">
+                  <div class="mobile-facets__footer w-full">
                     <button
                       type="button"
-                      class="button button--primary w-full"
+                      class="button button--primary size-style w-full"
                       onclick="this.closest('.mobile-facets__wrapper').querySelector('summary').click()"
                     >
                       {{ 'products.facets.apply' | t }}
+                      {{- 'icon-arrow.svg' | inline_asset_content -}}
                     </button>
                   </div>
                 </div>
@@ -446,7 +445,7 @@
     <div class="facets--bottom">
       <facet-filters-form class="facets facets-pill">
         <form id="FacetFiltersPillsForm" class="facets__form">
-          <div class="active-facets flex flex-wrap w-full active-facets-desktop">
+          <div class="active-facets flex flex-wrap items-center w-full active-facets-desktop">
             {%- for filter in results.filters -%}
               {%- for value in filter.active_values -%}
                 <facet-remove>

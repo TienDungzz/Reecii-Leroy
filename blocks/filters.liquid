@@ -73,7 +73,7 @@
     style="--font-size--sidebar-heading: {{ heading_label_font_size }};"
   >
     {%- capture sidebar_categories -%}
-      {%- content_for 'block', type: '_blog-post-sidebar-category', id: 'static-collection-categories', in_facets: true, heading_label_case: heading_label_case, text_label_case: text_label_case, heading_label_font_size: heading_label_font_size, text_label_font_size: text_label_font_size -%}
+      {%- content_for 'block', type: '_blog-post-sidebar-category', id: 'static-collection-categories', in_facets: true, heading_label_case: heading_label_case, text_label_case: text_label_case, heading_label_font_size: heading_label_font_size, text_label_font_size: text_label_font_size, collapse: false -%}
     {%- endcapture -%}
     {%- if filter_type == 'vertical' -%}
       {{ sidebar_categories }}
@@ -220,6 +220,12 @@
     .facets--bottom {
       grid-area: 2 / 1 / 3 / 3;
     }
+
+    @media screen and (max-width: 1024px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(2, auto);
+      row-gap: 8px;
+    }
   }
 
   .facets--drawer {
@@ -263,7 +269,7 @@
 
   /* Facets - Price */
   .facets__priceblock .facets-price__range {
-    padding-block: var(--padding-sm);
+    padding-block: 0.6rem;
   }
 
   /* Facets - Form */
@@ -592,10 +598,6 @@
     .results-count {
       font-size: var(--body-xs-font-size);
       color: rgba(var(--color-foreground-rgb) / var(--opacity-50));
-    }
-
-    @media screen and (max-width: 1024px) {
-      margin: 0 -1.2rem 1.2rem;
     }
 
     @media screen and (min-width: 1025px) {

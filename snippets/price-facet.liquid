@@ -38,7 +38,9 @@
   endif
 -%}
 
-<div class="facets-price__range relative" style="--lg-m: 0 0 3rem; --m: 0 0 1rem;">
+<div class="facets-price__range relative" style="--lg-m: 0 0 3rem; --m: 0 0 1rem;" data-symbol="{{ cart.currency.symbol }}">
+  <span class="facets-price__value min"><span class="symbol">{{ cart.currency.symbol }}</span><span class="value">{{ min_value }}</span></span>
+  <span class="facets-price__value max"><span class="symbol">{{ cart.currency.symbol }}</span><span class="value">{{ max_value }}</span></span>
   <input
     class="filter__price_change filter__price_min"
     min="0"
@@ -67,7 +69,7 @@
   >
 </div>
 
-<div class="facets-price__input flex items-center gap-sm">
+<div class="facets-price__input items-center gap-sm none">
   <div class="field">
     <span class="field-currency absolute-c-y z-1" style="--left: 0.5rem;">{{ cart.currency.symbol }}</span>
 
@@ -124,6 +126,7 @@
   </div>
 </div>
 
+{% comment %}
 <div class="facets-price__apply" >
   <button class="button button--primary button--full-width button--outline">
     <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'products.facets.apply' | t }}">
@@ -133,6 +136,7 @@
     </span>
   </button>
 </div>
+{% endcomment %}
 
 {%- stylesheet -%}
   .facets-price__apply {
