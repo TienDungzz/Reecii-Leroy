@@ -1274,6 +1274,7 @@ class DeferredMedia extends HTMLElement {
       this.isPlaying = true;
       const $video = this.querySelector('video')
       const $parent = $video.closest('.content-absolute-block');
+      let isClicked = false;
 
       if ($video) {
         $video.addEventListener('click', (e) => {
@@ -1284,7 +1285,23 @@ class DeferredMedia extends HTMLElement {
           $video.setAttribute('controls', 'controls');
           $video.removeAttribute('muted');
           $video.removeAttribute('autoplay');
-          this.pauseMedia.bind(self)
+          this.pauseMedia.bind(self);
+          self.classList.add('expand');
+          isClicked = true;
+        });
+
+        // HOVER IN (mouseenter)
+        $video.addEventListener('mouseenter', () => {
+          if (!isClicked) {
+            self.classList.add('expand');
+          }
+        });
+
+        // HOVER OUT (mouseleave)
+        $video.addEventListener('mouseleave', () => {
+          if (!isClicked) {
+            self.classList.remove('expand');
+          }
         });
       }
 

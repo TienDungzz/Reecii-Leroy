@@ -175,90 +175,139 @@
           {% endif %}
         </card-media>
       </div>
-      <div
-        class="
-          resource-card__content
-          {% if horizontal_alignment != blank %} {{ horizontal_alignment}}{% endif %}
-          {% if vertical_alignment != blank %} {{ vertical_alignment}}{% endif %}
-        "
-      >
-        {% if resource_type == 'product' and settings.predictive_search_show_vendor %}
-          <p class="resource-card__subtext paragraph">
-            {{- resource.vendor -}}
-          </p>
-        {% endif %}
-        <p
+      <div class="resource-card__content-wrapper">
+        <div
           class="
-            resource-card__title
-            {% if style == 'overlay' %} h5{%else %} paragraph{% endif %}
-            {% if resource_type == 'product' %} card__heading{% endif %}
+            resource-card__content
+            {% if horizontal_alignment != blank %} {{ horizontal_alignment}}{% endif %}
+            {% if vertical_alignment != blank %} {{ vertical_alignment}}{% endif %}
           "
         >
-          {% if resource_type == 'product' %}
-            <a href="{{ resource.url }}" class="card-title-change link link--hover-underline">
+          {% if resource_type == 'product' and settings.predictive_search_show_price %}
+            {% render 'price', product: resource, show_unit_price: true %}
+          {% elsif resource_type == 'collection' and single_thumbnail_collection == false %}
+            <p class="resource-card__subtext paragraph">
+              {{- 'content.search_results_resource_products_count' | t: count: resource.all_products_count -}}
+            </p>
+          {% else %}
+            <p class="resource-card__subtext paragraph">
+              {{- resource.excerpt | default: resource.content | strip_html | truncate: 65 -}}
+            </p>
           {% endif %}
-          <span class="text">{{- resource.title -}}</span>
-          {% if resource_type == 'product' %}
-            </a>
-          {% endif %}
-        </p>
 
-        {% if resource_type == 'product' and settings.predictive_search_show_price %}
-          {% render 'price', product: resource, show_unit_price: true %}
-        {% elsif resource_type == 'collection' and single_thumbnail_collection == false %}
-          <p class="resource-card__subtext paragraph">
-            {{- 'content.search_results_resource_products_count' | t: count: resource.all_products_count -}}
+          <p
+            class="
+              resource-card__title
+              {% if style == 'overlay' %} h5{%else %} paragraph{% endif %}
+              {% if resource_type == 'product' %} card__heading{% endif %}
+            "
+          >
+            {% if resource_type == 'product' %}
+              <a href="{{ resource.url }}" class="card-title-change link link--hover-underline">
+            {% endif %}
+            <span class="text">{{- resource.title -}}</span>
+            {% if resource_type == 'product' %}
+              </a>
+            {% endif %}
           </p>
-        {% else %}
-          <p class="resource-card__subtext paragraph">
-            {{- resource.excerpt | default: resource.content | strip_html | truncate: 65 -}}
-          </p>
-        {% endif %}
-        {% if resource_type == 'product' and show_variant_swatches %}
-          {%- liquid
-            assign product_swatch_option = settings.swatch | downcase
-            assign isColor = false
-            assign variant_img = ''
-            for option in resource.options_with_values
-              assign option_name = option.name | downcase
-              if product_swatch_option contains option_name
-                assign isColor = true
-                assign index = forloop.index0
-                assign position = forloop.index | minus: 1
-                assign variant_selected = option.selected_value
-                if settings.show_quick_shop
-                  for variant in resource.variants limit: 1
-                    if variant.image != null
-                      assign variant_img = variant.image
-                    endif
-                  endfor
+
+          {% if resource_type == 'product' and show_variant_swatches %}
+            {%- liquid
+              assign product_swatch_option = settings.swatch | downcase
+              assign isColor = false
+              assign variant_img = ''
+              for option in resource.options_with_values
+                assign option_name = option.name | downcase
+                if product_swatch_option contains option_name
+                  assign isColor = true
+                  assign index = forloop.index0
+                  assign position = forloop.index | minus: 1
+                  assign variant_selected = option.selected_value
+                  if settings.show_quick_shop
+                    for variant in resource.variants limit: 1
+                      if variant.image != null
+                        assign variant_img = variant.image
+                      endif
+                    endfor
+                  endif
+                  break
+                else
+                  assign position = 0
+                  assign variant_selected = null
                 endif
-                break
-              else
-                assign position = 0
-                assign variant_selected = null
-              endif
-            endfor
+              endfor
 
-            if horizontal_alignment == 'items-center' or vertical_alignment == 'justify-center'
-              assign alignment = 'center'
-            elsif horizontal_alignment == 'items-end' or vertical_alignment == 'justify-end'
-              assign alignment = 'end'
-            else
-              assign alignment = 'start'
-            endif
-          -%}
-          {% if isColor %}
-            <div class="resource-card__variant">
-              {%- render 'product-swatch',
-                product: resource,
-                variant_selected: variant_selected,
-                index: index,
-                alignment: alignment
-              -%}
-            </div>
+              if horizontal_alignment == 'items-center' or vertical_alignment == 'justify-center'
+                assign alignment = 'center'
+              elsif horizontal_alignment == 'items-end' or vertical_alignment == 'justify-end'
+                assign alignment = 'end'
+              else
+                assign alignment = 'start'
+              endif
+            -%}
+            {% if isColor %}
+              <div class="resource-card__variant">
+                {%- render 'product-swatch',
+                  product: resource,
+                  variant_selected: variant_selected,
+                  index: index,
+                  alignment: alignment
+                -%}
+              </div>
+            {% endif %}
           {% endif %}
-        {% endif %}
+        </div>
+        <div class="resouce-card__button">
+          <product-form-component data-section-id="{{ section_id }}">
+            {%- form 'product',
+              resource,
+              id: product_form_id,
+              class: 'form',
+              novalidate: 'novalidate',
+              data-type: 'add-to-cart-form'
+            -%}
+              <input
+                type="hidden"
+                name="id"
+                value="{{ resource.selected_or_first_available_variant.id }}"
+                class="product-variant-id"
+                {% if resource.selected_or_first_available_variant.available == false %}
+                  disabled
+                {% endif %}
+              >
+              <button
+                id="{{ product_form_id }}-submit"
+                type="submit"
+                name="add"
+                class="add-to-cart-button button"
+                aria-haspopup="dialog"
+                aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ resource.id }}"
+                aria-live="polite"
+                data-sold-out-message="true"
+                {% if resource.selected_or_first_available_variant.available == false %}
+                  disabled
+                {% endif %}
+              >
+                {%- if quick_add_type_icon == false -%}
+                  <span>
+                    {%- if resource.selected_or_first_available_variant.available -%}
+                      {{ 'products.product.add_to_cart' | t }}
+                    {%- else -%}
+                      {{ 'products.product.sold_out' | t }}
+                    {%- endif -%}
+                  </span>
+                  <span class="sold-out-message hidden">
+                    {{ 'products.product.sold_out' | t }}
+                  </span>
+                {%- else -%}
+                  {{ 'icon-cart.svg' | inline_asset_content }}
+                {%- endif -%}
+
+                {%- render 'loading-spinner' -%}
+              </button>
+            {%- endform -%}
+          </product-form-component>
+        </div>
       </div>
     </div>
   </div>
@@ -282,7 +331,7 @@
 
     display: grid;
     grid-template-columns: var(--resource-card-template-columns);
-    gap: var(--gap-md);
+    gap: var(--gap-xl);
     position: relative;
     text-decoration: none;
     height: 100%;
@@ -305,11 +354,16 @@
     z-index: 1;
   }
 
+  .resource-card__content-wrapper {
+    display: flex;
+    gap: 0.8rem;
+  }
+
   .resource-card__content {
     display: flex;
     flex-direction: column;
     color: var(--color-foreground);
-    gap: var(--padding-3xs);
+    gap: var(--padding-2xs);
     text-align: var(--text-align);
 
     .price {
@@ -338,9 +392,35 @@
     gap: var(--padding-xs);
   }
 
+  .resouce-card__button {
+    .add-to-cart-button {
+      width: 4.8rem;
+      height: 4.8rem;
+      border-radius: 50%;
+      background: #4E5486;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .icon {
+        width: 16px;
+        height: auto;
+        color: #ffffff;
+      }
+      &:hover {
+        background: #404568;
+        .icon.icon-cart {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
   .resource-card__media-wrapper .card__media {
     aspect-ratio: var(--resource-card-aspect-ratio, auto);
     position: relative;
+    border-radius: 10px;
+    border: 1px solid #E6EAF3;
   }
 
   .resource-card__image {
@@ -377,7 +457,6 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
-    line-height: 1.3;
   }
 
   .resource-card__title.paragraph {
@@ -386,6 +465,11 @@
     .link {
       text-transform: initial;
       padding-bottom: 0.1rem;
+    }
+
+    .text {
+      line-height: 1.25;
+      text-transform: uppercase;
     }
   }
 
