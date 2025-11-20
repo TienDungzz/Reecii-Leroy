@@ -332,59 +332,26 @@ class FacetFiltersForm extends HTMLElement {
   onSubmitHandler(event) {
     event.preventDefault();
     const sortFilterForms = document.querySelectorAll("facet-filters-form form");
-    if (event.srcElement.className == "mobile-facets__checkbox") {
-      const searchParams = this.createSearchParams(event.target.closest("form"));
-      this.onSubmitForm(searchParams, event);
-    } else {
-      const forms = [];
-      const isMobile = event.target.closest("form").id === "FacetFiltersFormMobile";
-
-      sortFilterForms.forEach((form) => {
-        if (!isMobile) {
-          if (form.id === "FacetSortForm" || form.id === "FacetFiltersForm" || form.id === "FacetSortDrawerForm") {
-            console.log(
-              `%c🔍 Log form.id desk:`,
-              "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;",
-              form.id,
-            );
-            console.log(
-              `%c🔍 Log this.createSearchParams:`,
-              "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;",
-              this.createSearchParams,
-            );
-
-            forms.push(this.createSearchParams(form));
-          }
-        } else if (form.id === "FacetFiltersFormMobile") {
-          console.log(
-            `%c🔍 Log form.id:`,
-            "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;",
-            form.id,
-          );
-
-          console.log(
-            `%c🔍 Log this.createSearchParams:`,
-            "color: #eaefef; background: #60539f; font-weight: bold; padding: 8px 16px; border-radius: 4px;",
-            this.createSearchParams,
-          );
-
-          forms.push(this.createSearchParams(form));
-        }
-      });
-      this.onSubmitForm(forms.join("&"), event);
+    const forms = [];
+    
+    sortFilterForms.forEach((form) => {
+      forms.push(this.createSearchParams(form));
+    });
+    this.onSubmitForm(forms.join("&"), event);
+    if (event.target.name === "sort_by" || event.target.name === "per_page") {
+      const form = event.target.closest('form');
+      form.querySelectorAll(".facet-filters__sort_item").forEach(el => el.classList.remove("selected", "pointer-events-none"));
+      event.target.closest(".facet-filters__sort_item").classList.add("selected", "pointer-events-none");
     }
+    // if (event.target.name === "per_page") {
+    //   const form = event.target.closest('form');
+    //   form.querySelectorAll(".facet-filters__sort_item").forEach(el => el.classList.remove("selected", "pointer-events-none"));
+    //   event.target.closest(".facet-filters__sort_item").classList.add("selected", "pointer-events-none");
+    // }
   }
 
   onInputChange(event) {
     this.debouncedOnSubmit(event);
-    // Check if the input is a price range input
-    // const isPriceRangeInput =
-    //   event.target.classList.contains("filter__price_change") ||
-    //   event.target.classList.contains("filter__price_number");
-
-    // Only auto-submit if it's not a price range input
-    // if (!isPriceRangeInput) {
-    // }
   }
 
   onPriceRangeApply(event) {
@@ -582,8 +549,6 @@ class PriceRange extends HTMLElement {
     const labelMin = this.querySelector(".facets-price__value.min .value");
     const labelMax = this.querySelector(".facets-price__value.max .value");
     const width = priceRange.clientWidth;
-
-    console.log("width", width);
 
     priceRange.style.setProperty("--left-space", (parseInt(value1) / parseInt(max)) * width + "px");
     priceRange.style.setProperty("--right-space", width - (parseInt(value2) / parseInt(max)) * width + "px");

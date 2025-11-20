@@ -9,26 +9,26 @@
 
 {%- liquid
   if cart.attributes.pagination != blank and cart.attributes.pagination
-    assign paginate_by = cart.attributes.pagination
+    assign paginate_by = cart.attributes.pagination | plus: 0
   else
-    assign paginate_by = limit
+    assign paginate_by = limit | plus: 0
   endif
 -%}
 
 <div class="flex items-center gap-lg">
-  <span class="shrink-0 facet-filters__field-label {{ text_label_case }}" style="--font-size: {{ heading_label_font_size }};">{{ 'content.items_per_page_label' | t }}</span>
+  <span class="shrink-0 facet-filters__field-label uppercase{{ text_label_case }}" style="--font-size: {{ heading_label_font_size }};">{{ 'content.items_per_page_label' | t }}</span>
   <details
     id="Details-PerPage"
-    class="facets__panel facets__panel--{{ style }} details--dropdown facet-filters__sort relative caption-large"
+    class="facets__panel facets__panel--{{ style }} details--dropdown relative caption-large"
     is="dropdown-details"
     {% if enable_hover_reveal %}
       activate-event="hover"
     {% endif %}
     data-index="0"
-    style="--font-size: {{ text_label_font_size }};"
+    style="--font-size: 1.4rem;"
   >
-    <summary class="details__summary facets__summary focus-inset limit-{{ limit }} paginate_by-{{ paginate_by }} {{ cart.attributes.pagination }}">
-      <span class="label-text" name="paginateBy">
+    <summary class="details__summary facets__summary focus-inset button-secondary paginate_by-{{ paginate_by }} {{ cart.attributes.pagination }}">
+      <span class="label-text dung--{{ paginate_by }} dung--{{ cart.attributes.pagination }}" name="paginateBy">
         {%- if cart.attributes.pagination != blank and cart.attributes.pagination -%}
             {{ cart.attributes.pagination }}
           {%- else -%}
@@ -42,17 +42,16 @@
     <div
       id="PerPageDropdown"
       class="details__list facets__list absolute top-full right-0 z-1 global-settings-popup bg-background {{ text_label_case }}"
-      style="--min-w: 20rem;"
+      style="--min-w: 8.2rem;"
       tabindex="-1"
     >
-      <ul class="list-unstyled" role="list">
+      <ul class="list-unstyled {{ paginate_by }}" role="list">
         <li
           class="facet-filters__sort_item relative{% if paginate_by == 8 %} selected pointer-events-none{% endif %}"
-          style="--p: 0.5rem 0;"
           tabindex="-1"
         >
-          <label for="Products-per-page-8" class="facet-checkbox cursor-pointer">
-            <input type="checkbox" name="per_page" value="8" id="Products-per-page-8" class="visually-hidden">
+          <label for="Products-per-page-8" class="facet-checkbox justify-center cursor-pointer">
+            <input type="radio" name="per_page" value="8" id="Products-per-page-8" class="visually-hidden">
             <span class="label full-unstyled-link">
               {{- 'content.items_per_page' | t: limit: 8 -}}
             </span>
@@ -60,11 +59,11 @@
         </li>
         <li
           class="facet-filters__sort_item relative{% if paginate_by == 16 %} selected pointer-events-none{% endif %}"
-          style="--p: 0.5rem 0;"
+          style="--m: 0.8rem 0 0;"
           tabindex="-1"
         >
-          <label for="Products-per-page-16" class="facet-checkbox cursor-pointer">
-            <input type="checkbox" name="per_page" value="16" id="Products-per-page-16" class="visually-hidden">
+          <label for="Products-per-page-16" class="facet-checkbox justify-center cursor-pointer">
+            <input type="radio" name="per_page" value="16" id="Products-per-page-16" class="visually-hidden">
             <span class="label full-unstyled-link">
               {{- 'content.items_per_page' | t: limit: 16 -}}
             </span>
@@ -72,11 +71,11 @@
         </li>
         <li
           class="facet-filters__sort_item relative{% if paginate_by == 24 %} selected pointer-events-none{% endif %}"
-          style="--p: 0.5rem 0;"
+          style="--m: 0.8rem 0 0;"
           tabindex="-1"
         >
-          <label for="Products-per-page-24" class="facet-checkbox cursor-pointer">
-            <input type="checkbox" name="per_page" value="24" id="Products-per-page-24" class="visually-hidden">
+          <label for="Products-per-page-24" class="facet-checkbox justify-center cursor-pointer">
+            <input type="radio" name="per_page" value="24" id="Products-per-page-24" class="visually-hidden">
             <span class="label full-unstyled-link">
               {{- 'content.items_per_page' | t: limit: 24 -}}
             </span>
@@ -84,11 +83,11 @@
         </li>
         <li
           class="facet-filters__sort_item relative{% if paginate_by == 32 %} selected pointer-events-none{% endif %}"
-          style="--p: 0.5rem 0;"
+          style="--m: 0.8rem 0 0;"
           tabindex="-1"
         >
-          <label for="Products-per-page-32" class="facet-checkbox cursor-pointer">
-            <input type="checkbox" name="per_page" value="32" id="Products-per-page-32" class="visually-hidden">
+          <label for="Products-per-page-32" class="facet-checkbox justify-center cursor-pointer">
+            <input type="radio" name="per_page" value="32" id="Products-per-page-32" class="visually-hidden">
             <span class="label full-unstyled-link">
               {{- 'content.items_per_page' | t: limit: 32 -}}
             </span>

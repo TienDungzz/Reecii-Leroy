@@ -1080,12 +1080,25 @@ class MenuDrawer extends HTMLElement {
   }
 
   openMenuDrawer(summaryElement) {
+    const priceRange = this.querySelector('price-range')
     setTimeout(() => {
       this.mainDetailsToggle.classList.add("menu-opening");
     });
     summaryElement.setAttribute("aria-expanded", true);
     trapFocus(this.mainDetailsToggle, summaryElement);
     document.body.classList.add(`overflow-hidden-${this.dataset.breakpoint}`);
+
+    if(priceRange) {
+      const numberS = priceRange.querySelectorAll(".filter__price_change");
+      if (numberS) {
+        let value1 = numberS[0].value;
+        let value2 = numberS[1].value;
+  
+        setTimeout(() => {
+          priceRange.updateDisplay(value1, value2);
+        }, 100);
+      }
+    }
   }
 
   closeMenuDrawer(event, elementToFocus = false) {

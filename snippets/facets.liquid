@@ -45,7 +45,7 @@
 -%}
 
 <div class="facets-container w-full{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-    <div class="facets--left flex items-center justify-start gap-md small-hide medium-hide">
+    <div class="facets--left flex items-center justify-start gap-md">
       {%- if enable_grid_view -%}
         {% render 'switcher-grid',
           columns_desktop: columns_desktop,
@@ -79,58 +79,79 @@
 
     {% comment %} Sort, product count and filter pills at the end when filter is type of Drawer for the correct tabbing order {% endcomment %}
     <div class="facets--right flex items-center justify-end gap-md">
-      {%- if enable_products_per_page -%}
-        <div class="facet-per-page products-per-page caption small-hide medium-hide">
-          {% render 'products-per-page',
-            limit: limit,
-            heading_label_case: heading_label_case,
-            dropdown_content_case: dropdown_content_case,
-            heading_label_font_size: heading_label_font_size,
-            text_label_font_size: text_label_font_size
-          %}
-        </div>
-      {%- endif -%}
-
       {%- if enable_sorting -%}
-        <facet-filters-form class="facets facets--sorting">
-          <form
-            id="FacetSortDrawerForm"
-            class="facets__form{% if filter_type == 'drawer' %} facets__disclosure-drawer{% endif %}"
-          >
-            {% render 'facets-sort-by',
-              results: results,
-              sort_by: sort_by,
-              selected_sort_by: selected_sort_by,
-              enable_hover_reveal: enable_hover_reveal,
-              style: style,
-              filter_type: filter_type,
-              heading_label_case: heading_label_case,
-              text_label_case: text_label_case,
-              heading_label_font_size: heading_label_font_size,
-              text_label_font_size: text_label_font_size
-            %}
-            {% if results.current_vendor or results.current_type %}
-              <input
-                type="hidden"
-                name="q"
-                value="{{ results.current_vendor }}{{ results.current_type }}"
+        {%- assign selected_sort_by = results.sort_options | where: 'value', sort_by | first -%}
+        <menu-drawer class="mobile-facets__wrapper flex" data-breakpoint="mobile">
+          <details class="mobile-facets__disclosure disclosure-has-popup relative flex justify-end">
+            <summary class="button-secondary mobile-facets__open-wrapper focus-offset">
+              <side-drawer-opener
+                class="mobile-facets__open gap-md"
+                data-toggle-drawer="Drawer-Facets"
               >
-            {% endif %}
-
-            {%- if results.terms -%}
-              <input
-                type="hidden"
-                name="q"
-                value="{{ results.terms | escape }}"
+                <span class="svg-wrapper">{{- 'icon-sort.svg' | inline_asset_content -}}</span>
+                <span class="facet-filters__field-label shrink-0 uppercase">{{ 'products.facets.sort_by_label' | t }}</span>
+                <span class="flex items-center normal-case small-hide">({{ selected_sort_by.name }})</span>
+              </side-drawer-opener>
+            </summary>
+            <facet-filters-form class="facets facets--sorting">
+              <form
+                id="FacetSortDrawerForm"
+                class="mobile-facets drawer__container fixed inset-0 z-9 pointer-events-none"
               >
-              <input
-                name="options[prefix]"
-                type="hidden"
-                value="last"
-              >
-            {%- endif -%}
-          </form>
-        </facet-filters-form>
+                <div class="mobile-facets__inner" data-drawer-content>
+                  <div class="mobile-facets__header flex sticky top-0 z-2">
+                    <div class="mobile-facets__header-inner relative flex justify-between items-center relative">
+                      <h5 class="mobile-facets__heading">Sort by</h5>
+                      <button
+                        class="drawer__close block button t-button bor-none cursor-pointer"
+                        type="button"
+                        data-close-drawer="Drawer-Facets"
+                        onclick="this.closest('facet-filters-form').closeDrawer()"
+                        aria-label="{{ 'accessibility.close_dialog' | t }}"
+                      >
+                        <span class="svg-wrapper">
+                          {{- 'icon-close.svg' | inline_asset_content -}}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    id="SortByDropdown"
+                    class="mobile-facets__main cus-scrollbar"
+                    tabindex="-1"
+                  >
+                      <ul
+                        class="list-unstyled mobile-facets__block"
+                        role="list"
+                      >
+                        {%- for option in results.sort_options -%}
+                          <li
+                            class="facet-filters__sort_item relative{% if option.value == sort_by %} selected{% endif %}"
+                            {% unless forloop.first %}style="--m: 1.6rem 0 0;"{% endunless %}
+                            tabindex="-1"
+                          >
+                            <label
+                              for="Filter-{{ option.value | escape }}-{{ forloop.index }}"
+                              class="facet-checkbox cursor-pointer"
+                            >
+                              <input
+                                type="radio"
+                                name="sort_by"
+                                value="{{ option.value | escape }}"
+                                id="Filter-{{ option.value | escape }}-{{ forloop.index }}"
+                                class="mobile-facets__radio visually-hidden"
+                              >
+                              <span class="label uppercase full-unstyled-link {{ text_label_case }}">{{ option.name | escape }}</span>
+                            </label>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    </div>
+                </div>
+              </form>
+            </facet-filters-form>
+          </details>
+        </menu-drawer>
       {%- endif -%}
 
       {% comment %}  Drawer and mobile filter {% endcomment %}
@@ -442,7 +463,7 @@
       {%- endif -%}
     </div>
 
-    <div class="facets--bottom small-hide medium-hide">
+    <div class="facets--bottom">
       <facet-filters-form class="facets facets-pill">
         <form id="FacetFiltersPillsForm" class="facets__form">
           <div class="active-facets flex flex-wrap items-center w-full active-facets-desktop">

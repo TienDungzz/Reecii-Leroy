@@ -446,6 +446,7 @@ class DropdownDetails extends HTMLDetailsElement {
       this._isOpen = value;
       if (this.isConnected) {
         this._animate(value);
+        
       } else {
         this.setAttribute('open', value ? 'true' : 'false');
       }

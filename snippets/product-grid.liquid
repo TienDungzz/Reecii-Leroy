@@ -13,6 +13,19 @@
 {% endcapture %}
 {% assign product_card_size = product_card_size | strip %}
 
+{% case section.settings.product_card_size %}
+  {% when 'small' %}
+    {% assign product_card_number = 5 %}
+  {% when 'medium' %}
+    {% assign product_card_number = 4 %}
+  {% when 'large' %}
+    {% assign product_card_number = 3 %}
+  {% when 'extra-large' %}
+    {% assign product_card_number = 2 %}
+  {% when 'extra-extra-large' %}
+    {% assign product_card_number = 1 %}
+{% endcase %}
+
 {%- style -%}
   @media (min-width: 750px) {
     {% case section.settings.layout_type %}
@@ -112,6 +125,7 @@
         data-infinite-scroll="true"
         id="product-grid"
         data-id="{{ section.id }}"
+        data-view="{{ product_card_number }}"
       >
         {{ children }}
       </ul>

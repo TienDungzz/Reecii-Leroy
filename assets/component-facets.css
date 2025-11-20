@@ -161,13 +161,6 @@
   padding-left: 2rem;
 }
 
-.facet-filters__sort_item:focus-within {
-  outline: 0.2rem solid rgb(var(--color-foreground-rgb) / var(--opacity-50));
-  outline-offset: 0.3rem;
-  box-shadow: 0 0 0 0.3rem var(--color-foreground),
-    0 0 0.5rem 0.4rem rgb(var(--color-foreground-rgb) / var(--opacity-30));
-}
-
 .facets__form {
   gap: 0 3.5rem;
 }
@@ -246,7 +239,7 @@
 }
 
 .facets__list {
-  padding: 0.5rem 2rem;
+  padding: 1.6rem 2rem;
 }
 
 .facets-layout-grid {
@@ -702,30 +695,38 @@ a.active-facets__button.focused .active-facets__button-inner {
   z-index: 3;
 }
 
-.mobile-facets__wrapper .mobile-facets__inner {
-  background: #ffffff;
-  width: calc(100% - 5rem);
-  margin-left: auto;
-  height: calc(100% - 32rem);
-  overflow-y: auto;
-  pointer-events: all;
-  max-width: 43rem;
-  display: flex;
-  flex-direction: column;
-  border-width: 0 0 0 0.1rem;
-  border-style: solid;
-  border-color: rgb(var(--color-foreground-rgb) / var(--opacity-20));
-  transition-property: transform, box-shadow;
-  transition-duration: var(--duration-extra-long);
-  transition-timing-function: var(--cubic-smooth);
-  top: 32rem;
-  right: 3.9rem;
-  padding: 1.6rem;
-  border-radius: 1.6rem;
-
-  @media screen and (max-width: 1024px) {
-    top: 24rem;
-    height: calc(100% - 24rem);
+.mobile-facets__wrapper {
+  .mobile-facets__inner {
+    background: #ffffff;
+    width: calc(100% - 5rem);
+    margin-left: auto;
+    height: fit-content;
+    max-height: calc(100% - 32rem);
+    overflow-y: auto;
+    pointer-events: all;
+    max-width: 43rem;
+    display: flex;
+    flex-direction: column;
+    border-width: 0 0 0 0.1rem;
+    border-style: solid;
+    border-color: rgb(var(--color-foreground-rgb) / var(--opacity-20));
+    transition-property: transform, box-shadow;
+    transition-duration: var(--duration-extra-long);
+    transition-timing-function: var(--cubic-smooth);
+    top: 32rem;
+    right: max(calc(var(--page-margin) + 1.5rem), calc(((100vw - var(--page-width)) / 2) + var(--page-margin) + 1rem));
+    padding: 1.6rem;
+    border-radius: 1.6rem;
+  
+    @media screen and (max-width: 1024px) {
+      top: 24rem;
+      height: calc(100% - 24rem);
+    }
+  }
+  #FacetSortDrawerForm {
+    .mobile-facets__inner {
+      max-width: 30rem;
+    }
   }
 }
 
