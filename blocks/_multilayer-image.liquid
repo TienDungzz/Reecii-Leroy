@@ -1,0 +1,164 @@
+{{ 'multilayer-image.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'multilayer-image.js' | asset_url }}" defer="defer"></script>
+
+<multilayer-image>
+    <div class="multilayer-image-carousel layout-panel-flex--row" data-width-active="{{ block.settings.width_active }}" data-gap="{{ block.settings.gap }}"
+        style="{%- render 'gap-style', value: block.settings.gap, scale_min: 0 -%}{% render 'spacing-style', settings: block.settings %}"
+    >
+        {%- content_for 'blocks' -%}
+    </div>
+</multilayer-image>
+
+{% schema %}
+{
+    "name": "Multilayers image",
+    "blocks": [
+        {
+            "type": "group"
+        },
+    ],
+    "settings": [
+        {
+            "type": "header",
+            "content": "t:content.layout"
+        },
+        {
+            "type": "range",
+            "id": "gap",
+            "label": "t:settings.gap",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 24
+        },
+        {
+            "type": "range",
+            "id": "width_active",
+            "label": "Width item active",
+            "min": 10,
+            "max": 80,
+            "step": 1,
+            "default": 60,
+            "unit": "%"
+        },
+        {
+            "type": "header",
+            "content": "t:content.appearance"
+        },
+        {
+            "type": "checkbox",
+            "id": "inherit_color_scheme",
+            "label": "t:settings.inherit_color_scheme",
+            "default": true
+        },
+        {
+            "type": "color",
+            "id": "scheme_background",
+            "label": "t:settings.background",
+            "default": "#FFFFFF",
+            "alpha": true,
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+        },
+        {
+            "type": "color_background",
+            "id": "scheme_background_gradient",
+            "label": "t:settings.background_gradient",
+            "info": "t:info.background_gradient_info",
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+        },
+        {
+            "type": "color",
+            "id": "scheme_foreground_heading",
+            "label": "t:settings.headings",
+            "default": "#000000",
+            "alpha": true,
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+        },
+        {
+            "type": "color",
+            "id": "scheme_foreground",
+            "label": "t:settings.text",
+            "default": "#000000",
+            "alpha": true,
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+        },
+        {
+            "type": "color",
+            "id": "scheme_primary",
+            "label": "t:settings.primary_color",
+            "default": "#000F9F",
+            "alpha": true,
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+        },
+        {
+            "type": "color",
+            "id": "scheme_primary_hover",
+            "label": "t:settings.primary_hover_color",
+            "default": "#000000",
+            "alpha": true,
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+        },
+        {
+            "type": "color",
+            "id": "scheme_border",
+            "label": "t:settings.borders",
+            "default": "#E6E6E6",
+            "alpha": true,
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+        },
+        {
+            "type": "color",
+            "id": "scheme_shadow",
+            "label": "t:settings.shadow_color",
+            "default": "#000000",
+            "alpha": true,
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+        },
+        {
+            "type": "header",
+            "content": "t:content.padding"
+        },
+        {
+            "type": "range",
+            "id": "padding-block-start",
+            "label": "t:settings.top",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding-block-end",
+            "label": "t:settings.bottom",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding-inline-start",
+            "label": "t:settings.left",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding-inline-end",
+            "label": "t:settings.right",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "px",
+            "default": 0
+        }
+    ]
+}
+{% endschema %}
