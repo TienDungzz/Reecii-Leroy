@@ -7,11 +7,11 @@
 
   if settings.quick_add_type == 'icon' and block.blocks.size > 0
     assign quick_add_is_icon = true
-    assign class_group = 'md:absolute top-0 right-0 z-2'
-    assign class_group_inner = 'max-sm:absolute top-0 right-0 z-2'
+    assign class_group = 'md:absolute bottom-0 right-0 z-2'
+    assign class_group_inner = 'max-sm:absolute bottom-0 right-0 z-2'
   elsif settings.quick_add_type == 'text' or settings.quick_add_type == 'icon' and block.blocks.size == 0
     assign quick_add_hidden = true
-    assign class_group = 'absolute top-0 right-0 z-2'
+    assign class_group = 'absolute bottom-0 right-0 z-2'
   endif
 -%}
 
@@ -29,19 +29,19 @@
         {% render 'product-wishlist-button', card_product: card_product, class_button: class_button, class_text: class_text, class_text_inner: class_text_inner %}
       {%- endif -%}
 
+      {% comment %} ------ Compare ------ {% endcomment %}
+      {%- if enable_compare -%}
+        {% render 'product-compare-button', card_product: card_product, class_button: class_button, sectionId: section_id, class_text: class_text, class_text_inner: class_text_inner %}
+      {%- endif -%}
+      
       {% comment %} ------ Quick view ------ {% endcomment %}
       {%- if enable_quick_view -%}
         {% render 'quick-view-button', card_product: card_product, class_button: class_button, class_text: class_text, class_text_inner: class_text_inner %}
       {%- endif -%}
 
-      {% comment %} ------ Compare ------ {% endcomment %}
-      {%- if enable_compare -%}
-        {% render 'product-compare-button', card_product: card_product, class_button: class_button, sectionId: section_id, class_text: class_text, class_text_inner: class_text_inner %}
-      {%- endif -%}
+      {% comment %} ------ Quick add ------ {% endcomment %}
+      {% content_for 'blocks' %}
     </div>
-
-    {% comment %} ------ Quick add ------ {% endcomment %}
-    {% content_for 'blocks' %}
   </div>
 {%- endif -%}
 

@@ -18,7 +18,24 @@
     aria-hidden="true"
     style="{%- render 'block-padding', settings: settings -%}"
   >
-    {{- 'products.product.on_sale' | t -}}
+    {%- if settings.enable_price_percent -%}
+      {%- liquid 
+        assign list_compare = card_product.variants | where: 'compare_at_price'
+        assign compare = 0
+        for variant in list_compare
+            assign saving = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round
+            if saving > compare
+                assign compare = saving
+            endif
+        endfor
+        if compare  < 1
+            assign compare = card_product.compare_at_price_min | minus: card_product.price_min | times: 100.0 | divided_by: card_product.compare_at_price_min | round
+        endif
+      -%}
+      -{{ compare | append: '%'}} {{ 'products.product.off_text' | t }}
+    {%- else -%}
+      {{- 'products.product.on_sale' | t -}}
+    {%- endif -%}
   </span>
 {%- endif -%}
 {%- if new_badge -%}

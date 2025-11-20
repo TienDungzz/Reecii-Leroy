@@ -139,8 +139,7 @@ class ProductCompare extends HTMLElement {
 
     if (this.compareItems.length > 1) {
       compareLink.parentElement.classList.add("is-show");
-      compareLink.querySelector("span.countPill").textContent =
-        this.compareItems.length;
+      compareLink.querySelector("span.countPill").textContent = "(" + this.compareItems.length + ")";
     } else {
       compareLink.parentElement.classList.remove("is-show");
     }

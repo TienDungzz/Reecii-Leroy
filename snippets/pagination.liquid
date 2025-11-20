@@ -25,11 +25,7 @@
 {% endcapture %}
 
 {% capture icons_style %}
-  {% if sec_stts.pagination_icons_type == 'chevron' %}
     {{- 'icon-caret.svg' | inline_asset_content -}}
-  {% else %}
-    {{- 'icon-arrow.svg' | inline_asset_content -}}
-  {% endif %}
 {% endcapture %}
 
 {%- if paginate.parts.size > 0 -%}
@@ -42,7 +38,6 @@
     style="
       {% render 'spacing-style', settings: sec_stts, suffix: suffix %}
       {% render 'border-override', settings: sec_stts %}
-      --pagination-alignment: {{ sec_stts.pagination_alignment | default: 'center' }};
     "
   >
     <nav
@@ -50,8 +45,53 @@
       role="navigation"
       aria-label="{{ 'content.pagination.label' | t }}"
     >
-      <ul class="{{ list_class }}" role="list">
-        {%- if paginate.previous -%}
+      <div class="pagination__group" role="list">
+        {%- if enable_products_per_page -%}
+        <div class="facet-per-page products-per-page caption small-hide">
+          <facet-filters-form class="facets facets--per-page">
+            <form
+              id="FacetPerPageForm"
+            >
+              {% render 'products-per-page',
+                limit: sec_stts.products_per_page
+              %}
+            </form>
+          </facet-filters-form>
+        </div>
+        {%- endif -%}
+        
+        <ul class="{{ list_class }}" role="list" style="--pagination-alignment: {{ sec_stts.pagination_alignment | default: 'center' }};">
+          {%- for part in paginate.parts -%}
+            <li>
+              {%- if part.is_link -%}
+                <a
+                  href="{{ part.url }}{{ anchor }}"
+                  class="{{ item_class }} link"
+                  aria-label="{{ 'content.pagination.page' | t: number: part.title }}"
+                >
+                  {{- part.title -}}
+                </a>
+              {%- else -%}
+                {%- if part.title == paginate.current_page -%}
+                  <a
+                    role="link"
+                    aria-disabled="true"
+                    class="{{ item_class }} pagination__item--current light"
+                    aria-current="page"
+                    aria-label="{{ 'content.pagination.page' | t: number: part.title }}"
+                  >
+                    {{- part.title -}}
+                  </a>
+                {%- else -%}
+                  <span class="pagination__item inline-flex items-center justify-center w-full">{{ part.title }}</span>
+                {%- endif -%}
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <div class="pagination__arrows {{ list_class }}" style="--pagination-alignment: right;">
+          {%- if paginate.previous -%}
           <li>
             <a
               href="{{ paginate.previous.url }}{{ anchor }}"
@@ -64,37 +104,8 @@
               </span>
             </a>
           </li>
-        {%- endif -%}
-
-        {%- for part in paginate.parts -%}
-          <li>
-            {%- if part.is_link -%}
-              <a
-                href="{{ part.url }}{{ anchor }}"
-                class="{{ item_class }} link"
-                aria-label="{{ 'content.pagination.page' | t: number: part.title }}"
-              >
-                {{- part.title -}}
-              </a>
-            {%- else -%}
-              {%- if part.title == paginate.current_page -%}
-                <a
-                  role="link"
-                  aria-disabled="true"
-                  class="{{ item_class }} pagination__item--current light"
-                  aria-current="page"
-                  aria-label="{{ 'content.pagination.page' | t: number: part.title }}"
-                >
-                  {{- part.title -}}
-                </a>
-              {%- else -%}
-                <span class="pagination__item">{{ part.title }}</span>
-              {%- endif -%}
-            {%- endif -%}
-          </li>
-        {%- endfor -%}
-
-        {%- if paginate.next -%}
+          {%- endif -%}
+          {%- if paginate.next -%}
           <li>
             <a
               href="{{ paginate.next.url }}{{ anchor }}"
@@ -107,8 +118,9 @@
               </span>
             </a>
           </li>
-        {%- endif -%}
-      </ul>
+          {%- endif -%}
+        </div>
+      </div>
     </nav>
 
     {% if sec_stts.pagination_type == 'infinite' %}
@@ -161,46 +173,85 @@
 {%- endif -%}
 
 {% stylesheet %}
+  .pagination-wrapper {
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--padding-block-start);
+  }
+
+  .pagination__group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    @media screen and (max-width: 750px) {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    @media screen and (max-width: 550px) {
+      flex-direction: column;
+      align-items: center;
+      row-gap: 0.8rem;
+    }
+  }
+
+  .pagination__arrows {
+    .pagination__item {
+      border-radius: 50%;
+      color: var(--arrow-color);
+      background-color: var(--arrow-background);
+      border: 1px solid var(--arrow-border);
+
+      &:hover {
+        color: var(--arrow-color-hover);
+        background: var(--arrow-background-hover);
+        border: 1px solid var(--arrow-border);
+      }
+    }
+    li + li {
+      margin-left: 0.8rem;
+    }
+  }
+
   .pagination__list {
     justify-content: var(--pagination-alignment);
   }
 
   .pagination__list > li {
-    min-width: 4rem;
-  }
-
-  .pagination__list > li:not(:last-child) {
-    margin-right: 1.6rem;
+    min-width: 4.8rem;
+    @media screen and (max-width: 750px) {
+      min-width: 4rem;
+    }
   }
 
   .pagination__item {
     display: inline-flex;
-    height: 4rem;
-    color: var(--pagination-color);
-    background-color: var(--pagination-active-color);
-    border: var(--border-width) solid var(--pagination-color);
+    height: 4.8rem;
     font-size: var(--body-s-font-size);
+    color: var(--pagination-color);
     box-shadow: rgba(var(--pagination-active-color-rgb) / 0.25) 0rem 0rem 0rem 0rem;
     transition: background-color var(--animation-speed) var(--ease-out-smooth),
       box-shadow var(--animation-speed) var(--ease-out-smooth);
 
-    &:has(.icon-arrow) {
-      padding: 0 1.3rem;
+    @media screen and (max-width: 750px) {
+      height: 4rem;
     }
   }
 
-  .pagination__item--current {
-    background: var(--pagination-color);
-    border-color: rgba(var(--pagination-active-color-rgb) / .25);
+  .pagination__item.pagination__item--current {
     color: var(--pagination-active-color);
-    box-shadow: rgba(var(--pagination-active-color-rgb) / .25) 0 4px 4px;
+    background: var(--color-primary-button-background);
+    border-radius: 50%;
+    &:hover {
+      color: var(--pagination-active-color);
+      background: var(--color-primary-button-hover-background);
+      cursor: pointer;
+    }
   }
 
-  .pagination__item:hover {
+  /* .pagination__item:hover {
     background: transparent;
     border-color: var(--pagination-active-color);
     box-shadow: rgba(var(--pagination-active-color-rgb) / 0.25) 0 4px 4px 0;
-  }
+  } */
 
   .pagination__item--next,
   .pagination__item--prev {
@@ -209,14 +260,6 @@
     &:hover {
       border-color: var(--pagination-active-color);
     }
-  }
-
-  .pagination__list > li:has(.pagination__item--next) {
-    margin-right: 2rem;
-  }
-
-  .pagination__list > li:has(.pagination__item--prev) {
-    margin-left: 0.4rem;
   }
 
   .pagination__item-arrow .svg-wrapper {
