@@ -9,10 +9,26 @@ if (typeof MultilayerImage === 'undefined') {
             const items = container.querySelectorAll(':scope > .group-block');
             if (!items.length) return;
 
-            const gap = parseFloat(container.getAttribute('data-gap')) || 0; 
+            const gap = parseFloat(container.getAttribute('data-gap')) || 0;
             const widthActivePercent = parseFloat(container.getAttribute('data-width-active')) || 60;
 
+            // Detect mobile
+            const isMobile = window.innerWidth <= 768;
+
+            /** ---------------------------------------------
+             *  DEFAULT: APPLY WIDTHS
+             * --------------------------------------------- */
             this.applyWidths = (items) => {
+                // Nếu mobile → reset toàn bộ width và return
+                if (isMobile) {
+                    items.forEach(el => {
+                        el.style.setProperty('--size-style-width', '100%');
+                        el.style.setProperty('--size-style-width-tablet', '100%');
+                    });
+                    container.style.removeProperty('--item-height'); 
+                    return;
+                }
+
                 const count = items.length;
                 const containerWidth = container.getBoundingClientRect().width;
 
@@ -21,50 +37,67 @@ if (typeof MultilayerImage === 'undefined') {
 
                 const originPx = usableWidth / count;
                 const activePx = usableWidth * (widthActivePercent / 100);
-                
+
                 const scaleActive = ((activePx / originPx) * 100) + 100;
 
                 items.forEach(el => {
                     if (el.classList.contains('group-active')) {
                         el.style.setProperty('--size-style-width', scaleActive + '%');
+                        el.style.setProperty('--size-style-width-tablet', scaleActive + '%');
                     } else {
                         el.style.setProperty('--size-style-width', '100%');
+                        el.style.setProperty('--size-style-width-tablet', '100%');
                     }
                 });
             };
 
             const firstItem = items[0];
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('group-active');
-                        this.applyWidths(items);
+            /** ---------------------------------------------
+             *  OBSERVER — BỎ HẲN TRÊN MOBILE
+             * --------------------------------------------- */
+            let observer = null;
 
-                        setTimeout(() => {
-                            const firstHeight = firstItem.getBoundingClientRect().height;
-                            container.style.setProperty('--item-height', firstHeight + 'px');
-                        }, 1000)
+            if (!isMobile) {
+                observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('group-active');
+                            this.applyWidths(items);
 
-                        observer.unobserve(entry.target);
-                    }
+                            setTimeout(() => {
+                                const firstHeight = firstItem.getBoundingClientRect().height;
+                                container.style.setProperty('--item-height', firstHeight + 'px');
+                            }, 1000);
+
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '-100px 0px'
                 });
-            }, {
-                threshold: 0.1,
-                rootMargin: '-100px 0px'
-            });
 
-            observer.observe(firstItem);
+                observer.observe(firstItem);
+            } else {
+                // MOBILE → reset widths ngay khi load
+                this.applyWidths(items);
+            }
 
-            items.forEach(item => {
-                item.addEventListener('mouseenter', () => {
-                    if (!item.classList.contains('group-active')) {
-                        container.querySelector('.group-block.group-active')?.classList.remove('group-active');
-                        item.classList.add('group-active');
-                        this.applyWidths(items);
-                    }
+            /** ---------------------------------------------
+             *  HOVER LOGIC — LOẠI BỎ TRÊN MOBILE
+             * --------------------------------------------- */
+            if (!isMobile) {
+                items.forEach(item => {
+                    item.addEventListener('mouseenter', () => {
+                        if (!item.classList.contains('group-active')) {
+                            container.querySelector('.group-block.group-active')?.classList.remove('group-active');
+                            item.classList.add('group-active');
+                            this.applyWidths(items);
+                        }
+                    });
                 });
-            });
+            }
         }
     }
 
